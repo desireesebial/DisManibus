@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
     public float crouchHeight = 1f;
     public float standingHeight = 2f;
     public float crouchCameraOffset = 0.5f; // How much to lower the camera when crouching
+    public float crouchTransitionSpeed = 5f; // How fast to transition between standing and crouching
 
     [Header("Sprint Stamina")]
     public float maxSprintTime = 3f;
@@ -35,6 +36,10 @@ public class PlayerMovement : MonoBehaviour
     private float verticalRotation = 0f;
     private Vector3 originalCameraPosition;
     private Vector3 crouchCameraPosition;
+    private Vector3 originalControllerCenter;
+    private Vector3 crouchControllerCenter;
+    private float targetHeight;
+    private float currentHeight;
 
     void Start() 
     {
@@ -62,6 +67,12 @@ public class PlayerMovement : MonoBehaviour
             originalCameraPosition = playerCamera.localPosition;
             crouchCameraPosition = originalCameraPosition - Vector3.up * crouchCameraOffset;
         }
+
+        // Store original controller settings
+        originalControllerCenter = controller.center;
+        crouchControllerCenter = new Vector3(originalControllerCenter.x, crouchHeight / 2f, originalControllerCenter.z);
+        currentHeight = standingHeight;
+        targetHeight = standingHeight;
 
         if(staminaBar != null)
         {
@@ -129,12 +140,25 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
             isCrouching = !isCrouching;
-            controller.height = isCrouching ? crouchHeight : standingHeight;
+            targetHeight = isCrouching ? crouchHeight : standingHeight;
+        }
+
+        // Smoothly transition height
+        if (Mathf.Abs(currentHeight - targetHeight) > 0.01f)
+        {
+            currentHeight = Mathf.Lerp(currentHeight, targetHeight, Time.deltaTime * crouchTransitionSpeed);
+            controller.height = currentHeight;
             
-            // Adjust camera position when crouching
+            // Adjust controller center based on height
+            float centerY = currentHeight / 2f;
+            controller.center = new Vector3(originalControllerCenter.x, centerY, originalControllerCenter.z);
+            
+            // Smoothly adjust camera position
             if (playerCamera != null)
             {
-                playerCamera.localPosition = isCrouching ? crouchCameraPosition : originalCameraPosition;
+                float t = (standingHeight - currentHeight) / (standingHeight - crouchHeight);
+                t = Mathf.Clamp01(t);
+                playerCamera.localPosition = Vector3.Lerp(originalCameraPosition, crouchCameraPosition, t);
             }
         }
     }
