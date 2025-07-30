@@ -9,9 +9,16 @@ public class PlayerMovement : MonoBehaviour
     public float sprintSpeed = 10f;
     public float crouchSpeed = 2f;
 
+    [Header("Mouse Look")]
+    public float mouseSensitivity = 2f;
+    public Transform playerCamera;
+    public float maxLookUpAngle = 80f;
+    public float maxLookDownAngle = -80f;
+
     [Header("Crouch Settings")]
     public float crouchHeight = 1f;
     public float standingHeight = 2f;
+    public float crouchCameraOffset = 0.5f; // How much to lower the camera when crouching
 
     [Header("Sprint Stamina")]
     public float maxSprintTime = 3f;
@@ -25,12 +32,36 @@ public class PlayerMovement : MonoBehaviour
     private float currentRechargeTime;
     private bool isSprinting = false;
     private bool canSprint = true;
+    private float verticalRotation = 0f;
+    private Vector3 originalCameraPosition;
+    private Vector3 crouchCameraPosition;
 
     void Start() 
     {
         controller = GetComponent<CharacterController>();
         currentSpeed = walkSpeed;
         currentSprintTime = maxSprintTime;
+
+        // Lock and hide cursor
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        // If no camera is assigned, try to find one
+        if (playerCamera == null)
+        {
+            Camera cam = GetComponentInChildren<Camera>();
+            if (cam != null)
+            {
+                playerCamera = cam.transform;
+            }
+        }
+
+        // Store original camera position
+        if (playerCamera != null)
+        {
+            originalCameraPosition = playerCamera.localPosition;
+            crouchCameraPosition = originalCameraPosition - Vector3.up * crouchCameraOffset;
+        }
 
         if(staminaBar != null)
         {
@@ -42,6 +73,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         MovePlayer();
+        HandleMouseLook();
         HandleCrouch();
         HandleSprintStamina();
     }
@@ -74,6 +106,23 @@ public class PlayerMovement : MonoBehaviour
         controller.Move(move * currentSpeed * Time.deltaTime);
     }
 
+    void HandleMouseLook()
+    {
+        if (playerCamera == null) return;
+
+        // Get mouse input
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+
+        // Rotate the player body horizontally
+        transform.Rotate(Vector3.up * mouseX);
+
+        // Rotate the camera vertically
+        verticalRotation -= mouseY;
+        verticalRotation = Mathf.Clamp(verticalRotation, maxLookDownAngle, maxLookUpAngle);
+        playerCamera.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
+    }
+
     // Handling Crouch
     void HandleCrouch()
     {
@@ -81,6 +130,12 @@ public class PlayerMovement : MonoBehaviour
         {
             isCrouching = !isCrouching;
             controller.height = isCrouching ? crouchHeight : standingHeight;
+            
+            // Adjust camera position when crouching
+            if (playerCamera != null)
+            {
+                playerCamera.localPosition = isCrouching ? crouchCameraPosition : originalCameraPosition;
+            }
         }
     }
 
