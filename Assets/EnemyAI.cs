@@ -7,6 +7,13 @@ public class EnemyAI : MonoBehaviour
     public float attackRange = 2f;         // How close to attack
     public float moveSpeed = 4f;           // How fast Kamatayan moves
     public float searchSpeed = 2f;         // How fast Kamatayan searches
+    public float attackDamage;
+    public float patrolSpeed;
+    public float chaseSpeed;
+    public float detectionRange;
+    public Transform[] patrolPoints;
+    public float patrolWaitTime;
+    public float fieldOfView;
     
     [Header("Search Behavior")]
     public Transform[] searchPoints;       // Points where Kamatayan searches

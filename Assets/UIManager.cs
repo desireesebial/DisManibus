@@ -33,8 +33,8 @@ public class UIManager : MonoBehaviour
             // Setup health UI
             if (playerHealth != null)
             {
-                playerHealth.healthBar = healthBar;
-                playerHealth.damageFlash = damageFlash;
+                // Note: PlayerHealth uses lives system, not health bar
+                // The healthBar and damageFlash are handled by UIManager directly
             }
             
             // Setup stamina UI
@@ -72,7 +72,7 @@ public class UIManager : MonoBehaviour
     {
         if (playerHealth != null && healthText != null)
         {
-            healthText.text = $"Health: {Mathf.Round(playerHealth.currentHealth)}/{playerHealth.maxHealth}";
+            healthText.text = $"Lives: {playerHealth.currentLives}/{playerHealth.maxLives}";
         }
     }
     

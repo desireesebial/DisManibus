@@ -64,17 +64,10 @@ public class EnemySpawner : MonoBehaviour
         }
         
         // Add NavMeshAgent if not present
-<<<<<<< HEAD
         UnityEngine.AI.NavMeshAgent agent = enemy.GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (agent == null)
         {
             agent = enemy.AddComponent<UnityEngine.AI.NavMeshAgent>();
-=======
-        NavMeshAgent agent = enemy.GetComponent<NavMeshAgent>();
-        if (agent == null)
-        {
-            agent = enemy.AddComponent<NavMeshAgent>();
->>>>>>> ea344000ef5ec98ca6e3256979115fbf27c3ee6a
         }
         
         Debug.Log($"Enemy spawned at {spawnPoint.position}");
@@ -96,17 +89,10 @@ public class EnemySpawner : MonoBehaviour
             enemyAI.chaseSpeed = enemySpeed * 2f;
         }
         
-<<<<<<< HEAD
         UnityEngine.AI.NavMeshAgent agent = enemy.GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (agent == null)
         {
             agent = enemy.AddComponent<UnityEngine.AI.NavMeshAgent>();
-=======
-        NavMeshAgent agent = enemy.GetComponent<NavMeshAgent>();
-        if (agent == null)
-        {
-            agent = enemy.AddComponent<NavMeshAgent>();
->>>>>>> ea344000ef5ec98ca6e3256979115fbf27c3ee6a
         }
     }
 } 
