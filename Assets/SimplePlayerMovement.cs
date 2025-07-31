@@ -1,13 +1,16 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(CharacterController))]
-public class PlayerMovement : MonoBehaviour
+public class SimplePlayerMovement : MonoBehaviour
 {
     [Header("Movement Speed")]
-    public float walkSpeed = 5f;
-    public float sprintSpeed = 10f;
-    public float crouchSpeed = 2f;
+    public float walkSpeed = 15f;
+    public float sprintSpeed = 25f;
+    public float crouchSpeed = 8f;
+    
+    [Header("Movement Type")]
+    public bool useTransformMovement = false; // Set to true for faster movement
 
     [Header("Mouse Look")]
     public float mouseSensitivity = 2f;
@@ -18,8 +21,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Crouch Settings")]
     public float crouchHeight = 1f;
     public float standingHeight = 2f;
-    public float crouchCameraOffset = 0.5f; // How much to lower the camera when crouching
-    public float crouchTransitionSpeed = 5f; // How fast to transition between standing and crouching
+    public float crouchCameraOffset = 0.5f;
+    public float crouchTransitionSpeed = 5f;
 
     [Header("Sprint Stamina")]
     public float maxSprintTime = 3f;
@@ -58,7 +61,16 @@ public class PlayerMovement : MonoBehaviour
             if (cam != null)
             {
                 playerCamera = cam.transform;
+                Debug.Log("Found camera automatically: " + cam.name);
             }
+            else
+            {
+                Debug.LogWarning("No camera found! Please assign a camera to the Player Camera field.");
+            }
+        }
+        else
+        {
+            Debug.Log("Camera assigned: " + playerCamera.name);
         }
 
         // Store original camera position
@@ -66,6 +78,7 @@ public class PlayerMovement : MonoBehaviour
         {
             originalCameraPosition = playerCamera.localPosition;
             crouchCameraPosition = originalCameraPosition - Vector3.up * crouchCameraOffset;
+            Debug.Log("Camera position stored: " + originalCameraPosition);
         }
 
         // Store original controller settings
@@ -73,6 +86,8 @@ public class PlayerMovement : MonoBehaviour
         crouchControllerCenter = new Vector3(originalControllerCenter.x, crouchHeight / 2f, originalControllerCenter.z);
         currentHeight = standingHeight;
         targetHeight = standingHeight;
+
+        Debug.Log("SimplePlayerMovement initialized successfully!");
 
         if(staminaBar != null)
         {
@@ -96,6 +111,12 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 move = transform.right * moveX + transform.forward * moveZ;
 
+        // Debug movement input
+        if (moveX != 0 || moveZ != 0)
+        {
+            Debug.Log($"Movement input: X={moveX}, Z={moveZ}, Speed={currentSpeed}");
+        }
+
         // Sprinting part
         if (Input.GetKey(KeyCode.LeftShift) && !isCrouching && canSprint && currentSprintTime > 0)
         {
@@ -114,7 +135,18 @@ public class PlayerMovement : MonoBehaviour
             currentSpeed = walkSpeed;
             isSprinting = false;
         }
-        controller.Move(move * currentSpeed * Time.deltaTime);
+        
+        // Apply movement
+        if (useTransformMovement)
+        {
+            // Use Transform movement (faster, no physics)
+            transform.position += move * currentSpeed * Time.deltaTime;
+        }
+        else
+        {
+            // Use CharacterController movement (with physics)
+            controller.Move(move * currentSpeed * Time.deltaTime);
+        }
     }
 
     void HandleMouseLook()
@@ -212,4 +244,4 @@ public class PlayerMovement : MonoBehaviour
     public bool CanSprint() => canSprint;
     public float GetSprintTimeRemaining() => currentSprintTime;
     public float GetSprintRechargeProgress() => currentRechargeTime / sprintRechargeTime;
-}
+} 

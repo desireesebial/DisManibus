@@ -19,7 +19,7 @@ public class UIManager : MonoBehaviour
     public Button mainMenuButton;
     
     private PlayerHealth playerHealth;
-    private PlayerMovement playerMovement;
+    private SimplePlayerMovement playerMovement;
     
     void Start()
     {
@@ -28,7 +28,7 @@ public class UIManager : MonoBehaviour
         if (player != null)
         {
             playerHealth = player.GetComponent<PlayerHealth>();
-            playerMovement = player.GetComponent<PlayerMovement>();
+            playerMovement = player.GetComponent<SimplePlayerMovement>();
             
             // Setup health UI
             if (playerHealth != null)

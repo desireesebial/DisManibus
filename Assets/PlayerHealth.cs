@@ -63,7 +63,7 @@ public class PlayerHealth : MonoBehaviour
     {
         Debug.Log("Game Over! All 3 attempts used!");
         // Disable player movement
-        GetComponent<PlayerMovement>().enabled = false;
+        GetComponent<SimplePlayerMovement>().enabled = false;
         // Load menu scene after 2 seconds
         Invoke("GameOver", 2f);
     }
