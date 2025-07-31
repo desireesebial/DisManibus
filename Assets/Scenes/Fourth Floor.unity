@@ -12644,7 +12644,7 @@ Transform:
   m_GameObject: {fileID: 1690094773}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.63463193, z: -0, w: 0.7728145}
-  m_LocalPosition: {x: 91.5, y: 79.6, z: 69}
+  m_LocalPosition: {x: 91.5, y: 60.1, z: 69}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -12663,15 +12663,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 792f04c5d2037624d8163258bcb7b84f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 5
-  sprintSpeed: 10
-  crouchSpeed: 2
+  walkSpeed: 55
+  sprintSpeed: 95
+  crouchSpeed: 35
+  useTransformMovement: 0
   mouseSensitivity: 2
-  playerCamera: {fileID: 0}
+  playerCamera: {fileID: 519643214}
   maxLookUpAngle: 80
   maxLookDownAngle: -80
   crouchHeight: 1
-  standingHeight: 2
+  standingHeight: 3
   crouchCameraOffset: 0.5
   crouchTransitionSpeed: 5
   maxSprintTime: 3
