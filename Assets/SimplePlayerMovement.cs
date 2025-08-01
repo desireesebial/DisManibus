@@ -117,8 +117,8 @@ public class SimplePlayerMovement : MonoBehaviour
             Debug.Log($"Movement input: X={moveX}, Z={moveZ}, Speed={currentSpeed}");
         }
 
-        // Sprinting part
-        if (Input.GetKey(KeyCode.LeftShift) && !isCrouching && canSprint && currentSprintTime > 0)
+        // Sprinting part - only allow sprinting when moving forward (positive Z input)
+        if (Input.GetKey(KeyCode.LeftShift) && !isCrouching && canSprint && currentSprintTime > 0 && moveZ > 0)
         {
             currentSpeed = sprintSpeed;
             isSprinting = true;
