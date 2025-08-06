@@ -5,28 +5,21 @@ public class SimpleLightingController : MonoBehaviour
     [Header("Lighting Settings")]
     public Light mainLight;
     
-    [Header("Atmosphere Presets")]
-    [SerializeField] private Color normalColor = Color.white;
-    [SerializeField] private float normalIntensity = 1f;
+    [Header("Horror Atmosphere Presets")]
+    [SerializeField] private Color normalColor = new Color(0.9f, 0.9f, 0.8f); // Slightly warm white
+    [SerializeField] private float normalIntensity = 0.8f;
     
-    [SerializeField] private Color eerieColor = new Color(0.8f, 0.6f, 0.4f);
-    [SerializeField] private float eerieIntensity = 0.6f;
+    [SerializeField] private Color eerieColor = new Color(0.6f, 0.4f, 0.2f); // Dark orange/amber
+    [SerializeField] private float eerieIntensity = 0.4f;
     
-    [SerializeField] private Color scaryColor = new Color(0.6f, 0.2f, 0.2f);
-    [SerializeField] private float scaryIntensity = 0.3f;
+    [SerializeField] private Color scaryColor = new Color(0.4f, 0.1f, 0.1f); // Dark red
+    [SerializeField] private float scaryIntensity = 0.2f;
     
-    [SerializeField] private Color creepyColor = new Color(0.4f, 0.2f, 0.6f);
+    [SerializeField] private Color creepyColor = new Color(0.2f, 0.1f, 0.4f); // Dark purple
     [SerializeField] private float creepyIntensity = 0.1f;
     
-    [Header("Developer Controls")]
-    [SerializeField] private bool enableKeyboardControls = true;
-    [SerializeField] private KeyCode normalKey = KeyCode.Alpha1;
-    [SerializeField] private KeyCode eerieKey = KeyCode.Alpha2;
-    [SerializeField] private KeyCode scaryKey = KeyCode.Alpha3;
-    [SerializeField] private KeyCode creepyKey = KeyCode.Alpha4;
-    
     [Header("Transition Settings")]
-    public float transitionSpeed = 2f;
+    public float transitionSpeed = 3f;
     
     private Color targetColor;
     private float targetIntensity;
@@ -46,27 +39,6 @@ public class SimpleLightingController : MonoBehaviour
     
     void Update()
     {
-        // Handle keyboard input (developer only)
-        if (enableKeyboardControls)
-        {
-            if (Input.GetKeyDown(normalKey))
-            {
-                SetNormalLighting();
-            }
-            else if (Input.GetKeyDown(eerieKey))
-            {
-                SetEerieLighting();
-            }
-            else if (Input.GetKeyDown(scaryKey))
-            {
-                SetScaryLighting();
-            }
-            else if (Input.GetKeyDown(creepyKey))
-            {
-                SetCreepyLighting();
-            }
-        }
-        
         // Update transition
         if (isTransitioning)
         {
@@ -82,7 +54,7 @@ public class SimpleLightingController : MonoBehaviour
             mainLight.color = normalColor;
             mainLight.intensity = normalIntensity;
         }
-        RenderSettings.ambientLight = normalColor;
+        RenderSettings.ambientLight = normalColor * 0.3f;
     }
     
     public void SetEerieLighting()
@@ -92,7 +64,7 @@ public class SimpleLightingController : MonoBehaviour
             mainLight.color = eerieColor;
             mainLight.intensity = eerieIntensity;
         }
-        RenderSettings.ambientLight = eerieColor * 0.5f;
+        RenderSettings.ambientLight = eerieColor * 0.2f;
     }
     
     public void SetScaryLighting()
@@ -102,7 +74,7 @@ public class SimpleLightingController : MonoBehaviour
             mainLight.color = scaryColor;
             mainLight.intensity = scaryIntensity;
         }
-        RenderSettings.ambientLight = scaryColor * 0.3f;
+        RenderSettings.ambientLight = scaryColor * 0.1f;
     }
     
     public void SetCreepyLighting()
@@ -112,7 +84,7 @@ public class SimpleLightingController : MonoBehaviour
             mainLight.color = creepyColor;
             mainLight.intensity = creepyIntensity;
         }
-        RenderSettings.ambientLight = creepyColor * 0.2f;
+        RenderSettings.ambientLight = creepyColor * 0.05f;
     }
     
     // Smooth transition methods
@@ -154,7 +126,7 @@ public class SimpleLightingController : MonoBehaviour
         mainLight.intensity = Mathf.Lerp(mainLight.intensity, targetIntensity, Time.deltaTime * transitionSpeed);
         
         // Smoothly change ambient light
-        RenderSettings.ambientLight = Color.Lerp(RenderSettings.ambientLight, targetColor * 0.5f, Time.deltaTime * transitionSpeed);
+        RenderSettings.ambientLight = Color.Lerp(RenderSettings.ambientLight, targetColor * 0.2f, Time.deltaTime * transitionSpeed);
         
         // Check if transition is complete (compare color components)
         if (Mathf.Abs(mainLight.color.r - targetColor.r) < 0.01f &&
