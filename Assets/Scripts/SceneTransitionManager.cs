@@ -1,0 +1,211 @@
+using UnityEngine;
+using UnityEngine.UI;
+using System.Collections;
+
+public class SceneTransitionManager : MonoBehaviour
+{
+    [Header("Transition Settings")]
+    [SerializeField] private CanvasGroup fadeCanvasGroup;
+    [SerializeField] private float fadeDuration = 0.5f;
+    [SerializeField] private AnimationCurve fadeCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    
+    [Header("UI References")]
+    [SerializeField] private Canvas transitionCanvas;
+    [SerializeField] private Image fadeImage;
+    
+    private static SceneTransitionManager instance;
+    private bool isTransitioning = false;
+    
+    public static SceneTransitionManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = FindFirstObjectByType<SceneTransitionManager>();
+                if (instance == null)
+                {
+                    GameObject go = new GameObject("SceneTransitionManager");
+                    instance = go.AddComponent<SceneTransitionManager>();
+                    DontDestroyOnLoad(go);
+                }
+            }
+            return instance;
+        }
+    }
+    
+    void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+            SetupTransitionCanvas();
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
+    
+    void Start()
+    {
+        // Ensure we start with a fade in
+        if (fadeCanvasGroup != null)
+        {
+            StartCoroutine(FadeIn());
+        }
+    }
+    
+    private void SetupTransitionCanvas()
+    {
+        if (transitionCanvas == null)
+        {
+            // Create transition canvas if it doesn't exist
+            GameObject canvasGO = new GameObject("TransitionCanvas");
+            transitionCanvas = canvasGO.AddComponent<Canvas>();
+            transitionCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            transitionCanvas.sortingOrder = 999; // Ensure it's on top
+            
+            // Add canvas scaler
+            CanvasScaler scaler = canvasGO.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920, 1080);
+            
+            // Add graphic raycaster
+            canvasGO.AddComponent<GraphicRaycaster>();
+            
+            // Create fade image
+            GameObject imageGO = new GameObject("FadeImage");
+            imageGO.transform.SetParent(canvasGO.transform, false);
+            
+            fadeImage = imageGO.AddComponent<Image>();
+            fadeImage.color = Color.black;
+            fadeImage.raycastTarget = false;
+            
+            // Set image to fill screen
+            RectTransform rectTransform = fadeImage.GetComponent<RectTransform>();
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.offsetMin = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
+            
+            // Create canvas group
+            fadeCanvasGroup = imageGO.AddComponent<CanvasGroup>();
+            fadeCanvasGroup.alpha = 0f;
+            
+            DontDestroyOnLoad(canvasGO);
+        }
+    }
+    
+    public void LoadScene(string sceneName)
+    {
+        if (!isTransitioning)
+        {
+            StartCoroutine(LoadSceneCoroutine(sceneName));
+        }
+    }
+    
+    public void LoadScene(int sceneIndex)
+    {
+        if (!isTransitioning)
+        {
+            StartCoroutine(LoadSceneCoroutine(sceneIndex));
+        }
+    }
+    
+    private IEnumerator LoadSceneCoroutine(string sceneName)
+    {
+        isTransitioning = true;
+        
+        // Fade out
+        yield return StartCoroutine(FadeOut());
+        
+        // Load scene
+        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+        
+        // Fade in
+        yield return StartCoroutine(FadeIn());
+        
+        isTransitioning = false;
+    }
+    
+    private IEnumerator LoadSceneCoroutine(int sceneIndex)
+    {
+        isTransitioning = true;
+        
+        // Fade out
+        yield return StartCoroutine(FadeOut());
+        
+        // Load scene
+        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneIndex);
+        
+        // Fade in
+        yield return StartCoroutine(FadeIn());
+        
+        isTransitioning = false;
+    }
+    
+    private IEnumerator FadeOut()
+    {
+        float elapsedTime = 0f;
+        
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float progress = elapsedTime / fadeDuration;
+            float alpha = fadeCurve.Evaluate(progress);
+            
+            if (fadeCanvasGroup != null)
+                fadeCanvasGroup.alpha = alpha;
+            
+            yield return null;
+        }
+        
+        if (fadeCanvasGroup != null)
+            fadeCanvasGroup.alpha = 1f;
+    }
+    
+    private IEnumerator FadeIn()
+    {
+        float elapsedTime = 0f;
+        
+        if (fadeCanvasGroup != null)
+            fadeCanvasGroup.alpha = 1f;
+        
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float progress = elapsedTime / fadeDuration;
+            float alpha = 1f - fadeCurve.Evaluate(progress);
+            
+            if (fadeCanvasGroup != null)
+                fadeCanvasGroup.alpha = alpha;
+            
+            yield return null;
+        }
+        
+        if (fadeCanvasGroup != null)
+            fadeCanvasGroup.alpha = 0f;
+    }
+    
+    // Public method to check if transition is in progress
+    public bool IsTransitioning()
+    {
+        return isTransitioning;
+    }
+    
+    // Public method to force fade out (useful for immediate transitions)
+    public void ForceFadeOut()
+    {
+        if (fadeCanvasGroup != null)
+            fadeCanvasGroup.alpha = 1f;
+    }
+    
+    // Public method to force fade in
+    public void ForceFadeIn()
+    {
+        if (fadeCanvasGroup != null)
+            fadeCanvasGroup.alpha = 0f;
+    }
+}

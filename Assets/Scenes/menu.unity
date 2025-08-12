@@ -148,16 +148,16 @@ RectTransform:
   m_GameObject: {fileID: 278142977}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.0920727, y: 1.0636, z: 1.0636}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1369551487}
   m_Father: {fileID: 982927529}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -102, y: 19.207}
-  m_SizeDelta: {x: 231.177, y: 82.414}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -123, y: -125.64}
+  m_SizeDelta: {x: -2328.823, y: 82.414}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &278142979
 MonoBehaviour:
@@ -262,9 +262,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 278142977}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3359998dab344224280266ba9a81afff, type: 3}
+  m_Script: {fileID: 11500000, guid: a79f1f7e17790424b9233107dffc16f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameSceneName: Fourth Floor
+  useTransitionManager: 1
+  newGameButton: {fileID: 0}
+  buttonImage: {fileID: 0}
+  buttonText: {fileID: 0}
 --- !u!1 &355199808
 GameObject:
   m_ObjectHideFlags: 0
@@ -1053,7 +1058,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -82, y: 9}
+  m_AnchoredPosition: {x: -108, y: 9}
   m_SizeDelta: {x: 241.1461, y: 79.2801}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1153908262
@@ -1341,9 +1346,9 @@ RectTransform:
   m_Father: {fileID: 278142978}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -147}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0.68200004}
+  m_AnchoredPosition: {x: 0, y: 23}
+  m_SizeDelta: {x: 0, y: 26}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1369551488
 MonoBehaviour:
@@ -1430,7 +1435,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 29.056534, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
