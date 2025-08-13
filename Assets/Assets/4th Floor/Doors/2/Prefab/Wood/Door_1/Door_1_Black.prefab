@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 23226955580423262}
   - component: {fileID: 65161449079294308}
   - component: {fileID: 82379819288447364}
-  - component: {fileID: 114024263972142150}
+  - component: {fileID: 6061941069276569995}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -29,7 +29,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1534469393933210}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.000000021855694, y: 0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.5000001, y: 0.00000007510185, z: 0.004844999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -68,7 +68,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7bd936c679c249940889082db865d216, type: 2}
+  - {fileID: 2100000, guid: 40ef8b2887311204b9fffa496131e059, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -208,7 +208,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
---- !u!114 &114024263972142150
+--- !u!114 &6061941069276569995
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -217,14 +217,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1534469393933210}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 731917776111cfd4e8e238be7a676f44, type: 3}
+  m_Script: {fileID: 11500000, guid: 62edea33453d2dd4b9eab7ef10ab2cab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  open: 0
-  smooth: 1
-  asource: {fileID: 0}
-  openDoor: {fileID: 8300000, guid: 44b63b0db16ce624b97e45ebde0a0971, type: 3}
-  closeDoor: {fileID: 8300000, guid: bc37ad25465405a428a26ff0facd9a7b, type: 3}
+  openAngle: 90
+  isOpen: 1
+  interactionDistance: 3
+  interactKey: 101
 --- !u!1 &1831504449878450
 GameObject:
   m_ObjectHideFlags: 0
@@ -234,7 +233,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4970741399400872}
-  - component: {fileID: 120235185868443974}
   m_Layer: 0
   m_Name: Door_1_Black
   m_TagString: Untagged
@@ -252,40 +250,13 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 37, y: 39, z: 50}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4429605065566062}
   - {fileID: 4895947811848380}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &120235185868443974
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1831504449878450}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba04e19fac023f14db0504e803e5ce98, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  doorPivot: {fileID: 0}
-  openAngle: 90
-  isOpen: 0
-  interactionDistance: 3
-  interactKey: 101
-  interactionPrompt: Press E to open/close door
-  openSound: {fileID: 0}
-  closeSound: {fileID: 0}
-  onDoorOpened:
-    m_PersistentCalls:
-      m_Calls: []
-  onDoorClosed:
-    m_PersistentCalls:
-      m_Calls: []
-  showDebugInfo: 1
 --- !u!1 &1875921088058430
 GameObject:
   m_ObjectHideFlags: 0
@@ -351,7 +322,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7bd936c679c249940889082db865d216, type: 2}
+  - {fileID: 2100000, guid: b913a0646305bbb4890db8ca1e545763, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -459,7 +430,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 27671ef6ad4a82148ade30fbd4ec5d32, type: 2}
+  - {fileID: 2100000, guid: b913a0646305bbb4890db8ca1e545763, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

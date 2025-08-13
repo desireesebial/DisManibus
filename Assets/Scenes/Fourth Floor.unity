@@ -20,7 +20,7 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.09396226, g: 0.0920121, b: 0.0920121, a: 0.3}
+  m_AmbientSkyColor: {r: 0, g: 0, b: 0, a: 0.3}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
@@ -11546,10 +11546,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1fefd438eeac9ee4f82ea1039559dbcb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1297101912}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1fefd438eeac9ee4f82ea1039559dbcb, type: 3}
 --- !u!1001 &702291141
 PrefabInstance:
@@ -15483,6 +15480,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Door_1_Black
       objectReference: {fileID: 0}
+    - target: {fileID: 1831504449878450, guid: b5a5a17dc3a6d9e47bd468828a2dec34, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
     - target: {fileID: 4970741399400872, guid: b5a5a17dc3a6d9e47bd468828a2dec34, type: 3}
       propertyPath: m_LocalScale.x
       value: 37
@@ -16101,11 +16102,6 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 6534420261576204862, guid: c492efe3e037d4447923edc38633bd5b, type: 3}
   m_PrefabInstance: {fileID: 1005724480}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1011205467 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 1fefd438eeac9ee4f82ea1039559dbcb, type: 3}
-  m_PrefabInstance: {fileID: 694932571}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1011517894
 GameObject:
@@ -21391,33 +21387,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1fefd438eeac9ee4f82ea1039559dbcb, type: 3}
   m_PrefabInstance: {fileID: 694932571}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1297101912
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1011205467}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba04e19fac023f14db0504e803e5ce98, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  doorPivot: {fileID: 0}
-  openAngle: 90
-  isOpen: 0
-  interactionDistance: 3
-  interactKey: 101
-  interactionPrompt: Press E to open/close door
-  openSound: {fileID: 0}
-  closeSound: {fileID: 0}
-  onDoorOpened:
-    m_PersistentCalls:
-      m_Calls: []
-  onDoorClosed:
-    m_PersistentCalls:
-      m_Calls: []
-  showDebugInfo: 1
 --- !u!1001 &1319378496
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27798,7 +27767,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 11
   m_Type: 1
-  m_Color: {r: 0.3132075, g: 0.306707, b: 0.306707, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_Intensity: 3.16
   m_Range: 10
   m_SpotAngle: 30
@@ -28665,7 +28634,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainLight: {fileID: 1603831892}
-  customColor: {r: 0.3132075, g: 0.306707, b: 0.306707, a: 1}
+  customColor: {r: 0, g: 0, b: 0, a: 1}
   customIntensity: 3.16
 --- !u!1 &1664231392
 GameObject:
