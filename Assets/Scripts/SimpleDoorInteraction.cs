@@ -178,26 +178,29 @@ public class SimpleDoorInteraction : MonoBehaviour
         transform.localRotation = closedRotation;
         Debug.Log("SimpleDoorInteraction: Door closed! New rotation: " + transform.localRotation.eulerAngles);
     }
-    
+
     bool IsPlayerInRange()
     {
-        if (player == null) 
+        if (player == null)
         {
             Debug.LogWarning("SimpleDoorInteraction: Player is null in IsPlayerInRange!");
             return false;
         }
-        
-        float distance = Vector3.Distance(transform.position, player.position);
+
+        Vector3 doorPos = transform.position;
+        Vector3 playerPos = player.position;
+        doorPos.y = 0;
+        playerPos.y = 0;
+        float distance = Vector3.Distance(doorPos, playerPos);
         bool inRange = distance <= interactionDistance;
-        
-        if (Input.GetKey(KeyCode.F3))
-        {
-            Debug.Log("SimpleDoorInteraction: Distance check - Distance: " + distance + ", Range: " + interactionDistance + ", In Range: " + inRange);
-        }
-        
+
+        Debug.Log("Distance (XZ only): " + distance + " | In Range: " + inRange);
+
         return inRange;
     }
-    
+
+
+
     // Public methods for testing
     public void ForceOpen()
     {
