@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class doorscrpit : MonoBehaviour
+public class doorscript : MonoBehaviour
 {
     public float openAngle = 90f;
     public float openSpeed = 2f;
