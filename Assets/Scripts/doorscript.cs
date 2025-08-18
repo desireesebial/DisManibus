@@ -10,8 +10,9 @@ public class doorscript : MonoBehaviour
     private Quaternion _closedRotation;
     private Quaternion _openRotation;
     private Coroutine _currentCoroutine;
+    private bool _playerInRange = false;
 
-    void Start() // <-- must be capitalized so Unity calls it
+    void Start()
     {
         _closedRotation = transform.rotation;
         _openRotation = Quaternion.Euler(transform.eulerAngles + new Vector3(0, openAngle, 0));
@@ -19,10 +20,26 @@ public class doorscript : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E) && _playerInRange)
         {
             if (_currentCoroutine != null) StopCoroutine(_currentCoroutine);
             _currentCoroutine = StartCoroutine(ToggleDoor());
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            _playerInRange = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            _playerInRange = false;
         }
     }
 
@@ -31,15 +48,14 @@ public class doorscript : MonoBehaviour
         Quaternion targetRotation = isOpen ? _closedRotation : _openRotation;
         Quaternion startRotation = transform.rotation;
         isOpen = !isOpen;
-
         float timeElapsed = 0f;
+
         while (Quaternion.Angle(transform.rotation, targetRotation) > 0.01f)
         {
             timeElapsed += Time.deltaTime * openSpeed;
             transform.rotation = Quaternion.Lerp(startRotation, targetRotation, timeElapsed);
             yield return null;
         }
-
-        transform.rotation = targetRotation; // snap to final position
+        transform.rotation = targetRotation;
     }
 }
