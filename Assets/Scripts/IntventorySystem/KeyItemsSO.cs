@@ -9,5 +9,7 @@ public class KeyItemsSO : ScriptableObject
     public Sprite item_sprite;
     public string itemName; // "House Key", "Car Key", etc.
     public int itemID; // Unique identifier for different keys
+    public string description; // Optional description
 }
+
 public enum itemType { Keys, Document, Flashlight }
