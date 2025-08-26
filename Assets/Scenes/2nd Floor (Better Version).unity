@@ -137409,6 +137409,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: dullahanHead_Fake1
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -169609,7 +169613,7 @@ MonoBehaviour:
   phaseDoors:
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 3469287837868409383}
   doorKeyIDs: c9000000ca000000cb000000
   timerUI: {fileID: 0}
   timerText: {fileID: 0}
@@ -189785,6 +189789,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
       propertyPath: m_Name
       value: dullahanHead_Real
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -348385,6 +348393,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: dullahanHead_Fake2
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -374107,6 +374119,7 @@ GameObject:
   - component: {fileID: 1711813854879168239}
   - component: {fileID: 1997056621}
   - component: {fileID: 3469287837868409382}
+  - component: {fileID: 3469287837868409383}
   m_Layer: 0
   m_Name: smol door
   m_TagString: Untagged
@@ -375499,6 +375512,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2049ad3972eb8894786d915f49f08ce2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3469287837868409383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132147795990330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3db1fbe31311c44b93bd514a00227ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  requiredKeyID: 203
+  doorName: Door
+  playerInventory: {fileID: 0}
+  doorAnimator: {fileID: 0}
+  doorAudioSource: {fileID: 0}
+  doorOpenSound: {fileID: 0}
+  doorCloseSound: {fileID: 0}
+  doorLockedSound: {fileID: 0}
+  doorCreakSound: {fileID: 0}
+  keyInsertSound: {fileID: 0}
+  soundVolume: 1
+  soundPitch: 1
+  randomizePitch: 1
+  pitchVariation: 0.1
+  interactionRange: 3
+  interactionKey: 101
 --- !u!4 &3494429798942525201
 Transform:
   m_ObjectHideFlags: 0
@@ -379189,7 +379230,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f104922074280e54f83e8ca0dc537ee0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  requiredHeadID: 1
+  requiredHeadID: 10
   puzzleCompleted: 0
   finalDoor: {fileID: 0}
   interactionRange: 3
@@ -380270,6 +380311,7 @@ GameObject:
   - component: {fileID: 5659952312157270895}
   - component: {fileID: 7595540579561768870}
   - component: {fileID: 7595540579561768871}
+  - component: {fileID: 7595540579561768872}
   m_Layer: 0
   m_Name: dullahanHead_Real
   m_TagString: Untagged
@@ -382289,6 +382331,32 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.009959135
   m_Center: {x: 0.000017910264, y: 0.0000029648654, z: 0.000003320165}
+--- !u!114 &7595540579561768872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6164527200153850554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 461442afad7180d47a148d7439ed11ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  headData: {fileID: 11400000, guid: 5eef2721c5ce5534587eb17c12f68bbe, type: 2}
+  isPickedUp: 0
+  headLight: {fileID: 0}
+  headRenderer: {fileID: 0}
+  originalMaterial: {fileID: 0}
+  glowMaterial: {fileID: 0}
+  audioSource: {fileID: 0}
+  pickupSound: {fileID: 0}
+  dropSound: {fileID: 0}
+  interactionRange: 3
+  interactionKey: 101
+  interactionText: Press E to pick up head
+  interactionUI: {fileID: 0}
+  interactionTextUI: {fileID: 0}
 --- !u!64 &7812066174100999338
 MeshCollider:
   m_ObjectHideFlags: 0
