@@ -374830,8 +374830,9 @@ GameObject:
   - component: {fileID: 3098707533113957367}
   - component: {fileID: 2066881200019641426}
   - component: {fileID: 4272788813988389016}
+  - component: {fileID: 4272788813988389017}
   m_Layer: 0
-  m_Name: medeival_door_0825064449_texture (1)
+  m_Name: exit door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -375592,6 +375593,28 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &4272788813988389017
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2326956630163702093}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -4659466963820198761, guid: c3f291f039b251c44b45762a539a82ad, type: 3}
 --- !u!1 &4289961491723596074
 GameObject:
   m_ObjectHideFlags: 0
@@ -376379,13 +376402,13 @@ MonoBehaviour:
   zoomFOV: 30
   zoomStepTime: 5
   playerCanMove: 1
-  walkSpeed: 10
+  walkSpeed: 5
   maxVelocityChange: 10
   enableSprint: 1
   unlimitedSprint: 0
   sprintKey: 304
-  sprintSpeed: 20
-  sprintDuration: 6
+  sprintSpeed: 15
+  sprintDuration: 4
   sprintCooldown: 0.1
   sprintFOV: 80
   sprintFOVStepTime: 2
@@ -377910,8 +377933,9 @@ GameObject:
   - component: {fileID: 8635660095280295198}
   - component: {fileID: 5781760263965530580}
   - component: {fileID: 8635660095280295199}
+  - component: {fileID: 8635660095280295200}
   m_Layer: 0
-  m_Name: medeival_door_0825064449_texture
+  m_Name: exit door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -378928,7 +378952,7 @@ MonoBehaviour:
   - {fileID: 103126145}
   - {fileID: 112480062}
   player: {fileID: 4459864850702346300}
-  sightRange: 20
+  sightRange: 40
   patrolWaitTime: 1
   rotationSpeed: 5
   audioSource: {fileID: 0}
@@ -378947,10 +378971,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f921f27ad7ecb294cbea239a1d01262d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxChaseSpeed: 8
-  minChaseSpeed: 3
+  maxChaseSpeed: 15
+  minChaseSpeed: 5
   maxIntensityDistance: 2
-  minIntensityDistance: 15
+  minIntensityDistance: 20
   intensityMultiplier: 1.5
   audioManager: {fileID: 842861111}
   dullahanLight: {fileID: 0}
@@ -382360,6 +382384,28 @@ MonoBehaviour:
   pitchVariation: 0.1
   interactionRange: 3
   interactionKey: 101
+--- !u!64 &8635660095280295200
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5421221398067410945}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -4659466963820198761, guid: c3f291f039b251c44b45762a539a82ad, type: 3}
 --- !u!23 &8687895923994823760
 MeshRenderer:
   m_ObjectHideFlags: 0
