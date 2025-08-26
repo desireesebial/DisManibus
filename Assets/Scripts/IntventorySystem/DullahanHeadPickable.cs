@@ -29,33 +29,20 @@ public class DullahanHeadPickable : MonoBehaviour, IPickable
     
     private bool playerInRange = false;
     private Transform player;
-    private PlayerInventory playerInventory;
+    private DullahanHeadInventory headInventory;
     private DullahanHeadEffectManager effectManager;
     private DullahanAudioManager audioManager;
     
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-        playerInventory = player.GetComponent<PlayerInventory>();
-        effectManager = FindObjectOfType<DullahanHeadEffectManager>();
-        audioManager = FindObjectOfType<DullahanAudioManager>();
+        // Find player and components
+        FindPlayerAndComponents();
         
         // Setup visual effects
         SetupVisualEffects();
         
         // Setup audio
-        if (audioSource == null)
-            audioSource = GetComponent<AudioSource>();
-            
-        if (audioSource == null)
-            audioSource = gameObject.AddComponent<AudioSource>();
-            
-        // Set audio clips from head data
-        if (headData != null)
-        {
-            pickupSound = headData.pickupSound;
-            dropSound = headData.dropSound;
-        }
+        SetupAudio();
         
         // Setup UI
         if (interactionUI != null)
@@ -68,6 +55,26 @@ public class DullahanHeadPickable : MonoBehaviour, IPickable
         
         CheckPlayerDistance();
         HandleInteraction();
+    }
+    
+    private void FindPlayerAndComponents()
+    {
+        // Find player
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+            player = playerObj.transform;
+        
+        // Find head inventory
+        if (headInventory == null)
+            headInventory = FindObjectOfType<DullahanHeadInventory>();
+        
+        // Find effect manager
+        if (effectManager == null)
+            effectManager = FindObjectOfType<DullahanHeadEffectManager>();
+        
+        // Find audio manager
+        if (audioManager == null)
+            audioManager = FindObjectOfType<DullahanAudioManager>();
     }
     
     void CheckPlayerDistance()
@@ -101,49 +108,44 @@ public class DullahanHeadPickable : MonoBehaviour, IPickable
     
     public void PickupHead()
     {
-        if (isPickedUp || playerInventory == null) return;
+        if (isPickedUp || headInventory == null) return;
         
-        // Check if player has inventory space
-        if (playerInventory.inventoryList.Count >= playerInventory.maxInventorySize)
+        // Check if head inventory is full
+        if (headInventory.headInventoryList.Count >= headInventory.maxHeadInventorySize)
         {
-            Debug.Log("Inventory is full!");
+            Debug.Log("Head inventory is full!");
             return;
         }
         
-        // Add to inventory
-        if (headData != null)
+        // Check if head data is valid
+        if (headData == null)
         {
-            // Convert DullahanHeadSO to KeyItemsSO for inventory compatibility
-            KeyItemsSO inventoryItem = CreateInventoryItem(headData);
-            playerInventory.inventoryList.Add(inventoryItem);
-            
-            // Apply effects if any
-            if (headData.hasEffect && effectManager != null)
-            {
-                effectManager.ApplyHeadEffect(headData);
-            }
-            
-            // Play pickup sound
-            if (audioManager != null)
-            {
-                audioManager.PlayHeadPickupSound(headData.headType);
-            }
-            else if (pickupSound != null)
-            {
-                audioSource.PlayOneShot(pickupSound);
-            }
-            
-            // Hide interaction UI
-            HideInteractionUI();
-            
-            // Mark as picked up
-            isPickedUp = true;
-            
-            // Hide the head object
-            gameObject.SetActive(false);
-            
-            Debug.Log($"Picked up {headData.headName}!");
+            Debug.LogError("Head has no ScriptableObject assigned!");
+            return;
         }
+        
+        // Add to head inventory
+        headInventory.headInventoryList.Add(headData);
+        
+        // Apply effects if any
+        if (headData.hasEffect && effectManager != null)
+        {
+            effectManager.ApplyHeadEffect(headData);
+        }
+        
+        // Play pickup sound
+        PlayPickupSound();
+        
+        // Hide interaction UI
+        HideInteractionUI();
+        
+        // Mark as picked up
+        isPickedUp = true;
+        
+        // Hide the head object
+        gameObject.SetActive(false);
+        
+        Debug.Log($"Picked up {headData.headName}!");
     }
     
     // Implementation of IPickable interface
@@ -152,18 +154,25 @@ public class DullahanHeadPickable : MonoBehaviour, IPickable
         PickupHead();
     }
     
-    KeyItemsSO CreateInventoryItem(DullahanHeadSO headSO)
+    private void PlayPickupSound()
     {
-        // Create a temporary KeyItemsSO for inventory compatibility
-        KeyItemsSO item = ScriptableObject.CreateInstance<KeyItemsSO>();
-        item.itemName = headSO.headName;
-        item.itemID = headSO.headID;
-        item.description = headSO.description;
-        item.item_sprite = headSO.headSprite;
-        item.item_type = itemType.Document; // Use Document type for heads
-        item.cooldown = 0f;
-        
-        return item;
+        // Try audio manager first
+        if (audioManager != null)
+        {
+            audioManager.PlayHeadPickupSound(headData.headType);
+        }
+        // Fallback to local audio source
+        else if (audioSource != null && pickupSound != null)
+        {
+            audioSource.PlayOneShot(pickupSound);
+        }
+        // Use head data audio if available
+        else if (headData != null && headData.pickupSound != null)
+        {
+            if (audioSource == null)
+                audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.PlayOneShot(headData.pickupSound);
+        }
     }
     
     void SetupVisualEffects()
@@ -173,11 +182,22 @@ public class DullahanHeadPickable : MonoBehaviour, IPickable
         // Setup glow effect
         if (headData.hasGlowEffect)
         {
-            if (headLight == null)
-            {
-                headLight = gameObject.AddComponent<Light>();
-            }
-            
+            SetupGlowEffect();
+        }
+        
+        // Setup material
+        SetupMaterial();
+    }
+    
+    private void SetupGlowEffect()
+    {
+        if (headLight == null)
+        {
+            headLight = gameObject.AddComponent<Light>();
+        }
+        
+        if (headLight != null)
+        {
             headLight.color = headData.headGlowColor;
             headLight.intensity = 1f;
             headLight.range = 3f;
@@ -185,8 +205,10 @@ public class DullahanHeadPickable : MonoBehaviour, IPickable
             // Add pulsing effect
             StartCoroutine(PulseLight());
         }
-        
-        // Setup material
+    }
+    
+    private void SetupMaterial()
+    {
         if (headRenderer == null)
             headRenderer = GetComponent<Renderer>();
             
@@ -194,6 +216,22 @@ public class DullahanHeadPickable : MonoBehaviour, IPickable
         {
             originalMaterial = headRenderer.material;
             headRenderer.material = headData.headMaterial;
+        }
+    }
+    
+    private void SetupAudio()
+    {
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
+            
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+            
+        // Set audio clips from head data
+        if (headData != null)
+        {
+            pickupSound = headData.pickupSound;
+            dropSound = headData.dropSound;
         }
     }
     

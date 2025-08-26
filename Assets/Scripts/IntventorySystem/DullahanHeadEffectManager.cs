@@ -1,6 +1,16 @@
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+
+[System.Serializable]
+public class ActiveEffect
+{
+    public EffectType effectType;
+    public float strength;
+    public float duration;
+    public float startTime;
+    public bool isActive = true;
+}
 
 public class DullahanHeadEffectManager : MonoBehaviour
 {
@@ -32,26 +42,10 @@ public class DullahanHeadEffectManager : MonoBehaviour
     void Start()
     {
         // Find player components
-        if (playerController == null)
-            playerController = FindObjectOfType<FirstPersonController>();
-            
-        if (playerInventory == null)
-            playerInventory = FindObjectOfType<PlayerInventory>();
-            
-        if (dullahanChase == null)
-            dullahanChase = FindObjectOfType<DullahanChaseSystem>();
-            
-        if (audioManager == null)
-            audioManager = FindObjectOfType<DullahanAudioManager>();
-            
+        FindPlayerComponents();
+        
         // Store original values
-        if (playerController != null)
-        {
-            originalWalkSpeed = playerController.walkSpeed;
-            originalSprintSpeed = playerController.sprintSpeed;
-            originalSprintDuration = playerController.sprintDuration;
-            originalFOV = playerController.fov;
-        }
+        StoreOriginalValues();
         
         // Setup UI
         if (effectNotificationUI != null)
@@ -62,6 +56,36 @@ public class DullahanHeadEffectManager : MonoBehaviour
     {
         // Update active effects
         UpdateActiveEffects();
+    }
+    
+    private void FindPlayerComponents()
+    {
+        // Find player controller if not assigned
+        if (playerController == null)
+            playerController = FindObjectOfType<FirstPersonController>();
+            
+        // Find player inventory if not assigned
+        if (playerInventory == null)
+            playerInventory = FindObjectOfType<PlayerInventory>();
+            
+        // Find Dullahan chase if not assigned
+        if (dullahanChase == null)
+            dullahanChase = FindObjectOfType<DullahanChaseSystem>();
+            
+        // Find audio manager if not assigned
+        if (audioManager == null)
+            audioManager = FindObjectOfType<DullahanAudioManager>();
+    }
+    
+    private void StoreOriginalValues()
+    {
+        if (playerController != null)
+        {
+            originalWalkSpeed = playerController.walkSpeed;
+            originalSprintSpeed = playerController.sprintSpeed;
+            originalSprintDuration = playerController.sprintDuration;
+            originalFOV = playerController.fov;
+        }
     }
     
     public void ApplyHeadEffect(DullahanHeadSO headData)
@@ -90,19 +114,12 @@ public class DullahanHeadEffectManager : MonoBehaviour
         }
         
         // Play effect sound
-        if (audioManager != null)
-        {
-            PlayEffectSound(headData.effectType);
-        }
-        else if (headData.effectSound != null)
-        {
-            AudioSource.PlayClipAtPoint(headData.effectSound, playerController.transform.position);
-        }
+        PlayEffectSound(headData);
         
         Debug.Log($"Applied {headData.effectType} effect from {headData.headName}");
     }
     
-    void ApplyEffect(ActiveEffect effect)
+    private void ApplyEffect(ActiveEffect effect)
     {
         if (playerController == null) return;
         
@@ -152,7 +169,7 @@ public class DullahanHeadEffectManager : MonoBehaviour
         }
     }
     
-    void RemoveEffect(ActiveEffect effect)
+    private void RemoveEffect(ActiveEffect effect)
     {
         if (playerController == null) return;
         
@@ -176,11 +193,13 @@ public class DullahanHeadEffectManager : MonoBehaviour
         }
     }
     
-    void UpdateActiveEffects()
+    private void UpdateActiveEffects()
     {
         for (int i = activeEffects.Count - 1; i >= 0; i--)
         {
             ActiveEffect effect = activeEffects[i];
+            
+            if (!effect.isActive) continue;
             
             // Check if effect has expired
             if (Time.time - effect.startTime >= effect.duration)
@@ -189,15 +208,15 @@ public class DullahanHeadEffectManager : MonoBehaviour
                 RemoveEffect(effect);
                 activeEffects.RemoveAt(i);
                 
-                Debug.Log($"Effect {effect.effectType} has expired");
+                Debug.Log($"Removed {effect.effectType} effect");
             }
         }
     }
     
-    IEnumerator ApplyFearEffect(ActiveEffect effect)
+    private IEnumerator ApplyFearEffect(ActiveEffect effect)
     {
         float originalIntensity = dullahanChase.GetCurrentIntensity();
-        float targetIntensity = Mathf.Min(1f, originalIntensity + effect.strength);
+        float targetIntensity = Mathf.Clamp01(originalIntensity + effect.strength);
         
         float elapsed = 0f;
         while (elapsed < effectFadeTime)
@@ -212,10 +231,10 @@ public class DullahanHeadEffectManager : MonoBehaviour
         }
     }
     
-    IEnumerator ApplyCalmEffect(ActiveEffect effect)
+    private IEnumerator ApplyCalmEffect(ActiveEffect effect)
     {
         float originalIntensity = dullahanChase.GetCurrentIntensity();
-        float targetIntensity = Mathf.Max(0f, originalIntensity - effect.strength);
+        float targetIntensity = Mathf.Clamp01(originalIntensity - effect.strength);
         
         float elapsed = 0f;
         while (elapsed < effectFadeTime)
@@ -230,48 +249,45 @@ public class DullahanHeadEffectManager : MonoBehaviour
         }
     }
     
-    void ShowEffectNotification(DullahanHeadSO headData)
+    private void ShowEffectNotification(DullahanHeadSO headData)
     {
         if (effectNotificationUI == null || effectNotificationText == null) return;
         
-        string effectText = GetEffectDescription(headData);
-        effectNotificationText.text = effectText;
+        string effectText = GetEffectText(headData.effectType, headData.effectStrength);
+        effectNotificationText.text = $"{headData.headName}: {effectText}";
         
         effectNotificationUI.SetActive(true);
         
-        // Hide after 3 seconds
+        // Hide notification after 3 seconds
         StartCoroutine(HideNotificationAfterDelay(3f));
     }
     
-    string GetEffectDescription(DullahanHeadSO headData)
+    private string GetEffectText(EffectType effectType, float strength)
     {
-        string effectName = headData.effectType.ToString();
-        string duration = $"{headData.effectDuration}s";
-        
-        switch (headData.effectType)
+        switch (effectType)
         {
             case EffectType.SpeedBoost:
-                return $"Speed Boost! (+{headData.effectStrength * 100}% for {duration})";
+                return $"Speed +{(strength * 100):0}%";
             case EffectType.SpeedDebuff:
-                return $"Speed Debuff! (-{headData.effectStrength * 100}% for {duration})";
+                return $"Speed -{(strength * 100):0}%";
             case EffectType.VisionBoost:
-                return $"Vision Boost! (+{headData.effectStrength * 10} FOV for {duration})";
+                return $"Vision +{(strength * 10):0}°";
             case EffectType.VisionDebuff:
-                return $"Vision Debuff! (-{headData.effectStrength * 10} FOV for {duration})";
+                return $"Vision -{(strength * 10):0}°";
             case EffectType.StaminaBoost:
-                return $"Stamina Boost! (+{headData.effectStrength * 100}% for {duration})";
+                return $"Stamina +{(strength * 100):0}%";
             case EffectType.StaminaDebuff:
-                return $"Stamina Debuff! (-{headData.effectStrength * 100}% for {duration})";
+                return $"Stamina -{(strength * 100):0}%";
             case EffectType.FearEffect:
-                return $"Fear Effect! (Increased chase intensity for {duration})";
+                return "Fear Increased";
             case EffectType.CalmEffect:
-                return $"Calm Effect! (Decreased chase intensity for {duration})";
+                return "Fear Decreased";
             default:
-                return $"Effect: {effectName} for {duration}";
+                return "Unknown Effect";
         }
     }
     
-    IEnumerator HideNotificationAfterDelay(float delay)
+    private IEnumerator HideNotificationAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
         
@@ -279,6 +295,21 @@ public class DullahanHeadEffectManager : MonoBehaviour
             effectNotificationUI.SetActive(false);
     }
     
+    private void PlayEffectSound(DullahanHeadSO headData)
+    {
+        // Try audio manager first
+        if (audioManager != null)
+        {
+            audioManager.PlayHeadEffectSound(headData.headType);
+        }
+        // Fallback to head data audio
+        else if (headData.effectSound != null)
+        {
+            AudioSource.PlayClipAtPoint(headData.effectSound, Camera.main.transform.position);
+        }
+    }
+    
+    // Public methods for other scripts
     public void ClearAllEffects()
     {
         foreach (ActiveEffect effect in activeEffects)
@@ -288,44 +319,18 @@ public class DullahanHeadEffectManager : MonoBehaviour
         activeEffects.Clear();
     }
     
-    public List<ActiveEffect> GetActiveEffects()
+    public bool HasActiveEffect(EffectType effectType)
     {
-        return activeEffects;
+        foreach (ActiveEffect effect in activeEffects)
+        {
+            if (effect.effectType == effectType && effect.isActive)
+                return true;
+        }
+        return false;
     }
     
-    void PlayEffectSound(EffectType effectType)
+    public int GetActiveEffectCount()
     {
-        if (audioManager == null) return;
-        
-        switch (effectType)
-        {
-            case EffectType.SpeedBoost:
-                audioManager.PlaySpeedBoostSound();
-                break;
-            case EffectType.SpeedDebuff:
-                audioManager.PlaySpeedDebuffSound();
-                break;
-            case EffectType.VisionBoost:
-                audioManager.PlayVisionBoostSound();
-                break;
-            case EffectType.VisionDebuff:
-                audioManager.PlayVisionDebuffSound();
-                break;
-            case EffectType.FearEffect:
-                audioManager.PlayFearEffectSound();
-                break;
-            case EffectType.CalmEffect:
-                audioManager.PlayCalmEffectSound();
-                break;
-        }
+        return activeEffects.Count;
     }
-}
-
-[System.Serializable]
-public class ActiveEffect
-{
-    public EffectType effectType;
-    public float strength;
-    public float duration;
-    public float startTime;
 }

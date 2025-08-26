@@ -211,4 +211,29 @@ public class Door : MonoBehaviour
             Gizmos.DrawWireSphere(transform.position, doorAudioSource.maxDistance);
         }
     }
+    
+    // Public property for RequiredKeyID (for DullahanBody)
+    public int RequiredKeyID
+    {
+        get { return requiredKeyID; }
+        set { requiredKeyID = value; }
+    }
+    
+    // Public method to unlock door (for DullahanBody)
+    public void UnlockDoor()
+    {
+        if (!isOpen)
+        {
+            OpenDoor();
+        }
+    }
+    
+    // Public method to lock door (for DullahanBody)
+    public void LockDoor()
+    {
+        if (isOpen)
+        {
+            CloseDoor();
+        }
+    }
 }

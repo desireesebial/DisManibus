@@ -1,273 +1,304 @@
-# Dullahan Chase System & Three Heads Puzzle
-
-This system implements an intensity-based chase mechanic for the Dullahan enemy and a puzzle involving three heads that the player must find and carry to complete the game.
+# Dullahan Head Inventory & Puzzle System Setup Guide
 
 ## Overview
+This system provides a complete, robust solution for the Dullahan head puzzle with comprehensive error handling and integration capabilities.
 
-The system consists of several interconnected components:
+## Flashlight System Setup
 
-1. **DullahanChaseSystem** - Enhanced chase mechanics with dynamic intensity
-2. **DullahanHeadSO** - Scriptable objects for head items
-3. **DullahanHeadPickable** - Pickable head objects with effects
-4. **DullahanHeadEffectManager** - Manages head effects on the player
-5. **DullahanBody** - The body that receives the real head
-6. **DullahanPuzzleManager** - Coordinates the entire puzzle system
+### 1. Flashlight UI Setup
+Create a flashlight UI in your Canvas:
 
-## Setup Instructions
+1. **Create Battery Indicator:**
+   - Add an Image component to your Canvas
+   - Set Image Type to "Filled"
+   - Set Fill Method to "Radial 360" or "Horizontal"
+   - Position it in the bottom-right corner of the screen
+   - Assign it to `batteryIndicator` in DullahanHeadInventory
 
-### 1. Dullahan Chase System Setup
+2. **Create Battery Text:**
+   - Add a TextMeshPro Text component
+   - Position it near the battery indicator
+   - Assign it to `batteryText` in DullahanHeadInventory
 
-1. **Add DullahanChaseSystem to Dullahan GameObject:**
-   - Select the Dullahan enemy GameObject
-   - Add the `DullahanChaseSystem` script
-   - Configure the chase settings in the inspector
+3. **Create Flashlight UI Container:**
+   - Create an empty GameObject as parent for flashlight UI elements
+   - Assign it to `flashlightUI` in DullahanHeadInventory
 
-2. **Configure Chase Settings:**
+### 2. Flashlight Audio Setup
+Add these audio clips to your DullahanAudioManager:
+
+- **flashlightOnSound**: Click/switch sound when turning on
+- **flashlightOffSound**: Click/switch sound when turning off  
+- **batteryLowSound**: Warning beep for low battery
+- **batteryDeadSound**: Final warning when battery dies
+
+### 3. Flashlight Controls
+- **Toggle Flashlight**: Press `T` key (configurable)
+- **Battery Management**: 
+  - Drains while on (1 second per real second)
+  - Recharges while off (0.5 seconds per real second)
+  - 5-minute total battery life (configurable)
+
+### 4. Flashlight Features
+- **Follows Camera**: Automatically follows player camera
+- **Battery Warnings**: Audio warnings at 20% and 0% battery
+- **Infinite Battery Mode**: Toggle for testing
+- **Battery Recharge**: Recharges when turned off
+- **Visual Feedback**: Battery indicator with color coding
+
+### 5. Integration with Head System
+The flashlight works independently of the head inventory system, allowing players to:
+- Use flashlight while holding heads
+- Toggle flashlight with one hand
+- Manage battery while exploring
+- Get audio feedback for battery status
+
+## 🎯 **Complete Setup Guide for Dullahan Head Inventory System**
+
+This system provides a specialized inventory for Dullahan heads with visual hand-holding, effects, and puzzle completion mechanics.
+
+## 📁 **New Scripts Created**
+
+### **Core Scripts:**
+1. **`DullahanHeadInventory.cs`** - Specialized inventory for Dullahan heads
+2. **`DullahanHeadSO.cs`** - Scriptable Object for head data
+3. **`DullahanHeadPickable.cs`** - Makes heads pickable in the world
+4. **`DullahanHeadEffectManager.cs`** - Manages buffs/debuffs from fake heads
+5. **`DullahanBody.cs`** - Handles head attachment to Dullahan body
+6. **`DullahanAudioManager.cs`** - Centralized audio management
+7. **`DullahanPuzzleManager.cs`** - Coordinates all puzzle components
+
+## 🛠️ **Step-by-Step Setup**
+
+### **Step 1: Create DullahanHeadSO Assets**
+
+1. **Right-click in Project** → **Create** → **Scriptable Objects** → **DullahanHead**
+2. **Create 3 head assets**:
+   - `DullahanHead_Real.asset`
+   - `DullahanHead_Fake1.asset` 
+   - `DullahanHead_Fake2.asset`
+
+3. **Configure each head**:
    ```
-   Chase Intensity Settings:
-   - Max Chase Speed: 8f (maximum speed when very close)
-   - Min Chase Speed: 3f (minimum speed when far away)
-   - Max Intensity Distance: 2f (distance for maximum intensity)
-   - Min Intensity Distance: 15f (distance to start chase)
-   - Intensity Multiplier: 1.5f (curve of intensity increase)
-   ```
-
-3. **Setup Audio:**
-   - Assign AudioSource component
-   - Add chase intensity clips (different audio for different intensity levels)
-   - Add heartbeat clips for player heartbeat sounds
-
-4. **Setup Visual Effects:**
-   - Assign the Dullahan's light component
-   - Configure light intensity and color changes
-   - Set up flicker effects
-
-5. **Setup Player Effects:**
-   - Assign the FirstPersonController
-   - Configure screen shake and FOV effects
-
-### 2. Three Heads Puzzle Setup
-
-#### Create Head Scriptable Objects
-
-1. **Right-click in Project window → Create → Scriptable Objects → DullahanHead**
-
-2. **Create three head assets:**
-   - **Real Head** (ID: 1, Type: Real, No effects)
-   - **Fake Head 1** (ID: 2, Type: Fake1, Effect: SpeedDebuff)
-   - **Fake Head 2** (ID: 3, Type: Fake2, Effect: SpeedBoost)
-
-3. **Configure each head:**
-   ```
-   Head Properties:
-   - Head Name: "Dullahan's Real Head" / "Fake Head 1" / "Fake Head 2"
-   - Head ID: 1 / 2 / 3
-   - Head Type: Real / Fake1 / Fake2
-   - Description: "The real head that opens the door" / etc.
+   Real Head:
+   - Head Name: "Real Dullahan Head"
+   - Head ID: 1
+   - Head Type: Real
+   - Has Effect: false
    
-   Effects (for fake heads):
+   Fake Head 1:
+   - Head Name: "Fake Head 1"
+   - Head ID: 2
+   - Head Type: Fake1
    - Has Effect: true
-   - Effect Type: SpeedDebuff / SpeedBoost
-   - Effect Strength: 0.3f
-   - Effect Duration: 15f
-   ```
-
-#### Setup Head Pickable Objects
-
-1. **Create head prefabs:**
-   - Create 3D objects for each head
-   - Add `DullahanHeadPickable` script
-   - Add collider with "Is Trigger" enabled
-   - Add visual effects (lights, materials)
-
-2. **Configure head pickables:**
-   ```
-   Head Settings:
-   - Head Data: Assign corresponding DullahanHeadSO
-   - Interaction Range: 3f
-   - Interaction Key: E
+   - Effect Type: SpeedBoost
+   - Effect Strength: 0.3
+   - Effect Duration: 15
    
-   Visual Effects:
-   - Head Light: Add light component for glow
-   - Head Renderer: Assign renderer for material changes
-   - Has Glow Effect: true (for visual appeal)
+   Fake Head 2:
+   - Head Name: "Fake Head 2"
+   - Head ID: 3
+   - Head Type: Fake2
+   - Has Effect: true
+   - Effect Type: SpeedDebuff
+   - Effect Strength: 0.2
+   - Effect Duration: 10
    ```
 
-#### Setup Dullahan Body
+### **Step 2: Setup DullahanHeadInventory**
 
-1. **Create body GameObject:**
-   - Add `DullahanBody` script
-   - Add collider with "Is Trigger" enabled
-   - Add visual components (renderer, light)
+1. **Add DullahanHeadInventory component** to your FirstPersonController
+2. **Configure the component**:
+   - **Head Inventory UI**: Assign 3 Image components for head slots
+   - **Player Head GameObjects**: Assign your existing head GameObjects
+   - **Head Prefabs**: Assign prefabs for dropping heads
+   - **Integration**: Leave empty (auto-finds other components)
 
-2. **Configure body:**
-   ```
-   Body Settings:
-   - Required Head ID: 1 (matches real head)
-   - Body Name: "Dullahan Body"
-   
-   Door Settings:
-   - Final Door: Assign the door that opens when puzzle is complete
-   - Door Key ID: 999 (special key ID)
-   
-   Visual Effects:
-   - Head Attachment Point: Transform where head appears
-   - Head Visual: GameObject that shows attached head
-   - Body Light: Light component for activation effects
-   - Body Material: Normal material
-   - Active Body Material: Material when head is attached
-   ```
+### **Step 3: Setup Head GameObjects**
 
-#### Setup Effect Manager
+1. **Select each head GameObject** in your Hand hierarchy
+2. **Add DullahanHeadPickable component**
+3. **Assign corresponding DullahanHeadSO** to each head
+4. **Add Colliders** (Box Collider) and set as trigger
+5. **Add AudioSource** (optional - for local sounds)
 
-1. **Create Effect Manager GameObject:**
-   - Add `DullahanHeadEffectManager` script
-   - Assign player references (FirstPersonController, PlayerInventory)
-   - Assign DullahanChaseSystem reference
+### **Step 4: Create Manager GameObjects**
 
-2. **Configure effects:**
-   ```
-   Effect Settings:
-   - Effect Fade Time: 1f
-   - Show Effect Notifications: true
-   
-   UI:
-   - Effect Notification UI: Canvas with notification text
-   - Effect Notification Text: TextMeshPro component
-   ```
+1. **Create "DullahanAudioManager"** GameObject
+   - Add **DullahanAudioManager** component
+   - Add 4 **AudioSource** components as children
+   - Assign audio clips for chase, pickup, effects
 
-#### Setup Puzzle Manager
+2. **Create "DullahanHeadEffectManager"** GameObject
+   - Add **DullahanHeadEffectManager** component
+   - Create UI for effect notifications (optional)
 
-1. **Create Puzzle Manager GameObject:**
-   - Add `DullahanPuzzleManager` script
-   - Assign all puzzle components
+3. **Create "DullahanPuzzleManager"** GameObject
+   - Add **DullahanPuzzleManager** component
+   - Create UI for puzzle status (optional)
 
-2. **Configure puzzle:**
-   ```
-   Puzzle Components:
-   - Head Pickables: Array of DullahanHeadPickable objects
-   - Dullahan Body: Reference to DullahanBody
-   - Dullahan Chase: Reference to DullahanChaseSystem
-   - Final Door: Reference to the final door
-   
-   Head Spawn Settings:
-   - Head Spawn Points: Array of Transform positions
-   - Head Prefabs: Array of head GameObject prefabs
-   - Head Data: Array of DullahanHeadSO assets
-   
-   Puzzle Settings:
-   - Puzzle Active: true
-   - Puzzle Start Delay: 5f
-   ```
+### **Step 5: Setup Dullahan Body**
 
-## How It Works
+1. **Add DullahanBody component** to your existing Dullahan GameObject
+2. **Configure the component**:
+   - **Required Head ID**: Set to 1 (matches real head)
+   - **Final Door**: Assign your final door
+   - **Head Attachment Point**: Create child GameObject for visual attachment
+   - **Attached Head Visual**: Create visual representation of attached head
 
-### Chase System
+### **Step 6: Create Final Door**
 
-1. **Distance-Based Intensity:** The closer the Dullahan gets to the player, the higher the chase intensity
-2. **Dynamic Effects:** Speed, audio, visual effects, and player effects all scale with intensity
-3. **Audio Progression:** Different audio clips play at different intensity levels
-4. **Visual Feedback:** Light intensity and color change based on proximity
-5. **Player Effects:** Screen shake and FOV changes create tension
+1. **Find or create your final door**
+2. **Set Required Key ID** to 999 (special key for puzzle completion)
+3. **Assign to DullahanBody** final door reference
 
-### Three Heads Puzzle
+## 🎮 **How It Works**
 
-1. **Head Collection:** Player must find and pick up three heads scattered around the level
-2. **Effect Application:** Fake heads apply buffs/debuffs to the player
-3. **Real Head Identification:** Only the real head (ID: 1) can be attached to the body
-4. **Puzzle Completion:** Attaching the real head unlocks the final door and completes the game
+### **Head Pickup Flow:**
+1. Player approaches head in world
+2. Press E to pick up
+3. Head appears in player's hands (visual)
+4. Head added to head inventory
+5. Effects applied if fake head
 
-### Head Effects
+### **Head Attachment Flow:**
+1. Player approaches Dullahan body with real head
+2. Press F to attach head
+3. Head disappears from hands
+4. Puzzle completes
+5. Final door unlocks
 
-- **SpeedBoost:** Increases player movement speed
-- **SpeedDebuff:** Decreases player movement speed
-- **VisionBoost:** Increases FOV
-- **VisionDebuff:** Decreases FOV
-- **StaminaBoost:** Increases sprint duration
-- **StaminaDebuff:** Decreases sprint duration
-- **FearEffect:** Increases Dullahan chase intensity
-- **CalmEffect:** Decreases Dullahan chase intensity
+### **Effect System:**
+- **Fake Head 1**: Speed boost (30% for 15 seconds)
+- **Fake Head 2**: Speed debuff (20% for 10 seconds)
+- Effects automatically expire and reset player stats
 
-## Integration with Existing Systems
+## 🔧 **Error Handling Features**
 
-### Inventory System
-- Heads are converted to KeyItemsSO for inventory compatibility
-- Uses existing inventory UI and management
-- Maintains inventory size limits
+### **Missing Prefabs:**
+- System gracefully handles missing head prefabs
+- Logs warnings but doesn't crash
+- Continues to function with available components
 
-### Door System
-- Final door uses special key ID (999)
-- Integrates with existing door locking mechanism
-- Maintains audio and visual feedback
+### **Missing References:**
+- All scripts auto-find missing references
+- Fallback to default values when needed
+- Comprehensive null checks throughout
 
-### First Person Controller
-- Effects modify player movement and vision
-- Screen shake and FOV changes enhance immersion
-- All effects are temporary and fade over time
+### **Audio Fallbacks:**
+- Multiple audio source options
+- Fallback to local audio if manager unavailable
+- Graceful degradation of audio features
 
-## Customization
+## 🎵 **Audio Integration**
 
-### Adding New Head Types
-1. Create new DullahanHeadSO asset
-2. Configure head properties and effects
-3. Create corresponding prefab with DullahanHeadPickable script
-4. Add to puzzle manager's head arrays
+### **Required Audio Clips:**
+- Chase start/end sounds
+- Head pickup sounds
+- Effect sounds
+- Puzzle completion sound
+- Wrong head sound
 
-### Modifying Chase Intensity
-1. Adjust distance thresholds in DullahanChaseSystem
-2. Modify intensity calculation curve
-3. Add new audio clips for different intensity levels
-4. Customize visual effects and player feedback
+### **Audio Sources:**
+- **DullahanAudio**: 3D spatial audio for Dullahan
+- **PlayerAudio**: 2D audio for player effects
+- **AmbientAudio**: 3D ambient sounds
+- **EffectAudio**: 2D effect sounds
 
-### Adding New Effects
-1. Add new effect type to EffectType enum
-2. Implement effect logic in DullahanHeadEffectManager
-3. Add effect description in GetEffectDescription method
-4. Create corresponding audio and visual assets
+## 🎨 **Visual Effects**
 
-## Troubleshooting
+### **Head Visuals:**
+- Glow effects for different head types
+- Pulsing light effects
+- Material changes based on head type
+- Visual feedback for selection
 
-### Common Issues
+### **Body Effects:**
+- Light color changes on completion
+- Visual head attachment
+- Particle effects (optional)
 
-1. **Heads not spawning:**
-   - Check head spawn points are assigned
-   - Verify head prefabs have DullahanHeadPickable script
-   - Ensure head data arrays match in length
+## 🐛 **Debug Features**
 
-2. **Chase not working:**
-   - Verify player has "Player" tag
-   - Check NavMeshAgent component on Dullahan
-   - Ensure DullahanChaseSystem is properly configured
+### **Debug Mode:**
+Enable debug mode in DullahanPuzzleManager for:
+- **F1**: Complete puzzle instantly
+- **F2**: Reset puzzle
+- **F3**: Add all heads to inventory
 
-3. **Effects not applying:**
-   - Check DullahanHeadEffectManager references
-   - Verify effect strength and duration values
-   - Ensure player components are assigned
+### **Console Logging:**
+- Comprehensive debug messages
+- Warning messages for missing components
+- Error handling with helpful messages
 
-4. **Body not accepting head:**
-   - Verify head ID matches required head ID
-   - Check inventory system integration
-   - Ensure DullahanBody script is properly configured
+## 🔄 **Integration with Existing Systems**
 
-### Debug Information
+### **PlayerInventory Compatibility:**
+- Separate from main inventory
+- No conflicts with existing items
+- Can be integrated if needed
 
-All scripts include debug logging to help identify issues:
-- Chase start/end events
-- Head pickup events
-- Effect application/removal
-- Puzzle progress updates
+### **FirstPersonController Integration:**
+- Modifies player stats for effects
+- Integrates with existing movement system
+- No breaking changes to original controller
 
-## Performance Considerations
+### **Door System Integration:**
+- Uses existing Door (Lockingsystem) component
+- Compatible with current door mechanics
+- Extends functionality for puzzle completion
 
-- Limit active effects to prevent performance issues
-- Use object pooling for particle effects
-- Optimize audio sources and light components
-- Consider LOD systems for complex visual effects
+## ✅ **Testing Checklist**
 
-## Future Enhancements
+- [ ] Heads can be picked up from world
+- [ ] Heads appear in player's hands
+- [ ] Head inventory UI updates correctly
+- [ ] Fake heads apply effects
+- [ ] Effects expire properly
+- [ ] Real head can be attached to body
+- [ ] Puzzle completion unlocks door
+- [ ] Audio plays correctly
+- [ ] Visual effects work
+- [ ] Debug features function
 
-- Add more head types and effects
-- Implement head-specific animations
-- Add environmental storytelling elements
-- Create multiple puzzle variations
-- Add save/load functionality for puzzle state
+## 🚨 **Common Issues & Solutions**
+
+### **Heads Not Appearing in Hands:**
+- Check head GameObject assignments in DullahanHeadInventory
+- Verify head GameObjects are children of Hand
+- Ensure head GameObjects are active
+
+### **Effects Not Working:**
+- Check DullahanHeadEffectManager is in scene
+- Verify effect settings in DullahanHeadSO
+- Check console for error messages
+
+### **Audio Not Playing:**
+- Verify audio clips are assigned
+- Check audio source configurations
+- Ensure audio manager is in scene
+
+### **Puzzle Not Completing:**
+- Verify real head ID matches DullahanBody required ID
+- Check final door assignment
+- Ensure DullahanBody component is on correct GameObject
+
+## 📝 **Customization Options**
+
+### **Effect Types Available:**
+- SpeedBoost/SpeedDebuff
+- VisionBoost/VisionDebuff
+- StaminaBoost/StaminaDebuff
+- FearEffect/CalmEffect
+
+### **Audio Customization:**
+- Multiple audio clips per event
+- Volume and pitch control
+- Spatial vs 2D audio options
+
+### **Visual Customization:**
+- Custom materials for heads
+- Glow colors and effects
+- Particle system integration
+
+This system provides a complete, robust solution for the Dullahan head puzzle with comprehensive error handling and integration capabilities.
