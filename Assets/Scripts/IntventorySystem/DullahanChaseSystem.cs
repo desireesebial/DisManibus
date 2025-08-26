@@ -11,6 +11,13 @@ public class DullahanChaseSystem : MonoBehaviour
     public float minDetectionRange = 5f;
     public float intensityUpdateRate = 0.1f;
     
+    [Header("Patrol Settings")]
+    public float patrolSpeed = 2f;
+    public float patrolRadius = 15f;
+    public float patrolWaitTime = 3f;
+    public bool useWaypointPatrol = false;
+    public Transform[] patrolWaypoints;
+    
     [Header("Dullahan References")]
     public Transform dullahanTransform;
     public NavMeshAgent dullahanAgent;
@@ -155,10 +162,37 @@ public class DullahanChaseSystem : MonoBehaviour
         // Return to patrol behavior
         if (dullahanAgent != null)
         {
-            dullahanAgent.speed = minChaseSpeed;
+            dullahanAgent.speed = patrolSpeed;
+            // Set initial patrol destination
+            Vector3 patrolPoint = GetRandomPatrolPoint();
+            dullahanAgent.SetDestination(patrolPoint);
         }
         
-        Debug.Log("Dullahan chase ended");
+        Debug.Log("Dullahan chase ended - returning to patrol");
+    }
+    
+    public void StartPatrol()
+    {
+        if (!isInitialized) return;
+        
+        isChasing = false;
+        currentIntensity = 0f;
+        
+        // Set patrol animation
+        if (dullahanAnimator != null)
+        {
+            dullahanAnimator.SetBool("IsChasing", false);
+        }
+        
+        // Set patrol speed and destination
+        if (dullahanAgent != null)
+        {
+            dullahanAgent.speed = patrolSpeed;
+            Vector3 patrolPoint = GetRandomPatrolPoint();
+            dullahanAgent.SetDestination(patrolPoint);
+        }
+        
+        Debug.Log("Dullahan patrol started");
     }
     
     private void UpdateChase()
@@ -197,12 +231,33 @@ public class DullahanChaseSystem : MonoBehaviour
     private void UpdatePatrol()
     {
         // Implement patrol behavior here
-        // This could be waypoint-based or random movement
         if (dullahanAgent != null && !dullahanAgent.hasPath)
         {
-            // Set random destination for patrol
-            Vector3 randomPoint = GetRandomPatrolPoint();
-            dullahanAgent.SetDestination(randomPoint);
+            if (useWaypointPatrol && patrolWaypoints.Length > 0)
+            {
+                // Use waypoint-based patrol
+                SetNextWaypointDestination();
+            }
+            else
+            {
+                // Use random patrol within radius
+                Vector3 randomPoint = GetRandomPatrolPoint();
+                dullahanAgent.SetDestination(randomPoint);
+            }
+        }
+    }
+    
+    private void SetNextWaypointDestination()
+    {
+        if (patrolWaypoints.Length == 0) return;
+        
+        // Simple waypoint cycling
+        int currentWaypointIndex = Random.Range(0, patrolWaypoints.Length);
+        Transform waypoint = patrolWaypoints[currentWaypointIndex];
+        
+        if (waypoint != null)
+        {
+            dullahanAgent.SetDestination(waypoint.position);
         }
     }
     
@@ -251,11 +306,11 @@ public class DullahanChaseSystem : MonoBehaviour
     private Vector3 GetRandomPatrolPoint()
     {
         // Generate a random point within patrol area
-        Vector3 randomPoint = dullahanTransform.position + Random.insideUnitSphere * 10f;
+        Vector3 randomPoint = dullahanTransform.position + Random.insideUnitSphere * patrolRadius;
         
         // Ensure point is on NavMesh
         NavMeshHit hit;
-        if (NavMesh.SamplePosition(randomPoint, out hit, 10f, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(randomPoint, out hit, patrolRadius, NavMesh.AllAreas))
         {
             return hit.position;
         }

@@ -101,6 +101,9 @@ public class DullahanChaseEventManager : MonoBehaviour
         // Lock all doors initially
         LockAllDoors();
         
+        // Ensure Dullahan starts in patrol mode
+        StartCoroutine(InitializePatrolMode());
+        
         // Subscribe to head attachment events
         if (dullahanBody != null)
         {
@@ -108,6 +111,20 @@ public class DullahanChaseEventManager : MonoBehaviour
         }
         
         Debug.Log("Dullahan Chase Event Manager initialized");
+    }
+    
+    private IEnumerator InitializePatrolMode()
+    {
+        // Wait for all systems to initialize
+        yield return new WaitForSeconds(1f);
+        
+        // Start Dullahan in patrol mode
+        if (dullahanChaseSystem != null)
+        {
+            dullahanChaseSystem.StartPatrol();
+        }
+        
+        Debug.Log("Dullahan initialized in patrol mode");
     }
     
     private IEnumerator StartInitialChase()
@@ -152,7 +169,7 @@ public class DullahanChaseEventManager : MonoBehaviour
         
         isChaseActive = false;
         
-        // Stop chase system
+        // Stop chase system and return to patrol
         if (dullahanChaseSystem != null)
         {
             dullahanChaseSystem.EndChase();
@@ -168,10 +185,26 @@ public class DullahanChaseEventManager : MonoBehaviour
         if (timerUI != null)
             timerUI.SetActive(false);
         
+        // Start patrol mode
+        StartCoroutine(StartPatrolAfterDelay());
+        
         // Open door for next phase
         StartCoroutine(OpenPhaseDoor());
         
-        Debug.Log($"Chase ended for phase: {currentPhase}");
+        Debug.Log($"Chase ended for phase: {currentPhase} - Dullahan returning to patrol");
+    }
+    
+    private IEnumerator StartPatrolAfterDelay()
+    {
+        // Wait a moment before starting patrol
+        yield return new WaitForSeconds(1f);
+        
+        if (dullahanChaseSystem != null)
+        {
+            dullahanChaseSystem.StartPatrol();
+        }
+        
+        Debug.Log("Dullahan patrol mode activated");
     }
     
     private IEnumerator OpenPhaseDoor()
@@ -408,9 +441,13 @@ public class DullahanChaseEventManager : MonoBehaviour
         phaseComplete = false;
         currentChaseTime = maxChaseTime;
         
-        // Stop all systems
+        // Stop all systems and return to patrol
         if (dullahanChaseSystem != null)
+        {
             dullahanChaseSystem.EndChase();
+            // Ensure patrol mode is activated after reset
+            StartCoroutine(StartPatrolAfterReset());
+        }
             
         if (audioManager != null)
             audioManager.EndChase();
@@ -422,7 +459,20 @@ public class DullahanChaseEventManager : MonoBehaviour
         // Lock all doors
         LockAllDoors();
         
-        Debug.Log("Event reset to initial state");
+        Debug.Log("Event reset to initial state - Dullahan returning to patrol");
+    }
+    
+    private IEnumerator StartPatrolAfterReset()
+    {
+        // Wait a moment before starting patrol after reset
+        yield return new WaitForSeconds(2f);
+        
+        if (dullahanChaseSystem != null)
+        {
+            dullahanChaseSystem.StartPatrol();
+        }
+        
+        Debug.Log("Dullahan patrol mode activated after reset");
     }
     
     // Public methods for external control

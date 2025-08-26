@@ -379239,11 +379239,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06ffde271c7ac364fae8ad662d476cf5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxChaseSpeed: 8
+  maxChaseSpeed: 25
   minChaseSpeed: 3
   maxDetectionRange: 20
   minDetectionRange: 5
   intensityUpdateRate: 0.1
+  patrolSpeed: 2
+  patrolRadius: 15
+  patrolWaitTime: 3
+  useWaypointPatrol: 0
+  patrolWaypoints: []
   dullahanTransform: {fileID: 543450652837065689}
   dullahanAgent: {fileID: 5866666021144979877}
   dullahanAnimator: {fileID: 5866666021144979875}
