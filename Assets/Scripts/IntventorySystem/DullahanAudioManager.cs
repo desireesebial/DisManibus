@@ -28,6 +28,10 @@ public class DullahanAudioManager : MonoBehaviour
     public AudioClip batteryLowSound;
     public AudioClip batteryDeadSound;
     
+    [Header("Timer Audio")]
+    public AudioClip timerWarningSound;
+    public AudioClip doorOpenSound;
+    
     [Header("Audio Settings")]
     public float maxVolume = 1f;
     public float minVolume = 0.1f;
@@ -399,5 +403,20 @@ public class DullahanAudioManager : MonoBehaviour
         if (!isInitialized || batteryDeadSound == null) return;
         
         PlayAudioClip(effectAudioSource, batteryDeadSound, maxVolume);
+    }
+    
+    // Timer Audio Methods
+    public void PlayTimerWarningSound()
+    {
+        if (!isInitialized || timerWarningSound == null) return;
+        
+        PlayAudioClip(effectAudioSource, timerWarningSound, maxVolume);
+    }
+    
+    public void PlayDoorOpenSound()
+    {
+        if (!isInitialized || doorOpenSound == null) return;
+        
+        PlayAudioClip(effectAudioSource, doorOpenSound, maxVolume);
     }
 }

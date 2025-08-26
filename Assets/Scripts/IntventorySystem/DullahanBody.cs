@@ -146,12 +146,28 @@ public class DullahanBody : MonoBehaviour
         {
             Debug.Log("Wrong head! This is not the real head.");
             PlayWrongHeadSound();
+            
+            // Notify event manager about wrong head
+            NotifyEventManager(headData.headType);
             return false;
         }
         
         // Complete the puzzle
         CompletePuzzle(headData);
+        
+        // Notify event manager about correct head
+        NotifyEventManager(headData.headType);
         return true;
+    }
+    
+    private void NotifyEventManager(HeadType headType)
+    {
+        // Find and notify the event manager
+        DullahanChaseEventManager eventManager = FindObjectOfType<DullahanChaseEventManager>();
+        if (eventManager != null)
+        {
+            eventManager.OnHeadAttached(headType);
+        }
     }
     
     private void TryAttachHead()

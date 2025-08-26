@@ -91365,6 +91365,8 @@ MonoBehaviour:
   flashlightOffSound: {fileID: 0}
   batteryLowSound: {fileID: 0}
   batteryDeadSound: {fileID: 0}
+  timerWarningSound: {fileID: 0}
+  doorOpenSound: {fileID: 0}
   maxVolume: 1
   minVolume: 0.1
   crossfadeTime: 1
@@ -169460,6 +169462,80 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1318174006}
   m_Mesh: {fileID: 4300000, guid: b0c4b0ab6532cd2419f037089c7e2cf2, type: 3}
+--- !u!1 &1340330524
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1340330526}
+  - component: {fileID: 1340330525}
+  m_Layer: 0
+  m_Name: DullahanChaseEventManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1340330525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1340330524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c195023a73b48cd4498a32ae2283df57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chaseDuration: 60
+  doorOpenDelay: 2
+  startChaseOnGameStart: 1
+  currentPhase: 0
+  isChaseActive: 0
+  isEventComplete: 0
+  phaseDoors:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  doorKeyIDs: c9000000ca000000cb000000
+  timerUI: {fileID: 0}
+  timerText: {fileID: 0}
+  timerFillImage: {fileID: 0}
+  timerNormalColor: {r: 1, g: 1, b: 1, a: 1}
+  timerWarningColor: {r: 1, g: 0, b: 0, a: 1}
+  warningThreshold: 10
+  phaseText: {fileID: 0}
+  phaseNames:
+  - Initial Chase
+  - Fake Head 1
+  - Fake Head 2
+  - Real Head
+  dullahanChaseSystem: {fileID: 5866666021144979882}
+  audioManager: {fileID: 842861111}
+  headInventory: {fileID: 4459864850702346304}
+  dullahanBody: {fileID: 5866666021144979880}
+  debugMode: 0
+  skipPhaseKey: 112
+  resetEventKey: 114
+--- !u!4 &1340330526
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1340330524}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.9, y: -9.5, z: 21}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &1343362444
 Mesh:
   m_ObjectHideFlags: 0
@@ -191526,7 +191602,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerController: {fileID: 4459864850702346298}
   playerInventory: {fileID: 0}
-  dullahanChase: {fileID: 5866666021144979879}
+  dullahanChase: {fileID: 5866666021144979882}
   audioManager: {fileID: 842861111}
   effectFadeTime: 1
   showEffectNotifications: 1
@@ -373799,9 +373875,9 @@ GameObject:
   - component: {fileID: 5866666021144979876}
   - component: {fileID: 5866666021144979877}
   - component: {fileID: 5866666021144979878}
-  - component: {fileID: 5866666021144979879}
   - component: {fileID: 5866666021144979880}
   - component: {fileID: 5866666021144979881}
+  - component: {fileID: 5866666021144979882}
   m_Layer: 0
   m_Name: Dullahan
   m_TagString: Untagged
@@ -378959,37 +379035,6 @@ MonoBehaviour:
   nearPlayerClip: {fileID: 0}
   chaseStartClip: {fileID: 0}
   chaseLoopClip: {fileID: 0}
---- !u!114 &5866666021144979879
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 919132148852517219}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f921f27ad7ecb294cbea239a1d01262d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxChaseSpeed: 15
-  minChaseSpeed: 5
-  maxIntensityDistance: 2
-  minIntensityDistance: 20
-  intensityMultiplier: 1.5
-  audioManager: {fileID: 842861111}
-  dullahanLight: {fileID: 0}
-  maxLightIntensity: 3
-  minLightIntensity: 2
-  normalLightColor: {r: 1, g: 1, b: 1, a: 1}
-  intenseLightColor: {r: 1, g: 0, b: 0, a: 1}
-  lightFlickerSpeed: 10
-  playerController: {fileID: 0}
-  maxScreenShake: 0.1
-  maxFOVChange: 10
-  normalFOV: 60
-  isChasing: 0
-  isNearPlayer: 0
-  currentIntensity: 0
 --- !u!114 &5866666021144979880
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -379039,6 +379084,38 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5866666021144979882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132148852517219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06ffde271c7ac364fae8ad662d476cf5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxChaseSpeed: 8
+  minChaseSpeed: 3
+  maxDetectionRange: 20
+  minDetectionRange: 5
+  intensityUpdateRate: 0.1
+  dullahanTransform: {fileID: 543450652837065689}
+  dullahanAgent: {fileID: 5866666021144979877}
+  dullahanAnimator: {fileID: 5866666021144979875}
+  playerTransform: {fileID: 4459864850702346300}
+  playerController: {fileID: 4459864850702346298}
+  currentIntensity: 0
+  maxIntensity: 1
+  intensityDecayRate: 0.5
+  audioManager: {fileID: 0}
+  eventManager: {fileID: 1340330525}
+  dullahanLight: {fileID: 0}
+  chaseParticles: {fileID: 0}
+  dullahanMaterial: {fileID: 0}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  chaseColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &5892283089921804909
 GameObject:
   m_ObjectHideFlags: 0
@@ -383220,3 +383297,4 @@ SceneRoots:
   - {fileID: 3098707533113957367}
   - {fileID: 1557373318}
   - {fileID: 33631178}
+  - {fileID: 1340330526}

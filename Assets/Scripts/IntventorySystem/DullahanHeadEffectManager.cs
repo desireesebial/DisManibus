@@ -224,8 +224,10 @@ public class DullahanHeadEffectManager : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = elapsed / effectFadeTime;
             
-            // This would need to be implemented in DullahanChaseSystem
-            // dullahanChase.SetChaseIntensity(Mathf.Lerp(originalIntensity, targetIntensity, t));
+            if (dullahanChase != null)
+            {
+                dullahanChase.SetChaseIntensity(Mathf.Lerp(originalIntensity, targetIntensity, t));
+            }
             
             yield return null;
         }
@@ -242,8 +244,10 @@ public class DullahanHeadEffectManager : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = elapsed / effectFadeTime;
             
-            // This would need to be implemented in DullahanChaseSystem
-            // dullahanChase.SetChaseIntensity(Mathf.Lerp(originalIntensity, targetIntensity, t));
+            if (dullahanChase != null)
+            {
+                dullahanChase.SetChaseIntensity(Mathf.Lerp(originalIntensity, targetIntensity, t));
+            }
             
             yield return null;
         }
