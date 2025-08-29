@@ -7,6 +7,8 @@ public class DullahanPuzzleManager : MonoBehaviour
     public DullahanHeadPickable[] headPickables = new DullahanHeadPickable[3];
     public DullahanBody dullahanBody;
     public DullahanChaseSystem dullahanChase;
+    public doorscript[] puzzleDoors; // Doors that open when puzzle is completed
+    public doorscript realHeadDoor; // Door to the real head room
     
     [Header("Managers")]
     public DullahanHeadInventory headInventory;
@@ -88,6 +90,20 @@ public class DullahanPuzzleManager : MonoBehaviour
         // Find audio manager if not assigned
         if (audioManager == null)
             audioManager = FindObjectOfType<DullahanAudioManager>();
+            
+        // Find real head door if not assigned
+        if (realHeadDoor == null)
+        {
+            doorscript[] allDoors = FindObjectsOfType<doorscript>();
+            foreach (var door in allDoors)
+            {
+                if (door.name.ToLower().Contains("real") || door.name.ToLower().Contains("head"))
+                {
+                    realHeadDoor = door;
+                    break;
+                }
+            }
+        }
     }
     
     private void SetupPuzzle()
@@ -98,8 +114,8 @@ public class DullahanPuzzleManager : MonoBehaviour
         // Setup head inventory if not already done
         if (headInventory != null)
         {
-            headInventory.headInventoryList.Clear();
-            headInventory.selectedHeadIndex = -1;
+            headInventory.ClearInventoryList();
+            headInventory.selectedItem = -1;
         }
         
         // Reset puzzle state
@@ -121,6 +137,9 @@ public class DullahanPuzzleManager : MonoBehaviour
         {
             dullahanBody.ResetPuzzle();
         }
+        
+        // Lock all doors initially
+        LockAllDoors();
         
         Debug.Log("Dullahan puzzle initialized");
     }
@@ -163,7 +182,7 @@ public class DullahanPuzzleManager : MonoBehaviour
         if (headInventory != null)
         {
             collectedHeads.Clear();
-            collectedHeads.AddRange(headInventory.headInventoryList);
+            collectedHeads.AddRange(headInventory.inventoryList);
         }
         
         // Check if puzzle is completed
@@ -203,6 +222,9 @@ public class DullahanPuzzleManager : MonoBehaviour
         {
             effectManager.ClearAllEffects();
         }
+        
+        // Open puzzle doors
+        OpenPuzzleDoors();
         
         // Update UI
         UpdatePuzzleUI();
@@ -261,16 +283,16 @@ public class DullahanPuzzleManager : MonoBehaviour
                 {
                     if (pickable != null && pickable.headData != null && !pickable.isPickedUp)
                     {
-                        headInventory.headInventoryList.Add(pickable.headData);
+                        headInventory.AddToInventoryList(pickable.headData);
                         pickable.isPickedUp = true;
                         pickable.gameObject.SetActive(false);
                     }
                 }
                 
-                if (headInventory.headInventoryList.Count > 0)
+                if (headInventory.inventoryList.Count > 0)
                 {
-                    headInventory.selectedHeadIndex = 0;
-                    headInventory.NewHeadSelected();
+                    headInventory.selectedItem = 0;
+                    headInventory.NewItemSelected();
                 }
             }
         }
@@ -286,9 +308,9 @@ public class DullahanPuzzleManager : MonoBehaviour
         // Reset head inventory
         if (headInventory != null)
         {
-            headInventory.headInventoryList.Clear();
-            headInventory.selectedHeadIndex = -1;
-            headInventory.DeactivateAllHeads();
+            headInventory.ClearInventoryList();
+            headInventory.selectedItem = -1;
+            headInventory.DeactivateAllItems();
         }
         
         // Reset head pickables
@@ -317,6 +339,30 @@ public class DullahanPuzzleManager : MonoBehaviour
         UpdatePuzzleUI();
         
         Debug.Log("Dullahan puzzle reset");
+    }
+    
+    private void OpenPuzzleDoors()
+    {
+        if (puzzleDoors != null && puzzleDoors.Length > 0)
+        {
+            foreach (var door in puzzleDoors)
+            {
+                if (door != null)
+                {
+                    door.ForceUnlock();
+                    door.OpenDoor();
+                    Debug.Log($"Puzzle door {door.name} opened!");
+                }
+            }
+        }
+        
+        // Also open real head door if puzzle is completed
+        if (realHeadDoor != null)
+        {
+            realHeadDoor.ForceUnlock();
+            realHeadDoor.OpenDoor();
+            Debug.Log($"Real head door {realHeadDoor.name} opened!");
+        }
     }
     
     public bool IsPuzzleCompleted()
@@ -374,6 +420,97 @@ public class DullahanPuzzleManager : MonoBehaviour
             UpdatePuzzleUI();
             
             Debug.Log($"Head attached: {headData.headName}");
+        }
+    }
+    
+    // Method called by the new event manager to spawn all heads
+    public void SpawnAllHeads()
+    {
+        Debug.Log("Spawning all three Dullahan heads for collection phase");
+        
+        // Reset and enable all head pickables
+        foreach (DullahanHeadPickable pickable in headPickables)
+        {
+            if (pickable != null)
+            {
+                pickable.isPickedUp = false;
+                pickable.gameObject.SetActive(true);
+                
+                // Reset any visual states
+                if (pickable.headVisual != null)
+                {
+                    pickable.headVisual.SetActive(true);
+                }
+            }
+        }
+        
+        // Clear head inventory
+        if (headInventory != null)
+        {
+            headInventory.ClearInventoryList();
+            headInventory.selectedItem = -1;
+            headInventory.DeactivateAllItems();
+        }
+        
+        // Clear collected heads list
+        collectedHeads.Clear();
+        
+        // Open real head door for collection phase
+        if (realHeadDoor != null)
+        {
+            realHeadDoor.ForceUnlock();
+            realHeadDoor.OpenDoor();
+            Debug.Log("Real head door opened for collection phase");
+        }
+        
+        // Update UI
+        UpdatePuzzleUI();
+        
+        Debug.Log("All three heads spawned and ready for collection");
+    }
+    
+    // Door management methods
+    private void LockAllDoors()
+    {
+        // Lock puzzle doors
+        if (puzzleDoors != null && puzzleDoors.Length > 0)
+        {
+            foreach (var door in puzzleDoors)
+            {
+                if (door != null)
+                {
+                    door.LockDoor();
+                    door.CloseDoor();
+                }
+            }
+        }
+        
+        // Lock real head door
+        if (realHeadDoor != null)
+        {
+            realHeadDoor.LockDoor();
+            realHeadDoor.CloseDoor();
+        }
+        
+        Debug.Log("All puzzle doors locked");
+    }
+    
+    public void OpenRealHeadDoor()
+    {
+        if (realHeadDoor != null)
+        {
+            realHeadDoor.ForceUnlock();
+            realHeadDoor.OpenDoor();
+            Debug.Log("Real head door opened");
+        }
+    }
+    
+    public void CloseRealHeadDoor()
+    {
+        if (realHeadDoor != null)
+        {
+            realHeadDoor.CloseDoor();
+            Debug.Log("Real head door closed");
         }
     }
 }

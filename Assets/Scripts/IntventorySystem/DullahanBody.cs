@@ -166,7 +166,14 @@ public class DullahanBody : MonoBehaviour
         DullahanChaseEventManager eventManager = FindObjectOfType<DullahanChaseEventManager>();
         if (eventManager != null)
         {
-            eventManager.OnHeadAttached(headType);
+            if (headType == HeadType.Real)
+            {
+                eventManager.OnRealHeadAttachedToBody();
+            }
+            else
+            {
+                eventManager.OnHeadAttached(headType);
+            }
         }
     }
     
@@ -184,19 +191,19 @@ public class DullahanBody : MonoBehaviour
         // Try to attach the head
         if (AttachHead(currentHead))
         {
-            // Remove head from inventory
-            headInventory.headInventoryList.Remove(currentHead);
+            // Remove head from inventory using compatibility method
+            headInventory.RemoveFromInventoryList(currentHead);
             
             // Update head inventory
-            if (headInventory.headInventoryList.Count > 0)
+            if (headInventory.inventoryList.Count > 0)
             {
-                headInventory.selectedHeadIndex = 0;
-                headInventory.NewHeadSelected();
+                headInventory.selectedItem = 0;
+                headInventory.NewItemSelected();
             }
             else
             {
-                headInventory.selectedHeadIndex = -1;
-                headInventory.DeactivateAllHeads();
+                headInventory.selectedItem = -1;
+                headInventory.DeactivateAllItems();
             }
         }
     }

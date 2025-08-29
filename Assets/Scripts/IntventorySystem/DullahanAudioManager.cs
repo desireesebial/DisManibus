@@ -28,6 +28,12 @@ public class DullahanAudioManager : MonoBehaviour
     public AudioClip batteryLowSound;
     public AudioClip batteryDeadSound;
     
+    [Header("Lantern Audio")]
+    public AudioClip lanternPickupSound;
+    public AudioClip lanternOnSound;
+    public AudioClip lanternOffSound;
+    public AudioClip lanternFlickerSound;
+    
     [Header("Timer Audio")]
     public AudioClip timerWarningSound;
     public AudioClip doorOpenSound;
@@ -418,5 +424,41 @@ public class DullahanAudioManager : MonoBehaviour
         if (!isInitialized || doorOpenSound == null) return;
         
         PlayAudioClip(effectAudioSource, doorOpenSound, maxVolume);
+    }
+    
+    // Lantern Audio Methods
+    public void PlayLanternPickupSound()
+    {
+        if (!isInitialized || lanternPickupSound == null) return;
+        
+        PlayAudioClip(effectAudioSource, lanternPickupSound, maxVolume);
+    }
+    
+    public void PlayLanternOnSound()
+    {
+        if (!isInitialized || lanternOnSound == null) return;
+        
+        PlayAudioClip(effectAudioSource, lanternOnSound, maxVolume);
+    }
+    
+    public void PlayLanternOffSound()
+    {
+        if (!isInitialized || lanternOffSound == null) return;
+        
+        PlayAudioClip(effectAudioSource, lanternOffSound, maxVolume);
+    }
+    
+    public void PlayLanternFlickerSound()
+    {
+        if (!isInitialized || lanternFlickerSound == null) return;
+        
+        PlayAudioClip(effectAudioSource, lanternFlickerSound, maxVolume * 0.5f);
+    }
+    
+    public void PlayCompletionSound()
+    {
+        if (!isInitialized || puzzleCompleteSound == null) return;
+        
+        PlayAudioClip(effectAudioSource, puzzleCompleteSound, maxVolume);
     }
 }

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2efda8adcb951f540b87ac5d09df9f45, type: 3}
+  m_Name: Lantern
+  m_EditorClassIdentifier: 
+  lanternName: Mysterious Lantern
+  lanternID: 1
+  lanternSprite: {fileID: 0}
+  lanternIcon: {fileID: 0}
+  description: An old lantern that provides light in the darkness.
+  lightColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  lightIntensity: 100
+  lightRange: 200
+  flickerEffect: 1
+  flickerSpeed: 2
+  flickerAmount: 0.1
+  pickupSound: {fileID: 0}
+  toggleOnSound: {fileID: 0}
+  toggleOffSound: {fileID: 0}
+  lanternPrefab: {fileID: 5852954894848626285, guid: 2967ab90ba266de42a377d4bd856a6c6, type: 3}
+  lanternMaterial: {fileID: 0}
+  lanternGlowColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  hasGlowEffect: 1
+  lanternParticles: {fileID: 0}
+  toggleKey: 102
+  toggleMessage: 

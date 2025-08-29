@@ -12,6 +12,7 @@ public class DullahanHeadPickable : MonoBehaviour, IPickable
     public Renderer headRenderer;
     public Material originalMaterial;
     public Material glowMaterial;
+    public GameObject headVisual; // Visual representation of the head
     
     [Header("Audio")]
     public AudioSource audioSource;
@@ -111,7 +112,7 @@ public class DullahanHeadPickable : MonoBehaviour, IPickable
         if (isPickedUp || headInventory == null) return;
         
         // Check if head inventory is full
-        if (headInventory.headInventoryList.Count >= headInventory.maxHeadInventorySize)
+        if (headInventory.inventoryList.Count >= headInventory.maxInventorySize)
         {
             Debug.Log("Head inventory is full!");
             return;
@@ -124,8 +125,8 @@ public class DullahanHeadPickable : MonoBehaviour, IPickable
             return;
         }
         
-        // Add to head inventory
-        headInventory.headInventoryList.Add(headData);
+        // Add to head inventory using compatibility method
+        headInventory.AddToInventoryList(headData);
         
         // Apply effects if any
         if (headData.hasEffect && effectManager != null)

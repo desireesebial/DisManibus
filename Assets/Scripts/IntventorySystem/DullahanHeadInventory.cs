@@ -4,208 +4,201 @@ using UnityEngine.UI;
 
 public class DullahanHeadInventory : MonoBehaviour
 {
-    [Header("Dullahan Head Settings")]
-    public List<DullahanHeadSO> headInventoryList = new List<DullahanHeadSO>();
-    public int maxHeadInventorySize = 3; // Only 3 heads total
-    public int selectedHeadIndex = -1; // -1 means no head selected
+    [Header("Inventory Settings")]
+    public List<InventorySlot> inventorySlots = new List<InventorySlot>();
+    public int maxInventorySize = 3;
+    public int playerReach = 3;
+    public int selectedItem = 0;
 
     [Header("Camera and UI")]
     [SerializeField] Camera cam;
     [SerializeField] GameObject pressToPickup_gameobject;
 
-    [Header("Head Inventory UI")]
-    [SerializeField] Image[] headInventorySlotImage = new Image[3];
-    [SerializeField] Image[] headInventoryBackgroundImage = new Image[3];
+    [Header("Inventory UI")]
+    [SerializeField] Image[] inventorySlotImage = new Image[3];
+    [SerializeField] Image[] inventoryBackgroundImage = new Image[3];
     [SerializeField] Sprite emptySlotImage;
 
     [Header("Input Keys")]
-    [SerializeField] KeyCode throwHeadKey = KeyCode.G;
-    [SerializeField] KeyCode pickUpHeadKey = KeyCode.E;
-    [SerializeField] KeyCode attachHeadKey = KeyCode.F;
-    [SerializeField] KeyCode toggleFlashlightKey = KeyCode.T;
+    [SerializeField] KeyCode pickUpItemKey = KeyCode.E;
 
-    [Header("Player Head GameObjects")]
-    [SerializeField] GameObject dullahanHead_Real;
-    [SerializeField] GameObject dullahanHead_Fake1;
-    [SerializeField] GameObject dullahanHead_Fake2;
+    [Header("Player Item GameObjects")]
+    [SerializeField] GameObject realHead_item;
+    [SerializeField] GameObject fakeHead1_item;
+    [SerializeField] GameObject fakeHead2_item;
+    [SerializeField] GameObject lantern_item;
 
-    [Header("Head Prefabs for Dropping")]
-    [SerializeField] GameObject dullahanHead_Real_prefab;
-    [SerializeField] GameObject dullahanHead_Fake1_prefab;
-    [SerializeField] GameObject dullahanHead_Fake2_prefab;
+    [Header("Item Prefabs for Dropping")]
+    [SerializeField] GameObject realHead_prefab;
+    [SerializeField] GameObject fakeHead1_prefab;
+    [SerializeField] GameObject fakeHead2_prefab;
+    [SerializeField] GameObject lantern_prefab;
 
     [Header("Throwing Settings")]
     [SerializeField] GameObject throwObject_gameobject;
     [SerializeField] float throwForce = 5f;
 
+    [Header("Lantern System")]
+    public bool hasLantern = false;
+    public bool isLanternOn = false;
+    public LanternSO currentLantern;
+    public Light lanternLight;
+
     [Header("Flashlight System")]
-    [SerializeField] Light flashlight;
-    [SerializeField] float maxBatteryLife = 300f; // 5 minutes in seconds
-    [SerializeField] float currentBatteryLife;
-    [SerializeField] float batteryDrainRate = 1f; // Battery drain per second
-    [SerializeField] float batteryRechargeRate = 0.5f; // Battery recharge per second when off
-    [SerializeField] bool isFlashlightOn = false;
-    [SerializeField] bool infiniteBattery = false;
-    
-    [Header("Flashlight Settings")]
-    [SerializeField] float flashlightIntensity = 2f;
-    [SerializeField] float flashlightRange = 15f;
-    [SerializeField] Color flashlightColor = Color.white;
-    [SerializeField] float flashlightAngle = 45f;
-    
-    [Header("Flashlight UI")]
-    [SerializeField] Image batteryIndicator;
-    [SerializeField] Color fullBatteryColor = Color.green;
-    [SerializeField] Color lowBatteryColor = Color.red;
-    [SerializeField] Color emptyBatteryColor = Color.gray;
-    [SerializeField] GameObject flashlightUI;
-    [SerializeField] TMPro.TextMeshProUGUI batteryText;
+    public bool hasFlashlight = false;
+    public bool isFlashlightOn = false;
+    public Light flashlightLight;
+    public float flashlightBattery = 100f;
+    public float maxFlashlightBattery = 100f;
+    public float flashlightDrainRate = 5f;
+    public float flashlightRechargeRate = 2f;
 
-    [Header("Integration")]
-    [SerializeField] PlayerInventory playerInventory; // Reference to main inventory
-    [SerializeField] DullahanHeadEffectManager effectManager;
-    [SerializeField] DullahanAudioManager audioManager;
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip headSelectSound;
+    public AudioClip flashlightToggleSound;
 
-    private Dictionary<HeadType, GameObject> headSetActive = new Dictionary<HeadType, GameObject>();
-    private bool isInitialized = false;
+    private Dictionary<HeadType, GameObject> itemSetActive = new Dictionary<HeadType, GameObject>();
+    private bool batteryLowPlayed = false;
+    private bool batteryDeadPlayed = false;
+
+    [System.Serializable]
+    public class InventorySlot
+    {
+        public bool isOccupied = false;
+        public DullahanHeadSO headItem = null;
+        public LanternSO lanternItem = null;
+        public ItemType itemType = ItemType.Empty;
+        
+        public enum ItemType
+        {
+            Empty,
+            Head,
+            Lantern
+        }
+        
+        public void Clear()
+        {
+            isOccupied = false;
+            headItem = null;
+            lanternItem = null;
+            itemType = ItemType.Empty;
+        }
+        
+        public void SetHead(DullahanHeadSO head)
+        {
+            isOccupied = true;
+            headItem = head;
+            lanternItem = null;
+            itemType = ItemType.Head;
+        }
+        
+        public void SetLantern(LanternSO lantern)
+        {
+            isOccupied = true;
+            headItem = null;
+            lanternItem = lantern;
+            itemType = ItemType.Lantern;
+        }
+    }
 
     void Start()
     {
-        // Initialize head dictionary with null checks
-        InitializeHeadDictionary();
+        // Initialize inventory slots
+        InitializeInventorySlots();
+        
+        // Initialize item dictionary
+        InitializeItemDictionary();
 
         // Set initial UI state
-        UpdateHeadInventoryUI();
+        UpdateInventoryUI();
 
-        // Find references if not assigned
-        FindReferences();
+        // If we start with items, select the first one
+        if (GetItemCount() > 0)
+        {
+            selectedItem = 0;
+            NewItemSelected();
+        }
+        else
+        {
+            DeactivateAllItems();
+        }
 
-        // Initialize flashlight
-        InitializeFlashlight();
-
-        isInitialized = true;
+        // Find audio source if not assigned
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
     {
-        if (!isInitialized) return;
-
-        HandleHeadThrowing();
-        HandleHeadPickup();
-        HandleHeadSelection();
-        HandleHeadAttachment();
-        HandleFlashlight();
-        UpdateHeadInventoryUI();
-        UpdateFlashlightUI();
+        HandleItemPickup();
+        HandleItemSelection();
+        HandleLanternAndFlashlight();
+        HandleFlashlightBattery();
+        UpdateInventoryUI();
     }
 
-    private void FindReferences()
+    private void InitializeInventorySlots()
     {
-        // Find PlayerInventory if not assigned
-        if (playerInventory == null)
-            playerInventory = FindObjectOfType<PlayerInventory>();
-
-        // Find EffectManager if not assigned
-        if (effectManager == null)
-            effectManager = FindObjectOfType<DullahanHeadEffectManager>();
-
-        // Find AudioManager if not assigned
-        if (audioManager == null)
-            audioManager = FindObjectOfType<DullahanAudioManager>();
-
-        // Find camera if not assigned
-        if (cam == null)
+        // Initialize inventory slots if empty
+        if (inventorySlots.Count == 0)
         {
-            FirstPersonController fpc = FindObjectOfType<FirstPersonController>();
-            if (fpc != null)
-                cam = fpc.playerCamera;
-        }
-
-        // Find flashlight if not assigned
-        if (flashlight == null)
-        {
-            flashlight = FindObjectOfType<Light>();
-            if (flashlight == null)
+            for (int i = 0; i < maxInventorySize; i++)
             {
-                // Create flashlight
-                GameObject flashlightObj = new GameObject("Flashlight");
-                flashlightObj.transform.SetParent(cam != null ? cam.transform : transform);
-                flashlight = flashlightObj.AddComponent<Light>();
+                inventorySlots.Add(new InventorySlot());
             }
         }
     }
 
-    private void InitializeHeadDictionary()
+    private void InitializeItemDictionary()
     {
-        headSetActive.Clear();
+        itemSetActive.Clear();
 
-        // Add heads to dictionary only if they exist
-        if (dullahanHead_Real != null) 
-            headSetActive.Add(HeadType.Real, dullahanHead_Real);
-        if (dullahanHead_Fake1 != null) 
-            headSetActive.Add(HeadType.Fake1, dullahanHead_Fake1);
-        if (dullahanHead_Fake2 != null) 
-            headSetActive.Add(HeadType.Fake2, dullahanHead_Fake2);
+        if (realHead_item != null) itemSetActive.Add(HeadType.Real, realHead_item);
+        if (fakeHead1_item != null) itemSetActive.Add(HeadType.Fake1, fakeHead1_item);
+        if (fakeHead2_item != null) itemSetActive.Add(HeadType.Fake2, fakeHead2_item);
 
-        // Initially deactivate all heads
-        DeactivateAllHeads();
+        // Initially deactivate all items
+        DeactivateAllItems();
     }
 
-    private void HandleHeadThrowing()
-    {
-        if (Input.GetKeyDown(throwHeadKey) && HasHeads())
-        {
-            DullahanHeadSO headToThrow = headInventoryList[selectedHeadIndex];
-
-            // Drop head with physics
-            DropHeadWithPhysics(headToThrow);
-
-            // Remove from inventory
-            headInventoryList.RemoveAt(selectedHeadIndex);
-
-            // Adjust selected head index
-            if (selectedHeadIndex >= headInventoryList.Count && headInventoryList.Count > 0)
-            {
-                selectedHeadIndex = headInventoryList.Count - 1;
-            }
-            else if (headInventoryList.Count == 0)
-            {
-                selectedHeadIndex = -1;
-            }
-
-            // Update selected head
-            if (HasHeads())
-            {
-                NewHeadSelected();
-            }
-            else
-            {
-                DeactivateAllHeads();
-            }
-        }
-    }
-
-    private void HandleHeadPickup()
+    private void HandleItemPickup()
     {
         if (cam == null) return;
 
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit hitInfo;
 
-        if (Physics.Raycast(ray, out hitInfo, 3f)) // 3f reach for heads
+        if (Physics.Raycast(ray, out hitInfo, playerReach))
         {
-            DullahanHeadPickable headPickable = hitInfo.collider.GetComponent<DullahanHeadPickable>();
+            IPickable pickableItem = hitInfo.collider.GetComponent<IPickable>();
+            DullahanHeadPickable pickableComponent = hitInfo.collider.GetComponent<DullahanHeadPickable>();
+            LanternPickable lanternComponent = hitInfo.collider.GetComponent<LanternPickable>();
 
-            if (headPickable != null && !headPickable.isPickedUp)
+            if (pickableItem != null)
             {
                 // Show pickup prompt
                 if (pressToPickup_gameobject != null)
                     pressToPickup_gameobject.SetActive(true);
 
-                // Handle pickup input
-                if (Input.GetKeyDown(pickUpHeadKey))
+                // Handle pickup input - only if not toggling lantern
+                if (Input.GetKeyDown(pickUpItemKey))
                 {
-                    TryPickupHead(headPickable);
+                    // Check if we're trying to toggle lantern instead of pickup
+                    if (hasLantern && currentLantern != null && currentLantern.toggleKey == pickUpItemKey)
+                    {
+                        // Don't pickup if we're toggling lantern
+                        return;
+                    }
+                    
+                    if (pickableComponent != null && !pickableComponent.isPickedUp)
+                    {
+                        TryPickupHead(pickableComponent, pickableItem);
+                    }
+                    else if (lanternComponent != null && !lanternComponent.isPickedUp)
+                    {
+                        TryPickupLantern(lanternComponent, pickableItem);
+                    }
                 }
             }
             else
@@ -221,527 +214,625 @@ public class DullahanHeadInventory : MonoBehaviour
         }
     }
 
-    private void TryPickupHead(DullahanHeadPickable headPickable)
+    private void TryPickupHead(DullahanHeadPickable pickableComponent, IPickable pickableItem)
     {
-        // Check if head inventory is full
-        if (headInventoryList.Count >= maxHeadInventorySize)
-        {
-            Debug.Log("Head inventory is full!");
-            return;
-        }
-
-        // Check if head has valid ScriptableObject
-        if (headPickable.headData == null)
+        // Check if item has valid ScriptableObject
+        if (pickableComponent.headData == null)
         {
             Debug.LogError("Head has no ScriptableObject assigned!");
             return;
         }
 
-        // Add head to inventory
-        headInventoryList.Add(headPickable.headData);
-
-        // Apply effects if any
-        if (headPickable.headData.hasEffect && effectManager != null)
+        // Find first empty slot
+        int emptySlot = FindFirstEmptySlot();
+        if (emptySlot == -1)
         {
-            effectManager.ApplyHeadEffect(headPickable.headData);
+            Debug.Log("Inventory is full! Cannot pick up more items.");
+            return;
         }
 
-        // Play pickup sound
-        if (audioManager != null)
+        // Add item to inventory slot
+        inventorySlots[emptySlot].SetHead(pickableComponent.headData);
+
+        // Pick up the item (destroys GameObject)
+        pickableItem.PickItem();
+
+        // If this is the first item, select it
+        if (GetItemCount() == 1)
         {
-            audioManager.PlayHeadPickupSound(headPickable.headData.headType);
+            selectedItem = emptySlot;
+            NewItemSelected();
         }
 
-        // Pick up the head (destroys GameObject)
-        headPickable.PickItem();
-
-        // If this is the first head, select it
-        if (headInventoryList.Count == 1)
-        {
-            selectedHeadIndex = 0;
-            NewHeadSelected();
-        }
-
-        Debug.Log($"Picked up: {headPickable.headData.headName}");
+        Debug.Log($"Picked up: {pickableComponent.headData.headName} in slot {emptySlot + 1}");
     }
 
-    private void HandleHeadSelection()
+    private void TryPickupLantern(LanternPickable lanternComponent, IPickable pickableItem)
     {
-        if (!HasHeads()) return;
+        // Check if lantern has valid ScriptableObject
+        if (lanternComponent.lanternData == null)
+        {
+            Debug.LogError("Lantern has no ScriptableObject assigned!");
+            return;
+        }
+
+        // Find first empty slot
+        int emptySlot = FindFirstEmptySlot();
+        if (emptySlot == -1)
+        {
+            Debug.Log("Inventory is full! Cannot pick up lantern.");
+            return;
+        }
+
+        // Add lantern to inventory slot
+        inventorySlots[emptySlot].SetLantern(lanternComponent.lanternData);
+
+        // Update lantern system
+        hasLantern = true;
+        isLanternOn = false;
+        currentLantern = lanternComponent.lanternData;
+        
+        // Show lantern in hand immediately (but turned off)
+        SetLanternVisual(false);
+
+        // Pick up the item (destroys GameObject)
+        pickableItem.PickItem();
+
+        string toggleMessage = currentLantern.toggleMessage;
+        Debug.Log($"Picked up {currentLantern.lanternName} in slot {emptySlot + 1}! {toggleMessage}");
+    }
+
+    private void HandleItemSelection()
+    {
+        if (!HasItems()) return;
 
         int newSelection = -1;
 
-        if (Input.GetKeyDown(KeyCode.Alpha1) && headInventoryList.Count > 0) newSelection = 0;
-        else if (Input.GetKeyDown(KeyCode.Alpha2) && headInventoryList.Count > 1) newSelection = 1;
-        else if (Input.GetKeyDown(KeyCode.Alpha3) && headInventoryList.Count > 2) newSelection = 2;
+        // Allow selection of any slot that has an item
+        if (Input.GetKeyDown(KeyCode.Alpha1) && inventorySlots[0].isOccupied) newSelection = 0;
+        else if (Input.GetKeyDown(KeyCode.Alpha2) && inventorySlots[1].isOccupied) newSelection = 1;
+        else if (Input.GetKeyDown(KeyCode.Alpha3) && inventorySlots[2].isOccupied) newSelection = 2;
 
-        if (newSelection != -1 && newSelection != selectedHeadIndex)
+        if (newSelection != -1 && newSelection != selectedItem)
         {
-            selectedHeadIndex = newSelection;
-            NewHeadSelected();
+            selectedItem = newSelection;
+            NewItemSelected();
         }
     }
 
-    private void HandleHeadAttachment()
+    private void HandleLanternAndFlashlight()
     {
-        if (!HasHeads()) return;
-
-        // Check if player is near Dullahan body
-        if (cam == null) return;
-
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hitInfo;
-
-        if (Physics.Raycast(ray, out hitInfo, 3f))
+        // Toggle lantern - simple on/off only
+        if (hasLantern && currentLantern != null && Input.GetKeyDown(currentLantern.toggleKey))
         {
-            DullahanBody dullahanBody = hitInfo.collider.GetComponent<DullahanBody>();
+            ToggleLantern();
+        }
 
-            if (dullahanBody != null && Input.GetKeyDown(attachHeadKey))
+        // Toggle flashlight
+        if (Input.GetKeyDown(KeyCode.F) && hasFlashlight)
+        {
+            ToggleFlashlight();
+        }
+    }
+
+    public void NewItemSelected()
+    {
+        // Store current lantern state before deactivating
+        bool wasLanternOn = isLanternOn;
+        bool hadLantern = hasLantern;
+        LanternSO previousLantern = currentLantern;
+
+        // Always deactivate all items first
+        DeactivateAllItems();
+
+        if (!HasItems())
+        {
+            return;
+        }
+
+        // Clamp selected item to valid range
+        selectedItem = Mathf.Clamp(selectedItem, 0, maxInventorySize - 1);
+
+        // Check if selected slot has an item
+        if (!inventorySlots[selectedItem].isOccupied)
+        {
+            return;
+        }
+
+        // Activate the selected item based on its type
+        InventorySlot currentSlot = inventorySlots[selectedItem];
+        
+        if (currentSlot.itemType == InventorySlot.ItemType.Head && currentSlot.headItem != null)
+        {
+            // Activate head item
+            if (itemSetActive.ContainsKey(currentSlot.headItem.headType))
             {
-                DullahanHeadSO currentHead = headInventoryList[selectedHeadIndex];
-                
-                // Check if this is the real head
-                if (currentHead.headType == HeadType.Real)
+                GameObject itemObject = itemSetActive[currentSlot.headItem.headType];
+                if (itemObject != null)
                 {
-                    // Attach head to Dullahan body
-                    if (dullahanBody.AttachHead(currentHead))
+                    itemObject.SetActive(true);
+                }
+            }
+            
+            // Play sound
+            if (audioSource != null && headSelectSound != null)
+            {
+                audioSource.PlayOneShot(headSelectSound);
+            }
+            
+            Debug.Log($"Selected head: {currentSlot.headItem.headName} in slot {selectedItem + 1}");
+        }
+        else if (currentSlot.itemType == InventorySlot.ItemType.Lantern && currentSlot.lanternItem != null)
+        {
+            // Update lantern system
+            currentLantern = currentSlot.lanternItem;
+            hasLantern = true;
+            
+            // Show lantern in hand (but keep current on/off state)
+            SetLanternVisual(isLanternOn);
+            
+            Debug.Log($"Selected lantern: {currentSlot.lanternItem.lanternName} in slot {selectedItem + 1} - Lantern GameObject active: {(lantern_item != null ? lantern_item.activeInHierarchy : false)}");
+        }
+    }
+
+    private void UpdateInventoryUI()
+    {
+        // Update inventory slot images
+        for (int i = 0; i < inventorySlotImage.Length; i++)
+        {
+            if (inventorySlotImage[i] != null)
+            {
+                if (i < inventorySlots.Count && inventorySlots[i].isOccupied)
+                {
+                    if (inventorySlots[i].itemType == InventorySlot.ItemType.Head && inventorySlots[i].headItem != null)
                     {
-                        // Remove head from inventory
-                        headInventoryList.RemoveAt(selectedHeadIndex);
-
-                        // Adjust selected head index
-                        if (selectedHeadIndex >= headInventoryList.Count && headInventoryList.Count > 0)
-                        {
-                            selectedHeadIndex = headInventoryList.Count - 1;
-                        }
-                        else if (headInventoryList.Count == 0)
-                        {
-                            selectedHeadIndex = -1;
-                        }
-
-                        // Update selected head
-                        if (HasHeads())
-                        {
-                            NewHeadSelected();
-                        }
-                        else
-                        {
-                            DeactivateAllHeads();
-                        }
-
-                        Debug.Log("Real head attached to Dullahan body!");
+                        inventorySlotImage[i].sprite = inventorySlots[i].headItem.headIcon;
+                    }
+                    else if (inventorySlots[i].itemType == InventorySlot.ItemType.Lantern && inventorySlots[i].lanternItem != null)
+                    {
+                        inventorySlotImage[i].sprite = inventorySlots[i].lanternItem.lanternIcon;
+                    }
+                    else
+                    {
+                        inventorySlotImage[i].sprite = emptySlotImage;
                     }
                 }
                 else
                 {
-                    Debug.Log("This is not the real head!");
-                }
-            }
-        }
-    }
-
-    public void NewHeadSelected()
-    {
-        if (!HasHeads())
-        {
-            DeactivateAllHeads();
-            return;
-        }
-
-        // Clamp selected head to valid range
-        selectedHeadIndex = Mathf.Clamp(selectedHeadIndex, 0, headInventoryList.Count - 1);
-
-        DeactivateAllHeads();
-
-        DullahanHeadSO currentHead = headInventoryList[selectedHeadIndex];
-        if (currentHead != null && headSetActive.ContainsKey(currentHead.headType))
-        {
-            GameObject headObject = headSetActive[currentHead.headType];
-            if (headObject != null)
-            {
-                headObject.SetActive(true);
-            }
-        }
-    }
-
-    private void UpdateHeadInventoryUI()
-    {
-        // Update head inventory slot images
-        for (int i = 0; i < headInventorySlotImage.Length; i++)
-        {
-            if (headInventorySlotImage[i] != null)
-            {
-                if (i < headInventoryList.Count && headInventoryList[i] != null && headInventoryList[i].headSprite != null)
-                {
-                    headInventorySlotImage[i].sprite = headInventoryList[i].headSprite;
-                }
-                else
-                {
-                    headInventorySlotImage[i].sprite = emptySlotImage;
+                    inventorySlotImage[i].sprite = emptySlotImage;
                 }
             }
         }
 
         // Update background colors for selection
-        for (int i = 0; i < headInventoryBackgroundImage.Length; i++)
+        for (int i = 0; i < inventoryBackgroundImage.Length; i++)
         {
-            if (headInventoryBackgroundImage[i] != null)
+            if (inventoryBackgroundImage[i] != null)
             {
-                if (i == selectedHeadIndex && HasHeads())
+                if (i == selectedItem && inventorySlots[i].isOccupied)
                 {
-                    headInventoryBackgroundImage[i].color = new Color32(145, 255, 126, 255); // Green for selected
+                    inventoryBackgroundImage[i].color = new Color32(145, 255, 126, 255); // Green for selected
                 }
                 else
                 {
-                    headInventoryBackgroundImage[i].color = new Color32(219, 219, 219, 255); // Default gray
+                    inventoryBackgroundImage[i].color = new Color32(219, 219, 219, 255); // Default gray
                 }
             }
         }
     }
 
-    private void DropHeadWithPhysics(DullahanHeadSO headToDrop)
+    public void DeactivateAllItems()
     {
-        GameObject prefabToThrow = GetPrefabForHead(headToDrop);
-        if (prefabToThrow == null) 
-        {
-            Debug.LogWarning($"No prefab found for head type: {headToDrop.headType}");
-            return;
-        }
-
-        // Calculate throw position
-        Vector3 throwPosition;
-        if (throwObject_gameobject != null)
-        {
-            throwPosition = throwObject_gameobject.transform.position;
-        }
-        else if (cam != null)
-        {
-            throwPosition = cam.transform.position + cam.transform.forward * 1f;
-        }
-        else
-        {
-            throwPosition = transform.position + transform.forward * 1f;
-        }
-
-        // Instantiate the head
-        GameObject droppedHead = Instantiate(prefabToThrow, throwPosition, Quaternion.identity);
-
-        // Set up the dropped head's ScriptableObject reference
-        DullahanHeadPickable droppedPickable = droppedHead.GetComponent<DullahanHeadPickable>();
-        if (droppedPickable != null)
-        {
-            droppedPickable.headData = headToDrop;
-            droppedPickable.isPickedUp = false;
-        }
-
-        // Configure physics
-        Rigidbody rb = droppedHead.GetComponent<Rigidbody>();
-        if (rb == null)
-        {
-            rb = droppedHead.AddComponent<Rigidbody>();
-        }
-
-        // Set physics properties
-        rb.mass = 1.0f; // Head mass
-        if (rb.linearDamping == 0) rb.linearDamping = 1f;
-        if (rb.angularDamping == 0) rb.angularDamping = 5f;
-
-        // Apply throw force
-        Vector3 throwDirection;
-        if (cam != null)
-        {
-            throwDirection = (cam.transform.forward + Vector3.up * 0.3f).normalized;
-        }
-        else
-        {
-            throwDirection = (transform.forward + Vector3.up * 0.3f).normalized;
-        }
-
-        rb.AddForce(throwDirection * throwForce, ForceMode.VelocityChange);
-        rb.AddTorque(Random.insideUnitSphere * 3f, ForceMode.VelocityChange);
+        if (realHead_item != null) realHead_item.SetActive(false);
+        if (fakeHead1_item != null) fakeHead1_item.SetActive(false);
+        if (fakeHead2_item != null) fakeHead2_item.SetActive(false);
+        
+        // Don't deactivate lantern here - it should be handled by SetLanternVisual
+        // The lantern should stay visible when we have it, only the light should be controlled
     }
 
-    private GameObject GetPrefabForHead(DullahanHeadSO head)
+    private int FindFirstEmptySlot()
     {
-        switch (head.headType)
+        for (int i = 0; i < inventorySlots.Count; i++)
         {
-            case HeadType.Real: return dullahanHead_Real_prefab;
-            case HeadType.Fake1: return dullahanHead_Fake1_prefab;
-            case HeadType.Fake2: return dullahanHead_Fake2_prefab;
-            default: return null;
+            if (!inventorySlots[i].isOccupied)
+            {
+                return i;
+            }
         }
+        return -1; // No empty slots
     }
 
-    public void DeactivateAllHeads()
+    private bool HasItems()
     {
-        if (dullahanHead_Real != null) dullahanHead_Real.SetActive(false);
-        if (dullahanHead_Fake1 != null) dullahanHead_Fake1.SetActive(false);
-        if (dullahanHead_Fake2 != null) dullahanHead_Fake2.SetActive(false);
+        for (int i = 0; i < inventorySlots.Count; i++)
+        {
+            if (inventorySlots[i].isOccupied)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public bool HasHeads()
+    private int GetItemCount()
     {
-        return headInventoryList != null && headInventoryList.Count > 0;
+        int count = 0;
+        for (int i = 0; i < inventorySlots.Count; i++)
+        {
+            if (inventorySlots[i].isOccupied)
+            {
+                count++;
+            }
+        }
+        return count;
     }
 
     // Public methods for other scripts to use
-    public bool HasHead(HeadType headType)
+    public bool HasItem(int itemID)
     {
-        foreach (DullahanHeadSO head in headInventoryList)
+        for (int i = 0; i < inventorySlots.Count; i++)
         {
-            if (head != null && head.headType == headType)
-                return true;
+            if (inventorySlots[i].isOccupied && inventorySlots[i].itemType == InventorySlot.ItemType.Head)
+            {
+                if (inventorySlots[i].headItem != null && inventorySlots[i].headItem.headID == itemID)
+                    return true;
+            }
         }
         return false;
     }
 
-    public bool HasRealHead()
+    public bool HasItemOfType(HeadType type)
     {
-        return HasHead(HeadType.Real);
+        for (int i = 0; i < inventorySlots.Count; i++)
+        {
+            if (inventorySlots[i].isOccupied && inventorySlots[i].itemType == InventorySlot.ItemType.Head)
+            {
+                if (inventorySlots[i].headItem != null && inventorySlots[i].headItem.headType == type)
+                    return true;
+            }
+        }
+        return false;
     }
 
-    public DullahanHeadSO GetCurrentHead()
+    public DullahanHeadSO GetCurrentItem()
     {
-        if (HasHeads() && selectedHeadIndex >= 0 && selectedHeadIndex < headInventoryList.Count)
-            return headInventoryList[selectedHeadIndex];
+        if (selectedItem >= 0 && selectedItem < inventorySlots.Count && inventorySlots[selectedItem].isOccupied)
+        {
+            if (inventorySlots[selectedItem].itemType == InventorySlot.ItemType.Head)
+                return inventorySlots[selectedItem].headItem;
+        }
         return null;
     }
 
-    public List<DullahanHeadSO> GetHeadsOfType(HeadType type)
+    public List<DullahanHeadSO> GetItemsOfType(HeadType type)
     {
-        List<DullahanHeadSO> heads = new List<DullahanHeadSO>();
-        foreach (DullahanHeadSO head in headInventoryList)
+        List<DullahanHeadSO> items = new List<DullahanHeadSO>();
+        for (int i = 0; i < inventorySlots.Count; i++)
         {
-            if (head != null && head.headType == type)
-                heads.Add(head);
+            if (inventorySlots[i].isOccupied && inventorySlots[i].itemType == InventorySlot.ItemType.Head)
+            {
+                if (inventorySlots[i].headItem != null && inventorySlots[i].headItem.headType == type)
+                    items.Add(inventorySlots[i].headItem);
+            }
         }
-        return heads;
+        return items;
     }
 
-    // Method to add head from main inventory (for integration)
-    public bool AddHeadFromMainInventory(KeyItemsSO item)
+    // Lantern and Flashlight methods
+    public void GiveLantern(LanternSO lanternData = null)
     {
-        if (headInventoryList.Count >= maxHeadInventorySize)
-            return false;
-
-        // Convert KeyItemsSO to DullahanHeadSO if possible
-        // This would need to be implemented based on your specific needs
-        return false;
+        hasLantern = true;
+        isLanternOn = false;
+        currentLantern = lanternData;
+        
+        // Show lantern in hand immediately (but turned off)
+        SetLanternVisual(false);
+        
+        string message = currentLantern != null ? 
+            $"{currentLantern.lanternName} added to inventory! {currentLantern.toggleMessage}" :
+            "Lantern added to inventory!";
+        Debug.Log(message);
     }
 
-    private void InitializeFlashlight()
+    public void RemoveLantern()
     {
-        if (flashlight == null) return;
-
-        // Setup flashlight properties
-        flashlight.type = LightType.Spot;
-        flashlight.intensity = 0f; // Start off
-        flashlight.range = flashlightRange;
-        flashlight.color = flashlightColor;
-        flashlight.spotAngle = flashlightAngle;
-        flashlight.enabled = false;
-
-        // Initialize battery
-        currentBatteryLife = maxBatteryLife;
-
-        // Position flashlight at camera
-        if (cam != null)
-        {
-            flashlight.transform.position = cam.transform.position;
-            flashlight.transform.rotation = cam.transform.rotation;
-        }
+        hasLantern = false;
+        isLanternOn = false;
+        currentLantern = null;
+        
+        // Hide lantern from hand
+        if (lantern_item != null)
+            lantern_item.SetActive(false);
+        if (lanternLight != null)
+            lanternLight.enabled = false;
+            
+        Debug.Log("Lantern removed from inventory!");
     }
 
-    private void HandleFlashlight()
+    public void RemoveItemFromSlot(int slotIndex)
     {
-        if (flashlight == null) return;
+        if (slotIndex < 0 || slotIndex >= inventorySlots.Count) return;
 
-        // Toggle flashlight
-        if (Input.GetKeyDown(toggleFlashlightKey))
+        InventorySlot slot = inventorySlots[slotIndex];
+        if (!slot.isOccupied) return;
+
+        if (slot.itemType == InventorySlot.ItemType.Lantern)
         {
-            ToggleFlashlight();
+            // If removing the currently selected lantern, update lantern system
+            if (slot.lanternItem == currentLantern)
+            {
+                hasLantern = false;
+                isLanternOn = false;
+                currentLantern = null;
+                
+                // Hide lantern from hand
+                if (lantern_item != null)
+                    lantern_item.SetActive(false);
+                if (lanternLight != null)
+                    lanternLight.enabled = false;
+            }
         }
 
-        // Update flashlight position to follow camera
-        if (cam != null)
+        // Clear the slot
+        slot.Clear();
+
+        // If we removed the selected item, try to select another item
+        if (slotIndex == selectedItem)
         {
-            flashlight.transform.position = cam.transform.position;
-            flashlight.transform.rotation = cam.transform.rotation;
+            // Find next available item
+            int nextItem = FindNextAvailableItem(slotIndex);
+            if (nextItem != -1)
+            {
+                selectedItem = nextItem;
+                NewItemSelected();
+            }
+            else
+            {
+                // No items left, deactivate all
+                DeactivateAllItems();
+            }
         }
 
-        // Update battery
-        UpdateBattery();
+        Debug.Log($"Item removed from slot {slotIndex + 1}");
     }
 
-    private void ToggleFlashlight()
+    private int FindNextAvailableItem(int currentSlot)
     {
-        if (currentBatteryLife <= 0f && !infiniteBattery) return;
+        // Check slots after current
+        for (int i = currentSlot + 1; i < inventorySlots.Count; i++)
+        {
+            if (inventorySlots[i].isOccupied)
+                return i;
+        }
+        
+        // Check slots before current
+        for (int i = 0; i < currentSlot; i++)
+        {
+            if (inventorySlots[i].isOccupied)
+                return i;
+        }
+        
+        return -1; // No items found
+    }
+
+    public void GiveFlashlight()
+    {
+        hasFlashlight = true;
+        flashlightBattery = maxFlashlightBattery;
+        SetFlashlightVisual(false);
+        Debug.Log("Flashlight added to inventory!");
+    }
+
+    public void RemoveFlashlight()
+    {
+        hasFlashlight = false;
+        SetFlashlightVisual(false);
+        Debug.Log("Flashlight removed from inventory!");
+    }
+
+    public void ToggleLantern()
+    {
+        if (!hasLantern || currentLantern == null) 
+        {
+            Debug.LogWarning("Cannot toggle lantern: hasLantern=" + hasLantern + ", currentLantern=" + (currentLantern != null));
+            return;
+        }
+
+        // Simple on/off toggle
+        isLanternOn = !isLanternOn;
+        SetLanternVisual(isLanternOn);
+
+        // Play sound based on ScriptableObject
+        if (audioSource != null)
+        {
+            AudioClip soundToPlay = isLanternOn ? currentLantern.toggleOnSound : currentLantern.toggleOffSound;
+            if (soundToPlay != null)
+            {
+                audioSource.PlayOneShot(soundToPlay);
+            }
+        }
+
+        Debug.Log($"{currentLantern.lanternName}: {(isLanternOn ? "ON" : "OFF")} - Lantern GameObject active: {(lantern_item != null ? lantern_item.activeInHierarchy : false)}");
+    }
+
+    public void ToggleFlashlight()
+    {
+        if (!hasFlashlight || (flashlightBattery <= 0 && isFlashlightOn)) return;
 
         isFlashlightOn = !isFlashlightOn;
-        flashlight.enabled = isFlashlightOn;
+        SetFlashlightVisual(isFlashlightOn);
 
-        if (isFlashlightOn)
+        // Play sound
+        if (audioSource != null && flashlightToggleSound != null)
         {
-            flashlight.intensity = flashlightIntensity;
-            // Play flashlight on sound
-            if (audioManager != null)
-            {
-                audioManager.PlayFlashlightOnSound();
-            }
-        }
-        else
-        {
-            flashlight.intensity = 0f;
-            // Play flashlight off sound
-            if (audioManager != null)
-            {
-                audioManager.PlayFlashlightOffSound();
-            }
+            audioSource.PlayOneShot(flashlightToggleSound);
         }
 
-        Debug.Log($"Flashlight {(isFlashlightOn ? "ON" : "OFF")}");
+        Debug.Log($"Flashlight toggled: {(isFlashlightOn ? "ON" : "OFF")}");
     }
 
-    private bool batteryLowWarningPlayed = false;
-    private bool batteryDeadWarningPlayed = false;
-
-    private void UpdateBattery()
+    private void SetLanternVisual(bool active)
     {
-        if (infiniteBattery) return;
+        // Always show lantern in hand when we have it, regardless of on/off state
+        if (lantern_item != null)
+            lantern_item.SetActive(hasLantern);
+
+        // Only control the light component
+        if (lanternLight != null)
+        {
+            lanternLight.enabled = active && hasLantern;
+            
+            // Apply ScriptableObject settings if available
+            if (active && currentLantern != null)
+            {
+                lanternLight.color = currentLantern.lightColor;
+                lanternLight.intensity = currentLantern.lightIntensity;
+                lanternLight.range = currentLantern.lightRange;
+            }
+        }
+    }
+
+    private void SetFlashlightVisual(bool active)
+    {
+        if (flashlightLight != null)
+            flashlightLight.enabled = active;
+    }
+
+    private void HandleFlashlightBattery()
+    {
+        if (!hasFlashlight) return;
 
         if (isFlashlightOn)
         {
             // Drain battery
-            currentBatteryLife -= batteryDrainRate * Time.deltaTime;
-            currentBatteryLife = Mathf.Max(0f, currentBatteryLife);
+            flashlightBattery -= flashlightDrainRate * Time.deltaTime;
+            flashlightBattery = Mathf.Max(0f, flashlightBattery);
 
-            // Check for low battery warning
-            float batteryPercentage = currentBatteryLife / maxBatteryLife;
-            if (batteryPercentage <= 0.2f && !batteryLowWarningPlayed)
-            {
-                if (audioManager != null)
-                {
-                    audioManager.PlayBatteryLowSound();
-                }
-                batteryLowWarningPlayed = true;
-                Debug.Log("Flashlight battery low!");
-            }
+            // Check for low battery
+            float batteryPercentage = flashlightBattery / maxFlashlightBattery;
 
-            // Turn off flashlight if battery is dead
-            if (currentBatteryLife <= 0f)
+            if (batteryPercentage <= 0.1f && !batteryDeadPlayed)
             {
-                isFlashlightOn = false;
-                flashlight.enabled = false;
-                flashlight.intensity = 0f;
-                
-                if (!batteryDeadWarningPlayed)
-                {
-                    if (audioManager != null)
-                    {
-                        audioManager.PlayBatteryDeadSound();
-                    }
-                    batteryDeadWarningPlayed = true;
-                }
-                
+                batteryDeadPlayed = true;
                 Debug.Log("Flashlight battery dead!");
+            }
+            else if (batteryPercentage <= 0.3f && !batteryLowPlayed)
+            {
+                batteryLowPlayed = true;
+                Debug.Log("Flashlight battery low!");
             }
         }
         else
         {
             // Recharge battery when off
-            currentBatteryLife += batteryRechargeRate * Time.deltaTime;
-            currentBatteryLife = Mathf.Min(maxBatteryLife, currentBatteryLife);
-            
-            // Reset warnings when battery is recharged
-            if (currentBatteryLife > maxBatteryLife * 0.3f)
+            if (flashlightBattery < maxFlashlightBattery)
             {
-                batteryLowWarningPlayed = false;
-                batteryDeadWarningPlayed = false;
+                flashlightBattery += flashlightRechargeRate * Time.deltaTime;
+                flashlightBattery = Mathf.Min(maxFlashlightBattery, flashlightBattery);
+
+                // Reset battery warnings when recharging
+                if (flashlightBattery > maxFlashlightBattery * 0.3f)
+                    batteryLowPlayed = false;
+                if (flashlightBattery > maxFlashlightBattery * 0.1f)
+                    batteryDeadPlayed = false;
             }
         }
     }
 
-    private void UpdateFlashlightUI()
-    {
-        if (batteryIndicator == null) return;
-
-        // Update battery indicator color
-        float batteryPercentage = currentBatteryLife / maxBatteryLife;
-        
-        if (batteryPercentage > 0.5f)
+    // Compatibility methods for other scripts
+    public List<DullahanHeadSO> inventoryList 
+    { 
+        get 
         {
-            batteryIndicator.color = fullBatteryColor;
-        }
-        else if (batteryPercentage > 0.2f)
-        {
-            batteryIndicator.color = lowBatteryColor;
-        }
-        else
-        {
-            batteryIndicator.color = emptyBatteryColor;
-        }
-
-        // Update battery indicator fill
-        batteryIndicator.fillAmount = batteryPercentage;
-
-        // Update battery text
-        if (batteryText != null)
-        {
-            int batteryPercent = Mathf.RoundToInt(batteryPercentage * 100f);
-            batteryText.text = $"{batteryPercent}%";
-        }
-
-        // Show/hide flashlight UI
-        if (flashlightUI != null)
-        {
-            flashlightUI.SetActive(true);
+            List<DullahanHeadSO> heads = new List<DullahanHeadSO>();
+            for (int i = 0; i < inventorySlots.Count; i++)
+            {
+                if (inventorySlots[i].isOccupied && inventorySlots[i].itemType == InventorySlot.ItemType.Head)
+                {
+                    if (inventorySlots[i].headItem != null)
+                        heads.Add(inventorySlots[i].headItem);
+                }
+            }
+            return heads;
         }
     }
-
-    // Public methods for flashlight control
-    public void TurnOnFlashlight()
-    {
-        if (currentBatteryLife > 0f || infiniteBattery)
+    
+    public List<DullahanHeadSO> headInventoryList 
+    { 
+        get 
         {
-            isFlashlightOn = true;
-            if (flashlight != null)
+            List<DullahanHeadSO> heads = new List<DullahanHeadSO>();
+            for (int i = 0; i < inventorySlots.Count; i++)
             {
-                flashlight.enabled = true;
-                flashlight.intensity = flashlightIntensity;
+                if (inventorySlots[i].isOccupied && inventorySlots[i].itemType == InventorySlot.ItemType.Head)
+                {
+                    if (inventorySlots[i].headItem != null)
+                        heads.Add(inventorySlots[i].headItem);
+                }
+            }
+            return heads;
+        }
+    }
+    public int selectedHeadIndex => selectedItem;
+
+    public void NewHeadSelected()
+    {
+        NewItemSelected();
+    }
+
+    public void DeactivateAllHeads()
+    {
+        DeactivateAllItems();
+    }
+
+    // Public getters
+    public bool HasHeads() => GetItemCount() > 0;
+    public int GetHeadCount() => GetItemCount();
+    public DullahanHeadSO GetSelectedHead() => GetCurrentItem();
+    public DullahanHeadSO GetCurrentHead() => GetSelectedHead();
+    public bool HasLantern() => hasLantern;
+    public bool IsLanternOn() => isLanternOn;
+    public bool HasFlashlight() => hasFlashlight;
+    public bool IsFlashlightOn() => isFlashlightOn;
+    public float GetFlashlightBattery() => flashlightBattery;
+    public float GetFlashlightBatteryPercentage() => flashlightBattery / maxFlashlightBattery;
+    public int maxHeadInventorySize => maxInventorySize;
+    
+    // Compatibility methods for inventoryList operations
+    public void AddToInventoryList(DullahanHeadSO head)
+    {
+        int emptySlot = FindFirstEmptySlot();
+        if (emptySlot != -1)
+        {
+            inventorySlots[emptySlot].SetHead(head);
+        }
+    }
+    
+    public void RemoveFromInventoryList(DullahanHeadSO head)
+    {
+        for (int i = 0; i < inventorySlots.Count; i++)
+        {
+            if (inventorySlots[i].isOccupied && inventorySlots[i].itemType == InventorySlot.ItemType.Head)
+            {
+                if (inventorySlots[i].headItem == head)
+                {
+                    RemoveItemFromSlot(i);
+                    break;
+                }
             }
         }
     }
-
-    public void TurnOffFlashlight()
+    
+    public void ClearInventoryList()
     {
-        isFlashlightOn = false;
-        if (flashlight != null)
+        for (int i = inventorySlots.Count - 1; i >= 0; i--)
         {
-            flashlight.enabled = false;
-            flashlight.intensity = 0f;
+            if (inventorySlots[i].isOccupied && inventorySlots[i].itemType == InventorySlot.ItemType.Head)
+            {
+                RemoveItemFromSlot(i);
+            }
         }
-    }
-
-    public void RechargeBattery(float amount)
-    {
-        currentBatteryLife += amount;
-        currentBatteryLife = Mathf.Min(maxBatteryLife, currentBatteryLife);
-        Debug.Log($"Battery recharged by {amount} seconds. Current: {currentBatteryLife:F1}s");
-    }
-
-    public void SetInfiniteBattery(bool infinite)
-    {
-        infiniteBattery = infinite;
-        Debug.Log($"Infinite battery: {(infinite ? "ON" : "OFF")}");
-    }
-
-    public float GetBatteryPercentage()
-    {
-        return currentBatteryLife / maxBatteryLife;
-    }
-
-    public bool IsFlashlightOn()
-    {
-        return isFlashlightOn;
     }
 }
+

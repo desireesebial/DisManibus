@@ -7,6 +7,7 @@ public class DullahanHeadSO : ScriptableObject
     public string headName = "Dullahan Head";
     public int headID; // Unique identifier
     public Sprite headSprite;
+    public Sprite headIcon; // Icon for inventory display
     public string description;
     
     [Header("Head Type")]
