@@ -23235,38 +23235,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &318178802
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 318178803}
-  m_Layer: 0
-  m_Name: animation
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &318178803
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 318178802}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 124, y: -0.24, z: 75.97}
-  m_LocalScale: {x: 205.00006, y: 270, z: 100.00003}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 543450651736526208}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!43 &322843966
 Mesh:
   m_ObjectHideFlags: 0
@@ -36710,10 +36678,10 @@ MonoBehaviour:
   headData: {fileID: 11400000, guid: 719bd4d659910c44a8565fe2dba5d710, type: 2}
   isPickedUp: 0
   headLight: {fileID: 0}
-  headRenderer: {fileID: 0}
-  originalMaterial: {fileID: 0}
+  headRenderer: {fileID: 405935604}
+  originalMaterial: {fileID: 2100000, guid: a398b1cedcdf229499a90b20b680d3a2, type: 2}
   glowMaterial: {fileID: 0}
-  headVisual: {fileID: 0}
+  headVisual: {fileID: 405935602}
   audioSource: {fileID: 0}
   pickupSound: {fileID: 0}
   dropSound: {fileID: 0}
@@ -44631,10 +44599,10 @@ MonoBehaviour:
   headData: {fileID: 11400000, guid: 3d1322954e9d75f47af424fe47296286, type: 2}
   isPickedUp: 0
   headLight: {fileID: 0}
-  headRenderer: {fileID: 0}
-  originalMaterial: {fileID: 0}
+  headRenderer: {fileID: 484884271}
+  originalMaterial: {fileID: 2100000, guid: a398b1cedcdf229499a90b20b680d3a2, type: 2}
   glowMaterial: {fileID: 0}
-  headVisual: {fileID: 0}
+  headVisual: {fileID: 484884269}
   audioSource: {fileID: 0}
   pickupSound: {fileID: 0}
   dropSound: {fileID: 0}
@@ -79760,8 +79728,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1498404468}
   m_HandleRect: {fileID: 1498404467}
   m_Direction: 2
-  m_Value: 0.99999845
-  m_Size: 0.60999995
+  m_Value: 0.9999989
+  m_Size: 0.6100001
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -114129,88 +114097,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!1 &893069208
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 893069209}
-  - component: {fileID: 893069211}
-  - component: {fileID: 893069210}
-  m_Layer: 0
-  m_Name: DullahanBody
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &893069209
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 893069208}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.03, y: 1.356, z: 0.111}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 543450652837065689}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &893069210
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 893069208}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &893069211
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 893069208}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f104922074280e54f83e8ca0dc537ee0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  requiredHeadID: 10
-  puzzleCompleted: 0
-  finalDoor: {fileID: 0}
-  interactionRange: 3
-  interactionKey: 102
-  interactionText: Press F to attach head
-  headAttachmentPoint: {fileID: 0}
-  attachedHeadVisual: {fileID: 0}
-  bodyLight: {fileID: 0}
-  completedColor: {r: 0, g: 1, b: 0, a: 1}
-  normalColor: {r: 1, g: 1, b: 1, a: 1}
-  audioSource: {fileID: 0}
-  headAttachSound: {fileID: 0}
-  puzzleCompleteSound: {fileID: 0}
-  interactionUI: {fileID: 0}
-  interactionTextUI: {fileID: 0}
 --- !u!1 &895487566
 GameObject:
   m_ObjectHideFlags: 0
@@ -158536,12 +158422,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   headPickables:
+  - {fileID: 7595540579561768872}
   - {fileID: 405935608}
   - {fileID: 484884275}
-  - {fileID: 7595540579561768872}
-  dullahanBody: {fileID: 5866666021144979880}
+  dullahanBody: {fileID: 0}
   dullahanChase: {fileID: 5866666021144979882}
-  puzzleDoors: []
+  puzzleDoors:
+  - {fileID: 8635660095280295203}
+  - {fileID: 4272788813988389018}
   realHeadDoor: {fileID: 3469287837868409382}
   headInventory: {fileID: 4459864850702346306}
   effectManager: {fileID: 0}
@@ -158597,7 +158485,7 @@ MonoBehaviour:
   proximityCenter: {fileID: 543450652837065689}
   playerInProximity: 0
   proximityTriggered: 0
-  chaseDuration: 5
+  chaseDuration: 10
   headSpawnDelay: 2
   headCollectionTime: 120
   exitDoors:
@@ -158632,7 +158520,7 @@ MonoBehaviour:
   dullahanChaseSystem: {fileID: 5866666021144979882}
   audioManager: {fileID: 0}
   headInventory: {fileID: 4459864850702346306}
-  dullahanBody: {fileID: 5866666021144979880}
+  dullahanBody: {fileID: 0}
   puzzleManager: {fileID: 1112342879}
   nextSceneName: NextLevel
   badEndingSceneName: BadEnding
@@ -165920,12 +165808,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9a4f8d5f9fee834292a1ba04e6b1afa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isPickedUp: 0
+  isPickedUp: 1
   lanternData: {fileID: 11400000, guid: 107c3a5530c7cdf40beb0e4ffbf6e606, type: 2}
   lanternModel: {fileID: 1187507823}
   lanternLight: {fileID: 2049750886}
   lanternParticles: {fileID: 1711661061}
-  lanternMaterial: {fileID: 0}
+  lanternMaterial: {fileID: 2100000, guid: b3eca3d1d3c6ad2498fc46f71d9bc30a, type: 2}
   onColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   offColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   pickupRange: 3
@@ -165934,7 +165822,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   pickupPrompt: {fileID: 1365719}
-  promptText: {fileID: 0}
+  promptText: {fileID: 1365721}
   audioSource: {fileID: 0}
   headInventory: {fileID: 4459864850702346306}
   audioManager: {fileID: 0}
@@ -360620,7 +360508,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1475373237}
   m_Direction: 0
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -380506,12 +380394,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919132147795990330}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.00956097, y: 0.008222222, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 124, y: 1.98, z: 74.01}
+  m_LocalScale: {x: 205.00012, y: 270, z: 100.00006}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 318178803}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!4 &543450652837065689
 Transform:
@@ -380530,7 +380418,6 @@ Transform:
   - {fileID: 642506678}
   - {fileID: 505485589400296663}
   - {fileID: 842861112}
-  - {fileID: 893069209}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &572664314905972962
@@ -380933,10 +380820,10 @@ GameObject:
   - component: {fileID: 5866666021144979876}
   - component: {fileID: 5866666021144979877}
   - component: {fileID: 5866666021144979878}
-  - component: {fileID: 5866666021144979880}
   - component: {fileID: 5866666021144979881}
   - component: {fileID: 5866666021144979882}
   - component: {fileID: 5866666021144979883}
+  - component: {fileID: 5866666021144979884}
   m_Layer: 0
   m_Name: Dullahan
   m_TagString: Untagged
@@ -382308,7 +382195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67ed09e9b3cd061469ff7d1ed4eb18b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  openAngle: 90
+  openAngle: 180
   openSpeed: 2
   isOpen: 0
   isLocked: 1
@@ -382788,8 +382675,7 @@ MonoBehaviour:
   isOpen: 0
   isLocked: 1
   requiredKeyID: 999
-  linkedDoors:
-  - {fileID: 0}
+  linkedDoors: []
   autoLinkDoors: 0
   doorAnimator: {fileID: 0}
   doorAudioSource: {fileID: 0}
@@ -383682,7 +383568,7 @@ MonoBehaviour:
   crosshair: 1
   crosshairImage: {fileID: 21300000, guid: be4ce60e2c9768c44b9b10b9c5258045, type: 3}
   crosshairColor: {r: 1, g: 1, b: 1, a: 1}
-  enableZoom: 1
+  enableZoom: 0
   holdToZoom: 0
   zoomKey: 324
   zoomFOV: 30
@@ -385059,7 +384945,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4540329327848940500, guid: 2967ab90ba266de42a377d4bd856a6c6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 23.17
+      value: 21.67
       objectReference: {fileID: 0}
     - target: {fileID: 4540329327848940500, guid: 2967ab90ba266de42a377d4bd856a6c6, type: 3}
       propertyPath: m_LocalPosition.y
@@ -385067,7 +384953,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4540329327848940500, guid: 2967ab90ba266de42a377d4bd856a6c6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 7.6
+      value: 7.54
       objectReference: {fileID: 0}
     - target: {fileID: 4540329327848940500, guid: 2967ab90ba266de42a377d4bd856a6c6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -385101,6 +384987,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5204361860658150788, guid: 2967ab90ba266de42a377d4bd856a6c6, type: 3}
+      propertyPath: MinDistance
+      value: 1.6756535
+      objectReference: {fileID: 0}
     - target: {fileID: 5552678932553996962, guid: 2967ab90ba266de42a377d4bd856a6c6, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -385129,6 +385019,10 @@ PrefabInstance:
       propertyPath: headInventory
       value: 
       objectReference: {fileID: 4459864850702346306}
+    - target: {fileID: 7387192473128991250, guid: 2967ab90ba266de42a377d4bd856a6c6, type: 3}
+      propertyPath: lanternMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: b3eca3d1d3c6ad2498fc46f71d9bc30a, type: 2}
     - target: {fileID: 7387192473128991250, guid: 2967ab90ba266de42a377d4bd856a6c6, type: 3}
       propertyPath: lanternParticles
       value: 
@@ -385905,34 +385799,6 @@ MonoBehaviour:
   nearPlayerClip: {fileID: 0}
   chaseStartClip: {fileID: 0}
   chaseLoopClip: {fileID: 0}
---- !u!114 &5866666021144979880
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 919132148852517219}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f104922074280e54f83e8ca0dc537ee0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  requiredHeadID: 10
-  puzzleCompleted: 0
-  finalDoor: {fileID: 0}
-  interactionRange: 3
-  interactionKey: 102
-  interactionText: Press F to attach head
-  headAttachmentPoint: {fileID: 0}
-  attachedHeadVisual: {fileID: 0}
-  bodyLight: {fileID: 0}
-  completedColor: {r: 0, g: 1, b: 0, a: 1}
-  normalColor: {r: 1, g: 1, b: 1, a: 1}
-  audioSource: {fileID: 0}
-  headAttachSound: {fileID: 0}
-  puzzleCompleteSound: {fileID: 0}
-  interactionUI: {fileID: 0}
-  interactionTextUI: {fileID: 0}
 --- !u!65 &5866666021144979881
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -385985,7 +385851,7 @@ MonoBehaviour:
   maxIntensity: 10
   intensityDecayRate: 0.5
   audioManager: {fileID: 0}
-  eventManager: {fileID: 0}
+  eventManager: {fileID: 1112342881}
   dullahanLight: {fileID: 0}
   chaseParticles: {fileID: 0}
   dullahanMaterial: {fileID: 0}
@@ -386008,7 +385874,7 @@ MonoBehaviour:
   attackCooldown: 2
   attackDuration: 0.5
   canAttack: 1
-  attackPoint: {fileID: 0}
+  attackPoint: {fileID: 543450652837065689}
   playerLayer:
     serializedVersion: 2
     m_Bits: 1
@@ -386023,8 +385889,8 @@ MonoBehaviour:
   attackSound: {fileID: 0}
   hitSound: {fileID: 0}
   missSound: {fileID: 0}
-  playerHealthSystem: {fileID: 0}
-  chaseSystem: {fileID: 0}
+  playerHealthSystem: {fileID: 4459864850702346307}
+  chaseSystem: {fileID: 5866666021144979882}
   attackPatterns:
   - patternName: Basic Attack
     damage: 1
@@ -386035,24 +385901,34 @@ MonoBehaviour:
     stunDuration: 0
     customAttackSound: {fileID: 0}
     customHitSound: {fileID: 0}
-  - patternName: Heavy Attack
-    damage: 2
-    range: 2.5
-    cooldown: 4
-    animationTrigger: HeavyAttack
-    canStun: 0
-    stunDuration: 0
-    customAttackSound: {fileID: 0}
-    customHitSound: {fileID: 0}
-  - patternName: Quick Attack
-    damage: 0.5
-    range: 1.5
-    cooldown: 1
-    animationTrigger: QuickAttack
-    canStun: 0
-    stunDuration: 0
-    customAttackSound: {fileID: 0}
-    customHitSound: {fileID: 0}
+--- !u!114 &5866666021144979884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132148852517219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f104922074280e54f83e8ca0dc537ee0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  requiredHeadID: 10
+  puzzleCompleted: 0
+  finalDoor: {fileID: 0}
+  interactionRange: 3
+  interactionKey: 102
+  interactionText: Press F to attach head
+  headAttachmentPoint: {fileID: 919132149155446097, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
+  attachedHeadVisual: {fileID: 919132149155446097, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
+  bodyLight: {fileID: 0}
+  completedColor: {r: 0, g: 1, b: 0, a: 1}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  audioSource: {fileID: 0}
+  headAttachSound: {fileID: 0}
+  puzzleCompleteSound: {fileID: 0}
+  interactionUI: {fileID: 0}
+  interactionTextUI: {fileID: 0}
 --- !u!1 &5892283089921804909
 GameObject:
   m_ObjectHideFlags: 0
@@ -389095,10 +388971,10 @@ MonoBehaviour:
   headData: {fileID: 11400000, guid: 5eef2721c5ce5534587eb17c12f68bbe, type: 2}
   isPickedUp: 0
   headLight: {fileID: 0}
-  headRenderer: {fileID: 0}
-  originalMaterial: {fileID: 0}
+  headRenderer: {fileID: 5659952312157270895}
+  originalMaterial: {fileID: 2100000, guid: a398b1cedcdf229499a90b20b680d3a2, type: 2}
   glowMaterial: {fileID: 0}
-  headVisual: {fileID: 0}
+  headVisual: {fileID: 6164527200153850554}
   audioSource: {fileID: 0}
   pickupSound: {fileID: 0}
   dropSound: {fileID: 0}
@@ -389437,8 +389313,9 @@ MonoBehaviour:
   isOpen: 0
   isLocked: 1
   requiredKeyID: 999
-  linkedDoors: []
-  autoLinkDoors: 0
+  linkedDoors:
+  - {fileID: 4272788813988389018}
+  autoLinkDoors: 1
   doorAnimator: {fileID: 0}
   doorAudioSource: {fileID: 0}
   doorOpenSound: {fileID: 0}
@@ -390386,7 +390263,7 @@ SceneRoots:
   - {fileID: 405935606}
   - {fileID: 484884273}
   - {fileID: 5539532300683696259}
-  - {fileID: 318178803}
+  - {fileID: 543450651736526208}
   - {fileID: 1264079154}
   - {fileID: 43968276}
   - {fileID: 1169290640}
