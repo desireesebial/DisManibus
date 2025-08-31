@@ -4,165 +4,92 @@ using TMPro;
 
 public class QuestLogEntry : MonoBehaviour
 {
-    [Header("UI Components")]
+    [Header("UI References")]
     public TextMeshProUGUI questTitleText;
     public TextMeshProUGUI questDescriptionText;
     public TextMeshProUGUI questProgressText;
-    public Image questIcon;
+    public Image questIconImage;
     public Image backgroundImage;
-    public Button questButton;
     
-    [Header("Visual States")]
-    public Color activeQuestColor = Color.white;
-    public Color completedQuestColor = Color.green;
-    public Color failedQuestColor = Color.red;
+    [Header("Colors")]
+    public Color activeQuestColor = new Color(0.2f, 0.6f, 1f, 0.8f);
+    public Color completedQuestColor = new Color(0.2f, 0.8f, 0.2f, 0.8f);
+    public Color normalTextColor = Color.white;
+    public Color completedTextColor = new Color(0.8f, 0.8f, 0.8f, 0.8f);
     
-    [Header("Progress Bar")]
-    public Image progressBar;
-    public Color progressBarColor = Color.blue;
-    
-    private Quest quest;
+    private Quest currentQuest;
     private bool isCompleted;
     
-    void Start()
+    public void SetupQuestEntry(Quest quest, bool completed)
     {
-        SetupQuestButton();
-    }
-    
-    private void SetupQuestButton()
-    {
-        if (questButton != null)
-        {
-            questButton.onClick.AddListener(OnQuestClicked);
-        }
-    }
-    
-    public void SetupQuestEntry(Quest questData, bool completed)
-    {
-        quest = questData;
+        currentQuest = quest;
         isCompleted = completed;
         
-        if (quest == null) return;
+        UpdateUI();
+    }
+    
+    private void UpdateUI()
+    {
+        if (currentQuest == null) return;
         
-        // Setup title
+        // Update title
         if (questTitleText != null)
         {
-            questTitleText.text = quest.questTitle;
+            questTitleText.text = currentQuest.questTitle;
+            questTitleText.color = isCompleted ? completedTextColor : normalTextColor;
         }
         
-        // Setup description
+        // Update description
         if (questDescriptionText != null)
         {
-            questDescriptionText.text = quest.questDescription;
+            questDescriptionText.text = currentQuest.questDescription;
+            questDescriptionText.color = isCompleted ? completedTextColor : normalTextColor;
         }
         
-        // Setup progress
-        if (questProgressText != null)
-        {
-            if (completed)
-            {
-                questProgressText.text = "Completed!";
-            }
-            else
-            {
-                questProgressText.text = $"{quest.currentProgress}/{quest.requiredProgress}";
-            }
-        }
-        
-        // Setup icon
-        if (questIcon != null && quest.questIcon != null)
-        {
-            questIcon.sprite = quest.questIcon;
-        }
-        
-        // Setup progress bar
-        if (progressBar != null)
-        {
-            float progress = quest.requiredProgress > 0 ? (float)quest.currentProgress / quest.requiredProgress : 0f;
-            progressBar.fillAmount = completed ? 1f : progress;
-            progressBar.color = progressBarColor;
-        }
-        
-        // Setup visual state
-        UpdateVisualState();
-    }
-    
-    private void UpdateVisualState()
-    {
-        if (backgroundImage == null) return;
-        
-        if (isCompleted)
-        {
-            backgroundImage.color = completedQuestColor;
-        }
-        else
-        {
-            backgroundImage.color = activeQuestColor;
-        }
-    }
-    
-    public void UpdateProgress()
-    {
-        if (quest == null) return;
-        
-        // Update progress text
+        // Update progress
         if (questProgressText != null)
         {
             if (isCompleted)
             {
-                questProgressText.text = "Completed!";
+                questProgressText.text = "COMPLETED";
+                questProgressText.color = completedTextColor;
             }
             else
             {
-                questProgressText.text = $"{quest.currentProgress}/{quest.requiredProgress}";
+                questProgressText.text = $"Progress: {currentQuest.currentProgress}/{currentQuest.requiredProgress}";
+                questProgressText.color = normalTextColor;
             }
         }
         
-        // Update progress bar
-        if (progressBar != null)
+        // Update icon
+        if (questIconImage != null && currentQuest.questIcon != null)
         {
-            float progress = quest.requiredProgress > 0 ? (float)quest.currentProgress / quest.requiredProgress : 0f;
-            progressBar.fillAmount = isCompleted ? 1f : progress;
+            questIconImage.sprite = currentQuest.questIcon;
+            questIconImage.color = isCompleted ? completedTextColor : Color.white;
+        }
+        
+        // Update background
+        if (backgroundImage != null)
+        {
+            backgroundImage.color = isCompleted ? completedQuestColor : activeQuestColor;
         }
     }
     
-    private void OnQuestClicked()
+    // Public method to refresh the entry (useful for dynamic updates)
+    public void RefreshEntry()
     {
-        if (quest == null) return;
-        
-        // You can add quest details popup or other functionality here
-        Debug.Log($"Quest clicked: {quest.questTitle}");
-        
-        // Example: Show quest details
-        ShowQuestDetails();
+        UpdateUI();
     }
     
-    private void ShowQuestDetails()
-    {
-        // This could open a detailed quest window
-        // For now, just log the details
-        Debug.Log($"Quest Details:");
-        Debug.Log($"  Title: {quest.questTitle}");
-        Debug.Log($"  Description: {quest.questDescription}");
-        Debug.Log($"  Type: {quest.questType}");
-        Debug.Log($"  Progress: {quest.currentProgress}/{quest.requiredProgress}");
-        Debug.Log($"  Completed: {quest.isCompleted}");
-        Debug.Log($"  Active: {quest.isActive}");
-    }
-    
+    // Public getters
     public Quest GetQuest()
     {
-        return quest;
+        return currentQuest;
     }
     
     public bool IsCompleted()
     {
         return isCompleted;
     }
-    
-    public void SetCompleted(bool completed)
-    {
-        isCompleted = completed;
-        UpdateVisualState();
-    }
 }
+
