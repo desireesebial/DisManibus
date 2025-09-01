@@ -155,23 +155,9 @@ public class DullahanMeleeAttack : MonoBehaviour
 
     private void ChooseAttackPattern()
     {
-        // Simple pattern selection - you can make this more complex
-        if (chaseSystem != null && chaseSystem.GetCurrentIntensity() > 0.7f)
-        {
-            // High intensity chase - use heavy attack
-            currentPattern = attackPatterns[1]; // Heavy Attack
-        }
-        else if (chaseSystem != null && chaseSystem.GetCurrentIntensity() > 0.3f)
-        {
-            // Medium intensity - use basic attack
-            currentPattern = attackPatterns[0]; // Basic Attack
-        }
-        else
-        {
-            // Low intensity - use quick attack
-            currentPattern = attackPatterns[2]; // Quick Attack
-        }
-
+        // Simple pattern selection - use basic attack for now
+        // TODO: Implement intensity-based selection when DullahanChaseSystem is ready
+        currentPattern = attackPatterns[0]; // Always use Basic Attack
         Debug.Log($"Dullahan using attack pattern: {currentPattern.patternName}");
     }
 

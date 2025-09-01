@@ -79785,8 +79785,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1498404468}
   m_HandleRect: {fileID: 1498404467}
   m_Direction: 2
-  m_Value: 0.99999845
-  m_Size: 0.60999995
+  m_Value: 0.9999989
+  m_Size: 0.6100001
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -360736,7 +360736,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1475373237}
   m_Direction: 0
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -383767,6 +383767,7 @@ GameObject:
   - component: {fileID: 4459864850702346298}
   - component: {fileID: 4459864850702346306}
   - component: {fileID: 4459864850702346307}
+  - component: {fileID: 4459864850702346308}
   m_Layer: 0
   m_Name: FirstPersonController
   m_TagString: Player
@@ -384047,6 +384048,31 @@ MonoBehaviour:
   postProcessVolume: {fileID: 0}
   blurIntensity: 1
   blurDuration: 5
+--- !u!114 &4459864850702346308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4459864850702346288}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01981e74a7bcc3d4ebbabd013c466c9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerHealthSystem: {fileID: 4459864850702346307}
+  dullahanAttack: {fileID: 5866666021144979883}
+  enableDebugLogging: 1
+  showDebugGUI: 1
+  enableDebugControls: 1
+  damageKey: 104
+  healKey: 106
+  fullHealKey: 107
+  forceAttackKey: 120
+  toggleInvulnerabilityKey: 105
+  showHealthBars: 1
+  showReferences: 1
+  showTimers: 1
 --- !u!4 &4491049413964756868
 Transform:
   m_ObjectHideFlags: 0
@@ -386097,7 +386123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f79e873fcb33a24abd6d995b28de26f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRange: 3
+  attackRange: 5
   attackDamage: 1
   attackCooldown: 2
   attackDuration: 0.5
@@ -386106,13 +386132,13 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 1
-  attackRadius: 1
+  attackRadius: 5
   dullahanAnimator: {fileID: 0}
   attackTriggerName: Attack
   attackParticles: {fileID: 0}
   attackLight: {fileID: 0}
   attackLightColor: {r: 1, g: 0, b: 0, a: 1}
-  attackLightIntensity: 2
+  attackLightIntensity: 10
   audioSource: {fileID: 0}
   attackSound: {fileID: 0}
   hitSound: {fileID: 0}
@@ -386121,12 +386147,30 @@ MonoBehaviour:
   chaseSystem: {fileID: 5866666021144979882}
   attackPatterns:
   - patternName: Basic Attack
-    damage: 1
+    damage: 2
     range: 2
     cooldown: 2
     animationTrigger: Attack
     canStun: 0
     stunDuration: 0
+    customAttackSound: {fileID: 0}
+    customHitSound: {fileID: 0}
+  - patternName: Basic Attack
+    damage: 2
+    range: 2
+    cooldown: 2
+    animationTrigger: Attack
+    canStun: 0
+    stunDuration: 0
+    customAttackSound: {fileID: 0}
+    customHitSound: {fileID: 0}
+  - patternName: Basic Attack
+    damage: 2
+    range: 2
+    cooldown: 2
+    animationTrigger: Attack
+    canStun: 1
+    stunDuration: 1
     customAttackSound: {fileID: 0}
     customHitSound: {fileID: 0}
 --- !u!114 &5866666021144979884
@@ -386145,7 +386189,7 @@ MonoBehaviour:
   puzzleCompleted: 0
   finalDoor: {fileID: 0}
   interactionRange: 3
-  interactionKey: 102
+  interactionKey: 103
   interactionText: Press F to attach head
   headAttachmentPoint: {fileID: 919132149155446097, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
   attachedHeadVisual: {fileID: 919132149155446097, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
