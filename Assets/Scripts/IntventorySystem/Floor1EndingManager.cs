@@ -34,7 +34,7 @@ public class Floor1EndingManager : MonoBehaviour
     
     [Header("Integration")]
     public QuestSystem questSystem;
-    public PlayerHealth playerHealth;
+    public PlayerHealthSystem playerHealth;
     
     [Header("Debug")]
     public bool debugMode = false;
@@ -66,7 +66,7 @@ public class Floor1EndingManager : MonoBehaviour
             questSystem = FindObjectOfType<QuestSystem>();
             
         if (playerHealth == null)
-            playerHealth = FindObjectOfType<PlayerHealth>();
+            playerHealth = FindObjectOfType<PlayerHealthSystem>();
         
         // Find player
         GameObject player = GameObject.FindGameObjectWithTag("Player");

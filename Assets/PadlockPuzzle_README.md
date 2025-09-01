@@ -310,7 +310,7 @@ void OnPuzzlesComplete()
 ### With Player Health System
 ```csharp
 // In CombinationPadlock
-public PlayerHealth playerHealth;
+public PlayerHealthSystem playerHealth;
 
 void OnWrongCombination()
 {
