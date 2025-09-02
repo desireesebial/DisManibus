@@ -355,6 +355,12 @@ public class DullahanChaseSystem : MonoBehaviour
         maxChaseSpeed = maxSpeed;
     }
     
+    public float GetCurrentChaseSpeed()
+    {
+        // Return the current calculated chase speed based on intensity
+        return Mathf.Lerp(minChaseSpeed, maxChaseSpeed, currentIntensity);
+    }
+    
     public void SetDetectionRange(float minRange, float maxRange)
     {
         minDetectionRange = minRange;

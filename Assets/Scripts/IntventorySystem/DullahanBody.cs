@@ -142,22 +142,28 @@ public class DullahanBody : MonoBehaviour
         if (puzzleCompleted || headData == null) return false;
         
         // Check if this is the correct head
-        if (headData.headID != requiredHeadID)
+        if (headData.headID == requiredHeadID)
         {
-            Debug.Log("Wrong head! This is not the real head.");
-            PlayWrongHeadSound();
+            Debug.Log("Correct head! Puzzle completed.");
             
-            // Notify event manager about wrong head
+            // Complete the puzzle
+            CompletePuzzle(headData);
+            
+            // Notify event manager about correct head
             NotifyEventManager(headData.headType);
-            return false;
+            return true;
         }
-        
-        // Complete the puzzle
-        CompletePuzzle(headData);
-        
-        // Notify event manager about correct head
-        NotifyEventManager(headData.headType);
-        return true;
+        else
+        {
+            Debug.Log($"Fake head attached: {headData.headType}. Applying effects and consuming head.");
+            
+            // Handle fake head - consume it and apply effects
+            HandleFakeHeadAttachment(headData);
+            
+            // Notify event manager about fake head
+            NotifyEventManager(headData.headType);
+            return true; // Return true so head is consumed from inventory
+        }
     }
     
     private void NotifyEventManager(HeadType headType)
@@ -175,6 +181,110 @@ public class DullahanBody : MonoBehaviour
                 eventManager.OnHeadAttached(headType);
             }
         }
+    }
+    
+    private void HandleFakeHeadAttachment(DullahanHeadSO headData)
+    {
+        if (headData == null) return;
+        
+        Debug.Log($"Handling fake head attachment: {headData.headName}");
+        
+        // Apply effects to player
+        ApplyFakeHeadEffectsToPlayer(headData);
+        
+        // Apply effects to Dullahan
+        ApplyFakeHeadEffectsToDullahan(headData);
+        
+        // Play fake head attachment sound
+        PlayWrongHeadSound();
+        
+        // Show temporary visual feedback
+        StartCoroutine(ShowFakeHeadFeedback(headData));
+    }
+    
+    private void ApplyFakeHeadEffectsToPlayer(DullahanHeadSO headData)
+    {
+        if (headData == null || !headData.hasEffect) return;
+        
+        // Find the effect manager
+        DullahanHeadEffectManager effectManager = FindObjectOfType<DullahanHeadEffectManager>();
+        if (effectManager != null)
+        {
+            effectManager.ApplyHeadEffect(headData);
+            Debug.Log($"Applied {headData.effectType} effect to player from {headData.headName}");
+        }
+        else
+        {
+            Debug.LogWarning("No DullahanHeadEffectManager found for player effects!");
+        }
+    }
+    
+    private void ApplyFakeHeadEffectsToDullahan(DullahanHeadSO headData)
+    {
+        if (headData == null || !headData.hasEffect) return;
+        
+        // Find the Dullahan chase system
+        DullahanChaseSystem dullahanChase = FindObjectOfType<DullahanChaseSystem>();
+        if (dullahanChase != null)
+        {
+            ApplyDullahanEffects(dullahanChase, headData);
+            Debug.Log($"Applied {headData.effectType} effect to Dullahan from {headData.headName}");
+        }
+        else
+        {
+            Debug.LogWarning("No DullahanChaseSystem found for Dullahan effects!");
+        }
+    }
+    
+    private void ApplyDullahanEffects(DullahanChaseSystem dullahanChase, DullahanHeadSO headData)
+    {
+        switch (headData.effectType)
+        {
+            case EffectType.FearEffect:
+                // Increase Dullahan chase intensity
+                dullahanChase.SetChaseIntensity(dullahanChase.GetCurrentIntensity() + headData.effectStrength);
+                break;
+                
+            case EffectType.CalmEffect:
+                // Decrease Dullahan chase intensity
+                dullahanChase.SetChaseIntensity(Mathf.Max(0, dullahanChase.GetCurrentIntensity() - headData.effectStrength));
+                break;
+                
+            case EffectType.SpeedBoost:
+                // Increase Dullahan movement speed
+                float currentMinSpeed = dullahanChase.minChaseSpeed;
+                float currentMaxSpeed = dullahanChase.maxChaseSpeed;
+                float speedBoost = headData.effectStrength;
+                dullahanChase.SetChaseSpeed(currentMinSpeed + speedBoost, currentMaxSpeed + speedBoost);
+                break;
+                
+            case EffectType.SpeedDebuff:
+                // Decrease Dullahan movement speed
+                float currentMinSpeedDebuff = dullahanChase.minChaseSpeed;
+                float currentMaxSpeedDebuff = dullahanChase.maxChaseSpeed;
+                float speedDebuff = headData.effectStrength;
+                dullahanChase.SetChaseSpeed(Mathf.Max(1f, currentMinSpeedDebuff - speedDebuff), Mathf.Max(2f, currentMaxSpeedDebuff - speedDebuff));
+                break;
+                
+            default:
+                Debug.Log($"Effect type {headData.effectType} not implemented for Dullahan");
+                break;
+        }
+    }
+    
+    private System.Collections.IEnumerator ShowFakeHeadFeedback(DullahanHeadSO headData)
+    {
+        // Flash the body light to indicate fake head was consumed
+        if (bodyLight != null)
+        {
+            Color originalColor = bodyLight.color;
+            bodyLight.color = Color.red;
+            yield return new WaitForSeconds(0.5f);
+            bodyLight.color = originalColor;
+        }
+        
+        // Optional: Show temporary particle effect or other visual feedback
+        yield return new WaitForSeconds(1f);
     }
     
     private void TryAttachHead()

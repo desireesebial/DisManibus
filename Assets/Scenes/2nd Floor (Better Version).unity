@@ -79928,8 +79928,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1498404468}
   m_HandleRect: {fileID: 1498404467}
   m_Direction: 2
-  m_Value: 0.99999946
-  m_Size: 0.61
+  m_Value: 0.99999845
+  m_Size: 0.60999995
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -158544,7 +158544,7 @@ MonoBehaviour:
   - {fileID: 7595540579561768872}
   - {fileID: 405935608}
   - {fileID: 484884275}
-  dullahanBody: {fileID: 0}
+  dullahanBody: {fileID: 5866666021144979884}
   dullahanChase: {fileID: 5866666021144979882}
   puzzleDoors:
   - {fileID: 8635660095280295203}
@@ -158572,7 +158572,7 @@ MonoBehaviour:
   activeQuests: []
   completedQuests: []
   questPopup: {fileID: 702565593}
-  questPopupTitle: {fileID: 0}
+  questPopupTitle: {fileID: 494637521}
   questPopupDescription: {fileID: 0}
   questPopupIcon: {fileID: 0}
   popupDuration: 3
@@ -158617,7 +158617,7 @@ MonoBehaviour:
   playerChoseToHelp: 0
   choiceMade: 0
   choiceTimeLimit: 480
-  currentState: 0
+  currentState: 3
   isChaseActive: 0
   isEventComplete: 0
   badEndingTriggered: 0
@@ -360779,7 +360779,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1475373237}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.99999994
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -386137,7 +386137,7 @@ MonoBehaviour:
   - {fileID: 112480062}
   player: {fileID: 4459864850702346300}
   sightRange: 40
-  patrolWaitTime: 1
+  patrolWaitTime: 3
   rotationSpeed: 5
   audioSource: {fileID: 0}
   nearPlayerClip: {fileID: 0}
@@ -386237,7 +386237,7 @@ MonoBehaviour:
   chaseSystem: {fileID: 5866666021144979882}
   attackPatterns:
   - patternName: Basic Attack
-    damage: 2
+    damage: 1
     range: 2
     cooldown: 2
     animationTrigger: Attack
@@ -386246,9 +386246,9 @@ MonoBehaviour:
     customAttackSound: {fileID: 0}
     customHitSound: {fileID: 0}
   - patternName: Basic Attack
-    damage: 2
+    damage: 1
     range: 2
-    cooldown: 2
+    cooldown: 1
     animationTrigger: Attack
     canStun: 0
     stunDuration: 0
@@ -386257,7 +386257,7 @@ MonoBehaviour:
   - patternName: Basic Attack
     damage: 2
     range: 2
-    cooldown: 2
+    cooldown: 1
     animationTrigger: Attack
     canStun: 1
     stunDuration: 1
