@@ -41,6 +41,8 @@ This system allows players to interact with note/letter objects in your Unity 3D
    - **Paper Texture**: 2D sprite for the paper background
    - **Text Color**: Color of the text
    - **Font**: TMP_FontAsset for TextMeshPro (optional)
+   - **Use Pre-written Paper**: Check if your texture already has text
+   - **Pre-written Paper Texture**: Texture with text already written on it
    - **Audio**: Open/close sound effects (optional)
 
 ### Step 2: Setup UI Canvas (Manual Setup)
@@ -104,6 +106,7 @@ Canvas
 
 ## How Text Content Works
 
+### Regular Paper Mode (Default)
 The **TextContent** element automatically combines all information:
 - **Title**: Displayed in bold with larger size (24)
 - **Main Content**: Normal text with line breaks
@@ -117,6 +120,22 @@ The Dullahan is near. Be careful when exploring the mansion.
 
 *By: Survivor | Last night*
 ```
+
+### Pre-written Paper Mode
+When **"Use Pre-written Paper"** is enabled:
+- **Text overlay is hidden** - No text appears on top
+- **Pre-written texture is used** - Shows your custom texture with text already written
+- **Perfect for handwritten notes** - Use scanned or hand-drawn paper textures
+- **Great for atmospheric notes** - Aged paper, torn edges, etc.
+
+## Pre-written Paper Setup
+
+1. **Create your paper texture** with text already written on it
+2. **Import as Sprite** in Unity
+3. **In NoteLetterSO**:
+   - Check **"Use Pre-written Paper"**
+   - Assign your texture to **"Pre-written Paper Texture"**
+4. **Text fields are ignored** - Only the texture is displayed
 
 ## Example Note Creation
 
@@ -139,6 +158,16 @@ Date: "Last night"
 Paper Texture: [Warning paper sprite]
 Text Color: Red
 Is Important: true
+```
+
+### Pre-written Handwritten Note
+```
+Title: "My Diary" (ignored in pre-written mode)
+Content: "Today I found..." (ignored in pre-written mode)
+Author: "Unknown" (ignored in pre-written mode)
+Date: "2024" (ignored in pre-written mode)
+Use Pre-written Paper: ✓ (checked)
+Pre-written Paper Texture: [Handwritten diary page sprite]
 ```
 
 ## Customization Options

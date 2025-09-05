@@ -31,6 +31,9 @@ public class NoteLetterUI : MonoBehaviour
     // Player controller reference
     private FirstPersonController firstPersonController;
     
+    // Event fired when the note UI fully closes
+    public System.Action OnNoteClosed;
+    
     void Start()
     {
         // Find UI elements in Canvas by name
@@ -127,9 +130,7 @@ public class NoteLetterUI : MonoBehaviour
         UpdateNoteDisplay();
         ShowNoteAnimated();
         
-        // Ensure cursor is visible and unlocked for note interaction
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        // Note: Cursor management is handled by NoteLetterPickable.cs
     }
     
     public void HideNote()
@@ -139,6 +140,11 @@ public class NoteLetterUI : MonoBehaviour
         HideNoteAnimated();
     }
     
+    public bool IsNoteVisible()
+    {
+        return isVisible;
+    }
+    
     void UpdateNoteDisplay()
     {
         if (currentNote == null) return;
@@ -146,49 +152,69 @@ public class NoteLetterUI : MonoBehaviour
         // Update text content - combine all information into one text element
         if (textContent != null)
         {
-            string fullText = "";
-            
-            // Add title if it exists
-            if (!string.IsNullOrEmpty(currentNote.noteTitle))
+            // Check if using pre-written paper
+            if (currentNote.usePreWrittenPaper)
             {
-                fullText += $"<b><size=24>{currentNote.noteTitle}</size></b>\n\n";
+                // Hide text content for pre-written paper
+                textContent.gameObject.SetActive(false);
             }
-            
-            // Add main content
-            if (!string.IsNullOrEmpty(currentNote.noteContent))
+            else
             {
-                fullText += currentNote.noteContent;
-            }
-            
-            // Add author and date at the bottom
-            if (!string.IsNullOrEmpty(currentNote.author) || !string.IsNullOrEmpty(currentNote.date))
-            {
-                fullText += "\n\n";
-                if (!string.IsNullOrEmpty(currentNote.author))
+                // Show text content for regular paper
+                textContent.gameObject.SetActive(true);
+                
+                string fullText = "";
+                
+                // Add title if it exists
+                if (!string.IsNullOrEmpty(currentNote.noteTitle))
                 {
-                    fullText += $"<i>By: {currentNote.author}</i>";
+                    fullText += $"<b><size=24>{currentNote.noteTitle}</size></b>\n\n";
                 }
-                if (!string.IsNullOrEmpty(currentNote.date))
+                
+                // Add main content
+                if (!string.IsNullOrEmpty(currentNote.noteContent))
                 {
-                    if (!string.IsNullOrEmpty(currentNote.author)) fullText += " | ";
-                    fullText += $"<i>{currentNote.date}</i>";
+                    fullText += currentNote.noteContent;
                 }
-            }
-            
-            textContent.text = fullText;
-            textContent.color = currentNote.textColor;
-            
-            // Update font if specified (uses TMP_FontAsset for TextMeshPro compatibility)
-            if (currentNote.textFont != null)
-            {
-                textContent.font = currentNote.textFont;
+                
+                // Add author and date at the bottom
+                if (!string.IsNullOrEmpty(currentNote.author) || !string.IsNullOrEmpty(currentNote.date))
+                {
+                    fullText += "\n\n";
+                    if (!string.IsNullOrEmpty(currentNote.author))
+                    {
+                        fullText += $"<i>By: {currentNote.author}</i>";
+                    }
+                    if (!string.IsNullOrEmpty(currentNote.date))
+                    {
+                        if (!string.IsNullOrEmpty(currentNote.author)) fullText += " | ";
+                        fullText += $"<i>{currentNote.date}</i>";
+                    }
+                }
+                
+                textContent.text = fullText;
+                textContent.color = currentNote.textColor;
+                
+                // Update font if specified (uses TMP_FontAsset for TextMeshPro compatibility)
+                if (currentNote.textFont != null)
+                {
+                    textContent.font = currentNote.textFont;
+                }
             }
         }
         
         // Update paper texture
-        if (paperImage != null && currentNote.paperTexture != null)
+        if (paperImage != null)
         {
-            paperImage.sprite = currentNote.paperTexture;
+            // Use pre-written paper texture if enabled, otherwise use regular paper texture
+            if (currentNote.usePreWrittenPaper && currentNote.preWrittenPaperTexture != null)
+            {
+                paperImage.sprite = currentNote.preWrittenPaperTexture;
+            }
+            else if (currentNote.paperTexture != null)
+            {
+                paperImage.sprite = currentNote.paperTexture;
+            }
         }
     }
     
@@ -208,7 +234,7 @@ public class NoteLetterUI : MonoBehaviour
         StartCoroutine(FadeOut());
     }
     
-    void HideNoteImmediate()
+    public void HideNoteImmediate()
     {
         if (notePanel != null)
         {
@@ -266,33 +292,15 @@ public class NoteLetterUI : MonoBehaviour
         
         HideNoteImmediate();
         
-        // Re-lock cursor for FPS gameplay
-        if (firstPersonController != null && firstPersonController.lockCursor)
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
+        // Note: Cursor management is handled by NoteLetterPickable.cs
         
-        // Notify the pickable object that the note is closed
-        if (currentNote != null)
-        {
-            var pickable = FindObjectOfType<NoteLetterPickable>();
-            if (pickable != null)
-            {
-                pickable.CloseNote();
-            }
-        }
+        // Notify listeners that the note closed; gameplay code should handle restoring state
+        OnNoteClosed?.Invoke();
     }
     
     public void CloseNote()
     {
         HideNote();
-    }
-    
-    // Public method to check if note is currently visible
-    public bool IsNoteVisible()
-    {
-        return isVisible;
     }
     
     // Public method to refresh UI element references (useful if UI changes)

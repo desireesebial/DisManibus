@@ -128,7 +128,11 @@ public class DullahanChaseSystem : MonoBehaviour
         // Set chase animation
         if (dullahanAnimator != null)
         {
-            dullahanAnimator.SetBool("IsChasing", true);
+            // Check if the parameter exists before setting it
+            if (HasAnimatorParameter("IsChasing"))
+            {
+                dullahanAnimator.SetBool("IsChasing", true);
+            }
         }
         
         // Start chase audio
@@ -181,7 +185,11 @@ public class DullahanChaseSystem : MonoBehaviour
         // Set patrol animation
         if (dullahanAnimator != null)
         {
-            dullahanAnimator.SetBool("IsChasing", false);
+            // Check if the parameter exists before setting it
+            if (HasAnimatorParameter("IsChasing"))
+            {
+                dullahanAnimator.SetBool("IsChasing", false);
+            }
         }
         
         // Set patrol speed and destination
@@ -405,5 +413,20 @@ public class DullahanChaseSystem : MonoBehaviour
             dullahanAgent = dullahan.GetComponent<NavMeshAgent>();
             dullahanAnimator = dullahan.GetComponent<Animator>();
         }
+    }
+    
+    // Helper method to check if an animator parameter exists
+    private bool HasAnimatorParameter(string parameterName)
+    {
+        if (dullahanAnimator == null) return false;
+        
+        foreach (AnimatorControllerParameter param in dullahanAnimator.parameters)
+        {
+            if (param.name == parameterName)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

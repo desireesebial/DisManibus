@@ -14,6 +14,12 @@ public class NoteLetterSO : ScriptableObject
     public Color textColor = Color.black;
     public TMP_FontAsset textFont;
     
+    [Header("Pre-written Paper Option")]
+    [Tooltip("Check this if your paper texture already has text written on it")]
+    public bool usePreWrittenPaper = false;
+    [Tooltip("If using pre-written paper, this will be the main texture (overrides paperTexture)")]
+    public Sprite preWrittenPaperTexture;
+    
     [Header("Audio")]
     public AudioClip openSound;
     public AudioClip closeSound;

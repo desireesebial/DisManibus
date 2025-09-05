@@ -25,6 +25,9 @@ This folder contains all the scripts and documentation for the Note and Letters 
 - ✅ **FirstPersonController integration** - Works with your FPS controller
 - ✅ **Crosshair system support** - Maintains crosshair during gameplay
 - ✅ **Smart cursor management** - Unlocks cursor for notes, locks for FPS
+- ✅ **Pre-written paper support** - Use textures with text already written
+- ✅ **Crosshair-based note selection** - Target specific notes when multiple are nearby
+- ✅ **Crosshair color feedback** - Crosshair changes color when hovering over notes
 - ✅ Customizable paper textures and text
 - ✅ Audio support
 - ✅ Player movement control during reading
