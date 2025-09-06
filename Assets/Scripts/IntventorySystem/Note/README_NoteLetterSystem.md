@@ -1,243 +1,55 @@
-# Note and Letters System Setup Guide
+# Note and Letters System
 
-## Overview
-This system allows players to interact with note/letter objects in your Unity 3D game, displaying a customizable 2D paper UI with text content. The UI is created manually in the Canvas, and the NoteLetterUI script works as a controller. **Uses only ONE text GameObject for all content.**
+A lightweight note/letter interaction system for Unity. Interact with world objects to open a stylized paper UI, read content, and close to resume gameplay.
 
-## Components
-
-### 1. NoteLetterSO (Scriptable Object)
-- **Location**: `Assets/Scripts/IntventorySystem/Note/NoteLetterSO.cs`
-- **Purpose**: Stores note data including title, content, paper texture, and styling
-- **Usage**: Create via `Create > Game > Note Letter` in Project window
-
-### 2. NoteLetterPickable (Script)
-- **Location**: `Assets/Scripts/IntventorySystem/Note/NoteLetterPickable.cs`
-- **Purpose**: Handles interaction with note objects in the 3D world
-- **Features**: 
-  - Player proximity detection
-  - E key interaction
-  - Audio feedback
-  - Player movement control during reading
-
-### 3. NoteLetterUI (Script - Note Controller)
-- **Location**: `Assets/Scripts/IntventorySystem/Note/NoteLetterUI.cs`
-- **Purpose**: Works as a controller to manage the note UI display
-- **Features**:
-  - Automatically finds UI elements by name in Canvas
-  - **Single text element** handles all content (title, content, author, date)
-  - Fade in/out animations
-  - Dynamic text content updates
-  - ESC key to close
-  - Can be attached to any GameObject (not necessarily the Canvas)
-
-## Setup Instructions
-
-### Step 1: Create Note Data
-1. Right-click in Project window
-2. Select `Create > Game > Note Letter`
-3. Configure your note:
-   - **Note Title**: The heading of the note
-   - **Note Content**: Main text (supports line breaks)
-   - **Paper Texture**: 2D sprite for the paper background
-   - **Text Color**: Color of the text
-   - **Font**: TMP_FontAsset for TextMeshPro (optional)
-   - **Use Pre-written Paper**: Check if your texture already has text
-   - **Pre-written Paper Texture**: Texture with text already written on it
-   - **Audio**: Open/close sound effects (optional)
-
-### Step 2: Setup UI Canvas (Manual Setup)
-1. Create a new Canvas in your scene
-2. Set Canvas Render Mode to "Screen Space - Overlay"
-3. Add Canvas Scaler and Graphic Raycaster components
-4. Create the UI hierarchy manually:
-
+## Quick Start
+1. Create a Note asset: Project → Create → Game → Note Letter.
+2. Build the UI once in your main Canvas:
 ```
 Canvas
-└── NotePanel (GameObject - will be shown/hidden)
-    ├── PaperImage (Image component - paper texture)
-    ├── TextContent (TextMeshPro - ALL text content)
-    └── CloseButton (Button - close the note)
+└── NotePanel
+    ├── PaperImage (Image)
+    ├── TextContent (TextMeshProUGUI)
+    └── CloseButton (Button)
 ```
+   - Names must match exactly. `NotePanel` starts inactive.
+3. Add `NoteLetterUI` to any GameObject (e.g., `NoteController`). It auto-finds the UI by names and adds a `CanvasGroup` to `NotePanel`.
+4. In the scene, add `NoteLetterPickable` to a 3D object. Assign the Note asset to "Note Data".
+5. Enter Play, look at or approach the object, press E to open, press Close or ESC to exit.
 
-**IMPORTANT**: The GameObject names must match exactly:
-- `NotePanel`
-- `PaperImage`
-- `TextContent` (single text element for everything)
-- `CloseButton`
+## Key Features
+- Single TMP text element for title, content, author, date with rich-text formatting.
+- Optional pre-written paper mode (hides text, shows texture-only notes).
+- Fade in/out animations with `CanvasGroup`.
+- Disables player movement/camera while reading; restores on close.
+- Interaction by proximity or crosshair raycast (configurable).
+- Optional audio for open/close via `NoteLetterSO` and an `AudioSource`.
 
-### Step 3: Configure UI Elements
-1. **NotePanel**: Set to cover most of the screen (e.g., anchors 0.1, 0.1 to 0.9, 0.9)
-2. **PaperImage**: Set to fill the NotePanel completely
-3. **TextContent**: Set to fill most of the NotePanel (e.g., anchors 0.1, 0.1 to 0.9, 0.9)
-4. **CloseButton**: Position at top right, add button text
+## Components
+- `NoteLetterSO`: Title, Content, Paper Texture, Text Color, optional TMP Font, Pre-written Paper options, Author/Date, Open/Close Audio.
+- `NoteLetterUI`: Finds `NotePanel`, `PaperImage`, `TextContent`, `CloseButton`. Handles text composition, textures, fades, ESC close.
+- `NoteLetterPickable`: Shows the UI on interaction, disables/enables player controls, handles crosshair feedback and prompts.
 
-### Step 4: Add Note Controller
-1. Create empty GameObject (e.g., "NoteController")
-2. Add the `NoteLetterUI` script to it
-3. The script will automatically find UI elements by name
-4. Customize element names if needed in the inspector
+## Configuration Tips
+- TextContent: Enable Word Wrap; set alignment Left; adjust margins to avoid the paper edge.
+- Fonts: Assign a TMP Font Asset in the SO to override the default font at runtime.
+- Crosshair Detection: Set a LayerMask for notes; place note colliders on that layer.
+- Interaction UI: Provide a small prompt GameObject and a TMP label for the interaction text.
 
-### Step 5: Create Interactive Note Object
-1. Create a 3D GameObject (e.g., a paper model, book, etc.)
-2. Add the `NoteLetterPickable` script
-3. Assign your `NoteLetterSO` to the **Note Data** field
-4. Configure interaction settings:
-   - **Interaction Range**: How close player needs to be
-   - **Interaction Key**: Key to press (default: E)
-   - **Interaction Text**: Text shown in UI prompt
-
-### Step 6: Setup Interaction UI
-1. Create interaction prompt UI (similar to existing systems)
-2. Assign to **Interaction UI** field in `NoteLetterPickable`
-3. Assign TextMeshPro component to **Interaction Text UI**
-
-### Step 7: Add Audio (Optional)
-1. Add `AudioSource` component to note object
-2. Assign audio clips in `NoteLetterSO`
-3. Reference the `AudioSource` in `NoteLetterPickable`
-
-## UI Layout Example
-
-### Recommended Layout Settings:
-- **NotePanel**: Anchors (0.1, 0.1) to (0.9, 0.9)
-- **PaperImage**: Anchors (0, 0) to (1, 1)
-- **TextContent**: Anchors (0.1, 0.1) to (0.9, 0.9)
-- **CloseButton**: Anchors (0.85, 0.85) to (0.95, 0.95)
-
-## How Text Content Works
-
-### Regular Paper Mode (Default)
-The **TextContent** element automatically combines all information:
-- **Title**: Displayed in bold with larger size (24)
-- **Main Content**: Normal text with line breaks
-- **Author & Date**: Italic text at the bottom, separated by " | "
-
-Example output:
-```
-**WARNING!**
-
-The Dullahan is near. Be careful when exploring the mansion.
-
-*By: Survivor | Last night*
-```
-
-### Pre-written Paper Mode
-When **"Use Pre-written Paper"** is enabled:
-- **Text overlay is hidden** - No text appears on top
-- **Pre-written texture is used** - Shows your custom texture with text already written
-- **Perfect for handwritten notes** - Use scanned or hand-drawn paper textures
-- **Great for atmospheric notes** - Aged paper, torn edges, etc.
-
-## Pre-written Paper Setup
-
-1. **Create your paper texture** with text already written on it
-2. **Import as Sprite** in Unity
-3. **In NoteLetterSO**:
-   - Check **"Use Pre-written Paper"**
-   - Assign your texture to **"Pre-written Paper Texture"**
-4. **Text fields are ignored** - Only the texture is displayed
-
-## Example Note Creation
-
-### Basic Note
-```
-Title: "Welcome Note"
-Content: "Welcome to the mansion. Be careful..."
-Author: "Unknown"
-Date: "2024"
-Paper Texture: [Paper sprite]
-Text Color: Black
-```
-
-### Important Note
-```
-Title: "WARNING!"
-Content: "The Dullahan is near..."
-Author: "Survivor"
-Date: "Last night"
-Paper Texture: [Warning paper sprite]
-Text Color: Red
-Is Important: true
-```
-
-### Pre-written Handwritten Note
-```
-Title: "My Diary" (ignored in pre-written mode)
-Content: "Today I found..." (ignored in pre-written mode)
-Author: "Unknown" (ignored in pre-written mode)
-Date: "2024" (ignored in pre-written mode)
-Use Pre-written Paper: ✓ (checked)
-Pre-written Paper Texture: [Handwritten diary page sprite]
-```
-
-## Customization Options
-
-### Paper Textures
-- Use different sprites for different note types
-- Create aged paper, modern paper, or themed textures
-- Adjust Image component settings for proper scaling
-
-### Text Styling
-- Custom fonts for different time periods
-- Color coding for importance levels
-- Text size and spacing adjustments
-
-### Audio Feedback
-- Paper rustling sounds
-- Typewriter sounds for modern notes
-- Ambient sounds for atmosphere
-
-## Integration with Existing Systems
-
-### Player Movement
-- Automatically disables player movement during reading
-- Re-enables when note is closed
-- Compatible with your existing `SimplePlayerMovement` script
-
-### Interaction System
-- Follows the same pattern as other interactive objects
-- Uses E key interaction (configurable)
-- Shows/hides interaction prompts
-
-### UI Management
-- Fade in/out animations
-- Canvas-based UI system
-- Responsive to ESC key
+## Validation Checklist
+- Canvas is in scene, Screen Space - Overlay.
+- Exact names exist under Canvas: `NotePanel`, `PaperImage`, `TextContent`, `CloseButton`.
+- `NotePanel` initially inactive; becomes active when opening a note.
+- `NoteLetterUI` present; no console errors about missing UI.
+- `NoteLetterSO` assigned on each `NoteLetterPickable`.
+- Player has tag `Player`; `FirstPersonController` present in scene.
 
 ## Troubleshooting
+- Note UI not showing: Check GameObject names; use `NoteLetterUI` → "Refresh UI References".
+- Interaction not working: Ensure within range or crosshair ray hits the note on `noteLayerMask`.
+- Text not visible: Pre-written mode hides `TextContent` intentionally.
+- Controls/cursor stuck: Use `NoteLetterPickable` → "Force Reset Player Controls" context command.
+- Close button inert: Ensure a Button component exists; the script wires onClick at Start.
 
-### Note UI Not Showing
-- Check if UI elements exist with exact names in Canvas
-- Verify NoteLetterUI script is attached to a GameObject
-- Use "Refresh UI References" context menu option
-- Check Console for missing element warnings
-
-### Interaction Not Working
-- Verify player has "Player" tag
-- Check interaction range in scene view (yellow wire sphere)
-- Ensure `NoteLetterSO` is assigned to `NoteLetterPickable`
-
-### Text Not Displaying
-- Check TextMeshPro component is properly configured
-- Verify text content in `NoteLetterSO`
-- Ensure UI elements are active in hierarchy
-
-### UI Element Names
-- All UI elements must have exact names as specified
-- Names are case-sensitive
-- Use the inspector to customize element names if needed
-
-## Performance Considerations
-
-- Notes are loaded on-demand
-- UI elements are found once at startup
-- Minimal impact on frame rate
-- Audio clips are loaded once per note
-
-## Future Enhancements
-
-- Multiple page support
-- Handwriting recognition
-- Note collection system
-- Translation/localization support
-- Note sharing between players (multiplayer)
+## Future Ideas
+- Multi-page notes, collection/logbook, localization, accessibility options.

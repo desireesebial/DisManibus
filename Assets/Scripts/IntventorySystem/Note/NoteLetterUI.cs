@@ -10,6 +10,9 @@ public class NoteLetterUI : MonoBehaviour
     public string textContentName = "TextContent";
     public string closeButtonName = "CloseButton";
     
+    [Header("Canvas")]
+    public Canvas targetCanvas; // Optional: assign the canvas that contains the NotePanel
+    
     [Header("Animation")]
     public float fadeInDuration = 0.3f;
     public float fadeOutDuration = 0.2f;
@@ -68,19 +71,19 @@ public class NoteLetterUI : MonoBehaviour
     
     void FindUIElements()
     {
-        // Find Canvas in scene
-        Canvas canvas = FindObjectOfType<Canvas>();
+        // Choose canvas: prefer assigned one; otherwise search all canvases for the NotePanel
+        Canvas canvas = targetCanvas != null ? targetCanvas : FindCanvasContainingNotePanel();
         if (canvas == null)
         {
-            Debug.LogError("No Canvas found in scene! Please create a Canvas first.");
+            Debug.LogError("No suitable Canvas found in scene! Ensure a Canvas exists and contains '" + notePanelName + "'.");
             return;
         }
         
-        // Find UI elements by name
+        // Find UI elements by name within the chosen canvas
         notePanel = FindUIElementByName(canvas.transform, notePanelName);
         if (notePanel == null)
         {
-            Debug.LogError($"NotePanel with name '{notePanelName}' not found in Canvas!");
+            Debug.LogError($"NotePanel with name '{notePanelName}' not found in the selected Canvas!");
             return;
         }
         
@@ -92,6 +95,25 @@ public class NoteLetterUI : MonoBehaviour
         if (paperImage == null) Debug.LogWarning($"PaperImage with name '{paperImageName}' not found!");
         if (textContent == null) Debug.LogWarning($"TextContent with name '{textContentName}' not found!");
         if (closeButton == null) Debug.LogWarning($"CloseButton with name '{closeButtonName}' not found!");
+    }
+    
+    // Searches through all canvases (active and inactive) to find one that contains the NotePanel
+    Canvas FindCanvasContainingNotePanel()
+    {
+        // Include inactive canvases as well
+        var canvases = Resources.FindObjectsOfTypeAll<Canvas>();
+        foreach (var canvas in canvases)
+        {
+            if (canvas == null) continue;
+            var found = FindUIElementByName(canvas.transform, notePanelName);
+            if (found != null)
+            {
+                return canvas;
+            }
+        }
+        
+        // Fallback to any active canvas
+        return FindObjectOfType<Canvas>();
     }
     
     GameObject FindUIElementByName(Transform parent, string name)

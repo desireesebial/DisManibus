@@ -6,12 +6,17 @@ using TMPro;
 
 public class doorscript : MonoBehaviour
 {
+    private static int s_lastInteractFrame = -1; // prevents multiple doors handling the same E press
     [Header("Door Settings")]
     public float openAngle = 90f;
     public float openSpeed = 2f;
     public bool isOpen = false;
     public bool isLocked = true;
     public int requiredKeyID = -1; // -1 means no key required
+    public string requiredKeySOId = ""; // empty means no SO key required
+    public bool consumeKeyOnUnlock = false; // consume SO key when unlocking
+    public bool useSelectedSOKeyOnly = false; // when true, only selected KeySO can unlock
+    public bool consumeWrongSelectedKey = true; // consume wrong selected key
     
     [Header("Multiple Doors")]
     public doorscript[] linkedDoors; // Doors that should open/close together
@@ -95,6 +100,8 @@ public class doorscript : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.E))
         {
+            if (s_lastInteractFrame == Time.frameCount) return; // another door already handled this press
+            s_lastInteractFrame = Time.frameCount;
             if (isLocked)
             {
                 TryUnlockDoor();
@@ -108,6 +115,39 @@ public class doorscript : MonoBehaviour
 
     private void TryUnlockDoor()
     {
+        // If an SO key is configured, always use SO logic and selected key interaction
+        if (!string.IsNullOrEmpty(requiredKeySOId))
+        {
+            if (headInventory == null)
+            {
+                PlayLockedSound();
+                ShowLockedMessage();
+                return;
+            }
+
+            var selectedKey = headInventory.GetSelectedKey();
+            if (selectedKey != null)
+            {
+                if (selectedKey.keyId == requiredKeySOId)
+                {
+                    if (consumeKeyOnUnlock) headInventory.RemoveSelectedKeyIfKey();
+                    UnlockDoor();
+                    ToggleDoor();
+                }
+                else
+                {
+                    if (consumeWrongSelectedKey) headInventory.RemoveSelectedKeyIfKey();
+                    PlayLockedSound();
+                    ShowLockedMessage();
+                }
+                return;
+            }
+            // No selected key; fall through to locked feedback
+            PlayLockedSound();
+            ShowLockedMessage();
+            return;
+        }
+
         if (HasRequiredKey())
         {
             UnlockDoor();
@@ -122,7 +162,17 @@ public class doorscript : MonoBehaviour
 
     private bool HasRequiredKey()
     {
-        if (requiredKeyID == -1) return true; // No key required
+        if (requiredKeyID == -1 && string.IsNullOrEmpty(requiredKeySOId)) return true; // No key required
+        
+        // If an SO key is specified, only that key can satisfy the door
+        if (!string.IsNullOrEmpty(requiredKeySOId))
+        {
+            if (headInventory != null)
+            {
+                return headInventory.HasKey(requiredKeySOId);
+            }
+            return false;
+        }
         
         // Check player inventory for keys
         if (playerInventory != null)
@@ -136,11 +186,11 @@ public class doorscript : MonoBehaviour
             }
         }
         
-        // Check head inventory for special keys (if needed)
-        if (headInventory != null)
+        // Check DullahanHeadInventory for SO-based keys
+        if (headInventory != null && !string.IsNullOrEmpty(requiredKeySOId))
         {
-            // You can add special head-based unlocking logic here
-            // For example, if a specific head acts as a key
+            if (headInventory.HasKey(requiredKeySOId))
+                return true;
         }
         
         return false;
@@ -188,7 +238,7 @@ public class doorscript : MonoBehaviour
         }
     }
 
-    private IEnumerator AnimateDoor(bool open)
+    private IEnumerator AnimateDoor(bool open, bool propagate = true)
     {
         _isAnimating = true;
         
@@ -205,18 +255,15 @@ public class doorscript : MonoBehaviour
             doorAnimator.SetBool("IsOpen", open);
         }
         
-        // Animate all linked doors
-        if (linkedDoors != null && linkedDoors.Length > 0)
+        // Animate all linked doors (non-recursive)
+        if (propagate && linkedDoors != null && linkedDoors.Length > 0)
         {
             foreach (var linkedDoor in linkedDoors)
             {
                 if (linkedDoor != null)
                 {
-                    linkedDoor.isOpen = open;
-                    if (linkedDoor.doorAnimator != null)
-                    {
-                        linkedDoor.doorAnimator.SetBool("IsOpen", open);
-                    }
+                    linkedDoor.StopAllCoroutines();
+                    linkedDoor.StartCoroutine(linkedDoor.AnimateDoor(open, false));
                 }
             }
         }
@@ -231,18 +278,7 @@ public class doorscript : MonoBehaviour
         transform.rotation = targetRotation;
         isOpen = open;
         
-        // Update linked doors
-        if (linkedDoors != null)
-        {
-            foreach (var linkedDoor in linkedDoors)
-            {
-                if (linkedDoor != null)
-                {
-                    linkedDoor.isOpen = open;
-                    linkedDoor.transform.rotation = open ? linkedDoor._openRotation : linkedDoor._closedRotation;
-                }
-            }
-        }
+        // Update own state flag; linked doors manage their own state in their coroutine
         
         _isAnimating = false;
         Debug.Log($"Door {gameObject.name} {(open ? "opened" : "closed")}!");
