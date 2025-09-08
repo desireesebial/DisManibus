@@ -22,6 +22,11 @@ public class DullahanBody : MonoBehaviour
     public Color completedColor = Color.green;
     public Color normalColor = Color.white;
     
+    [Header("Fake Head Visuals")] 
+    public bool showFakeHeadPlacement = true; // briefly show fake head when placed
+    public float fakeHeadVisualDuration = 0.75f; // seconds before it disappears
+    private GameObject temporaryFakeHeadInstance;
+    
     [Header("Audio")]
     public AudioSource audioSource;
     public AudioClip headAttachSound;
@@ -189,6 +194,9 @@ public class DullahanBody : MonoBehaviour
         
         Debug.Log($"Handling fake head attachment: {headData.headName}");
         
+        // Spawn a temporary visual of the fake head at the attachment point
+        TryShowTemporaryFakeHead(headData);
+        
         // Apply effects to player
         ApplyFakeHeadEffectsToPlayer(headData);
         
@@ -200,6 +208,39 @@ public class DullahanBody : MonoBehaviour
         
         // Show temporary visual feedback
         StartCoroutine(ShowFakeHeadFeedback(headData));
+    }
+
+    private void TryShowTemporaryFakeHead(DullahanHeadSO headData)
+    {
+        if (!showFakeHeadPlacement) return;
+        if (headAttachmentPoint == null) return;
+        if (headData.headPrefab == null) return;
+
+        // Clean up any previous temp instance
+        if (temporaryFakeHeadInstance != null)
+        {
+            Destroy(temporaryFakeHeadInstance);
+            temporaryFakeHeadInstance = null;
+        }
+
+        // Instantiate under the attachment point and align
+        temporaryFakeHeadInstance = Instantiate(headData.headPrefab, headAttachmentPoint.transform);
+        temporaryFakeHeadInstance.transform.localPosition = Vector3.zero;
+        temporaryFakeHeadInstance.transform.localRotation = Quaternion.identity;
+        temporaryFakeHeadInstance.transform.localScale = Vector3.one;
+
+        // Auto-remove after a short duration
+        StartCoroutine(RemoveTemporaryFakeHeadAfterDelay(fakeHeadVisualDuration));
+    }
+
+    private IEnumerator RemoveTemporaryFakeHeadAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (temporaryFakeHeadInstance != null)
+        {
+            Destroy(temporaryFakeHeadInstance);
+            temporaryFakeHeadInstance = null;
+        }
     }
     
     private void ApplyFakeHeadEffectsToPlayer(DullahanHeadSO headData)

@@ -36936,15 +36936,15 @@ MonoBehaviour:
   headRenderer: {fileID: 405935604}
   originalMaterial: {fileID: 2100000, guid: a398b1cedcdf229499a90b20b680d3a2, type: 2}
   glowMaterial: {fileID: 0}
-  headVisual: {fileID: 405935602}
+  headVisual: {fileID: 1462732053699718131, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
   audioSource: {fileID: 0}
   pickupSound: {fileID: 0}
   dropSound: {fileID: 0}
   interactionRange: 6
   interactionKey: 101
   interactionText: Press E to pick up head
-  interactionUI: {fileID: 0}
-  interactionTextUI: {fileID: 0}
+  interactionUI: {fileID: 1365719}
+  interactionTextUI: {fileID: 1365721}
 --- !u!1 &407653997
 GameObject:
   m_ObjectHideFlags: 0
@@ -44929,15 +44929,15 @@ MonoBehaviour:
   headRenderer: {fileID: 484884271}
   originalMaterial: {fileID: 2100000, guid: a398b1cedcdf229499a90b20b680d3a2, type: 2}
   glowMaterial: {fileID: 0}
-  headVisual: {fileID: 484884269}
+  headVisual: {fileID: 1462732053699718131, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
   audioSource: {fileID: 0}
   pickupSound: {fileID: 0}
   dropSound: {fileID: 0}
   interactionRange: 6
   interactionKey: 101
   interactionText: Press E to pick up head
-  interactionUI: {fileID: 0}
-  interactionTextUI: {fileID: 0}
+  interactionUI: {fileID: 1365719}
+  interactionTextUI: {fileID: 1365721}
 --- !u!1 &486083257
 GameObject:
   m_ObjectHideFlags: 0
@@ -158596,6 +158596,37 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!1 &1106820798
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1106820799}
+  m_Layer: 0
+  m_Name: AttackPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1106820799
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106820798}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.67522436, y: 0.20804977, z: -0.17253298, w: -0.6863088}
+  m_LocalPosition: {x: -0.067, y: 0.012, z: -0.026}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3742407835020705940}
+  m_LocalEulerAnglesHint: {x: 0, y: -94.328, z: 210.198}
 --- !u!43 &1108285824
 Mesh:
   m_ObjectHideFlags: 0
@@ -159552,6 +159583,7 @@ GameObject:
   - component: {fileID: 1112342881}
   - component: {fileID: 1112342880}
   - component: {fileID: 1112342879}
+  - component: {fileID: 1112342883}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -159582,7 +159614,7 @@ MonoBehaviour:
   - {fileID: 4272788813988389018}
   realHeadDoor: {fileID: 3469287837868409382}
   headInventory: {fileID: 4459864850702346306}
-  effectManager: {fileID: 0}
+  effectManager: {fileID: 1112342883}
   audioManager: {fileID: 0}
   puzzleActive: 1
   debugMode: 0
@@ -159693,6 +159725,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1112342883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1112342878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aef45a10de0520248845df13cd4851c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerController: {fileID: 4459864850702346298}
+  playerInventory: {fileID: 0}
+  playerHealthSystem: {fileID: 4459864850702346307}
+  headInventory: {fileID: 4459864850702346306}
+  dullahanChase: {fileID: 5866666021144979882}
+  audioManager: {fileID: 0}
+  effectFadeTime: 360
+  showEffectNotifications: 0
+  effectNotificationUI: {fileID: 0}
+  effectNotificationText: {fileID: 0}
 --- !u!1 &1120173773
 GameObject:
   m_ObjectHideFlags: 0
@@ -168684,6 +168738,38 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1 &1243612189
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1243612190}
+  m_Layer: 0
+  m_Name: HeadSocket
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1243612190
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1243612189}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.034, y: 0.373, z: -0.032}
+  m_LocalScale: {x: 0.74625546, y: 0.74625546, z: 0.74625546}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2071610018}
+  m_Father: {fileID: 9209473233648635739}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1253780510
 GameObject:
   m_ObjectHideFlags: 0
@@ -373845,6 +373931,89 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2069424200}
   m_Mesh: {fileID: 4300000, guid: adb48619c3168884b88d06d29e8acf53, type: 3}
+--- !u!1001 &2071610016
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1243612190}
+    m_Modifications:
+    - target: {fileID: 1462732053699718131, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      propertyPath: m_Name
+      value: dullahanHead
+      objectReference: {fileID: 0}
+    - target: {fileID: 1462732053699718131, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7395270573944179110, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 16.740227
+      objectReference: {fileID: 0}
+    - target: {fileID: 7395270573944179110, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 16.740227
+      objectReference: {fileID: 0}
+    - target: {fileID: 7395270573944179110, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 16.740227
+      objectReference: {fileID: 0}
+    - target: {fileID: 7395270573944179110, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.002
+      objectReference: {fileID: 0}
+    - target: {fileID: 7395270573944179110, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 7395270573944179110, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.017
+      objectReference: {fileID: 0}
+    - target: {fileID: 7395270573944179110, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7395270573944179110, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7395270573944179110, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7395270573944179110, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7395270573944179110, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7395270573944179110, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7395270573944179110, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+--- !u!1 &2071610017 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1462732053699718131, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+  m_PrefabInstance: {fileID: 2071610016}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2071610018 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7395270573944179110, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+  m_PrefabInstance: {fileID: 2071610016}
+  m_PrefabAsset: {fileID: 0}
 --- !u!23 &2071623304
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -383255,10 +383424,10 @@ GameObject:
   - component: {fileID: 5866666021144979876}
   - component: {fileID: 5866666021144979877}
   - component: {fileID: 5866666021144979878}
-  - component: {fileID: 5866666021144979881}
   - component: {fileID: 5866666021144979882}
   - component: {fileID: 5866666021144979883}
   - component: {fileID: 5866666021144979884}
+  - component: {fileID: 5866666021144979881}
   m_Layer: 0
   m_Name: Dullahan
   m_TagString: Enemy
@@ -386412,6 +386581,7 @@ Transform:
   m_LocalScale: {x: 0.99999994, y: 1.0000005, z: 0.9999999}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1106820799}
   - {fileID: 2544324025665017310}
   - {fileID: 6162258518752569857}
   - {fileID: 9209473233648635739}
@@ -388016,7 +388186,7 @@ GameObject:
   - component: {fileID: 4459864850702346306}
   - component: {fileID: 4459864850702346307}
   - component: {fileID: 4459864850702346308}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: FirstPersonController
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -388115,7 +388285,7 @@ Transform:
   m_GameObject: {fileID: 4459864850702346288}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.24, y: 4, z: 5}
+  m_LocalPosition: {x: 1.24, y: 3.47, z: 5}
   m_LocalScale: {x: 0.8, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -388295,6 +388465,12 @@ MonoBehaviour:
   - {fileID: 836063734}
   - {fileID: 1108580928}
   healthText: {fileID: 1531729835}
+  statusText: {fileID: 0}
+  deathMessageUI: {fileID: 0}
+  deathMessageText: {fileID: 0}
+  healthyBarColor: {r: 0.1, g: 0.8, b: 0.1, a: 1}
+  injuredBarColor: {r: 1, g: 0.65, b: 0.1, a: 1}
+  criticalBarColor: {r: 0.9, g: 0.1, b: 0.1, a: 1}
   playerCamera: {fileID: 4459864849948344996}
   shakeIntensity: 0.5
   shakeDuration: 0.3
@@ -391064,11 +391240,17 @@ MonoBehaviour:
   attackCooldown: 2
   attackDuration: 0.5
   canAttack: 1
-  attackPoint: {fileID: 543450652837065689}
+  attackPoint: {fileID: 1106820799}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 8
   attackRadius: 5
+  enforceSameFloor: 1
+  maxVerticalDifference: 1.5
+  requireLineOfSight: 0
+  lineOfSightObstacles:
+    serializedVersion: 2
+    m_Bits: 0
   dullahanAnimator: {fileID: 0}
   attackTriggerName: Attack
   attackParticles: {fileID: 0}
@@ -391091,24 +391273,6 @@ MonoBehaviour:
     stunDuration: 0
     customAttackSound: {fileID: 0}
     customHitSound: {fileID: 0}
-  - patternName: Basic Attack
-    damage: 1
-    range: 2
-    cooldown: 1
-    animationTrigger: Attack
-    canStun: 0
-    stunDuration: 0
-    customAttackSound: {fileID: 0}
-    customHitSound: {fileID: 0}
-  - patternName: Basic Attack
-    damage: 2
-    range: 2
-    cooldown: 1
-    animationTrigger: Attack
-    canStun: 1
-    stunDuration: 1
-    customAttackSound: {fileID: 0}
-    customHitSound: {fileID: 0}
 --- !u!114 &5866666021144979884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -391127,11 +391291,13 @@ MonoBehaviour:
   interactionRange: 3
   interactionKey: 103
   interactionText: Press F to attach head
-  headAttachmentPoint: {fileID: 919132149155446097, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
-  attachedHeadVisual: {fileID: 919132149155446097, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
+  headAttachmentPoint: {fileID: 1243612189}
+  attachedHeadVisual: {fileID: 2071610017}
   bodyLight: {fileID: 0}
   completedColor: {r: 0, g: 1, b: 0, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
+  showFakeHeadPlacement: 1
+  fakeHeadVisualDuration: 0.75
   audioSource: {fileID: 0}
   headAttachSound: {fileID: 0}
   puzzleCompleteSound: {fileID: 0}
@@ -394400,15 +394566,15 @@ MonoBehaviour:
   headRenderer: {fileID: 5659952312157270895}
   originalMaterial: {fileID: 2100000, guid: a398b1cedcdf229499a90b20b680d3a2, type: 2}
   glowMaterial: {fileID: 0}
-  headVisual: {fileID: 6164527200153850554}
+  headVisual: {fileID: 1462732053699718131, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
   audioSource: {fileID: 0}
   pickupSound: {fileID: 0}
   dropSound: {fileID: 0}
   interactionRange: 3
   interactionKey: 101
   interactionText: Press E to pick up head
-  interactionUI: {fileID: 0}
-  interactionTextUI: {fileID: 0}
+  interactionUI: {fileID: 1365719}
+  interactionTextUI: {fileID: 1365721}
 --- !u!33 &7631979440646749313
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -395738,6 +395904,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6289909963060637631}
+  - {fileID: 1243612190}
   m_Father: {fileID: 3742407835020705940}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
