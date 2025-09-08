@@ -1037,5 +1037,76 @@ public class DullahanHeadInventory : MonoBehaviour
         }
         return false;
     }
+
+    // Head placement/consumption helpers (use heads like keys for puzzles)
+    public bool HasHead(HeadType type)
+    {
+        return HasItemOfType(type);
+    }
+
+    public bool RemoveSelectedHeadIfHead()
+    {
+        if (selectedItem >= 0 && selectedItem < inventorySlots.Count && inventorySlots[selectedItem].isOccupied)
+        {
+            if (inventorySlots[selectedItem].itemType == InventorySlot.ItemType.Head)
+            {
+                RemoveItemFromSlot(selectedItem);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool ConsumeHead(HeadType type)
+    {
+        for (int i = 0; i < inventorySlots.Count; i++)
+        {
+            if (inventorySlots[i].isOccupied && inventorySlots[i].itemType == InventorySlot.ItemType.Head)
+            {
+                if (inventorySlots[i].headItem != null && inventorySlots[i].headItem.headType == type)
+                {
+                    RemoveItemFromSlot(i);
+                    Debug.Log($"Consumed head of type: {type}");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // Returns true if the currently selected head matches the required type and was removed from inventory
+    public bool TryPlaceSelectedHeadOnBody(HeadType requiredType)
+    {
+        if (selectedItem < 0 || selectedItem >= inventorySlots.Count) return false;
+
+        var slot = inventorySlots[selectedItem];
+        if (!slot.isOccupied || slot.itemType != InventorySlot.ItemType.Head || slot.headItem == null) return false;
+
+        if (slot.headItem.headType != requiredType) return false;
+
+        // Remove from inventory (this will also update visuals/selection)
+        RemoveItemFromSlot(selectedItem);
+        Debug.Log($"Placed head of type {requiredType} on Dullahan body");
+        return true;
+    }
+
+    // Preferred placement path: delegates to DullahanBody so it can apply effects for fake heads
+    public bool TryPlaceSelectedHeadOnBody(DullahanBody dullahanBody)
+    {
+        if (dullahanBody == null) return false;
+        if (selectedItem < 0 || selectedItem >= inventorySlots.Count) return false;
+
+        var slot = inventorySlots[selectedItem];
+        if (!slot.isOccupied || slot.itemType != InventorySlot.ItemType.Head || slot.headItem == null) return false;
+
+        // Use body logic (applies effects for fake heads, completes puzzle for real head)
+        bool attached = dullahanBody.AttachHead(slot.headItem);
+        if (attached)
+        {
+            RemoveItemFromSlot(selectedItem);
+            return true;
+        }
+        return false;
+    }
 }
 

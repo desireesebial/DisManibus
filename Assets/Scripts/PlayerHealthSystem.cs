@@ -14,6 +14,14 @@ public class PlayerHealthSystem : MonoBehaviour
     public GameObject healthUI;
     public Image[] healthBars = new Image[3];
     public TextMeshProUGUI healthText;
+    public TextMeshProUGUI statusText;
+    public GameObject deathMessageUI;
+    public TextMeshProUGUI deathMessageText;
+
+    [Header("Health UI Colors")]
+    public Color healthyBarColor = new Color(0.1f, 0.8f, 0.1f);
+    public Color injuredBarColor = new Color(1f, 0.65f, 0.1f);
+    public Color criticalBarColor = new Color(0.9f, 0.1f, 0.1f);
 
     [Header("Camera Effects")]
     public Camera playerCamera;
@@ -47,6 +55,8 @@ public class PlayerHealthSystem : MonoBehaviour
     private bool isBlurActive = false;
     private Coroutine blurCoroutine;
     private Coroutine damageFlashCoroutine;
+    private float originalWalkSpeed;
+    private float originalMouseSensitivity;
 
     void Start()
     {
@@ -71,6 +81,13 @@ public class PlayerHealthSystem : MonoBehaviour
         if (playerController == null)
             playerController = GetComponent<FirstPersonController>();
 
+        // Cache original movement-related values from FirstPersonController
+        if (playerController != null)
+        {
+            originalWalkSpeed = playerController.walkSpeed;
+            originalMouseSensitivity = playerController.mouseSensitivity;
+        }
+
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
 
@@ -83,6 +100,7 @@ public class PlayerHealthSystem : MonoBehaviour
 
         // Update UI
         UpdateHealthUI();
+        UpdateStatusUI();
 
         Debug.Log($"Player Health System initialized. Health: {currentHealth}/{maxHealth}");
     }
@@ -124,6 +142,7 @@ public class PlayerHealthSystem : MonoBehaviour
 
         // Update UI
         UpdateHealthUI();
+        UpdateStatusUI();
 
         Debug.Log($"Player took {damage} damage. Health: {currentHealth}/{maxHealth}");
     }
@@ -172,14 +191,14 @@ public class PlayerHealthSystem : MonoBehaviour
         switch (currentHealth)
         {
             case 2: // Minor injury
-                playerController.walkSpeed = 4f; // Reduced from default
-                playerController.mouseSensitivity = 1.5f; // Reduced from default
+                playerController.walkSpeed = originalWalkSpeed * 0.8f;
+                playerController.mouseSensitivity = originalMouseSensitivity * 0.75f;
                 Debug.Log("Applied minor injury debuffs: Reduced speed and sensitivity");
                 break;
 
             case 1: // Critical injury
-                playerController.walkSpeed = 3f; // Further reduced
-                playerController.mouseSensitivity = 1f; // Further reduced
+                playerController.walkSpeed = originalWalkSpeed * 0.6f;
+                playerController.mouseSensitivity = originalMouseSensitivity * 0.5f;
                 Debug.Log("Applied critical injury debuffs: Major speed and sensitivity reduction");
                 break;
         }
@@ -189,9 +208,9 @@ public class PlayerHealthSystem : MonoBehaviour
     {
         if (playerController == null) return;
 
-        // Restore original values (adjust these to match your FirstPersonController defaults)
-        playerController.walkSpeed = 6f; // Restore to default
-        playerController.mouseSensitivity = 2f; // Restore to default
+        // Restore original values captured from FirstPersonController
+        playerController.walkSpeed = originalWalkSpeed;
+        playerController.mouseSensitivity = originalMouseSensitivity;
         Debug.Log("Removed health debuffs: Restored speed and sensitivity");
     }
 
@@ -327,8 +346,15 @@ public class PlayerHealthSystem : MonoBehaviour
             playerController.enabled = false;
         }
 
-        // You can add death screen, respawn logic, or scene reload here
-        // For now, just log the death
+        // Show death UI
+        if (deathMessageUI != null)
+        {
+            deathMessageUI.SetActive(true);
+        }
+        if (deathMessageText != null)
+        {
+            deathMessageText.text = "You are dead";
+        }
     }
 
     private void UpdateHealthUI()
@@ -338,7 +364,18 @@ public class PlayerHealthSystem : MonoBehaviour
         {
             if (healthBars[i] != null)
             {
-                healthBars[i].fillAmount = (i < currentHealth) ? 1f : 0f;
+                bool isActive = i < currentHealth;
+                healthBars[i].fillAmount = isActive ? 1f : 0f;
+                if (isActive)
+                {
+                    // Color bars based on current state
+                    if (currentHealth >= maxHealth)
+                        healthBars[i].color = healthyBarColor;
+                    else if (currentHealth == 2)
+                        healthBars[i].color = injuredBarColor;
+                    else if (currentHealth == 1)
+                        healthBars[i].color = criticalBarColor;
+                }
             }
         }
 
@@ -346,6 +383,43 @@ public class PlayerHealthSystem : MonoBehaviour
         if (healthText != null)
         {
             healthText.text = $"Health: {currentHealth}/{maxHealth}";
+        }
+    }
+
+    private void UpdateStatusUI()
+    {
+        // Update status text and toggle death UI when appropriate
+        if (statusText != null)
+        {
+            if (currentHealth <= 0)
+            {
+                statusText.text = "Dead";
+                statusText.color = criticalBarColor;
+            }
+            else if (currentHealth == 1)
+            {
+                statusText.text = "Critically Injured";
+                statusText.color = criticalBarColor;
+            }
+            else if (currentHealth == 2)
+            {
+                statusText.text = "Injured";
+                statusText.color = injuredBarColor;
+            }
+            else
+            {
+                statusText.text = "Healthy";
+                statusText.color = healthyBarColor;
+            }
+        }
+
+        if (deathMessageUI != null)
+        {
+            deathMessageUI.SetActive(currentHealth <= 0);
+        }
+        if (deathMessageText != null && currentHealth <= 0)
+        {
+            deathMessageText.text = "You are dead";
         }
     }
 

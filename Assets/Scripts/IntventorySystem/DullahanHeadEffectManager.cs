@@ -17,6 +17,8 @@ public class DullahanHeadEffectManager : MonoBehaviour
     [Header("Player References")]
     public FirstPersonController playerController;
     public PlayerInventory playerInventory;
+    public PlayerHealthSystem playerHealthSystem;
+    public DullahanHeadInventory headInventory;
     
     [Header("Dullahan References")]
     public DullahanChaseSystem dullahanChase;
@@ -67,6 +69,14 @@ public class DullahanHeadEffectManager : MonoBehaviour
         // Find player inventory if not assigned
         if (playerInventory == null)
             playerInventory = FindObjectOfType<PlayerInventory>();
+        
+        // Find player health if not assigned
+        if (playerHealthSystem == null)
+            playerHealthSystem = FindObjectOfType<PlayerHealthSystem>();
+
+        // Find head inventory if not assigned
+        if (headInventory == null)
+            headInventory = FindObjectOfType<DullahanHeadInventory>();
             
         // Find Dullahan chase if not assigned
         if (dullahanChase == null)
@@ -121,34 +131,55 @@ public class DullahanHeadEffectManager : MonoBehaviour
     
     private void ApplyEffect(ActiveEffect effect)
     {
-        if (playerController == null) return;
-        
+        // Movement/vision effects require controller; health effects can run without it
         switch (effect.effectType)
         {
             case EffectType.SpeedBoost:
+                if (playerController == null) return;
                 playerController.walkSpeed = originalWalkSpeed * (1f + effect.strength);
                 playerController.sprintSpeed = originalSprintSpeed * (1f + effect.strength);
                 break;
                 
             case EffectType.SpeedDebuff:
+                if (playerController == null) return;
                 playerController.walkSpeed = originalWalkSpeed * (1f - effect.strength);
                 playerController.sprintSpeed = originalSprintSpeed * (1f - effect.strength);
                 break;
                 
             case EffectType.VisionBoost:
+                if (playerController == null) return;
                 playerController.fov = originalFOV + (effect.strength * 10f);
                 break;
                 
             case EffectType.VisionDebuff:
+                if (playerController == null) return;
                 playerController.fov = originalFOV - (effect.strength * 10f);
                 break;
                 
             case EffectType.StaminaBoost:
+                if (playerController == null) return;
                 playerController.sprintDuration = originalSprintDuration * (1f + effect.strength);
                 break;
                 
             case EffectType.StaminaDebuff:
+                if (playerController == null) return;
                 playerController.sprintDuration = originalSprintDuration * (1f - effect.strength);
+                break;
+
+            case EffectType.HealthBoost:
+                if (playerHealthSystem != null)
+                {
+                    int healAmount = Mathf.Max(1, Mathf.RoundToInt(effect.strength));
+                    playerHealthSystem.Heal(healAmount);
+                }
+                break;
+
+            case EffectType.HealthDebuff:
+                if (playerHealthSystem != null)
+                {
+                    int damageAmount = Mathf.Max(1, Mathf.RoundToInt(effect.strength));
+                    playerHealthSystem.TakeDamage(damageAmount);
+                }
                 break;
                 
             case EffectType.FearEffect:
@@ -190,6 +221,7 @@ public class DullahanHeadEffectManager : MonoBehaviour
             case EffectType.StaminaDebuff:
                 playerController.sprintDuration = originalSprintDuration;
                 break;
+            // Health effects are instantaneous; nothing to revert here
         }
     }
     

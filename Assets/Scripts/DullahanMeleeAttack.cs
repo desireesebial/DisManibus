@@ -15,6 +15,12 @@ public class DullahanMeleeAttack : MonoBehaviour
     public LayerMask playerLayer = 1;
     public float attackRadius = 1f;
 
+    [Header("Spatial Awareness")]
+    public bool enforceSameFloor = true;
+    public float maxVerticalDifference = 1.5f;
+    public bool requireLineOfSight = true;
+    public LayerMask lineOfSightObstacles;
+
     [Header("Visual Effects")]
     public Animator dullahanAnimator;
     public string attackTriggerName = "Attack";
@@ -118,8 +124,18 @@ public class DullahanMeleeAttack : MonoBehaviour
     {
         if (playerTransform == null) return;
 
-        float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
-        playerInRange = distanceToPlayer <= attackRange;
+        // Horizontal distance on XZ plane
+        Vector2 selfXZ = new Vector2(transform.position.x, transform.position.z);
+        Vector2 playerXZ = new Vector2(playerTransform.position.x, playerTransform.position.z);
+        float horizontalDistance = Vector2.Distance(selfXZ, playerXZ);
+
+        // Floor check using vertical delta
+        bool sameFloor = !enforceSameFloor || Mathf.Abs(transform.position.y - playerTransform.position.y) <= maxVerticalDifference;
+
+        // Line of sight check
+        bool hasLOS = !requireLineOfSight || HasLineOfSight(playerTransform);
+
+        playerInRange = horizontalDistance <= attackRange && sameFloor && hasLOS;
 
         // Debug visualization
         if (playerInRange)
@@ -190,19 +206,44 @@ public class DullahanMeleeAttack : MonoBehaviour
 
     private void CheckForHit()
     {
-        if (playerTransform == null || playerHealthSystem == null) return;
+        // Overlap check around attack point for any player-layer targets
+        if (attackPoint == null) attackPoint = transform;
 
-        // Check if player is still in range
-        float distanceToPlayer = Vector3.Distance(attackPoint.position, playerTransform.position);
-        
-        if (distanceToPlayer <= currentPattern.range)
+        Collider[] hits = Physics.OverlapSphere(attackPoint.position, attackRadius, playerLayer, QueryTriggerInteraction.Collide);
+        if (hits == null || hits.Length == 0)
         {
-            // Player is hit!
-            DealDamage();
+            PlayMissSound();
+            return;
+        }
+
+        bool appliedDamage = false;
+        for (int i = 0; i < hits.Length; i++)
+        {
+            Collider col = hits[i];
+            Transform target = col.transform;
+
+            // Optional same-floor and LOS validation
+            bool sameFloor = !enforceSameFloor || Mathf.Abs(attackPoint.position.y - target.position.y) <= maxVerticalDifference;
+            bool hasLOS = !requireLineOfSight || HasLineOfSight(target);
+            if (!sameFloor || !hasLOS) continue;
+
+            // Support any object that has PlayerHealthSystem on it or its parents
+            PlayerHealthSystem targetHealth = col.GetComponentInParent<PlayerHealthSystem>();
+            if (targetHealth == null) continue;
+
+            // Apply pattern damage
+            int damage = Mathf.RoundToInt(currentPattern.damage);
+            targetHealth.TakeDamage(damage);
+            appliedDamage = true;
+        }
+
+        if (appliedDamage)
+        {
+            PlayHitSound();
+            StartHitEffects();
         }
         else
         {
-            // Attack missed
             PlayMissSound();
         }
     }
@@ -232,12 +273,33 @@ public class DullahanMeleeAttack : MonoBehaviour
 
     private IEnumerator StunPlayer()
     {
-        // You can implement player stun logic here
-        // For example, disable player movement temporarily
         Debug.Log($"Player stunned for {currentPattern.stunDuration} seconds!");
-        
+
+        // Disable player movement using FirstPersonController reference on the PlayerHealthSystem
+        FirstPersonController controller = null;
+        if (playerHealthSystem != null)
+        {
+            controller = playerHealthSystem.playerController;
+        }
+        if (controller == null)
+        {
+            controller = FindObjectOfType<FirstPersonController>();
+        }
+
+        bool previousCanMove = true;
+        if (controller != null)
+        {
+            previousCanMove = controller.playerCanMove;
+            controller.playerCanMove = false;
+        }
+
         yield return new WaitForSeconds(currentPattern.stunDuration);
-        
+
+        if (controller != null)
+        {
+            controller.playerCanMove = previousCanMove;
+        }
+
         Debug.Log("Player stun ended");
     }
 
@@ -359,6 +421,13 @@ public class DullahanMeleeAttack : MonoBehaviour
             Gizmos.color = playerInRange ? Color.green : Color.blue;
             Gizmos.DrawWireSphere(transform.position, currentPattern.range);
         }
+
+        // Visualize attack overlap radius
+        if (attackPoint != null)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
+        }
     }
 
     // Public getters
@@ -367,4 +436,28 @@ public class DullahanMeleeAttack : MonoBehaviour
     public AttackPattern GetCurrentPattern() => currentPattern;
     public float GetAttackCooldown() => currentPattern != null ? currentPattern.cooldown : attackCooldown;
     public float GetTimeUntilNextAttack() => Mathf.Max(0, (lastAttackTime + (currentPattern != null ? currentPattern.cooldown : attackCooldown)) - Time.time);
+
+    private bool HasLineOfSight(Transform target)
+    {
+        if (target == null) return false;
+
+        Vector3 origin = attackPoint != null ? attackPoint.position : transform.position;
+        Vector3 targetPos = target.position;
+        Vector3 dir = (targetPos - origin).normalized;
+        float dist = Vector3.Distance(origin, targetPos);
+
+        // If no obstacle mask provided, default to Physics default which may hit anything
+        int mask = lineOfSightObstacles.value == 0 ? Physics.DefaultRaycastLayers : lineOfSightObstacles.value;
+
+        if (Physics.Raycast(origin, dir, out RaycastHit hit, dist, mask, QueryTriggerInteraction.Ignore))
+        {
+            // If we hit something before reaching the target that is not the target, LOS is blocked
+            if (hit.transform != target && hit.transform.IsChildOf(target) == false)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
