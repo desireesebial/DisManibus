@@ -180,19 +180,34 @@ public class PlayerInventory : MonoBehaviour
 
     private void HandleItemSelection()
     {
-        if (!HasItems()) return;
-
         int newSelection = -1;
 
-        if (Input.GetKeyDown(KeyCode.Alpha1) && inventoryList.Count > 0) newSelection = 0;
-        else if (Input.GetKeyDown(KeyCode.Alpha2) && inventoryList.Count > 1) newSelection = 1;
-        else if (Input.GetKeyDown(KeyCode.Alpha3) && inventoryList.Count > 2) newSelection = 2;
-        else if (Input.GetKeyDown(KeyCode.Alpha4) && inventoryList.Count > 3) newSelection = 3;
-        else if (Input.GetKeyDown(KeyCode.Alpha5) && inventoryList.Count > 4) newSelection = 4;
+        // Number keys 1-9 select slot index 0-8 within maxInventorySize
+        if (Input.GetKeyDown(KeyCode.Alpha1) && maxInventorySize >= 1) newSelection = 0;
+        else if (Input.GetKeyDown(KeyCode.Alpha2) && maxInventorySize >= 2) newSelection = 1;
+        else if (Input.GetKeyDown(KeyCode.Alpha3) && maxInventorySize >= 3) newSelection = 2;
+        else if (Input.GetKeyDown(KeyCode.Alpha4) && maxInventorySize >= 4) newSelection = 3;
+        else if (Input.GetKeyDown(KeyCode.Alpha5) && maxInventorySize >= 5) newSelection = 4;
+        else if (Input.GetKeyDown(KeyCode.Alpha6) && maxInventorySize >= 6) newSelection = 5;
+        else if (Input.GetKeyDown(KeyCode.Alpha7) && maxInventorySize >= 7) newSelection = 6;
+        else if (Input.GetKeyDown(KeyCode.Alpha8) && maxInventorySize >= 8) newSelection = 7;
+        else if (Input.GetKeyDown(KeyCode.Alpha9) && maxInventorySize >= 9) newSelection = 8;
+
+        // Mouse wheel scroll cycles selection across all slots (including empty)
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (scroll > 0.01f)
+        {
+            newSelection = (selectedItem + 1) % Mathf.Max(1, maxInventorySize);
+        }
+        else if (scroll < -0.01f)
+        {
+            int size = Mathf.Max(1, maxInventorySize);
+            newSelection = (selectedItem - 1 + size) % size;
+        }
 
         if (newSelection != -1 && newSelection != selectedItem)
         {
-            selectedItem = newSelection;
+            selectedItem = Mathf.Clamp(newSelection, 0, Mathf.Max(0, maxInventorySize - 1));
             NewItemSelected();
         }
     }
@@ -244,7 +259,7 @@ public class PlayerInventory : MonoBehaviour
         {
             if (inventoryBackgroundImage[i] != null)
             {
-                if (i == selectedItem && HasItems())
+                if (i == selectedItem)
                 {
                     inventoryBackgroundImage[i].color = new Color32(145, 255, 126, 255); // Green for selected
                 }
@@ -254,6 +269,36 @@ public class PlayerInventory : MonoBehaviour
                 }
             }
         }
+    }
+
+    // Helper methods for door integration
+    public bool HasKey(int keyID)
+    {
+        for (int i = 0; i < inventoryList.Count; i++)
+        {
+            var item = inventoryList[i];
+            if (item != null && item.item_type == itemType.Keys && item.itemID == keyID)
+                return true;
+        }
+        return false;
+    }
+
+    public bool ConsumeKey(int keyID)
+    {
+        for (int i = 0; i < inventoryList.Count; i++)
+        {
+            var item = inventoryList[i];
+            if (item != null && item.item_type == itemType.Keys && item.itemID == keyID)
+            {
+                inventoryList.RemoveAt(i);
+                // Adjust selected index if needed
+                if (selectedItem >= inventoryList.Count)
+                    selectedItem = Mathf.Max(0, inventoryList.Count - 1);
+                NewItemSelected();
+                return true;
+            }
+        }
+        return false;
     }
 
     private void DropItemWithPhysics(KeyItemsSO itemToDrop)

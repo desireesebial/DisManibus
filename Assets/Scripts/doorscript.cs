@@ -151,6 +151,11 @@ public class doorscript : MonoBehaviour
         if (HasRequiredKey())
         {
             UnlockDoor();
+            // Consume numeric key from PlayerInventory if configured and available
+            if (consumeKeyOnUnlock && requiredKeyID != -1 && playerInventory != null)
+            {
+                playerInventory.ConsumeKey(requiredKeyID);
+            }
             ToggleDoor();
         }
         else
