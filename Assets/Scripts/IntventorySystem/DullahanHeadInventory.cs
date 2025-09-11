@@ -151,6 +151,31 @@ public class DullahanHeadInventory : MonoBehaviour
         // Find audio source if not assigned
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
+
+        // Fallback: ensure we have a camera for center-screen raycasts (crosshair)
+        if (cam == null)
+        {
+            // Prefer the FirstPersonController's assigned camera
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                var fpc = player.GetComponent<FirstPersonController>();
+                if (fpc != null && fpc.playerCamera != null)
+                {
+                    cam = fpc.playerCamera;
+                }
+                if (cam == null)
+                {
+                    cam = player.GetComponentInChildren<Camera>();
+                }
+            }
+
+            // As a final fallback, use Camera.main
+            if (cam == null)
+            {
+                cam = Camera.main;
+            }
+        }
     }
 
     void Update()
@@ -206,7 +231,9 @@ public class DullahanHeadInventory : MonoBehaviour
     {
         if (cam == null) return;
 
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        // Raycast from the screen center (crosshair), not the mouse position
+        Vector3 screenCenter = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f);
+        Ray ray = cam.ScreenPointToRay(screenCenter);
         RaycastHit hitInfo;
 
         if (Physics.Raycast(ray, out hitInfo, playerReach))
