@@ -16,6 +16,13 @@ using UnityEngine.UI;
 
 public class FirstPersonController : MonoBehaviour
 {
+    // Global reference to the active FirstPersonController
+    public static FirstPersonController Instance { get; private set; }
+
+    // Public accessors for commonly used components
+    public Camera PlayerCamera => playerCamera;
+    public Image CrosshairImage => crosshairObject;
+
     private Rigidbody rb;
 
     #region Camera Movement Variables
@@ -133,6 +140,9 @@ public class FirstPersonController : MonoBehaviour
 
     private void Awake()
     {
+        // Set global reference
+        Instance = this;
+
         rb = GetComponent<Rigidbody>();
 
         crosshairObject = GetComponentInChildren<Image>();
@@ -196,6 +206,16 @@ public class FirstPersonController : MonoBehaviour
         }
 
         #endregion
+    }
+
+    // Helper to get an active player camera from anywhere
+    public static Camera GetActivePlayerCamera()
+    {
+        if (Instance != null && Instance.playerCamera != null)
+        {
+            return Instance.playerCamera;
+        }
+        return Camera.main;
     }
 
     float camRotation;

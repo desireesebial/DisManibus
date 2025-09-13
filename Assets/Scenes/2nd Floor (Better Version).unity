@@ -386814,7 +386814,6 @@ GameObject:
   - component: {fileID: 517978292403931994}
   - component: {fileID: 1311037718394689313}
   - component: {fileID: 8723090955053930879}
-  - component: {fileID: 8723090955053930880}
   m_Layer: 0
   m_Name: SM_TreasureChest_Lid
   m_TagString: Untagged
@@ -395498,46 +395497,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 8781330214973298204, guid: 93e087e7dd3a9fd4c9f12e6955378375, type: 3}
---- !u!114 &8723090955053930880
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4096171660622670058}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e119f4cc3d803d1449f80f2afd4be60b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lidTransform: {fileID: 4853180885972951968}
-  openLocalEulerOffset: {x: -70, y: 0, z: 0}
-  animationDuration: 0.6
-  animationCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  startOpen: 0
 --- !u!64 &8723090955078268955
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -395929,17 +395888,53 @@ MonoBehaviour:
   m_GameObject: {fileID: 9182821020807822862}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f04a7cb096e05f49b0752861e574b79, type: 3}
+  m_Script: {fileID: 11500000, guid: 3aa2309c46243d149addf2632920d18f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chestLid: {fileID: 8723090955053930880}
-  chestPadlock: {fileID: 0}
   chestRoot: {fileID: 8368884085582275764}
+  lidTransform: {fileID: 4853180885972951968}
+  lockVisual: {fileID: 0}
+  startLocked: 0
+  requiredKey: {fileID: 0}
+  consumeKeyOnUnlock: 0
+  openLocalEulerOffset: {x: -70, y: 0, z: 0}
+  animationDuration: 0.6
+  animationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   interactKey: 101
   interactRange: 3
   interactMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 8
+  useTrigger: 0
+  playerTag: Player
+  audioSource: {fileID: 0}
+  openClip: {fileID: 0}
+  closeClip: {fileID: 0}
+  unlockClip: {fileID: 0}
+  deniedClip: {fileID: 0}
 --- !u!1 &9182821020896599914
 GameObject:
   m_ObjectHideFlags: 0
