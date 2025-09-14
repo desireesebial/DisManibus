@@ -53,17 +53,60 @@ public class TreasureChestController : MonoBehaviour
     private Quaternion _closedLocalRotation;
     private Quaternion _openLocalRotation;
     private Coroutine _animateRoutine;
+    private int _effectiveLayerMask;
+
+    [Header("Debug / Reliability")]
+    [Tooltip("If true, draws a debug ray from the camera center when pressing the interact key.")]
+    public bool debugDrawRay = false;
+    [Tooltip("Radius for sphere cast fallback if thin ray misses. Set 0 to disable.")]
+    public float sphereCastRadius = 0.15f;
+    [Tooltip("If true, disables Animator on lid while animating to avoid override.")]
+    public bool disableAnimatorOnLid = true;
+
+    // Cached lid components for diagnosing overrides
+    private Animator _lidAnimator;
+    private Rigidbody _lidRigidbody;
+    private HingeJoint _lidHingeJoint;
+    private bool _physicsOverrideWarned = false;
 
     void Awake()
     {
         if (chestRoot == null) chestRoot = transform;
-        if (lidTransform == null) lidTransform = transform;
+        if (lidTransform == null || lidTransform == transform)
+        {
+            // Try to auto-find a likely lid child if not explicitly assigned
+            Transform found = transform.Find("SM_TreasureChest_Lid");
+            if (found == null)
+            {
+                foreach (Transform t in GetComponentsInChildren<Transform>(true))
+                {
+                    if (t == transform) continue;
+                    if (t.name.IndexOf("lid", System.StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        found = t;
+                        break;
+                    }
+                }
+            }
+            if (found != null) lidTransform = found;
+            if (lidTransform == null) lidTransform = transform;
+        }
 
         _closedLocalRotation = lidTransform.localRotation;
         _openLocalRotation = _closedLocalRotation * Quaternion.Euler(openLocalEulerOffset);
 
         _isLocked = startLocked;
         if (lockVisual != null) lockVisual.SetActive(_isLocked);
+
+        // Cache lid components and log selection
+        _lidAnimator = lidTransform != null ? lidTransform.GetComponent<Animator>() : null;
+        _lidRigidbody = lidTransform != null ? lidTransform.GetComponent<Rigidbody>() : null;
+        _lidHingeJoint = lidTransform != null ? lidTransform.GetComponent<HingeJoint>() : null;
+        if (lidTransform == transform)
+        {
+            Debug.LogWarning("TreasureChestController: lidTransform is the root. Assign the actual lid object for visible rotation.");
+        }
+        Debug.Log($"TreasureChestController: Lid='{(lidTransform!=null?lidTransform.name:"null")}', HasRB={_lidRigidbody!=null}, HasHinge={_lidHingeJoint!=null}, HasAnimator={_lidAnimator!=null}");
     }
 
     void Start()
@@ -99,7 +142,20 @@ public class TreasureChestController : MonoBehaviour
         
         if (audioSource == null) audioSource = GetComponent<AudioSource>();
         
-        Debug.Log($"TreasureChestController initialized. UseTrigger: {useTrigger}, InteractRange: {interactRange}, InteractMask: {interactMask}");
+        // Resolve effective raycast layer mask; default to Physics.DefaultRaycastLayers if mask is empty (Nothing)
+        _effectiveLayerMask = interactMask.value != 0 ? interactMask.value : Physics.DefaultRaycastLayers;
+        if (interactMask.value == 0)
+        {
+            Debug.LogWarning("TreasureChestController: InteractMask is 'Nothing'. Using Physics.DefaultRaycastLayers.");
+        }
+        
+        Debug.Log($"TreasureChestController initialized. UseTrigger: {useTrigger}, InteractRange: {interactRange}, InteractMask: {interactMask}, EffectiveMask: {_effectiveLayerMask}");
+        if (lidTransform != null)
+        {
+            var closedEuler = _closedLocalRotation.eulerAngles;
+            var openEuler = _openLocalRotation.eulerAngles;
+            Debug.Log($"TreasureChestController: ClosedEuler={closedEuler}, OpenEuler={openEuler}, Offset={openLocalEulerOffset}");
+        }
     }
 
     void Update()
@@ -125,7 +181,18 @@ public class TreasureChestController : MonoBehaviour
     {
         Ray ray = _playerCamera.ScreenPointToRay(new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f));
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, interactRange, interactMask, QueryTriggerInteraction.Collide))
+        if (debugDrawRay)
+        {
+            Debug.DrawRay(ray.origin, ray.direction * interactRange, Color.yellow, 0.5f);
+        }
+
+        bool didHit = Physics.Raycast(ray, out hit, interactRange, _effectiveLayerMask, QueryTriggerInteraction.Collide);
+        if (!didHit && sphereCastRadius > 0f)
+        {
+            didHit = Physics.SphereCast(ray, sphereCastRadius, out hit, interactRange, _effectiveLayerMask, QueryTriggerInteraction.Collide);
+        }
+
+        if (didHit)
         {
             Transform t = hit.collider.transform;
             Transform root = chestRoot != null ? chestRoot : transform;
@@ -144,7 +211,7 @@ public class TreasureChestController : MonoBehaviour
         }
         else
         {
-            Debug.Log($"No raycast hit within range {interactRange} on mask {interactMask}");
+            Debug.Log($"No raycast/spherecast hit within range {interactRange} on mask {_effectiveLayerMask}");
         }
     }
 
@@ -227,6 +294,12 @@ public class TreasureChestController : MonoBehaviour
     private void PlayAnimation(bool open)
     {
         if (_animateRoutine != null) StopCoroutine(_animateRoutine);
+        // Prevent Animator from overriding transform if desired
+        if (disableAnimatorOnLid && _lidAnimator != null && _lidAnimator.enabled)
+        {
+            Debug.Log("TreasureChestController: Disabling lid Animator to allow manual rotation.");
+            _lidAnimator.enabled = false;
+        }
         _animateRoutine = StartCoroutine(Animate(open));
     }
 
@@ -237,6 +310,11 @@ public class TreasureChestController : MonoBehaviour
         Quaternion to = open ? _openLocalRotation : _closedLocalRotation;
         float duration = Mathf.Max(0.01f, animationDuration);
         float t = 0f;
+        if (!_physicsOverrideWarned && (_lidRigidbody != null || _lidHingeJoint != null))
+        {
+            Debug.LogWarning("TreasureChestController: Lid has Rigidbody/HingeJoint. Physics may override transform rotation. Consider making the lid kinematic or removing joints, or drive the joint instead.");
+            _physicsOverrideWarned = true;
+        }
         while (t < 1f)
         {
             t += Time.deltaTime / duration;
