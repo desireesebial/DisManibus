@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Unified controller for your chest hierarchy:
@@ -44,6 +45,18 @@ public class TreasureChestController : MonoBehaviour
     public AudioClip unlockClip;
     public AudioClip deniedClip;
 
+    [Header("UI Prompt (Optional)")]
+    [Tooltip("Optional UI.Text for showing interact prompts.")]
+    public Text promptText;
+    [Tooltip("Text shown when player is near chest.")]
+    public string promptInteractText = "Press E to interact";
+    [Tooltip("Text shown when chest is locked and interaction fails.")]
+    public string promptLockedText = "Chest is Locked";
+    [Tooltip("Show the proximity prompt when within interact range (or inside trigger).")]
+    public bool showProximityPrompt = true;
+    [Tooltip("Seconds to show the locked message after failed interaction.")]
+    public float lockedMessageDuration = 1.5f;
+
     // Runtime
     private Camera _playerCamera;
     private DullahanHeadInventory _inventory;
@@ -54,6 +67,7 @@ public class TreasureChestController : MonoBehaviour
     private Quaternion _openLocalRotation;
     private Coroutine _animateRoutine;
     private int _effectiveLayerMask;
+    private Coroutine _lockedMessageRoutine;
 
     [Header("Debug / Reliability")]
     [Tooltip("If true, draws a debug ray from the camera center when pressing the interact key.")]
@@ -162,6 +176,9 @@ public class TreasureChestController : MonoBehaviour
     {
         if (_playerCamera == null) return;
 
+        // Update the on-screen prompt based on proximity
+        UpdatePromptUI();
+
         if (useTrigger)
         {
             if (_playerInTrigger && Input.GetKeyDown(interactKey))
@@ -195,24 +212,93 @@ public class TreasureChestController : MonoBehaviour
         if (didHit)
         {
             Transform t = hit.collider.transform;
-            Transform root = chestRoot != null ? chestRoot : transform;
+            var controller = t.GetComponentInParent<TreasureChestController>();
             Debug.Log($"Raycast hit: {hit.collider.name} on layer {hit.collider.gameObject.layer}. Distance: {hit.distance:F2}");
-            Debug.Log($"Checking if {t.name} is child of {root.name}");
             
-            if (t == root || t.IsChildOf(root))
+            if (controller != null)
             {
-                Debug.Log("Hit detected! Calling Interact()");
-                Interact();
+                Debug.Log("Hit detected! Interacting with chest controller.");
+                if (controller != this) controller.Interact(); else Interact();
             }
             else
             {
-                Debug.Log("Hit object is not part of chest hierarchy");
+                Debug.Log("Hit object is not a chest (no TreasureChestController in parents)");
             }
         }
         else
         {
             Debug.Log($"No raycast/spherecast hit within range {interactRange} on mask {_effectiveLayerMask}");
         }
+    }
+
+    private void UpdatePromptUI()
+    {
+        if (!showProximityPrompt || promptText == null)
+        {
+            return;
+        }
+
+        bool shouldShow = false;
+        if (useTrigger)
+        {
+            // Require being inside trigger and looking at the chest
+            shouldShow = _playerInTrigger && IsLookingAtChest();
+        }
+        else
+        {
+            // Raycast aim only (like notes function)
+            shouldShow = IsLookingAtChest();
+        }
+
+        if (shouldShow)
+        {
+            if (_lockedMessageRoutine == null)
+            {
+                promptText.text = promptInteractText;
+            }
+            if (!promptText.enabled) promptText.enabled = true;
+        }
+        else
+        {
+            if (promptText.enabled) promptText.enabled = false;
+        }
+    }
+
+    private bool IsLookingAtChest()
+    {
+        if (_playerCamera == null) return false;
+        Ray ray = _playerCamera.ScreenPointToRay(new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f));
+        RaycastHit hit;
+        bool didHit = Physics.Raycast(ray, out hit, interactRange, _effectiveLayerMask, QueryTriggerInteraction.Collide);
+        if (!didHit && sphereCastRadius > 0f)
+        {
+            didHit = Physics.SphereCast(ray, sphereCastRadius, out hit, interactRange, _effectiveLayerMask, QueryTriggerInteraction.Collide);
+        }
+        if (!didHit) return false;
+
+        Transform t = hit.collider.transform;
+        var controller = t.GetComponentInParent<TreasureChestController>();
+        return controller == this;
+    }
+
+    private IEnumerator ShowLockedPrompt()
+    {
+        if (promptText == null) yield break;
+
+        // Force show locked text
+        promptText.text = promptLockedText;
+        promptText.enabled = true;
+
+        float timer = 0f;
+        while (timer < lockedMessageDuration)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        _lockedMessageRoutine = null;
+        // After locked message, either show normal prompt (if still in proximity) or hide
+        UpdatePromptUI();
     }
 
     private void Interact()
@@ -244,6 +330,12 @@ public class TreasureChestController : MonoBehaviour
                 Debug.Log("No inventory found");
             }
             PlayClip(deniedClip);
+            // Show temporary locked prompt
+            if (promptText != null)
+            {
+                if (_lockedMessageRoutine != null) StopCoroutine(_lockedMessageRoutine);
+                _lockedMessageRoutine = StartCoroutine(ShowLockedPrompt());
+            }
             return;
         }
 

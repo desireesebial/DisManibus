@@ -382,6 +382,7 @@ public class FirstPersonController : MonoBehaviour
         {
             HeadBob();
         }
+
     }
 
     void FixedUpdate()
@@ -546,6 +547,8 @@ public class FirstPersonController : MonoBehaviour
             joint.localPosition = new Vector3(Mathf.Lerp(joint.localPosition.x, jointOriginalPos.x, Time.deltaTime * bobSpeed), Mathf.Lerp(joint.localPosition.y, jointOriginalPos.y, Time.deltaTime * bobSpeed), Mathf.Lerp(joint.localPosition.z, jointOriginalPos.z, Time.deltaTime * bobSpeed));
         }
     }
+
+
 }
 
 
