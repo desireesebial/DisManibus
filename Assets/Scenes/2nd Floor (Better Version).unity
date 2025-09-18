@@ -382868,7 +382868,7 @@ Transform:
   m_GameObject: {fileID: 919132148141353094}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: -0.7071068}
-  m_LocalPosition: {x: -75.77658, y: 1.9629, z: -27.085398}
+  m_LocalPosition: {x: -75.77658, y: 1.9629, z: -26.86}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -384881,7 +384881,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!1 &2026739370604323388
 GameObject:
@@ -389176,12 +389176,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5572989458782274857}
+  - component: {fileID: 5572989458782274858}
   m_Layer: 0
   m_Name: WoodenBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!64 &5108541414098212247
 MeshCollider:
@@ -390236,6 +390237,58 @@ Transform:
   - {fileID: 2653248071849707761}
   m_Father: {fileID: 290263835}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5572989458782274858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5052173253003878291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13d531fdb70c90f4489ac902bafd4247, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boxRoot: {fileID: 5572989458782274857}
+  lidTransform: {fileID: 6976505436394249040}
+  interactKey: 101
+  interactRange: 5
+  interactMask:
+    serializedVersion: 2
+    m_Bits: 1
+  showProximityPrompt: 1
+  promptText: {fileID: 925080521}
+  promptInteractText: Press E to open
+  slideAxisLocal: {x: 1, y: 0, z: 0}
+  openDistance: 0.4
+  slideDuration: 0.45
+  slideCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  audioSource: {fileID: 0}
+  openClip: {fileID: 0}
+  closeClip: {fileID: 0}
 --- !u!23 &5624656822782716207
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -393709,8 +393762,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7888029219711983633}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: 0.96999997, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.01, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -394869,7 +394922,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &8065455163359944720
 Transform:
@@ -396005,7 +396058,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   interactKey: 101
-  interactRange: 6
+  interactRange: 3
   interactMask:
     serializedVersion: 2
     m_Bits: 1
