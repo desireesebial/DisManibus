@@ -3124,7 +3124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 369474178}
   navMeshAgent: {fileID: 0}
-  animator: {fileID: 0}
+  animator: {fileID: 405520974}
   chantAudio: {fileID: 0}
   detectionRadius: 12
   requireLineOfSight: 1
@@ -3140,6 +3140,11 @@ MonoBehaviour:
       m_Calls: []
   animParamIsMoving: IsMoving
   animTriggerChant: Chant
+--- !u!95 &405520974 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 0d05306381656a34596b2330f55a52f3, type: 3}
+  m_PrefabInstance: {fileID: 405520970}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &410028581
 GameObject:
   m_ObjectHideFlags: 0
