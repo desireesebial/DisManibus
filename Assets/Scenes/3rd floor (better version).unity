@@ -4472,6 +4472,59 @@ Transform:
   - {fileID: 1022197461}
   m_Father: {fileID: 1259482884}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &560531023
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 560531025}
+  - component: {fileID: 560531024}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &560531024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 560531023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 908110b73fd3112458d3d128e89815a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flashlightKey: 116
+  isFlashlightOn: 0
+  lightIntensity: 20
+  lightRange: 10
+  lightColor: {r: 1, g: 1, b: 1, a: 1}
+  lightType: 0
+  spotAngle: 60
+  turnOnSound: {fileID: 0}
+  turnOffSound: {fileID: 0}
+--- !u!4 &560531025
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 560531023}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 34.07173, y: 0, z: 29.61102}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &565241913
 GameObject:
   m_ObjectHideFlags: 0
@@ -171378,3 +171431,4 @@ SceneRoots:
   - {fileID: 305274167}
   - {fileID: 53069398}
   - {fileID: 805708392}
+  - {fileID: 560531025}
