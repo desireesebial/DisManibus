@@ -5,15 +5,15 @@ using UnityEngine.Events;
 /// <summary>
 /// Jenglot behavior:
 /// - Detects and follows the Player within a radius.
-/// - If the Player is using a flashlight (selected in PlayerInventory), Jenglot freezes and does not move.
-/// - If not frozen and in attack range, chants a dark magic attack (event/animation/audio hook).
+/// - Freezes only when actually illuminated by the player's flashlight cone.
+/// - Performs a long-range magic attack while not illuminated.
 ///
 /// Setup:
 /// - Add this component to the Jenglot GameObject.
 /// - Add/assign a NavMeshAgent to the Jenglot.
 /// - Assign the Player (or leave null to auto-find by tag "Player").
 /// - Optionally assign Animator and AudioSource and hook up the OnChantAttack event.
-/// - Ensure the Player has the PlayerInventory component provided in this project.
+/// - Ensure the Player has a FlashlightController (or inventory that manages it) on the player or camera root.
 /// </summary>
 public class JenglotAI : MonoBehaviour
 {
@@ -30,16 +30,26 @@ public class JenglotAI : MonoBehaviour
     [SerializeField] float rotationSpeed = 10f;
 
     [Header("Attack")]
-    [SerializeField] float attackRange = 2.2f;
-    [SerializeField] float attackCooldown = 2.5f;
-    [SerializeField] int attackDamage = 10; // used with SendMessage if receiver implements TakeDamage(int)
+	[Tooltip("Maximum distance for ranged attack.")]
+	[SerializeField] float attackRange = 12f;
+	[Tooltip("Cooldown between ranged attacks.")]
+	[SerializeField] float attackCooldown = 3.5f;
+	[Tooltip("Projectile or raycast damage applied to player.")]
+	[SerializeField] int attackDamage = 10; // used with SendMessage if receiver implements TakeDamage(int)
     [SerializeField] UnityEvent onChantAttack; // hook VFX/SFX or gameplay here
+	[Tooltip("Layer mask for line-of-sight of ranged attack.")]
+	[SerializeField] LayerMask attackObstructionMask = ~0;
+	[Tooltip("If true, uses raycast for instant hit. Otherwise, use projectile prefab if assigned.")]
+	[SerializeField] bool useHitscan = true;
+	[SerializeField] GameObject projectilePrefab; // optional projectile
+	[SerializeField] float projectileSpeed = 20f;
 
     // Animator parameter names (optional)
     [SerializeField] string animParamIsMoving = "IsMoving";
     [SerializeField] string animTriggerChant = "Chant";
 
-    PlayerInventory playerInventory;
+	PlayerInventory playerInventory;
+	FlashlightController flashlightController;
     float lastAttackTime;
 
     void Reset()
@@ -63,8 +73,11 @@ public class JenglotAI : MonoBehaviour
                 player = playerObj.transform;
         }
 
-        if (player != null)
-            playerInventory = player.GetComponent<PlayerInventory>();
+		if (player != null)
+		{
+			playerInventory = player.GetComponent<PlayerInventory>();
+			flashlightController = FindObjectOfType<FlashlightController>();
+		}
     }
 
     void Update()
@@ -73,7 +86,7 @@ public class JenglotAI : MonoBehaviour
             return;
 
         bool playerDetected = IsPlayerDetected();
-        bool frozenByFlashlight = IsFrozenByPlayerFlashlight();
+		bool frozenByFlashlight = IsFrozenByPlayerFlashlight();
 
         if (!playerDetected)
         {
@@ -93,15 +106,15 @@ public class JenglotAI : MonoBehaviour
             return;
         }
 
-        float distance = Vector3.Distance(transform.position, player.position);
-        if (distance <= attackRange)
+		float distance = Vector3.Distance(transform.position, player.position);
+		if (distance <= attackRange)
         {
             // Attack behavior
             navMeshAgent.isStopped = true;
             navMeshAgent.velocity = Vector3.zero;
             SetMoving(false);
             FaceTarget(player.position);
-            TryAttack();
+			TryAttack();
         }
         else
         {
@@ -133,21 +146,24 @@ public class JenglotAI : MonoBehaviour
         return true;
     }
 
-    bool IsFrozenByPlayerFlashlight()
+	bool IsFrozenByPlayerFlashlight()
     {
-        if (playerInventory == null)
-            return false;
+		// Prefer geometric check against actual flashlight light cone if available
+		if (flashlightController != null)
+		{
+			// Ignore self so our own collider does not count as an obstruction
+			return flashlightController.IsIlluminating(transform, true, lineOfSightObstructionMask);
+		}
 
-        // Frozen if the currently selected inventory item is a Flashlight.
-        // This uses your PlayerInventory, no dependence on other inventory systems.
-        var currentItem = playerInventory.GetCurrentItem();
-        if (currentItem == null)
-            return false;
-
-        return currentItem.item_type == itemType.Flashlight;
+		// Fallback: use inventory selection if no controller found
+		if (playerInventory == null)
+			return false;
+		var currentItem = playerInventory.GetCurrentItem();
+		if (currentItem == null) return false;
+		return currentItem.item_type == itemType.Flashlight;
     }
 
-    void TryAttack()
+	void TryAttack()
     {
         if (Time.time - lastAttackTime < attackCooldown)
             return;
@@ -162,10 +178,43 @@ public class JenglotAI : MonoBehaviour
 
         onChantAttack?.Invoke();
 
-        // Optional generic damage call to player, if they implement a compatible method.
-        // The receiver may implement: void TakeDamage(int amount)
-        player.SendMessage("TakeDamage", attackDamage, SendMessageOptions.DontRequireReceiver);
+		// Execute ranged attack
+		if (useHitscan)
+		{
+			PerformHitscan();
+		}
+		else if (projectilePrefab != null)
+		{
+			LaunchProjectile();
+		}
     }
+
+	void PerformHitscan()
+	{
+		Vector3 origin = transform.position + Vector3.up * 1.4f;
+		Vector3 toPlayer = (player.position + Vector3.up * 1.6f) - origin;
+		float maxDist = Mathf.Min(attackRange, toPlayer.magnitude + 0.5f);
+		if (Physics.Raycast(origin, toPlayer.normalized, out RaycastHit hit, maxDist, attackObstructionMask, QueryTriggerInteraction.Ignore))
+		{
+			// Only apply if we actually hit player or one of its children
+			if (hit.transform == player || hit.transform.IsChildOf(player))
+			{
+				player.SendMessage("TakeDamage", attackDamage, SendMessageOptions.DontRequireReceiver);
+			}
+		}
+	}
+
+	void LaunchProjectile()
+	{
+		Vector3 origin = transform.position + Vector3.up * 1.4f;
+		Quaternion rot = Quaternion.LookRotation((player.position + Vector3.up * 1.6f) - origin, Vector3.up);
+		GameObject proj = Instantiate(projectilePrefab, origin, rot);
+		Rigidbody rb = proj.GetComponent<Rigidbody>();
+		if (rb != null)
+		{
+			rb.velocity = proj.transform.forward * projectileSpeed;
+		}
+	}
 
     void FaceTarget(Vector3 worldPosition)
     {
