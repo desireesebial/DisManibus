@@ -3,6 +3,17 @@ using UnityEngine.AI;
 using UnityEngine.Events;
 
 /// <summary>
+/// Jenglot animation states corresponding to available animations
+/// </summary>
+public enum JenglotAnimationState
+{
+    Idle,           // Sitting cross-legged (idle state)
+    Walking,        // Moving toward player
+    SpellCasting,   // Performing ranged attack
+    Frozen          // Illuminated by flashlight (uses idle pose)
+}
+
+/// <summary>
 /// Jenglot behavior:
 /// - Detects and follows the Player within a radius.
 /// - Freezes only when actually illuminated by the player's flashlight cone.
@@ -28,6 +39,12 @@ public class JenglotAI : MonoBehaviour
     [SerializeField] bool requireLineOfSight = true;
     [SerializeField] LayerMask lineOfSightObstructionMask = ~0; // what blocks LOS
     [SerializeField] float rotationSpeed = 10f;
+	[SerializeField, Tooltip("If enabled, once the player is detected, the Jenglot will keep chasing even if LOS is blocked, until the player exceeds loseChaseDistance.")]
+	bool persistentChaseAfterDetection = true;
+	[SerializeField, Tooltip("Distance at which the Jenglot will give up the chase once already chasing. Should be >= detectionRadius.")]
+	float loseChaseDistance = 30f;
+	[SerializeField, Tooltip("If true, the Jenglot will never drop the chase within this scene once detected (ignores loseChaseDistance). It will reset only on scene unload/destroy.")]
+	bool neverDropChaseInScene = true;
 
     [Header("Attack")]
 	[Tooltip("Maximum distance for ranged attack.")]
@@ -44,13 +61,17 @@ public class JenglotAI : MonoBehaviour
 	[SerializeField] GameObject projectilePrefab; // optional projectile
 	[SerializeField] float projectileSpeed = 20f;
 
-    // Animator parameter names (optional)
-    [SerializeField] string animParamIsMoving = "IsMoving";
-    [SerializeField] string animTriggerChant = "Chant";
+    [Header("Animation Parameters")]
+    [Tooltip("Animator parameter for idle/sitting animation (bool) - matches your SittingIdle state")]
+    [SerializeField] string animParamIsIdle = "Idle";
+    [Tooltip("Animator trigger for spell casting animation - matches your AttackAnimation state")]
+    [SerializeField] string animTriggerSpellCast = "Attack";
 
 	PlayerInventory playerInventory;
 	FlashlightController flashlightController;
     float lastAttackTime;
+	bool hasDetectedPlayer;
+    JenglotAnimationState currentAnimationState = JenglotAnimationState.Idle;
 
     void Reset()
     {
@@ -78,6 +99,48 @@ public class JenglotAI : MonoBehaviour
 			playerInventory = player.GetComponent<PlayerInventory>();
 			flashlightController = FindObjectOfType<FlashlightController>();
 		}
+
+        // Debug animator setup
+        DebugAnimatorSetup();
+    }
+
+    void DebugAnimatorSetup()
+    {
+        if (animator == null)
+        {
+            Debug.LogWarning($"[{name}] No Animator assigned! Please assign the Animator component.");
+            return;
+        }
+
+        if (animator.runtimeAnimatorController == null)
+        {
+            Debug.LogWarning($"[{name}] No Animator Controller assigned! Please assign your Controller.controller.");
+            return;
+        }
+
+        Debug.Log($"[{name}] Animator setup OK. Controller: {animator.runtimeAnimatorController.name}");
+        
+        // Check if our parameters exist
+        bool hasIdle = HasParameter(animParamIsIdle);
+        bool hasAttack = HasParameter(animTriggerSpellCast);
+
+        Debug.Log($"[{name}] Animation Parameters: Idle={hasIdle}, Attack={hasAttack}");
+        
+        if (!hasIdle || !hasAttack)
+        {
+            Debug.LogWarning($"[{name}] Missing animation parameters! Add 'Idle' (Bool) and 'Attack' (Trigger) to your Animator Controller.");
+        }
+    }
+
+    bool HasParameter(string paramName)
+    {
+        if (animator == null || string.IsNullOrEmpty(paramName)) return false;
+        
+        foreach (AnimatorControllerParameter param in animator.parameters)
+        {
+            if (param.name == paramName) return true;
+        }
+        return false;
     }
 
     void Update()
@@ -85,13 +148,13 @@ public class JenglotAI : MonoBehaviour
         if (player == null || navMeshAgent == null)
             return;
 
-        bool playerDetected = IsPlayerDetected();
+		bool playerDetected = IsPlayerDetected();
 		bool frozenByFlashlight = IsFrozenByPlayerFlashlight();
 
-        if (!playerDetected)
+		if (!playerDetected)
         {
             // Idle when player not detected
-            SetMoving(false);
+            SetAnimationState(JenglotAnimationState.Idle);
             navMeshAgent.isStopped = true;
             return;
         }
@@ -101,8 +164,10 @@ public class JenglotAI : MonoBehaviour
             // Freeze movement due to flashlight
             navMeshAgent.isStopped = true;
             navMeshAgent.velocity = Vector3.zero;
-            SetMoving(false);
+            navMeshAgent.ResetPath(); // Clear any existing path
+            SetAnimationState(JenglotAnimationState.Frozen);
             FaceTarget(player.position);
+            Debug.Log($"[{name}] FROZEN by flashlight - stopped at position {transform.position}");
             return;
         }
 
@@ -112,7 +177,7 @@ public class JenglotAI : MonoBehaviour
             // Attack behavior
             navMeshAgent.isStopped = true;
             navMeshAgent.velocity = Vector3.zero;
-            SetMoving(false);
+            SetAnimationState(JenglotAnimationState.SpellCasting);
             FaceTarget(player.position);
 			TryAttack();
         }
@@ -121,29 +186,53 @@ public class JenglotAI : MonoBehaviour
             // Follow behavior
             navMeshAgent.isStopped = false;
             navMeshAgent.SetDestination(player.position);
-            SetMoving(true);
+            SetAnimationState(JenglotAnimationState.Walking);
         }
     }
 
-    bool IsPlayerDetected()
+	bool IsPlayerDetected()
     {
-        float distance = Vector3.Distance(transform.position, player.position);
-        if (distance > detectionRadius)
-            return false;
+		float distance = Vector3.Distance(transform.position, player.position);
 
-        if (!requireLineOfSight)
-            return true;
+		// If already chasing and persistent mode is on, keep chasing (optionally forever in-scene)
+		if (persistentChaseAfterDetection && hasDetectedPlayer)
+		{
+			if (neverDropChaseInScene)
+				return true;
 
-        Vector3 origin = transform.position + Vector3.up * 1.6f;
-        Vector3 dir = (player.position + Vector3.up * 1.6f) - origin;
-        float maxDist = dir.magnitude;
-        if (Physics.Raycast(origin, dir.normalized, out RaycastHit hit, maxDist, lineOfSightObstructionMask, QueryTriggerInteraction.Ignore))
-        {
-            // If we hit something that isn't the player, LOS is blocked
-            if (hit.transform != player)
-                return false;
-        }
-        return true;
+			if (loseChaseDistance <= 0f)
+				return true;
+
+			if (distance <= Mathf.Max(detectionRadius, loseChaseDistance))
+				return true;
+
+			// Drop chase only when well beyond the configured distance
+			hasDetectedPlayer = false;
+			return false;
+		}
+
+		// Fresh detection check
+		if (distance > detectionRadius)
+			return false;
+
+		if (!requireLineOfSight)
+		{
+			hasDetectedPlayer = true;
+			return true;
+		}
+
+		Vector3 origin = transform.position + Vector3.up * 1.6f;
+		Vector3 dir = (player.position + Vector3.up * 1.6f) - origin;
+		float maxDist = dir.magnitude;
+		if (Physics.Raycast(origin, dir.normalized, out RaycastHit hit, maxDist, lineOfSightObstructionMask, QueryTriggerInteraction.Ignore))
+		{
+			// If we hit something that isn't the player, LOS is blocked
+			if (hit.transform != player && !hit.transform.IsChildOf(player))
+				return false;
+		}
+
+		hasDetectedPlayer = true;
+		return true;
     }
 
 	bool IsFrozenByPlayerFlashlight()
@@ -152,7 +241,12 @@ public class JenglotAI : MonoBehaviour
 		if (flashlightController != null)
 		{
 			// Ignore self so our own collider does not count as an obstruction
-			return flashlightController.IsIlluminating(transform, true, lineOfSightObstructionMask);
+			bool illuminated = flashlightController.IsIlluminating(transform, true, lineOfSightObstructionMask);
+			if (illuminated)
+			{
+				Debug.Log($"[{name}] Illuminated by flashlight - FREEZING!");
+			}
+			return illuminated;
 		}
 
 		// Fallback: use inventory selection if no controller found
@@ -160,7 +254,12 @@ public class JenglotAI : MonoBehaviour
 			return false;
 		var currentItem = playerInventory.GetCurrentItem();
 		if (currentItem == null) return false;
-		return currentItem.item_type == itemType.Flashlight;
+		bool hasFlashlight = currentItem.item_type == itemType.Flashlight;
+		if (hasFlashlight)
+		{
+			Debug.Log($"[{name}] Player has flashlight selected - FREEZING!");
+		}
+		return hasFlashlight;
     }
 
 	void TryAttack()
@@ -170,8 +269,8 @@ public class JenglotAI : MonoBehaviour
 
         lastAttackTime = Time.time;
 
-        if (animator != null && !string.IsNullOrEmpty(animTriggerChant))
-            animator.SetTrigger(animTriggerChant);
+        if (animator != null && !string.IsNullOrEmpty(animTriggerSpellCast))
+            animator.SetTrigger(animTriggerSpellCast);
 
         if (chantAudio != null)
             chantAudio.Play();
@@ -212,7 +311,7 @@ public class JenglotAI : MonoBehaviour
 		Rigidbody rb = proj.GetComponent<Rigidbody>();
 		if (rb != null)
 		{
-			rb.velocity = proj.transform.forward * projectileSpeed;
+			rb.linearVelocity = proj.transform.forward * projectileSpeed;
 		}
 	}
 
@@ -226,10 +325,38 @@ public class JenglotAI : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
     }
 
-    void SetMoving(bool isMoving)
+    void SetAnimationState(JenglotAnimationState newState)
     {
-        if (animator != null && !string.IsNullOrEmpty(animParamIsMoving))
-            animator.SetBool(animParamIsMoving, isMoving);
+        if (currentAnimationState == newState) return;
+        
+        Debug.Log($"[{name}] Animation State: {currentAnimationState} → {newState}");
+        currentAnimationState = newState;
+        
+        if (animator == null) return;
+        
+        // Handle different states properly
+        switch (newState)
+        {
+            case JenglotAnimationState.Idle:
+            case JenglotAnimationState.Walking:
+            case JenglotAnimationState.Frozen:
+                // All use the sitting idle animation
+                if (!string.IsNullOrEmpty(animParamIsIdle))
+                {
+                    animator.SetBool(animParamIsIdle, true);
+                    Debug.Log($"[{name}] Set {animParamIsIdle} = true (State: {newState})");
+                }
+                break;
+                
+            case JenglotAnimationState.SpellCasting:
+                // Attack trigger will be fired in TryAttack(), keep idle as base
+                if (!string.IsNullOrEmpty(animParamIsIdle))
+                {
+                    animator.SetBool(animParamIsIdle, true);
+                    Debug.Log($"[{name}] Set {animParamIsIdle} = true (State: {newState} - ready for attack trigger)");
+                }
+                break;
+        }
     }
 
     void OnDrawGizmosSelected()

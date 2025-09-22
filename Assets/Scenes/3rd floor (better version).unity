@@ -3092,6 +3092,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: f739bc11ee520c642910c024ec3ea6e4, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 0d05306381656a34596b2330f55a52f3, type: 3}
+      propertyPath: m_AnimatePhysics
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3099,6 +3103,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 0d05306381656a34596b2330f55a52f3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 405520973}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 0d05306381656a34596b2330f55a52f3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 405520975}
   m_SourcePrefab: {fileID: 100100000, guid: 0d05306381656a34596b2330f55a52f3, type: 3}
 --- !u!4 &405520971 stripped
 Transform:
@@ -3123,7 +3130,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 369474178}
-  navMeshAgent: {fileID: 0}
+  navMeshAgent: {fileID: 405520975}
   animator: {fileID: 405520974}
   chantAudio: {fileID: 0}
   detectionRadius: 12
@@ -3132,19 +3139,50 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   rotationSpeed: 10
+  persistentChaseAfterDetection: 1
+  loseChaseDistance: 30
+  neverDropChaseInScene: 1
   attackRange: 2.2
   attackCooldown: 2.5
   attackDamage: 10
   onChantAttack:
     m_PersistentCalls:
       m_Calls: []
-  animParamIsMoving: IsMoving
-  animTriggerChant: Chant
+  attackObstructionMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  useHitscan: 1
+  projectilePrefab: {fileID: 0}
+  projectileSpeed: 20
+  animParamIsIdle: SittingIdle
+  animTriggerSpellCast: AttackAnimation
 --- !u!95 &405520974 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 0d05306381656a34596b2330f55a52f3, type: 3}
   m_PrefabInstance: {fileID: 405520970}
   m_PrefabAsset: {fileID: 0}
+--- !u!195 &405520975
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 405520972}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 240
+  m_StoppingDistance: 0.5
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &410028581
 GameObject:
   m_ObjectHideFlags: 0
@@ -4510,6 +4548,11 @@ MonoBehaviour:
   spotAngle: 60
   turnOnSound: {fileID: 0}
   turnOffSound: {fileID: 0}
+  batteryCapacitySeconds: 60
+  batterySecondsRemaining: 20
+  rechargeDelaySeconds: 5
+  rechargeRatePerSecond: 5
+  lockUseWhenDepleted: 1
 --- !u!4 &560531025
 Transform:
   m_ObjectHideFlags: 0
