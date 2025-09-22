@@ -3094,7 +3094,7 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: f739bc11ee520c642910c024ec3ea6e4, type: 2}
     - target: {fileID: 5866666021909216657, guid: 0d05306381656a34596b2330f55a52f3, type: 3}
       propertyPath: m_AnimatePhysics
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3133,15 +3133,17 @@ MonoBehaviour:
   navMeshAgent: {fileID: 405520975}
   animator: {fileID: 405520974}
   chantAudio: {fileID: 0}
-  detectionRadius: 12
+  detectionRadius: 18
   requireLineOfSight: 1
   lineOfSightObstructionMask:
     serializedVersion: 2
     m_Bits: 4294967295
   rotationSpeed: 10
   persistentChaseAfterDetection: 1
-  loseChaseDistance: 30
+  loseChaseDistance: 999
   neverDropChaseInScene: 1
+  requireDirectIllumination: 1
+  stayFrozenUntilFlashlightOff: 1
   attackRange: 2.2
   attackCooldown: 2.5
   attackDamage: 10
@@ -3175,7 +3177,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 240
-  m_StoppingDistance: 0.5
+  m_StoppingDistance: 1.5
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -4541,17 +4543,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flashlightKey: 116
   isFlashlightOn: 0
-  lightIntensity: 20
-  lightRange: 10
+  lightIntensity: 60
+  lightRange: 100
   lightColor: {r: 1, g: 1, b: 1, a: 1}
   lightType: 0
   spotAngle: 60
   turnOnSound: {fileID: 0}
   turnOffSound: {fileID: 0}
-  batteryCapacitySeconds: 60
-  batterySecondsRemaining: 20
-  rechargeDelaySeconds: 5
-  rechargeRatePerSecond: 5
+  batteryCapacitySeconds: 10
+  batterySecondsRemaining: 10
+  rechargeDelaySeconds: 3
+  rechargeRatePerSecond: 0.3
   lockUseWhenDepleted: 1
 --- !u!4 &560531025
 Transform:

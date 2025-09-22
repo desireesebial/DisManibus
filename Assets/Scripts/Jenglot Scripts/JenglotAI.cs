@@ -46,6 +46,12 @@ public class JenglotAI : MonoBehaviour
 	[SerializeField, Tooltip("If true, the Jenglot will never drop the chase within this scene once detected (ignores loseChaseDistance). It will reset only on scene unload/destroy.")]
 	bool neverDropChaseInScene = true;
 
+    [Header("Flashlight Behavior")]
+    [SerializeField, Tooltip("If true, Jenglot only freezes when directly illuminated. If false, Jenglot freezes whenever flashlight is ON (regardless of direction).")]
+    bool requireDirectIllumination = true;
+    [SerializeField, Tooltip("If true, once frozen by flashlight, Jenglot stays frozen until flashlight is turned OFF completely.")]
+    bool stayFrozenUntilFlashlightOff = true;
+
     [Header("Attack")]
 	[Tooltip("Maximum distance for ranged attack.")]
 	[SerializeField] float attackRange = 12f;
@@ -72,6 +78,7 @@ public class JenglotAI : MonoBehaviour
     float lastAttackTime;
 	bool hasDetectedPlayer;
     JenglotAnimationState currentAnimationState = JenglotAnimationState.Idle;
+    bool wasFrozenByFlashlight = false; // Track if we were frozen to maintain freeze state
 
     void Reset()
     {
@@ -129,6 +136,18 @@ public class JenglotAI : MonoBehaviour
         if (!hasIdle || !hasAttack)
         {
             Debug.LogWarning($"[{name}] Missing animation parameters! Add 'Idle' (Bool) and 'Attack' (Trigger) to your Animator Controller.");
+        }
+
+        // Debug current animator state
+        var currentState = animator.GetCurrentAnimatorStateInfo(0);
+        Debug.Log($"[{name}] Current Animation State: {currentState.shortNameHash} (normalized time: {currentState.normalizedTime})");
+        
+        // Debug all available states
+        Debug.Log($"[{name}] Available states in controller:");
+        for (int i = 0; i < animator.layerCount; i++)
+        {
+            var stateMachine = animator.GetBehaviour<UnityEngine.StateMachineBehaviour>();
+            Debug.Log($"  Layer {i}: {animator.GetLayerName(i)}");
         }
     }
 
@@ -237,29 +256,63 @@ public class JenglotAI : MonoBehaviour
 
 	bool IsFrozenByPlayerFlashlight()
     {
-		// Prefer geometric check against actual flashlight light cone if available
+		bool isFlashlightOn = false;
+		bool isIlluminated = false;
+
+		// Check if flashlight is on and optionally if we're illuminated
 		if (flashlightController != null)
 		{
-			// Ignore self so our own collider does not count as an obstruction
-			bool illuminated = flashlightController.IsIlluminating(transform, true, lineOfSightObstructionMask);
-			if (illuminated)
+			isFlashlightOn = flashlightController.IsFlashlightOn();
+			
+			if (requireDirectIllumination)
 			{
-				Debug.Log($"[{name}] Illuminated by flashlight - FREEZING!");
+				// Only freeze when directly illuminated
+				isIlluminated = flashlightController.IsIlluminating(transform, true, lineOfSightObstructionMask);
 			}
-			return illuminated;
+			else
+			{
+				// Freeze whenever flashlight is on (regardless of direction)
+				isIlluminated = isFlashlightOn;
+			}
+		}
+		else
+		{
+			// Fallback: use inventory selection if no controller found
+			if (playerInventory != null)
+			{
+				var currentItem = playerInventory.GetCurrentItem();
+				isFlashlightOn = currentItem != null && currentItem.item_type == itemType.Flashlight;
+				isIlluminated = isFlashlightOn;
+			}
 		}
 
-		// Fallback: use inventory selection if no controller found
-		if (playerInventory == null)
-			return false;
-		var currentItem = playerInventory.GetCurrentItem();
-		if (currentItem == null) return false;
-		bool hasFlashlight = currentItem.item_type == itemType.Flashlight;
-		if (hasFlashlight)
+		// Handle persistent freezing logic
+		if (stayFrozenUntilFlashlightOff)
 		{
-			Debug.Log($"[{name}] Player has flashlight selected - FREEZING!");
+			if (isIlluminated && !wasFrozenByFlashlight)
+			{
+				// First time being illuminated - start freeze
+				wasFrozenByFlashlight = true;
+				Debug.Log($"[{name}] First illumination - FREEZING until flashlight turns OFF!");
+			}
+			else if (!isFlashlightOn && wasFrozenByFlashlight)
+			{
+				// Flashlight turned off - unfreeze
+				wasFrozenByFlashlight = false;
+				Debug.Log($"[{name}] Flashlight turned OFF - UNFREEZING!");
+			}
+			
+			return wasFrozenByFlashlight;
 		}
-		return hasFlashlight;
+		else
+		{
+			// Standard behavior - freeze only when illuminated
+			if (isIlluminated)
+			{
+				Debug.Log($"[{name}] Currently illuminated - FREEZING!");
+			}
+			return isIlluminated;
+		}
     }
 
 	void TryAttack()
@@ -345,6 +398,10 @@ public class JenglotAI : MonoBehaviour
                 {
                     animator.SetBool(animParamIsIdle, true);
                     Debug.Log($"[{name}] Set {animParamIsIdle} = true (State: {newState})");
+                    
+                    // Verify the parameter was actually set
+                    bool actualValue = animator.GetBool(animParamIsIdle);
+                    Debug.Log($"[{name}] Verified {animParamIsIdle} actual value: {actualValue}");
                 }
                 break;
                 
@@ -357,6 +414,10 @@ public class JenglotAI : MonoBehaviour
                 }
                 break;
         }
+        
+        // Debug current animator state after parameter change
+        var stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        Debug.Log($"[{name}] After parameter change - Current state hash: {stateInfo.shortNameHash}, IsName('SittingIdle'): {stateInfo.IsName("SittingIdle")}, IsName('AttackAnimation'): {stateInfo.IsName("AttackAnimation")}");
     }
 
     void OnDrawGizmosSelected()
