@@ -561,6 +561,11 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!4 &164413096 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4459864850019384738, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+  m_PrefabInstance: {fileID: 1947632594}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &209922835
 Transform:
   m_ObjectHideFlags: 0
@@ -396796,7 +396801,7 @@ Transform:
   m_GameObject: {fileID: 7581042978786423373}
   serializedVersion: 2
   m_LocalRotation: {x: -0.00000003774895, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.0412483, y: 10.52, z: 27.564941}
+  m_LocalPosition: {x: 4.0412483, y: 11.25, z: 27.564941}
   m_LocalScale: {x: 500, y: 500, z: 500}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -397449,6 +397454,7 @@ GameObject:
   - component: {fileID: 7097275817569872119}
   - component: {fileID: 6183808793193211730}
   - component: {fileID: 8229688525241914264}
+  - component: {fileID: 8229688525241914265}
   m_Layer: 0
   m_Name: Kamatayan
   m_TagString: Untagged
@@ -398106,6 +398112,43 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &8229688525241914265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7581042978786423373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14f7ada9119f41346be3000888639e67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 164413096}
+  navMeshAgent: {fileID: 0}
+  animator: {fileID: 0}
+  patrolWaypoints: []
+  waitTimeAtWaypoint: 2
+  patrolSpeed: 3.5
+  useRandomPatrol: 0
+  autoPatrolRadius: 20
+  detectionRadius: 15
+  lookingInterval: 5
+  lookingDuration: 3
+  requireLineOfSight: 1
+  lineOfSightObstructionMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  rotationSpeed: 2
+  fieldOfViewAngle: 60
+  chaseSpeed: 6
+  loseChaseDistance: 25
+  chaseTimeout: 30
+  persistentChase: 1
+  animParamIsIdle: IsIdle
+  animParamIsWalking: IsWalking
+  animParamIsLooking: IsLooking
+  animParamIsChasing: IsChasing
 --- !u!4 &8230934492284542711
 Transform:
   m_ObjectHideFlags: 0
