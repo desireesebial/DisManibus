@@ -22,6 +22,10 @@ public class NotePileSwiper : MonoBehaviour
     public float nextPagePopOffset = 10f;
     public float nextPagePopScale = 1.02f;
 
+    [Header("Behavior")]
+    [Tooltip("If true, the last remaining page cannot be swiped away. Use interaction to show the final note instead.")]
+    public bool keepLastPage = true;
+
     [Header("Cancel / Resume")] 
     public KeyCode cancelKey = KeyCode.Escape;
     [Tooltip("Persist remaining pages across sessions using PlayerPrefs")] public bool persistProgress = true;
@@ -90,11 +94,17 @@ public class NotePileSwiper : MonoBehaviour
 
         if (Input.GetKeyDown(swipeLeftKey) || Input.GetKeyDown(swipeLeftAlt))
         {
-            StartCoroutine(SwipeTopPage(-1f));
+            if (!(keepLastPage && pilePages.Count <= 1))
+            {
+                StartCoroutine(SwipeTopPage(-1f));
+            }
         }
         else if (Input.GetKeyDown(swipeRightKey) || Input.GetKeyDown(swipeRightAlt))
         {
-            StartCoroutine(SwipeTopPage(1f));
+            if (!(keepLastPage && pilePages.Count <= 1))
+            {
+                StartCoroutine(SwipeTopPage(1f));
+            }
         }
     }
 
@@ -132,6 +142,7 @@ public class NotePileSwiper : MonoBehaviour
     private IEnumerator SwipeTopPage(float direction)
     {
         if (pilePages.Count == 0) yield break;
+        if (keepLastPage && pilePages.Count <= 1) yield break;
 
         isAnimating = true;
 
@@ -221,6 +232,16 @@ public class NotePileSwiper : MonoBehaviour
             if (top != null) top.gameObject.SetActive(false);
             pilePages.RemoveAt(i);
         }
+    }
+
+    public bool IsOnlyLastPageRemaining()
+    {
+        return pilePages != null && pilePages.Count <= 1;
+    }
+
+    public bool IsCleared()
+    {
+        return pilePages == null || pilePages.Count == 0;
     }
 }
 

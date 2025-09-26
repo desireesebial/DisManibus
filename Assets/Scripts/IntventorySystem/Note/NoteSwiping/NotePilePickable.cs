@@ -114,13 +114,23 @@ public class NotePilePickable : MonoBehaviour
             return;
         }
 
+        // If cleared or only the last page remains and we keep it, show final note instead of enabling swipe
+        if ((pileSwiper.keepLastPage && pileSwiper.IsOnlyLastPageRemaining()) || pileSwiper.IsCleared())
+        {
+            if (pileSwiper.finalNote != null && pileSwiper.noteUI != null)
+            {
+                pileSwiper.noteUI.ShowNote(pileSwiper.finalNote);
+            }
+            return;
+        }
+
         isActiveSession = true;
         HideInteractionUI();
         ChangeCrosshairColor(false);
 
         DisablePlayerControls();
 
-        if (pileCanvas != null) pileCanvas.enabled = true;
+        if (pileCanvas != null) pileCanvas.gameObject.SetActive(true);
         pileSwiper.ActivatePile(true);
     }
 
@@ -158,7 +168,7 @@ public class NotePilePickable : MonoBehaviour
     void RestoreSession()
     {
         isActiveSession = false;
-        if (pileCanvas != null) pileCanvas.enabled = false;
+        if (pileCanvas != null) pileCanvas.gameObject.SetActive(false);
         pileSwiper.ActivatePile(false);
         EnablePlayerControls();
     }
