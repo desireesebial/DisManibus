@@ -2592,10 +2592,12 @@ MonoBehaviour:
   isOpen: 0
   isLocked: 0
   requiredKeyID: -1
+  requiredKeyItem: {fileID: 0}
   requiredKeySOId: 
   consumeKeyOnUnlock: 0
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
+  requireSelectedNumericKey: 0
   linkedDoors: []
   autoLinkDoors: 0
   doorAnimator: {fileID: 0}
@@ -2603,8 +2605,8 @@ MonoBehaviour:
   doorOpenSound: {fileID: 0}
   doorCloseSound: {fileID: 0}
   doorLockedSound: {fileID: 0}
-  interactionUI: {fileID: 0}
-  interactionText: {fileID: 0}
+  interactionUI: {fileID: 1194947264}
+  interactionText: {fileID: 664776773}
   openText: Press E to open
   closeText: Press E to close
   lockedText: Door is locked
@@ -3145,9 +3147,9 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: 8030108961325689674, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
     m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 4459864850019384738, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 4749706098350693}
+    - targetCorrespondingSourceObject: {fileID: 2749210433660060874, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+      insertIndex: 2
+      addedObject: {fileID: 664776771}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 4459864850019384750, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       insertIndex: -1
@@ -3259,6 +3261,9 @@ MonoBehaviour:
   - {fileID: 369474181}
   - {fileID: 369474180}
   prazdnySlotImage: {fileID: 0}
+  selectedItemNameText: {fileID: 0}
+  selectedItemNameVisibleSeconds: 2
+  setHandVisualsToIgnoreRaycast: 0
   throwItemKey: 103
   pickUpItemKey: 101
   keys_item: {fileID: 0}
@@ -3267,8 +3272,10 @@ MonoBehaviour:
   keys_prefab: {fileID: 0}
   document_prefab: {fileID: 0}
   flashlight_prefab: {fileID: 0}
+  enableDropping: 1
   throwObject_gameobject: {fileID: 0}
   throwForce: 5
+  keyVisuals: []
 --- !u!1 &371958863
 GameObject:
   m_ObjectHideFlags: 0
@@ -143358,6 +143365,144 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 658474836}
   m_Mesh: {fileID: 4300002, guid: 525e42c8aa5e52e4ea137bc78720fcfc, type: 3}
+--- !u!1 &664776770
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 664776771}
+  - component: {fileID: 664776772}
+  - component: {fileID: 664776773}
+  m_Layer: 5
+  m_Name: DoorPrompt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &664776771
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 664776770}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1194947263}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -56, y: -100}
+  m_SizeDelta: {x: 200, y: 50}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &664776772
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 664776770}
+  m_CullTransparentMesh: 1
+--- !u!114 &664776773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 664776770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: 'Press E to Interact Door
+
+'
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 36
+  m_fontSizeBase: 36
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 0, y: 0, z: -212.36386, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &666097681
 GameObject:
   m_ObjectHideFlags: 0
@@ -144022,15 +144167,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67ed09e9b3cd061469ff7d1ed4eb18b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  openAngle: -90
+  openAngle: 90
   openSpeed: 2
   isOpen: 0
-  isLocked: 0
-  requiredKeyID: -1
+  isLocked: 1
+  requiredKeyID: 200
+  requiredKeyItem: {fileID: 11400000, guid: a281c33297b37774aa624e402d4cb8aa, type: 2}
   requiredKeySOId: 
-  consumeKeyOnUnlock: 0
+  consumeKeyOnUnlock: 1
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
+  requireSelectedNumericKey: 0
   linkedDoors:
   - {fileID: 8577619685409900200}
   autoLinkDoors: 0
@@ -144039,8 +144186,8 @@ MonoBehaviour:
   doorOpenSound: {fileID: 0}
   doorCloseSound: {fileID: 0}
   doorLockedSound: {fileID: 0}
-  interactionUI: {fileID: 0}
-  interactionText: {fileID: 0}
+  interactionUI: {fileID: 1194947264}
+  interactionText: {fileID: 664776773}
   openText: Press E to open
   closeText: Press E to close
   lockedText: Door is locked
@@ -147594,6 +147741,16 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1185209198}
   m_Mesh: {fileID: 4300002, guid: ae1057f934c75a249ae1a6462f310568, type: 3}
+--- !u!224 &1194947263 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 2749210433660060874, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+  m_PrefabInstance: {fileID: 369474177}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1194947264 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2453725463930292059, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+  m_PrefabInstance: {fileID: 369474177}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1206334566
 GameObject:
   m_ObjectHideFlags: 0
@@ -296233,11 +296390,11 @@ Transform:
   m_GameObject: {fileID: 1623855245836243}
   serializedVersion: 2
   m_LocalRotation: {x: -0.00000003774895, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -101.22282, y: 12.7203, z: -116.15754}
+  m_LocalPosition: {x: -92, y: 16.0203, z: -56}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 369474178}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4759321084150198
 Transform:
@@ -303819,10 +303976,12 @@ MonoBehaviour:
   isOpen: 0
   isLocked: 0
   requiredKeyID: -1
+  requiredKeyItem: {fileID: 0}
   requiredKeySOId: 
   consumeKeyOnUnlock: 0
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
+  requireSelectedNumericKey: 0
   linkedDoors: []
   autoLinkDoors: 0
   doorAnimator: {fileID: 0}
@@ -303830,8 +303989,8 @@ MonoBehaviour:
   doorOpenSound: {fileID: 0}
   doorCloseSound: {fileID: 0}
   doorLockedSound: {fileID: 0}
-  interactionUI: {fileID: 0}
-  interactionText: {fileID: 0}
+  interactionUI: {fileID: 1194947264}
+  interactionText: {fileID: 664776773}
   openText: Press E to open
   closeText: Press E to close
   lockedText: Door is locked
@@ -304007,10 +304166,12 @@ MonoBehaviour:
   isOpen: 0
   isLocked: 0
   requiredKeyID: -1
+  requiredKeyItem: {fileID: 0}
   requiredKeySOId: 
   consumeKeyOnUnlock: 0
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
+  requireSelectedNumericKey: 0
   linkedDoors: []
   autoLinkDoors: 0
   doorAnimator: {fileID: 0}
@@ -305098,10 +305259,12 @@ MonoBehaviour:
   isOpen: 0
   isLocked: 0
   requiredKeyID: -1
+  requiredKeyItem: {fileID: 0}
   requiredKeySOId: 
   consumeKeyOnUnlock: 0
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
+  requireSelectedNumericKey: 0
   linkedDoors: []
   autoLinkDoors: 0
   doorAnimator: {fileID: 0}
@@ -305109,8 +305272,8 @@ MonoBehaviour:
   doorOpenSound: {fileID: 0}
   doorCloseSound: {fileID: 0}
   doorLockedSound: {fileID: 0}
-  interactionUI: {fileID: 0}
-  interactionText: {fileID: 0}
+  interactionUI: {fileID: 1194947264}
+  interactionText: {fileID: 664776773}
   openText: Press E to open
   closeText: Press E to close
   lockedText: Door is locked
@@ -305176,10 +305339,12 @@ MonoBehaviour:
   isOpen: 0
   isLocked: 0
   requiredKeyID: -1
+  requiredKeyItem: {fileID: 0}
   requiredKeySOId: 
   consumeKeyOnUnlock: 0
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
+  requireSelectedNumericKey: 0
   linkedDoors: []
   autoLinkDoors: 0
   doorAnimator: {fileID: 0}
@@ -305187,8 +305352,8 @@ MonoBehaviour:
   doorOpenSound: {fileID: 0}
   doorCloseSound: {fileID: 0}
   doorLockedSound: {fileID: 0}
-  interactionUI: {fileID: 0}
-  interactionText: {fileID: 0}
+  interactionUI: {fileID: 1194947264}
+  interactionText: {fileID: 664776773}
   openText: Press E to open
   closeText: Press E to close
   lockedText: Door is locked
@@ -309087,6 +309252,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4135971101874858595}
+  - component: {fileID: 4135971101874858596}
   m_Layer: 0
   m_Name: LeatherTrunk
   m_TagString: Untagged
@@ -309393,6 +309559,70 @@ Transform:
   - {fileID: 4838852226377897385}
   m_Father: {fileID: 354147573}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4135971101874858596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3615892840002384089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3aa2309c46243d149addf2632920d18f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chestRoot: {fileID: 4135971101874858595}
+  lidTransform: {fileID: 8157775978710756901}
+  lockVisual: {fileID: 0}
+  startLocked: 0
+  requiredKey: {fileID: 0}
+  consumeKeyOnUnlock: 0
+  openLocalEulerOffset: {x: -89, y: 0, z: 0}
+  animationDuration: 0.6
+  animationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  interactKey: 101
+  interactRange: 4
+  interactMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  useTrigger: 0
+  playerTag: Player
+  audioSource: {fileID: 0}
+  openClip: {fileID: 0}
+  closeClip: {fileID: 0}
+  unlockClip: {fileID: 0}
+  deniedClip: {fileID: 0}
+  promptText: {fileID: 0}
+  promptInteractText: Press E to interact
+  promptLockedText: Chest is Locked
+  showProximityPrompt: 1
+  lockedMessageDuration: 1.5
+  debugDrawRay: 0
+  sphereCastRadius: 0.15
+  disableAnimatorOnLid: 1
 --- !u!4 &4135971101959360367
 Transform:
   m_ObjectHideFlags: 0
@@ -309666,6 +309896,7 @@ GameObject:
   - component: {fileID: 9071211020110937290}
   - component: {fileID: 6487326503418906624}
   - component: {fileID: 3856872904003719172}
+  - component: {fileID: 9071211020110937291}
   m_Layer: 0
   m_Name: Infirmary Key
   m_TagString: Untagged
@@ -311258,13 +311489,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7784806037423318898}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.5, y: -0.49999997, z: -0.5, w: -0.5}
+  m_LocalRotation: {x: -0.5, y: 0.5, z: 0.5, w: 0.5}
   m_LocalPosition: {x: 0, y: 0.5987469, z: -0.041932106}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 268324279445566616}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 90}
 --- !u!1 &7471742834066106884
 GameObject:
   m_ObjectHideFlags: 0
@@ -311724,7 +311955,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 96585288858230127}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: -0.7071068}
+  m_LocalRotation: {x: -0.70090926, y: 0, z: 0, w: 0.7132505}
   m_LocalPosition: {x: 0.00000024098608, y: 0.033638075, z: -0.33906558}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -311732,7 +311963,7 @@ Transform:
   - {fileID: 7576841388295163081}
   - {fileID: 8957141226492908595}
   m_Father: {fileID: 4838852226377897385}
-  m_LocalEulerAnglesHint: {x: 270, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -89, y: 0, z: 0}
 --- !u!4 &8157775978796239657
 Transform:
   m_ObjectHideFlags: 0
@@ -312138,15 +312369,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67ed09e9b3cd061469ff7d1ed4eb18b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  openAngle: 90
+  openAngle: -90
   openSpeed: 2
   isOpen: 0
-  isLocked: 0
-  requiredKeyID: -1
-  requiredKeySOId: 
-  consumeKeyOnUnlock: 0
+  isLocked: 1
+  requiredKeyID: 200
+  requiredKeyItem: {fileID: 11400000, guid: a281c33297b37774aa624e402d4cb8aa, type: 2}
+  requiredKeySOId: 200
+  consumeKeyOnUnlock: 1
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
+  requireSelectedNumericKey: 0
   linkedDoors:
   - {fileID: 704869731}
   autoLinkDoors: 0
@@ -312155,8 +312388,8 @@ MonoBehaviour:
   doorOpenSound: {fileID: 0}
   doorCloseSound: {fileID: 0}
   doorLockedSound: {fileID: 0}
-  interactionUI: {fileID: 0}
-  interactionText: {fileID: 0}
+  interactionUI: {fileID: 1194947264}
+  interactionText: {fileID: 664776773}
   openText: Press E to open
   closeText: Press E to close
   lockedText: Door is locked
@@ -312436,6 +312669,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4685821025146726869}
   m_Mesh: {fileID: 7265974592398154989, guid: 2c5e779568bc06c4d947ac355f408a35, type: 3}
+--- !u!114 &9071211020110937291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4685821025146726869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19f4cc7e64dc0ca4eb9d7485e1476f06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemScriptableObject: {fileID: 11400000, guid: a281c33297b37774aa624e402d4cb8aa, type: 2}
+  highlightEffect: {fileID: 0}
 --- !u!1 &9073903622470940114
 GameObject:
   m_ObjectHideFlags: 0
@@ -312550,6 +312797,7 @@ SceneRoots:
   - {fileID: 2125209887}
   - {fileID: 4373200964293738}
   - {fileID: 369474177}
+  - {fileID: 4749706098350693}
   - {fileID: 648577865}
   - {fileID: 2119071027}
   - {fileID: 7891334001122010280}
