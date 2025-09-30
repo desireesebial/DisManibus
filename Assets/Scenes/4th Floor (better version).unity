@@ -302474,6 +302474,9 @@ MonoBehaviour:
   - {fileID: 1947632597}
   - {fileID: 1947632596}
   prazdnySlotImage: {fileID: 0}
+  selectedItemNameText: {fileID: 0}
+  selectedItemNameVisibleSeconds: 2
+  setHandVisualsToIgnoreRaycast: 0
   throwItemKey: 103
   pickUpItemKey: 101
   keys_item: {fileID: 0}
@@ -302482,8 +302485,10 @@ MonoBehaviour:
   keys_prefab: {fileID: 0}
   document_prefab: {fileID: 0}
   flashlight_prefab: {fileID: 0}
+  enableDropping: 1
   throwObject_gameobject: {fileID: 0}
   throwForce: 5
+  keyVisuals: []
 --- !u!1 &1558362413
 GameObject:
   m_ObjectHideFlags: 0
@@ -311031,10 +311036,12 @@ MonoBehaviour:
   isOpen: 0
   isLocked: 1
   requiredKeyID: -1
+  requiredKeyItem: {fileID: 0}
   requiredKeySOId: 
   consumeKeyOnUnlock: 0
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
+  requireSelectedNumericKey: 0
   linkedDoors: []
   autoLinkDoors: 0
   doorAnimator: {fileID: 0}
@@ -568542,10 +568549,12 @@ MonoBehaviour:
   isOpen: 0
   isLocked: 1
   requiredKeyID: -1
+  requiredKeyItem: {fileID: 0}
   requiredKeySOId: 
   consumeKeyOnUnlock: 0
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 1
+  requireSelectedNumericKey: 0
   linkedDoors: []
   autoLinkDoors: 0
   doorAnimator: {fileID: 0}
@@ -568965,10 +568974,12 @@ MonoBehaviour:
   isOpen: 0
   isLocked: 1
   requiredKeyID: -1
+  requiredKeyItem: {fileID: 0}
   requiredKeySOId: 
   consumeKeyOnUnlock: 0
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 1
+  requireSelectedNumericKey: 0
   linkedDoors: []
   autoLinkDoors: 0
   doorAnimator: {fileID: 0}
@@ -569388,10 +569399,12 @@ MonoBehaviour:
   isOpen: 0
   isLocked: 0
   requiredKeyID: -1
+  requiredKeyItem: {fileID: 0}
   requiredKeySOId: 
   consumeKeyOnUnlock: 0
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
+  requireSelectedNumericKey: 0
   linkedDoors: []
   autoLinkDoors: 0
   doorAnimator: {fileID: 0}
@@ -569520,10 +569533,12 @@ MonoBehaviour:
   isOpen: 0
   isLocked: 1
   requiredKeyID: -1
+  requiredKeyItem: {fileID: 0}
   requiredKeySOId: 
   consumeKeyOnUnlock: 0
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 1
+  requireSelectedNumericKey: 0
   linkedDoors: []
   autoLinkDoors: 0
   doorAnimator: {fileID: 0}
@@ -570007,10 +570022,12 @@ MonoBehaviour:
   isOpen: 0
   isLocked: 1
   requiredKeyID: -1
+  requiredKeyItem: {fileID: 0}
   requiredKeySOId: 
   consumeKeyOnUnlock: 0
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 1
+  requireSelectedNumericKey: 0
   linkedDoors: []
   autoLinkDoors: 0
   doorAnimator: {fileID: 0}
@@ -580501,6 +580518,7 @@ GameObject:
   - component: {fileID: 6183808793193211730}
   - component: {fileID: 8229688525241914264}
   - component: {fileID: 8229688525241914265}
+  - component: {fileID: 8229688525241914266}
   m_Layer: 0
   m_Name: Kamatayan
   m_TagString: Untagged
@@ -581102,7 +581120,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 164413096}
-  navMeshAgent: {fileID: 0}
+  navMeshAgent: {fileID: 8229688525241914266}
   animator: {fileID: 0}
   patrolWaypoints: []
   waitTimeAtWaypoint: 2
@@ -581126,6 +581144,28 @@ MonoBehaviour:
   animParamIsWalking: IsWalking
   animParamIsLooking: IsLooking
   animParamIsChasing: IsChasing
+--- !u!195 &8229688525241914266
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7581042978786423373}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.0075285174
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 0.01903538
+  m_BaseOffset: 0.00951769
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!4 &8230934492284542711
 Transform:
   m_ObjectHideFlags: 0
