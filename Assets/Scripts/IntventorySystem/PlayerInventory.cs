@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class PlayerInventory : MonoBehaviour
 {
@@ -19,6 +21,11 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField] Image[] inventoryBackgroundImage = new Image[5];
     [SerializeField] Sprite prazdnySlotImage; // Keep original name for compatibility
 
+    [Header("Selected Item UI (Optional)")]
+    [SerializeField] TextMeshProUGUI selectedItemNameText;
+    [SerializeField] float selectedItemNameVisibleSeconds = 2f;
+    [SerializeField] bool setHandVisualsToIgnoreRaycast = false; // optional safety; off by default
+
     [Header("Input Keys")]
     [SerializeField] KeyCode throwItemKey = KeyCode.G;
     [SerializeField] KeyCode pickUpItemKey = KeyCode.E;
@@ -34,10 +41,24 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField] GameObject flashlight_prefab;
 
     [Header("Throwing Settings")]
+    [SerializeField] bool enableDropping = true;
     [SerializeField] GameObject throwObject_gameobject; // Keep original name for compatibility
     [SerializeField] float throwForce = 5f;
 
     private Dictionary<itemType, GameObject> itemSetActive = new Dictionary<itemType, GameObject>();
+    private GameObject spawnedHeldVisual; // runtime instance of selected item's held visual
+    private Coroutine selectedItemNameRoutine;
+
+    [System.Serializable]
+    public class KeyVisualMapping
+    {
+        public KeyItemsSO keyItem;
+        public GameObject keyObject;
+    }
+
+    [Header("Key Visuals (Optional)")]
+    [SerializeField] List<KeyVisualMapping> keyVisuals = new List<KeyVisualMapping>();
+    private readonly Dictionary<int, GameObject> keyVisualById = new Dictionary<int, GameObject>();
 
     void Start()
     {
@@ -71,16 +92,46 @@ public class PlayerInventory : MonoBehaviour
     {
         itemSetActive.Clear();
 
-        if (keys_item != null) itemSetActive.Add(itemType.Keys, keys_item);
-        if (document_item != null) itemSetActive.Add(itemType.Document, document_item);
-        if (flashlight_item != null) itemSetActive.Add(itemType.Flashlight, flashlight_item);
+        if (keys_item != null)
+        {
+            itemSetActive.Add(itemType.Keys, keys_item);
+            SanitizeAnchor(keys_item);
+        }
+        if (document_item != null)
+        {
+            itemSetActive.Add(itemType.Document, document_item);
+            SanitizeAnchor(document_item);
+        }
+        if (flashlight_item != null)
+        {
+            itemSetActive.Add(itemType.Flashlight, flashlight_item);
+            SanitizeAnchor(flashlight_item);
+        }
 
         // Initially deactivate all items
         DeactivateAllItems();
+
+        // Build key visual lookup and hide visuals initially
+        keyVisualById.Clear();
+        for (int i = 0; i < keyVisuals.Count; i++)
+        {
+            var entry = keyVisuals[i];
+            if (entry != null && entry.keyItem != null && entry.keyObject != null)
+            {
+                int id = entry.keyItem.itemID;
+                if (!keyVisualById.ContainsKey(id))
+                {
+                    keyVisualById.Add(id, entry.keyObject);
+                    entry.keyObject.SetActive(false);
+                    TrySetIgnoreRaycastLayer(entry.keyObject);
+                }
+            }
+        }
     }
 
     private void HandleItemThrowing()
     {
+        if (!enableDropping) return;
         if (Input.GetKeyDown(throwItemKey) && HasItems())
         {
             KeyItemsSO itemToThrow = inventoryList[selectedItem];
@@ -111,23 +162,29 @@ public class PlayerInventory : MonoBehaviour
 
     private void HandleItemPickup()
     {
-        if (cam == null) return;
+        // Ensure we have a camera; fall back to Camera.main if not assigned
+        if (cam == null)
+        {
+            cam = Camera.main;
+            if (cam == null) return;
+        }
 
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        // Raycast from screen center to behave like a crosshair pickup
+        Vector3 screenCenter = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f);
+        Ray ray = cam.ScreenPointToRay(screenCenter);
         RaycastHit hitInfo;
 
         if (Physics.Raycast(ray, out hitInfo, playerReach))
         {
-            IPickable pickableItem = hitInfo.collider.GetComponent<IPickable>();
-            ItemsPickable pickableComponent = hitInfo.collider.GetComponent<ItemsPickable>();
+            // Support colliders on child objects with the pickable script on parent
+            IPickable pickableItem = hitInfo.collider.GetComponentInParent<IPickable>();
+            ItemsPickable pickableComponent = hitInfo.collider.GetComponentInParent<ItemsPickable>();
 
             if (pickableItem != null && pickableComponent != null)
             {
-                // Show pickup prompt
                 if (pressToPickup_gameobject != null)
                     pressToPickup_gameobject.SetActive(true);
 
-                // Handle pickup input
                 if (Input.GetKeyDown(pickUpItemKey))
                 {
                     TryPickupItem(pickableComponent, pickableItem);
@@ -217,15 +274,17 @@ public class PlayerInventory : MonoBehaviour
         if (!HasItems())
         {
             DeactivateAllItems();
+            DestroySpawnedHeldVisual();
+            UpdateSelectedItemNameUI();
             return;
         }
 
-        // Clamp selected item to valid range
-        selectedItem = Mathf.Clamp(selectedItem, 0, inventoryList.Count - 1);
+        // Clamp selected item to slot range, not inventory count, so empty slots are selectable
+        selectedItem = Mathf.Clamp(selectedItem, 0, Mathf.Max(0, maxInventorySize - 1));
 
         DeactivateAllItems();
 
-        KeyItemsSO currentItem = inventoryList[selectedItem];
+        KeyItemsSO currentItem = (selectedItem >= 0 && selectedItem < inventoryList.Count) ? inventoryList[selectedItem] : null;
         if (currentItem != null && itemSetActive.ContainsKey(currentItem.item_type))
         {
             GameObject itemObject = itemSetActive[currentItem.item_type];
@@ -233,7 +292,27 @@ public class PlayerInventory : MonoBehaviour
             {
                 itemObject.SetActive(true);
             }
+
+            if (currentItem.item_type == itemType.Keys)
+            {
+                ShowKeyVisual(currentItem, itemObject);
+            }
+            else
+            {
+                TrySpawnHeldVisual(currentItem, itemObject);
+            }
         }
+        else
+        {
+            if (currentItem != null && currentItem.item_type == itemType.Keys)
+            {
+                HideAllKeyVisuals();
+            }
+            TrySpawnHeldVisual(currentItem, null);
+        }
+
+        UpdateSelectedItemNameUI();
+        ShowSelectedNameTemporarily();
     }
 
     private void UpdateInventoryUI()
@@ -389,6 +468,173 @@ public class PlayerInventory : MonoBehaviour
         if (keys_item != null) keys_item.SetActive(false);
         if (document_item != null) document_item.SetActive(false);
         if (flashlight_item != null) flashlight_item.SetActive(false);
+        DestroySpawnedHeldVisual();
+        HideAllKeyVisuals();
+    }
+
+    private void UpdateSelectedItemNameUI()
+    {
+        if (selectedItemNameText == null)
+            return;
+
+        if (!HasItems() || selectedItem < 0 || selectedItem >= inventoryList.Count || inventoryList[selectedItem] == null)
+        {
+            selectedItemNameText.text = string.Empty;
+            selectedItemNameText.enabled = false;
+            return;
+        }
+
+        selectedItemNameText.text = inventoryList[selectedItem].itemName;
+        if (!selectedItemNameText.enabled) selectedItemNameText.enabled = true;
+    }
+
+    private void TrySpawnHeldVisual(KeyItemsSO item, GameObject anchor)
+    {
+        DestroySpawnedHeldVisual();
+        if (item == null || item.heldVisualPrefab == null || anchor == null) return;
+        // Ensure the anchor and its children do not block interaction/physics
+        DisablePhysicsOnHierarchy(anchor);
+        spawnedHeldVisual = Instantiate(item.heldVisualPrefab, anchor.transform);
+        spawnedHeldVisual.transform.localPosition = Vector3.zero;
+        spawnedHeldVisual.transform.localRotation = Quaternion.identity;
+        spawnedHeldVisual.transform.localScale = Vector3.one;
+        // Ensure no physics on held visual
+        var rb = spawnedHeldVisual.GetComponent<Rigidbody>();
+        if (rb != null) Destroy(rb);
+        var collider = spawnedHeldVisual.GetComponent<Collider>();
+        if (collider != null) Destroy(collider);
+        DisablePhysicsOnHierarchy(spawnedHeldVisual);
+        TrySetIgnoreRaycastLayer(spawnedHeldVisual);
+    }
+
+    private void ShowKeyVisual(KeyItemsSO item, GameObject anchor)
+    {
+        HideAllKeyVisuals();
+        DestroySpawnedHeldVisual();
+        if (item == null)
+        {
+            return;
+        }
+
+        if (keyVisualById.TryGetValue(item.itemID, out var visual) && visual != null)
+        {
+            visual.SetActive(true);
+            TrySetIgnoreRaycastLayer(visual);
+        }
+        else if (anchor != null)
+        {
+            TrySpawnHeldVisual(item, anchor);
+        }
+    }
+
+    private void DestroySpawnedHeldVisual()
+    {
+        if (spawnedHeldVisual != null)
+        {
+            Destroy(spawnedHeldVisual);
+            spawnedHeldVisual = null;
+        }
+    }
+
+    private void DisablePhysicsOnHierarchy(GameObject root)
+    {
+        if (root == null) return;
+        var colliders = root.GetComponentsInChildren<Collider>(true);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            colliders[i].enabled = false;
+        }
+        var bodies = root.GetComponentsInChildren<Rigidbody>(true);
+        for (int i = 0; i < bodies.Length; i++)
+        {
+            if (Application.isPlaying)
+            {
+                Destroy(bodies[i]);
+            }
+            else
+            {
+                DestroyImmediate(bodies[i]);
+            }
+        }
+    }
+
+    private void SetIgnoreRaycastLayer(GameObject root)
+    {
+        if (root == null) return;
+        int ignoreLayer = LayerMask.NameToLayer("Ignore Raycast");
+        if (ignoreLayer < 0) return;
+        SetLayerRecursive(root.transform, ignoreLayer);
+    }
+
+    private void TrySetIgnoreRaycastLayer(GameObject root)
+    {
+        if (!setHandVisualsToIgnoreRaycast) return;
+        SetIgnoreRaycastLayer(root);
+    }
+
+    private void SetLayerRecursive(Transform t, int layer)
+    {
+        t.gameObject.layer = layer;
+        for (int i = 0; i < t.childCount; i++)
+        {
+            SetLayerRecursive(t.GetChild(i), layer);
+        }
+    }
+
+    private void SanitizeAnchor(GameObject anchor)
+    {
+        TrySetIgnoreRaycastLayer(anchor);
+        if (anchor != null)
+        {
+            var collider = anchor.GetComponent<Collider>();
+            if (collider != null)
+            {
+                Debug.LogWarning($"PlayerInventory: Anchor '{anchor.name}' has a Collider. Consider removing it or placing the anchor on a child without gameplay colliders to avoid interaction issues.");
+            }
+        }
+    }
+
+    private void HideAllKeyVisuals()
+    {
+        foreach (var kv in keyVisualById)
+        {
+            if (kv.Value != null)
+            {
+                kv.Value.SetActive(false);
+            }
+        }
+    }
+
+    private void ShowSelectedNameTemporarily()
+    {
+        if (selectedItemNameText == null) return;
+        if (selectedItemNameRoutine != null)
+        {
+            StopCoroutine(selectedItemNameRoutine);
+            selectedItemNameRoutine = null;
+        }
+        if (!HasItems() || selectedItem < 0 || selectedItem >= inventoryList.Count || inventoryList[selectedItem] == null)
+        {
+            selectedItemNameText.enabled = false;
+            return;
+        }
+        selectedItemNameText.enabled = true;
+        selectedItemNameRoutine = StartCoroutine(HideSelectedNameAfterDelay(selectedItemNameVisibleSeconds));
+    }
+
+    private IEnumerator HideSelectedNameAfterDelay(float seconds)
+    {
+        float t = 0f;
+        while (t < seconds)
+        {
+            t += Time.deltaTime;
+            yield return null;
+        }
+        if (selectedItemNameText != null)
+        {
+            selectedItemNameText.enabled = false;
+        }
+        selectedItemNameRoutine = null;
     }
 
     private bool HasItems()

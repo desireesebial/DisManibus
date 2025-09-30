@@ -13,10 +13,12 @@ public class doorscript : MonoBehaviour
     public bool isOpen = false;
     public bool isLocked = true;
     public int requiredKeyID = -1; // -1 means no key required
+    public KeyItemsSO requiredKeyItem; // optional direct reference to key asset
     public string requiredKeySOId = ""; // empty means no SO key required
     public bool consumeKeyOnUnlock = false; // consume SO key when unlocking
     public bool useSelectedSOKeyOnly = false; // when true, only selected KeySO can unlock
     public bool consumeWrongSelectedKey = true; // consume wrong selected key
+    public bool requireSelectedNumericKey = false; // when true, require selected numeric key in hand
     
     [Header("Multiple Doors")]
     public doorscript[] linkedDoors; // Doors that should open/close together
@@ -152,9 +154,13 @@ public class doorscript : MonoBehaviour
         {
             UnlockDoor();
             // Consume numeric key from PlayerInventory if configured and available
-            if (consumeKeyOnUnlock && requiredKeyID != -1 && playerInventory != null)
+            if (consumeKeyOnUnlock && playerInventory != null)
             {
-                playerInventory.ConsumeKey(requiredKeyID);
+                int targetKeyId = requiredKeyItem != null ? requiredKeyItem.itemID : requiredKeyID;
+                if (targetKeyId != -1)
+                {
+                    playerInventory.ConsumeKey(targetKeyId);
+                }
             }
             ToggleDoor();
         }
@@ -167,7 +173,8 @@ public class doorscript : MonoBehaviour
 
     private bool HasRequiredKey()
     {
-        if (requiredKeyID == -1 && string.IsNullOrEmpty(requiredKeySOId)) return true; // No key required
+        int targetKeyId = requiredKeyItem != null ? requiredKeyItem.itemID : requiredKeyID;
+        if (targetKeyId == -1 && string.IsNullOrEmpty(requiredKeySOId)) return true; // No key required
         
         // If an SO key is specified, only that key can satisfy the door
         if (!string.IsNullOrEmpty(requiredKeySOId))
@@ -182,11 +189,20 @@ public class doorscript : MonoBehaviour
         // Check player inventory for keys
         if (playerInventory != null)
         {
-            foreach (var item in playerInventory.inventoryList)
+            if (requireSelectedNumericKey)
             {
-                if (item != null && item.item_type == itemType.Keys && item.itemID == requiredKeyID)
-                {
+                var current = playerInventory.GetCurrentItem();
+                if (current != null && current.item_type == itemType.Keys && current.itemID == targetKeyId)
                     return true;
+            }
+            else
+            {
+                foreach (var item in playerInventory.inventoryList)
+                {
+                    if (item != null && item.item_type == itemType.Keys && item.itemID == targetKeyId)
+                    {
+                        return true;
+                    }
                 }
             }
         }

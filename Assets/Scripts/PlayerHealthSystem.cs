@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class PlayerHealthSystem : MonoBehaviour
 {
@@ -17,6 +18,12 @@ public class PlayerHealthSystem : MonoBehaviour
     public TextMeshProUGUI statusText;
     public GameObject deathMessageUI;
     public TextMeshProUGUI deathMessageText;
+
+    [Header("Death Screen UI")]
+    public Button retryButton; // Reload current scene
+    public Button mainMenuButton; // Go to main menu
+    public string mainMenuSceneName = "MainMenu";
+    public bool pauseOnDeath = true;
 
     [Header("Health UI Colors")]
     public Color healthyBarColor = new Color(0.1f, 0.8f, 0.1f);
@@ -44,6 +51,14 @@ public class PlayerHealthSystem : MonoBehaviour
     public float blurIntensity = 1f;
     public float blurDuration = 5f; // How long blur lasts for critical health
 
+    [Header("Enemy Tags & Damage")]
+    public string jenglotTag = "Jenglot";
+    public int jenglotDamage = 1;
+    public string kamatayanTag = "Kamatayan";
+    public int kamatayanDamage = 1;
+    public string dullahanTag = "Dullahan";
+    public int dullahanDamage = 1;
+
     // Events
     public System.Action<int> OnHealthChanged;
     public System.Action OnCriticalHealth;
@@ -57,6 +72,7 @@ public class PlayerHealthSystem : MonoBehaviour
     private Coroutine damageFlashCoroutine;
     private float originalWalkSpeed;
     private float originalMouseSensitivity;
+    private bool hasDied = false;
 
     void Start()
     {
@@ -103,6 +119,27 @@ public class PlayerHealthSystem : MonoBehaviour
         UpdateStatusUI();
 
         Debug.Log($"Player Health System initialized. Health: {currentHealth}/{maxHealth}");
+
+        // Ensure death UI is hidden and time/cursor are normal at start
+        if (deathMessageUI != null)
+            deathMessageUI.SetActive(false);
+        hasDied = false;
+        if (pauseOnDeath)
+            Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        // Wire death screen buttons
+        if (retryButton != null)
+        {
+            retryButton.onClick.RemoveAllListeners();
+            retryButton.onClick.AddListener(RestartLevel);
+        }
+        if (mainMenuButton != null)
+        {
+            mainMenuButton.onClick.RemoveAllListeners();
+            mainMenuButton.onClick.AddListener(ReturnToMainMenu);
+        }
     }
 
     public void TakeDamage(int damage)
@@ -338,6 +375,8 @@ public class PlayerHealthSystem : MonoBehaviour
 
     private void HandlePlayerDeath()
     {
+        if (hasDied) return;
+        hasDied = true;
         Debug.Log("Player has died!");
         
         // Disable player movement
@@ -346,15 +385,11 @@ public class PlayerHealthSystem : MonoBehaviour
             playerController.enabled = false;
         }
 
-        // Show death UI
-        if (deathMessageUI != null)
-        {
-            deathMessageUI.SetActive(true);
-        }
-        if (deathMessageText != null)
-        {
-            deathMessageText.text = "You are dead";
-        }
+        // Stop effects
+        StopCriticalHealthBlur();
+
+        // Show death UI and pause/cursor handling
+        ShowDeathScreen();
     }
 
     private void UpdateHealthUI()
@@ -413,14 +448,7 @@ public class PlayerHealthSystem : MonoBehaviour
             }
         }
 
-        if (deathMessageUI != null)
-        {
-            deathMessageUI.SetActive(currentHealth <= 0);
-        }
-        if (deathMessageText != null && currentHealth <= 0)
-        {
-            deathMessageText.text = "You are dead";
-        }
+        // Do not auto-toggle death UI here; it's handled by ShowDeathScreen on death
     }
 
     private void HandleDebugInput()
@@ -455,4 +483,79 @@ public class PlayerHealthSystem : MonoBehaviour
     public bool IsInvulnerable() => isInvulnerable;
     public bool IsCriticalHealth() => currentHealth == 1;
     public bool IsDead() => currentHealth <= 0;
+
+    // Enemy contact handling
+    private void OnTriggerEnter(Collider other)
+    {
+        TryApplyEnemyContactDamage(other.gameObject);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        TryApplyEnemyContactDamage(collision.gameObject);
+    }
+
+    private void TryApplyEnemyContactDamage(GameObject other)
+    {
+        if (other == null || currentHealth <= 0) return;
+
+        if (!isInvulnerable)
+        {
+            if (!string.IsNullOrEmpty(jenglotTag) && other.CompareTag(jenglotTag))
+            {
+                TakeDamage(Mathf.Max(1, jenglotDamage));
+                return;
+            }
+            if (!string.IsNullOrEmpty(kamatayanTag) && other.CompareTag(kamatayanTag))
+            {
+                TakeDamage(Mathf.Max(1, kamatayanDamage));
+                return;
+            }
+            if (!string.IsNullOrEmpty(dullahanTag) && other.CompareTag(dullahanTag))
+            {
+                TakeDamage(Mathf.Max(1, dullahanDamage));
+                return;
+            }
+        }
+    }
+
+    // Death screen helpers
+    private void ShowDeathScreen()
+    {
+        if (pauseOnDeath)
+            Time.timeScale = 0f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        if (deathMessageUI != null)
+            deathMessageUI.SetActive(true);
+        if (deathMessageText != null)
+            deathMessageText.text = "You are dead";
+    }
+
+    public void RestartLevel()
+    {
+        if (pauseOnDeath)
+            Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        var scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.name);
+    }
+
+    public void ReturnToMainMenu()
+    {
+        if (pauseOnDeath)
+            Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        if (!string.IsNullOrEmpty(mainMenuSceneName))
+        {
+            SceneManager.LoadScene(mainMenuSceneName);
+        }
+        else
+        {
+            Debug.LogError("Main menu scene name is not set on PlayerHealthSystem.");
+        }
+    }
 }
