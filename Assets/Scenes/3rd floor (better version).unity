@@ -306404,6 +306404,7 @@ GameObject:
   - component: {fileID: 8157775978710756901}
   - component: {fileID: 7713875980773053211}
   - component: {fileID: 8424480999051324507}
+  - component: {fileID: 8424480999051324508}
   m_Layer: 0
   m_Name: LeatherTrunk_Lid
   m_TagString: Untagged
@@ -308814,6 +308815,7 @@ GameObject:
   - component: {fileID: 4838852226377897385}
   - component: {fileID: 6787806441962107957}
   - component: {fileID: 3267459851053564782}
+  - component: {fileID: 6787806441962107958}
   m_Layer: 0
   m_Name: LeatherTrunk_Body
   m_TagString: Untagged
@@ -311074,6 +311076,52 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3287495093057650053}
   m_Mesh: {fileID: -6224670424476466028, guid: 3987c0abcc50b084ab6934d3d204f9a0, type: 3}
+--- !u!61 &6787806441962107958
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3287495093057650053}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: -0.010543603}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.45354304, y: 0.116420574}
+  m_EdgeRadius: 0
 --- !u!33 &6787806442014101817
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -312288,6 +312336,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &8424480999051324508
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 96585288858230127}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.4535436, y: 0.05396182, z: 0.3137978}
+  m_Center: {x: 0.00000043958426, y: 0.024027973, z: 0.15212488}
 --- !u!33 &8472238063351365842
 MeshFilter:
   m_ObjectHideFlags: 0
