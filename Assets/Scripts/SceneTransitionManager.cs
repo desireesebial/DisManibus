@@ -1,6 +1,8 @@
-using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using World.UI;
 
 public class SceneTransitionManager : MonoBehaviour
 {
@@ -12,6 +14,10 @@ public class SceneTransitionManager : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private Canvas transitionCanvas;
     [SerializeField] private Image fadeImage;
+
+    [Header("Loading Screen")]
+    [SerializeField] private bool useLoadingScreenByDefault = true;
+    [SerializeField] private string defaultLoadingMessage = "Loading...";
     
     private static SceneTransitionManager instance;
     private bool isTransitioning = false;
@@ -96,56 +102,86 @@ public class SceneTransitionManager : MonoBehaviour
             
             DontDestroyOnLoad(canvasGO);
         }
-    }
-    
-    public void LoadScene(string sceneName)
-    {
-        if (!isTransitioning)
+        else if (fadeCanvasGroup == null && fadeImage != null)
         {
-            StartCoroutine(LoadSceneCoroutine(sceneName));
+            fadeCanvasGroup = fadeImage.GetComponent<CanvasGroup>();
+            if (fadeCanvasGroup == null)
+            {
+                fadeCanvasGroup = fadeImage.gameObject.AddComponent<CanvasGroup>();
+            }
         }
     }
     
-    public void LoadScene(int sceneIndex)
+    public void LoadScene(string sceneName, string loadingMessage = null, bool? useLoadingScreenOverride = null)
     {
         if (!isTransitioning)
         {
-            StartCoroutine(LoadSceneCoroutine(sceneIndex));
+            bool useLoadingScreen = useLoadingScreenOverride ?? useLoadingScreenByDefault;
+            StartCoroutine(LoadSceneCoroutine(sceneName, loadingMessage, useLoadingScreen));
         }
     }
     
-    private IEnumerator LoadSceneCoroutine(string sceneName)
+    public void LoadScene(int sceneIndex, string loadingMessage = null, bool? useLoadingScreenOverride = null)
+    {
+        if (!isTransitioning)
+        {
+            bool useLoadingScreen = useLoadingScreenOverride ?? useLoadingScreenByDefault;
+            StartCoroutine(LoadSceneCoroutine(sceneIndex, loadingMessage, useLoadingScreen));
+        }
+    }
+    
+    private IEnumerator LoadSceneCoroutine(string sceneName, string loadingMessage, bool useLoadingScreen)
     {
         isTransitioning = true;
         
         // Fade out
         yield return StartCoroutine(FadeOut());
         
-        // Load scene
-        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
-        
-        // Fade in
+        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
+        yield return HandleAsyncOperation(operation, loadingMessage, useLoadingScreen);
+
         yield return StartCoroutine(FadeIn());
-        
+
         isTransitioning = false;
     }
     
-    private IEnumerator LoadSceneCoroutine(int sceneIndex)
+    private IEnumerator LoadSceneCoroutine(int sceneIndex, string loadingMessage, bool useLoadingScreen)
     {
         isTransitioning = true;
         
         // Fade out
         yield return StartCoroutine(FadeOut());
         
-        // Load scene
-        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneIndex);
-        
-        // Fade in
+        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneIndex);
+        yield return HandleAsyncOperation(operation, loadingMessage, useLoadingScreen);
+
         yield return StartCoroutine(FadeIn());
-        
+
         isTransitioning = false;
     }
     
+    private IEnumerator HandleAsyncOperation(AsyncOperation operation, string loadingMessage, bool useLoadingScreen)
+    {
+        if (operation == null)
+        {
+            Debug.LogError("SceneTransitionManager failed to start async load operation.");
+            yield break;
+        }
+
+        if (useLoadingScreen && LoadingScreenController.Instance != null)
+        {
+            string status = string.IsNullOrWhiteSpace(loadingMessage) ? defaultLoadingMessage : loadingMessage;
+            yield return LoadingScreenController.Instance.TrackAsyncOperation(operation, status);
+        }
+        else
+        {
+            yield return operation;
+        }
+
+        // Give new scene a frame to initialise before fading in
+        yield return null;
+    }
+
     private IEnumerator FadeOut()
     {
         float elapsedTime = 0f;

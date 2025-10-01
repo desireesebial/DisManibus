@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using World.UI;
 
 namespace SaveLoad
 {
@@ -88,11 +89,25 @@ namespace SaveLoad
         {
             if (SceneTransitionManager.Instance != null)
             {
-                SceneTransitionManager.Instance.LoadScene(sceneName);
+                SceneTransitionManager.Instance.LoadScene(sceneName, "Loading Save");
             }
             else
             {
-                SceneManager.LoadScene(sceneName);
+                StartCoroutine(LoadSceneAsyncFallback(sceneName, "Loading Save"));
+            }
+        }
+
+        private IEnumerator LoadSceneAsyncFallback(string sceneName, string loadingMessage)
+        {
+            var operation = SceneManager.LoadSceneAsync(sceneName);
+
+            if (LoadingScreenController.Instance != null)
+            {
+                yield return LoadingScreenController.Instance.TrackAsyncOperation(operation, loadingMessage);
+            }
+            else
+            {
+                yield return operation;
             }
         }
 
@@ -220,9 +235,21 @@ namespace SaveLoad
 
         private IEnumerator ApplyPendingLoadRoutine()
         {
+            if (LoadingScreenController.Instance != null)
+            {
+                LoadingScreenController.Instance.SetStatus("Applying Save...");
+            }
+
             yield return null;
+
             ApplyLoadedData(pendingLoadData);
             onLoadSuccess?.Invoke();
+
+            if (LoadingScreenController.Instance != null)
+            {
+                LoadingScreenController.Instance.Hide();
+            }
+
             pendingLoadData = null;
             hasPendingLoadData = false;
         }

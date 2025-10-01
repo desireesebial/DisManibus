@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using World.UI;
 
 public class NewGameButton : MonoBehaviour
 {
@@ -46,17 +47,33 @@ public class NewGameButton : MonoBehaviour
             newGameButton.interactable = false;
         
         // Use transition manager if available, otherwise direct load
+        string loadingMessage = "Starting New Game";
+
         if (useTransitionManager && SceneTransitionManager.Instance != null)
         {
-            SceneTransitionManager.Instance.LoadScene(gameSceneName);
+            SceneTransitionManager.Instance.LoadScene(gameSceneName, loadingMessage);
         }
         else
         {
-            SceneManager.LoadScene(gameSceneName);
+            StartCoroutine(LoadSceneWithLoadingScreen(gameSceneName, loadingMessage));
         }
 
         // Clear existing save data when starting a new game
         SaveLoad.SaveSystem.DeleteSave();
+    }
+
+    private System.Collections.IEnumerator LoadSceneWithLoadingScreen(string sceneName, string loadingMessage)
+    {
+        var operation = SceneManager.LoadSceneAsync(sceneName);
+
+        if (LoadingScreenController.Instance != null)
+        {
+            yield return LoadingScreenController.Instance.TrackAsyncOperation(operation, loadingMessage);
+        }
+        else
+        {
+            yield return operation;
+        }
     }
     
     private void LoadGameScene()

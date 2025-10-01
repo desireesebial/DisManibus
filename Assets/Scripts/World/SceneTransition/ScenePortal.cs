@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using World.UI;
 
 namespace World.SceneTransition
 {
@@ -20,6 +21,10 @@ namespace World.SceneTransition
         [Header("Events")]
         [SerializeField] private UnityEvent onPortalActivated;
         [SerializeField] private UnityEvent onPortalFailed;
+
+        [Header("Loading Screen")]
+        [SerializeField] private string loadingMessage = "Loading...";
+        [SerializeField] private bool preferTransitionManagerLoadingScreen = true;
 
         private bool playerInRange;
         private GameObject playerReference;
@@ -121,22 +126,22 @@ namespace World.SceneTransition
             {
                 if (!string.IsNullOrEmpty(targetSceneName))
                 {
-                    SceneTransitionManager.Instance.LoadScene(targetSceneName);
+                    SceneTransitionManager.Instance.LoadScene(targetSceneName, loadingMessage, preferTransitionManagerLoadingScreen);
                 }
                 else
                 {
-                    SceneTransitionManager.Instance.LoadScene(targetSceneBuildIndex);
+                    SceneTransitionManager.Instance.LoadScene(targetSceneBuildIndex, loadingMessage, preferTransitionManagerLoadingScreen);
                 }
             }
             else
             {
                 if (!string.IsNullOrEmpty(targetSceneName))
                 {
-                    SceneManager.LoadScene(targetSceneName);
+                    StartCoroutine(LoadSceneWithFallback(targetSceneName));
                 }
                 else
                 {
-                    SceneManager.LoadScene(targetSceneBuildIndex);
+                    StartCoroutine(LoadSceneWithFallback(targetSceneBuildIndex));
                 }
             }
         }
@@ -155,6 +160,34 @@ namespace World.SceneTransition
         public void SetTargetScene(int buildIndex)
         {
             targetSceneBuildIndex = buildIndex;
+        }
+
+        private System.Collections.IEnumerator LoadSceneWithFallback(string sceneName)
+        {
+            var operation = SceneManager.LoadSceneAsync(sceneName);
+
+            if (LoadingScreenController.Instance != null)
+            {
+                yield return LoadingScreenController.Instance.TrackAsyncOperation(operation, "Loading...");
+            }
+            else
+            {
+                yield return operation;
+            }
+        }
+
+        private System.Collections.IEnumerator LoadSceneWithFallback(int buildIndex)
+        {
+            var operation = SceneManager.LoadSceneAsync(buildIndex);
+
+            if (LoadingScreenController.Instance != null)
+            {
+                yield return LoadingScreenController.Instance.TrackAsyncOperation(operation, "Loading...");
+            }
+            else
+            {
+                yield return operation;
+            }
         }
     }
 }

@@ -29,7 +29,6 @@ public class LoadGameScript : MonoBehaviour
             Debug.LogError("LoadGameScript could not find a SaveManager in the scene.");
             return;
         }
-
         saveManager.LoadGame();
     }
 }
