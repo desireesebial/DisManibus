@@ -558,4 +558,42 @@ public class PlayerHealthSystem : MonoBehaviour
             Debug.LogError("Main menu scene name is not set on PlayerHealthSystem.");
         }
     }
+
+    public void ApplySavedHealth(int savedCurrentHealth, int savedMaxHealth)
+    {
+        maxHealth = Mathf.Max(1, savedMaxHealth);
+        currentHealth = Mathf.Clamp(savedCurrentHealth, 0, maxHealth);
+
+        // Reset debuffs, effects, and controller states
+        RemoveHealthDebuffs();
+        ApplyHealthDebuffs();
+
+        if (currentHealth <= 0)
+        {
+            OnPlayerDeath?.Invoke();
+            HandlePlayerDeath();
+        }
+        else
+        {
+            hasDied = false;
+            StopCriticalHealthBlur();
+            if (pauseOnDeath)
+                Time.timeScale = 1f;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            if (deathMessageUI != null)
+                deathMessageUI.SetActive(false);
+            if (playerController != null && !playerController.enabled)
+                playerController.enabled = true;
+        }
+
+        // Update UI and status
+        UpdateHealthUI();
+        UpdateStatusUI();
+
+        if (currentHealth == 1)
+        {
+            StartCriticalHealthBlur();
+        }
+    }
 }

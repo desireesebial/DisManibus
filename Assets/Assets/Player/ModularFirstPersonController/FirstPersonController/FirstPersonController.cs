@@ -138,6 +138,56 @@ public class FirstPersonController : MonoBehaviour
 
     #endregion
 
+    public bool IsCrouched => isCrouched;
+    public bool IsSprinting => isSprinting;
+
+    public void SetCrouchState(bool shouldCrouch)
+    {
+        if (enableCrouch)
+        {
+            if (isCrouched != shouldCrouch)
+            {
+                ToggleCrouch(shouldCrouch);
+            }
+        }
+    }
+
+    public void SetSprintState(bool shouldSprint)
+    {
+        if (!enableSprint)
+        {
+            return;
+        }
+
+        if (shouldSprint && !isSprinting)
+        {
+            if (playerCanMove && sprintRemaining > 0f && !isSprintCooldown)
+            {
+                isSprinting = true;
+            }
+        }
+        else if (!shouldSprint && isSprinting)
+        {
+            isSprinting = false;
+        }
+    }
+
+    private void ToggleCrouch(bool targetState)
+    {
+        if (targetState)
+        {
+            transform.localScale = new Vector3(originalScale.x, crouchHeight, originalScale.z);
+            walkSpeed *= speedReduction;
+            isCrouched = true;
+        }
+        else
+        {
+            transform.localScale = new Vector3(originalScale.x, originalScale.y, originalScale.z);
+            walkSpeed /= speedReduction;
+            isCrouched = false;
+        }
+    }
+
     private void Awake()
     {
         // Set global reference
@@ -498,23 +548,13 @@ public class FirstPersonController : MonoBehaviour
 
     private void Crouch()
     {
-        // Stands player up to full height
-        // Brings walkSpeed back up to original speed
         if(isCrouched)
         {
-            transform.localScale = new Vector3(originalScale.x, originalScale.y, originalScale.z);
-            walkSpeed /= speedReduction;
-
-            isCrouched = false;
+            ToggleCrouch(false);
         }
-        // Crouches player down to set height
-        // Reduces walkSpeed
         else
         {
-            transform.localScale = new Vector3(originalScale.x, crouchHeight, originalScale.z);
-            walkSpeed *= speedReduction;
-
-            isCrouched = true;
+            ToggleCrouch(true);
         }
     }
 

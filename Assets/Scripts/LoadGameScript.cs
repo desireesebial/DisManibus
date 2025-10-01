@@ -1,8 +1,9 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class LoadGameScript : MonoBehaviour
 {
+    [SerializeField] private SaveLoad.SaveManager saveManager;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -18,7 +19,17 @@ public class LoadGameScript : MonoBehaviour
     // Call this method to load a saved game
     public void LoadGame()
     {
-        // SceneManager.LoadScene("SavedGameScene"); // Commented out for debugging
-        Debug.Log("Load Game function called!");
+        if (saveManager == null)
+        {
+            saveManager = FindAnyObjectByType<SaveLoad.SaveManager>();
+        }
+
+        if (saveManager == null)
+        {
+            Debug.LogError("LoadGameScript could not find a SaveManager in the scene.");
+            return;
+        }
+
+        saveManager.LoadGame();
     }
 }

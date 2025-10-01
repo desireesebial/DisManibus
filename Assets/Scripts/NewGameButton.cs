@@ -52,8 +52,11 @@ public class NewGameButton : MonoBehaviour
         }
         else
         {
-            LoadGameScene();
+            SceneManager.LoadScene(gameSceneName);
         }
+
+        // Clear existing save data when starting a new game
+        SaveLoad.SaveSystem.DeleteSave();
     }
     
     private void LoadGameScene()
