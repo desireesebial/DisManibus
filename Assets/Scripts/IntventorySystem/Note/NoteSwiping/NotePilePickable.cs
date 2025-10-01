@@ -22,6 +22,10 @@ public class NotePilePickable : MonoBehaviour
     public GameObject interactionUI;
     public TextMeshProUGUI interactionTextUI;
 
+	[Header("On Cleared")]
+	public bool hideWorldPileOnCleared = true;
+	public GameObject worldPileObject; // Defaults to this GameObject if null
+
     private bool playerInRange = false;
     private bool isActiveSession = false;
 
@@ -136,6 +140,13 @@ public class NotePilePickable : MonoBehaviour
 
     void HandlePileCleared()
     {
+		// Optionally hide the world pile object immediately after all pages are swiped
+		if (hideWorldPileOnCleared)
+		{
+			GameObject toHide = worldPileObject != null ? worldPileObject : gameObject;
+			if (toHide != null) toHide.SetActive(false);
+		}
+
         // Swiping finished; allow note UI to show, and when the player closes the note, re-enable controls.
         // We don't re-enable here immediately to keep controls disabled while the final note is open.
         // If there is no final note or UI, end the session now.
