@@ -18,6 +18,8 @@ namespace SaveLoad
         [SerializeField] private PlayerHealthSystem playerHealthSystem;
 
         private CharacterController characterController;
+        private Rigidbody playerRigidbody;
+        private FirstPersonController firstPersonController;
         private Camera playerCamera;
 
         [Header("Events")]
@@ -120,6 +122,8 @@ namespace SaveLoad
                 CachePlayerComponents();
             }
 
+            var controllerEnabledState = DisableMovementComponents();
+
             player.transform.position = data.playerPosition.ToVector3();
             player.transform.eulerAngles = data.playerRotation.ToVector3();
 
@@ -137,6 +141,54 @@ namespace SaveLoad
             {
                 playerHealthSystem.ApplySavedHealth(data.playerHealth, data.maxHealth);
             }
+
+            RestoreMovementComponents(controllerEnabledState);
+        }
+
+        private (bool characterControllerEnabled, bool rigidbodyKinematic, bool firstPersonControllerEnabled) DisableMovementComponents()
+        {
+            bool ccEnabled = characterController != null && characterController.enabled;
+            bool fpcEnabled = firstPersonController != null && firstPersonController.enabled;
+            bool rbKinematic = playerRigidbody != null && playerRigidbody.isKinematic;
+
+            if (characterController != null && characterController.enabled)
+            {
+                characterController.enabled = false;
+            }
+
+            if (firstPersonController != null && firstPersonController.enabled)
+            {
+                firstPersonController.enabled = false;
+            }
+
+            if (playerRigidbody != null)
+            {
+                playerRigidbody.isKinematic = true;
+                playerRigidbody.linearVelocity = Vector3.zero;
+                playerRigidbody.angularVelocity = Vector3.zero;
+            }
+
+            return (ccEnabled, rbKinematic, fpcEnabled);
+        }
+
+        private void RestoreMovementComponents((bool characterControllerEnabled, bool rigidbodyKinematic, bool firstPersonControllerEnabled) previousState)
+        {
+            if (characterController != null)
+            {
+                characterController.enabled = previousState.characterControllerEnabled;
+            }
+
+            if (firstPersonController != null)
+            {
+                firstPersonController.enabled = previousState.firstPersonControllerEnabled;
+            }
+
+            if (playerRigidbody != null)
+            {
+                playerRigidbody.isKinematic = previousState.rigidbodyKinematic;
+                playerRigidbody.linearVelocity = Vector3.zero;
+                playerRigidbody.angularVelocity = Vector3.zero;
+            }
         }
 
         private void CachePlayerComponents()
@@ -144,8 +196,9 @@ namespace SaveLoad
             if (player != null)
             {
                 characterController = player.GetComponent<CharacterController>();
-                var fpc = player.GetComponent<FirstPersonController>();
-                playerCamera = fpc != null ? fpc.PlayerCamera : FirstPersonController.GetActivePlayerCamera();
+                firstPersonController = player.GetComponent<FirstPersonController>();
+                playerRigidbody = player.GetComponent<Rigidbody>();
+                playerCamera = firstPersonController != null ? firstPersonController.PlayerCamera : FirstPersonController.GetActivePlayerCamera();
 
                 if (playerHealthSystem == null)
                 {
