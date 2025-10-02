@@ -483,6 +483,7 @@ GameObject:
   - component: {fileID: 4459864850019384741}
   - component: {fileID: 4459864850019384740}
   - component: {fileID: 7562252594709440236}
+  - component: {fileID: 7105035103742784172}
   m_Layer: 0
   m_Name: FirstPersonController
   m_TagString: Player
@@ -712,6 +713,56 @@ MonoBehaviour:
   throwObject_gameobject: {fileID: 0}
   throwForce: 5
   keyVisuals: []
+--- !u!114 &7105035103742784172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4459864850019384750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f4a204ed1373d142a9572e2980a84ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 3
+  invulnerabilityTime: 1
+  currentHealth: 0
+  healthUI: {fileID: 0}
+  healthBars:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  healthText: {fileID: 0}
+  statusText: {fileID: 0}
+  deathMessageUI: {fileID: 0}
+  deathMessageText: {fileID: 0}
+  retryButton: {fileID: 0}
+  mainMenuButton: {fileID: 0}
+  mainMenuSceneName: MainMenu
+  pauseOnDeath: 1
+  healthyBarColor: {r: 0.1, g: 0.8, b: 0.1, a: 1}
+  injuredBarColor: {r: 1, g: 0.65, b: 0.1, a: 1}
+  criticalBarColor: {r: 0.9, g: 0.1, b: 0.1, a: 1}
+  playerCamera: {fileID: 0}
+  shakeIntensity: 0.5
+  shakeDuration: 0.3
+  damageFlashDuration: 0.2
+  damageFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  playerController: {fileID: 0}
+  audioSource: {fileID: 0}
+  damageSound: {fileID: 0}
+  healSound: {fileID: 0}
+  criticalHealthSound: {fileID: 0}
+  postProcessVolume: {fileID: 0}
+  blurIntensity: 1
+  blurDuration: 5
+  jenglotTag: Jenglot
+  jenglotDamage: 1
+  kamatayanTag: Kamatayan
+  kamatayanDamage: 1
+  dullahanTag: Dullahan
+  dullahanDamage: 1
 --- !u!1 &4459864850190357393
 GameObject:
   m_ObjectHideFlags: 0
