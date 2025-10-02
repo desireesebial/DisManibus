@@ -10,6 +10,13 @@ namespace SaveLoad
     {
         private static SaveData pendingLoadData;
         private static bool hasPendingLoadData;
+        private Coroutine pendingSaveCoroutine;
+        private string lastSerializedSave;
+
+        [Header("Checkpoint Saving")]
+        [SerializeField] private bool saveAsynchronously = true;
+        [SerializeField] private float checkpointCooldown = 0.25f;
+        private float lastSaveTime;
 
         [Header("References")]
         [Tooltip("Reference to the player GameObject that will be saved.")]
@@ -52,6 +59,12 @@ namespace SaveLoad
         private void OnDisable()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
+
+            if (pendingSaveCoroutine != null)
+            {
+                StopCoroutine(pendingSaveCoroutine);
+                pendingSaveCoroutine = null;
+            }
         }
 
         public void SaveGame()
@@ -62,8 +75,32 @@ namespace SaveLoad
                 return;
             }
 
-            SaveSystem.SavePlayer(player, playerHealthSystem);
-            onSaveSuccess?.Invoke();
+            if (saveAsynchronously)
+            {
+                StartAsyncSave();
+            }
+            else
+            {
+                if (PersistentWorldState.Instance != null)
+                {
+                    PersistentWorldState.Instance.CreateSnapshot();
+                }
+
+                SaveSystem.SavePlayer(player, playerHealthSystem);
+                onSaveSuccess?.Invoke();
+            }
+        }
+
+        public void SaveCheckpoint()
+        {
+            if (!gameObject.activeInHierarchy)
+                return;
+
+            if (Time.unscaledTime - lastSaveTime < checkpointCooldown)
+                return;
+
+            lastSaveTime = Time.unscaledTime;
+            SaveGame();
         }
 
         public void LoadGame()
@@ -252,6 +289,29 @@ namespace SaveLoad
 
             pendingLoadData = null;
             hasPendingLoadData = false;
+        }
+
+        private void StartAsyncSave()
+        {
+            if (pendingSaveCoroutine != null)
+            {
+                StopCoroutine(pendingSaveCoroutine);
+            }
+
+            var data = SaveSystem.BuildSaveData(player, playerHealthSystem);
+            lastSerializedSave = SaveSystem.SerializeSaveData(data, true);
+
+            pendingSaveCoroutine = StartCoroutine(SaveSystem.WriteSaveAsync(lastSerializedSave,
+                () =>
+                {
+                    onSaveSuccess?.Invoke();
+                    pendingSaveCoroutine = null;
+                },
+                ex =>
+                {
+                    Debug.LogError($"Async save failed: {ex.Message}");
+                    pendingSaveCoroutine = null;
+                }));
         }
 
         public bool HasSaveData()

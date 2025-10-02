@@ -16924,6 +16924,7 @@ Transform:
   - {fileID: 1202329275}
   - {fileID: 735192070}
   - {fileID: 1421436315}
+  - {fileID: 1092269919}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &558866003
@@ -286227,6 +286228,50 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1091459573}
   m_Mesh: {fileID: -2600649239184529759, guid: 4d7a1f2d72196e24bb9a9eefb40859c3, type: 3}
+--- !u!1 &1092269918
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1092269919}
+  - component: {fileID: 1092269920}
+  m_Layer: 0
+  m_Name: Scenesave
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1092269919
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1092269918}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 558064036}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1092269920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1092269918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6fc4ecdf0d60dd428ec910ea423fead, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1099288931
 GameObject:
   m_ObjectHideFlags: 0
@@ -306057,6 +306102,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79a002cc01ba6c04b89f0ad5fff73321, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  saveAsynchronously: 1
+  checkpointCooldown: 0.25
   player: {fileID: 1947632595}
   playerHealthSystem: {fileID: 269456230}
   onSaveSuccess:

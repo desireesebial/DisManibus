@@ -1,7 +1,10 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -37,6 +40,31 @@ namespace SaveLoad
                 return;
             }
 
+            var data = BuildSaveData(player, healthSystem);
+            string json = SerializeSaveData(data, true);
+
+            try
+            {
+                WriteEncrypted(json);
+#if UNITY_EDITOR
+                Debug.Log($"Game saved to {FilePath}\n{json}");
+#else
+                Debug.Log("Game saved successfully (encrypted).");
+#endif
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Failed to save game: {ex.Message}\n{ex.StackTrace}");
+            }
+        }
+
+        public static SaveData BuildSaveData(GameObject player, PlayerHealthSystem healthSystem)
+        {
+            if (player == null)
+            {
+                throw new ArgumentNullException(nameof(player));
+            }
+
             var controller = player.GetComponent<FirstPersonController>();
             Camera playerCamera = controller != null ? controller.PlayerCamera : FirstPersonController.GetActivePlayerCamera();
 
@@ -44,7 +72,7 @@ namespace SaveLoad
                 ? PersistentWorldState.Instance.CreateSnapshot()
                 : new WorldState();
 
-            var data = new SaveData
+            return new SaveData
             {
                 sceneName = SceneManager.GetActiveScene().name,
                 playerPosition = new Vector3Serializable(player.transform.position),
@@ -57,21 +85,47 @@ namespace SaveLoad
                 isSprinting = controller != null && controller.IsSprinting,
                 worldState = worldState
             };
+        }
 
-            string json = JsonUtility.ToJson(data, true);
-            try
+        public static string SerializeSaveData(SaveData data, bool prettyPrint)
+        {
+            return JsonUtility.ToJson(data, prettyPrint);
+        }
+
+        public static IEnumerator WriteSaveAsync(string json, Action onSuccess = null, Action<Exception> onError = null)
+        {
+            if (string.IsNullOrEmpty(json))
             {
-                string encrypted = Encrypt(json);
-                File.WriteAllText(FilePath, encrypted);
-#if UNITY_EDITOR
-                Debug.Log($"Game saved to {FilePath}\n{json}");
-#else
-                Debug.Log("Game saved successfully (encrypted).");
-#endif
+                onError?.Invoke(new ArgumentException("Cannot write empty save data."));
+                yield break;
             }
-            catch (Exception ex)
+
+            Exception capturedException = null;
+
+            Task task = Task.Run(() =>
             {
-                Debug.LogError($"Failed to save game: {ex.Message}\n{ex.StackTrace}");
+                try
+                {
+                    WriteEncrypted(json);
+                }
+                catch (Exception ex)
+                {
+                    capturedException = ex;
+                }
+            });
+
+            while (!task.IsCompleted)
+            {
+                yield return null;
+            }
+
+            if (capturedException != null)
+            {
+                onError?.Invoke(capturedException);
+            }
+            else
+            {
+                onSuccess?.Invoke();
             }
         }
 
@@ -137,6 +191,15 @@ namespace SaveLoad
                 Debug.LogError($"Failed to delete save: {ex.Message}");
                 return false;
             }
+        }
+
+        private static void WriteEncrypted(string json)
+        {
+            string encrypted = Encrypt(json);
+            File.WriteAllText(FilePath, encrypted);
+#if UNITY_EDITOR
+            Debug.Log($"Game saved to {FilePath}\n{json}");
+#endif
         }
 
         private static string Encrypt(string plainText)
