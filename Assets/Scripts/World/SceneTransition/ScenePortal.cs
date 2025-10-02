@@ -1,6 +1,8 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using World.UI;
 
 namespace World.SceneTransition
@@ -17,6 +19,17 @@ namespace World.SceneTransition
         [SerializeField] private KeyCode interactKey = KeyCode.E;
         [SerializeField] private string playerTag = "Player";
         [SerializeField] private bool saveOnTransition = true;
+        [SerializeField] private bool requireHoldToActivate = false;
+        [SerializeField, Min(0f)] private float holdDuration = 1.5f;
+
+        [Header("Interaction UI")]
+        [SerializeField] private GameObject interactionUIPanel;
+        [SerializeField] private TMP_Text interactionLabel;
+        [SerializeField] private Image holdProgressImage;
+        [SerializeField] private Slider holdProgressSlider;
+        [SerializeField] private string tapPromptFormat = "Press {0} to enter";
+        [SerializeField] private string holdPromptFormat = "Hold {0} to enter";
+        [SerializeField] private bool showHoldDurationInPrompt = true;
 
         [Header("Events")]
         [SerializeField] private UnityEvent onPortalActivated;
@@ -28,6 +41,15 @@ namespace World.SceneTransition
 
         private bool playerInRange;
         private GameObject playerReference;
+        private float holdTimer;
+        private bool holdActivationTriggered;
+
+        private void Start()
+        {
+            ResetHoldState();
+            HideInteractionUI();
+            UpdatePromptText();
+        }
 
         private void Reset()
         {
@@ -51,6 +73,8 @@ namespace World.SceneTransition
                     collider.isTrigger = true;
                 }
             }
+
+            UpdatePromptText();
         }
 
         private void Update()
@@ -67,9 +91,35 @@ namespace World.SceneTransition
 
         private void HandleInteractionInput()
         {
-            if (Input.GetKeyDown(interactKey))
+            if (!requireHoldToActivate)
             {
-                ActivatePortal();
+                UpdateHoldProgressUI(0f);
+                if (Input.GetKeyDown(interactKey))
+                {
+                    ActivatePortal();
+                }
+                return;
+            }
+
+            if (Input.GetKey(interactKey))
+            {
+                holdTimer += Time.deltaTime;
+                float requiredTime = Mathf.Max(holdDuration, 0f);
+                float progress = requiredTime <= 0f ? 1f : Mathf.Clamp01(holdTimer / requiredTime);
+                UpdateHoldProgressUI(progress);
+
+                if (!holdActivationTriggered && (requiredTime <= 0f || holdTimer >= requiredTime))
+                {
+                    holdActivationTriggered = true;
+                    ActivatePortal();
+                }
+            }
+            else
+            {
+                if (holdTimer > 0f || holdActivationTriggered)
+                {
+                    ResetHoldState();
+                }
             }
         }
 
@@ -81,6 +131,7 @@ namespace World.SceneTransition
             {
                 playerInRange = true;
                 playerReference = other.gameObject;
+                ShowInteractionUI();
             }
         }
 
@@ -94,7 +145,9 @@ namespace World.SceneTransition
                 if (playerReference == other.gameObject)
                 {
                     playerReference = null;
+                    ResetHoldState();
                 }
+                HideInteractionUI();
             }
         }
 
@@ -150,6 +203,22 @@ namespace World.SceneTransition
         public void SetPlayerReference(GameObject player)
         {
             playerReference = player;
+            if (!useTrigger)
+            {
+                if (playerReference != null)
+                {
+                    ShowInteractionUI();
+                }
+                else
+                {
+                    HideInteractionUI();
+                }
+            }
+
+            if (player == null)
+            {
+                ResetHoldState();
+            }
         }
 
         public void SetTargetScene(string sceneName)
@@ -188,6 +257,82 @@ namespace World.SceneTransition
             {
                 yield return operation;
             }
+        }
+
+        private void ResetHoldState()
+        {
+            holdTimer = 0f;
+            holdActivationTriggered = false;
+            UpdateHoldProgressUI(0f);
+        }
+
+        private void ShowInteractionUI()
+        {
+            if (interactionUIPanel != null && !interactionUIPanel.activeSelf)
+            {
+                interactionUIPanel.SetActive(true);
+            }
+
+            UpdatePromptText();
+            UpdateHoldProgressUI(0f);
+        }
+
+        private void HideInteractionUI()
+        {
+            if (interactionUIPanel != null && interactionUIPanel.activeSelf)
+            {
+                interactionUIPanel.SetActive(false);
+            }
+
+            UpdateHoldProgressUI(0f);
+        }
+
+        private void UpdateHoldProgressUI(float progress)
+        {
+            if (!requireHoldToActivate)
+            {
+                progress = 0f;
+            }
+
+            float clampedProgress = Mathf.Clamp01(progress);
+
+            if (holdProgressImage != null)
+            {
+                holdProgressImage.fillAmount = clampedProgress;
+            }
+
+            if (holdProgressSlider != null)
+            {
+                holdProgressSlider.normalizedValue = clampedProgress;
+            }
+        }
+
+        private void UpdatePromptText()
+        {
+            if (interactionLabel == null) return;
+
+            string keyName = interactKey.ToString();
+
+            if (requireHoldToActivate)
+            {
+                string prompt = string.Format(holdPromptFormat, keyName);
+                if (showHoldDurationInPrompt && holdDuration > 0f)
+                {
+                    prompt = $"{prompt} ({holdDuration:0.#}s)";
+                }
+                interactionLabel.text = prompt;
+            }
+            else
+            {
+                interactionLabel.text = string.Format(tapPromptFormat, keyName);
+            }
+        }
+
+        private void OnValidate()
+        {
+            holdDuration = Mathf.Max(0f, holdDuration);
+            UpdatePromptText();
+            UpdateHoldProgressUI(0f);
         }
     }
 }
