@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using TMPro;
 using UnityEngine.UI;
 
 namespace World.UI
@@ -11,7 +12,7 @@ namespace World.UI
         [Header("Visuals")]
         [SerializeField] private CanvasGroup canvasGroup;
         [SerializeField] private Slider progressSlider;
-        [SerializeField] private Text statusText;
+        [SerializeField] private TMP_Text statusText;
         [SerializeField] private float fadeDuration = 0.25f;
         [SerializeField] private bool blockInputWhileVisible = true;
         [SerializeField] private bool hideOnStart = true;

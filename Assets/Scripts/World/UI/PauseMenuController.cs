@@ -167,7 +167,14 @@ namespace World.UI
             isPaused = false;
             onResumed?.Invoke();
 
-            SceneTransitionManager.Instance.LoadScene(mainMenuSceneName);
+            if (SceneTransitionManager.Instance != null)
+            {
+                SceneTransitionManager.Instance.LoadScene(mainMenuSceneName);
+            }
+            else
+            {
+                SceneManager.LoadScene(mainMenuSceneName);
+            }
         }
 
         public void ForceResume()

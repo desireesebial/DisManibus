@@ -2,22 +2,14 @@ using UnityEngine;
 
 public class ExitGameScript : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    // Call this method to exit the game
     public void ExitGame()
     {
-        // Application.Quit(); // Commented out for debugging
-        Debug.Log("Exit Game function called!");
+        Debug.Log("Exit Game triggered.");
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 }
