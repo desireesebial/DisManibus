@@ -467,6 +467,7 @@ Transform:
   - {fileID: 354147573}
   - {fileID: 51611241}
   - {fileID: 1622905524}
+  - {fileID: 1668264087}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &44586014
@@ -2529,11 +2530,11 @@ Transform:
   m_GameObject: {fileID: 133338979}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -6.584198, y: -0.0001, z: -1.1341143}
+  m_LocalPosition: {x: -915.39014, y: 0, z: -7589.469}
   m_LocalScale: {x: 1.904784, y: 0.9091, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1668264087}
+  m_Father: {fileID: 1761843649}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &134045983
 GameObject:
@@ -6200,7 +6201,7 @@ GameObject:
   - component: {fileID: 307795429}
   - component: {fileID: 307795430}
   m_Layer: 0
-  m_Name: Infirmary Door
+  m_Name: Infirmary Room 2 Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13122,13 +13123,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 565241913}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
-  m_LocalPosition: {x: -6.5581894, y: -0.000100238416, z: -8.606111}
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: -0.7071068}
+  m_LocalPosition: {x: 0.101257324, y: -4.23446, z: -3.2675781}
   m_LocalScale: {x: 3.5, y: 3.5, z: 3.5}
   m_ConstrainProportionsScale: 1
-  m_Children:
-  - {fileID: 704869727}
-  m_Father: {fileID: 1668264087}
+  m_Children: []
+  m_Father: {fileID: 1137837295}
   m_LocalEulerAnglesHint: {x: 0, y: 270, z: 0}
 --- !u!1 &567648261
 GameObject:
@@ -153661,12 +153661,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 704869726}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.5, y: 0.5, z: 0.5, w: 0.5}
-  m_LocalPosition: {x: 0, y: 0.5987469, z: -0.041932106}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: -0.7071068}
+  m_LocalPosition: {x: 0.24804688, y: -2.1388457, z: -3.2675781}
+  m_LocalScale: {x: 3.5000005, y: 3.5, z: 3.4999995}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 565241914}
+  m_Father: {fileID: 1137837295}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 90}
 --- !u!65 &704869728
 BoxCollider:
@@ -162754,6 +162754,41 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1137771852}
   m_Mesh: {fileID: 5461320835613783329, guid: 2ec8da8e3124a68429b7d476fc764f89, type: 3}
+--- !u!1 &1137837294
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1137837295}
+  m_Layer: 0
+  m_Name: Lounge Doors
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1137837295
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1137837294}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -6.659424, y: 4.2343597, z: -5.338379}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 268324279445566616}
+  - {fileID: 7440790412133842376}
+  - {fileID: 565241914}
+  - {fileID: 704869727}
+  m_Father: {fileID: 1668264087}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1138652821
 GameObject:
   m_ObjectHideFlags: 0
@@ -166034,6 +166069,7 @@ Transform:
   - {fileID: 4726189537841883}
   - {fileID: 4415244734571098}
   - {fileID: 4160543729139551}
+  - {fileID: 4645308997266402}
   m_Father: {fileID: 1761843649}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1263978304
@@ -175778,17 +175814,13 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 133338985}
-  - {fileID: 268324279445566616}
-  - {fileID: 565241914}
-  - {fileID: 4004345927259027}
   - {fileID: 4004344390756980}
-  - {fileID: 4322687462696444}
-  - {fileID: 4238493880018617}
-  - {fileID: 4735846004590973}
-  - {fileID: 4645308997266402}
   - {fileID: 307795428}
-  m_Father: {fileID: 1761843649}
+  - {fileID: 4322687462696444}
+  - {fileID: 1137837295}
+  - {fileID: 4004345927259027}
+  - {fileID: 4238493880018617}
+  m_Father: {fileID: 32427546}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1670059531
 GameObject:
@@ -178510,7 +178542,6 @@ Transform:
   - {fileID: 7891334001122010280}
   - {fileID: 1004152444}
   - {fileID: 649256523}
-  - {fileID: 1668264087}
   - {fileID: 1643596203}
   - {fileID: 1849583999}
   - {fileID: 873341644}
@@ -178520,6 +178551,8 @@ Transform:
   - {fileID: 1182731720}
   - {fileID: 1121308855}
   - {fileID: 305274167}
+  - {fileID: 4735846004590973}
+  - {fileID: 133338985}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1766986836
@@ -323176,7 +323209,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4004344390756980}
   m_Layer: 0
-  m_Name: Infirmary Door
+  m_Name: Infirmary Room 1 Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -323192,7 +323225,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4004345927259027}
   m_Layer: 0
-  m_Name: Door_V2
+  m_Name: CR Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -324446,7 +324479,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4322687462696444}
   m_Layer: 0
-  m_Name: Door_V3
+  m_Name: Office Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -325210,7 +325243,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4238493880018617}
   m_Layer: 0
-  m_Name: DoorD_V2
+  m_Name: Infirmary Room 2 Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -327259,11 +327292,11 @@ Transform:
   m_GameObject: {fileID: 1087478463162128}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -46.64434, y: -0.0001, z: 34.868317}
+  m_LocalPosition: {x: -67.866394, y: -4.80536, z: 44.06836}
   m_LocalScale: {x: 3.5, y: 3.5, z: 3.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 1668264087}
+  m_Father: {fileID: 1259482884}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!4 &4649795312279432
 Transform:
@@ -327424,11 +327457,11 @@ Transform:
   m_GameObject: {fileID: 1941853140867011}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 79.71515, y: -0.0001, z: 74.96962}
-  m_LocalScale: {x: 3.5, y: 3.5, z: 3.5}
+  m_LocalPosition: {x: -829.0908, y: 0, z: -7513.365}
+  m_LocalScale: {x: 3.500001, y: 3.5, z: 3.500001}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 1668264087}
+  m_Father: {fileID: 1761843649}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!4 &4748269297118144
 Transform:
@@ -337902,12 +337935,11 @@ Transform:
   m_GameObject: {fileID: 5519095687987318229}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -6.40419, y: -0.000100238416, z: -1.6561098}
+  m_LocalPosition: {x: 0.25524902, y: -4.23446, z: 3.682129}
   m_LocalScale: {x: 3.5, y: 3.5, z: 3.5}
   m_ConstrainProportionsScale: 1
-  m_Children:
-  - {fileID: 7440790412133842376}
-  m_Father: {fileID: 1668264087}
+  m_Children: []
+  m_Father: {fileID: 1137837295}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!23 &477533100951660696
 MeshRenderer:
@@ -342328,12 +342360,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7784806037423318898}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.5, y: 0.5, z: 0.5, w: 0.5}
-  m_LocalPosition: {x: 0, y: 0.5987469, z: -0.041932106}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: 0.7071068, z: 0.7071068, w: 0}
+  m_LocalPosition: {x: 0.10845947, y: -2.1388457, z: 3.682129}
+  m_LocalScale: {x: 3.5, y: 3.5, z: 3.4999995}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 268324279445566616}
+  m_Father: {fileID: 1137837295}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 90}
 --- !u!1 &7471742834066106884
 GameObject:
