@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 namespace World.UI
 {
@@ -19,6 +20,9 @@ namespace World.UI
         [SerializeField] private bool allowResume = true;
         [SerializeField] private bool lockCursorWhenResumed = true;
         [SerializeField] private float timeScaleWhilePaused = 0f;
+
+        [Header("Navigation")]
+        [SerializeField] private string mainMenuSceneName;
 
         [Header("Events")]
         [SerializeField] private UnityEvent onPaused;
@@ -140,6 +144,30 @@ namespace World.UI
         public void QuitGame()
         {
             Application.Quit();
+        }
+
+        public void ExitToMainMenu()
+        {
+            if (string.IsNullOrEmpty(mainMenuSceneName))
+            {
+                Debug.LogWarning($"{nameof(PauseMenuController)}: Main menu scene name is not set.", this);
+                return;
+            }
+
+            Time.timeScale = cachedTimeScale;
+
+            if (pauseMenuRoot != null)
+            {
+                pauseMenuRoot.SetActive(false);
+            }
+
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+            isPaused = false;
+            onResumed?.Invoke();
+
+            SceneTransitionManager.Instance.LoadScene(mainMenuSceneName);
         }
 
         public void ForceResume()
