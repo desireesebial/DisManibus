@@ -574272,9 +574272,40 @@ MonoBehaviour:
   m_GameObject: {fileID: 1034450315187944}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 67ed09e9b3cd061469ff7d1ed4eb18b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  openAngle: 90
+  openSpeed: 2
+  isOpen: 0
+  isLocked: 1
+  requiredKeyID: -1
+  requiredKeyItem: {fileID: 0}
+  requiredKeySOId: 
+  consumeKeyOnUnlock: 0
+  useSelectedSOKeyOnly: 0
+  consumeWrongSelectedKey: 1
+  requireSelectedNumericKey: 0
+  linkedDoors: []
+  autoLinkDoors: 0
+  doorAnimator: {fileID: 0}
+  doorAudioSource: {fileID: 0}
+  doorOpenSound: {fileID: 0}
+  doorCloseSound: {fileID: 0}
+  doorLockedSound: {fileID: 0}
+  interactionUI: {fileID: 0}
+  interactionText: {fileID: 0}
+  openText: Press E to open
+  closeText: Press E to close
+  lockedText: Door is locked
+  headInventory: {fileID: 0}
+  playerInventory: {fileID: 0}
+  changeVisibilityOnInteract: 0
+  interactVisibilityState: 1
+  changeVisibilityOnCorrectCode: 0
+  correctCodeVisibilityState: 1
+  affectColliders: 0
+  visibilityTargets: []
 --- !u!114 &114180900345829627
 MonoBehaviour:
   m_ObjectHideFlags: 0
