@@ -276834,36 +276834,56 @@ PrefabInstance:
       value: 1801810542
       objectReference: {fileID: 0}
     - target: {fileID: 7180855258625915328, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
+      propertyPath: Correct
+      value: 472913
+      objectReference: {fileID: 0}
+    - target: {fileID: 7180855258625915328, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
+      propertyPath: CodeLength
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7180855258625915328, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
       propertyPath: targetDoor
       value: 
-      objectReference: {fileID: 82448484004009999}
+      objectReference: {fileID: 64433130514810424}
+    - target: {fileID: 7180855258872658345, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 8.881749
+      objectReference: {fileID: 0}
+    - target: {fileID: 7180855258872658345, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 8.881749
+      objectReference: {fileID: 0}
+    - target: {fileID: 7180855258872658345, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 8.881749
+      objectReference: {fileID: 0}
     - target: {fileID: 7180855258872658345, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -78.444
+      value: -15.789
       objectReference: {fileID: 0}
     - target: {fileID: 7180855258872658345, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.188
+      value: 5.85
       objectReference: {fileID: 0}
     - target: {fileID: 7180855258872658345, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -135.901
+      value: -43.477
       objectReference: {fileID: 0}
     - target: {fileID: 7180855258872658345, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.4780216
+      value: -0.70696986
       objectReference: {fileID: 0}
     - target: {fileID: 7180855258872658345, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.5210522
+      value: -0.013918123
       objectReference: {fileID: 0}
     - target: {fileID: 7180855258872658345, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.5210522
+      value: 0.013918123
       objectReference: {fileID: 0}
     - target: {fileID: 7180855258872658345, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.4780216
+      value: 0.70696986
       objectReference: {fileID: 0}
     - target: {fileID: 7180855258872658345, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -276871,7 +276891,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7180855258872658345, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -274.932
+      value: -182.256
       objectReference: {fileID: 0}
     - target: {fileID: 7180855258872658345, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -276884,6 +276904,12 @@ PrefabInstance:
     - target: {fileID: 7180855258962356777, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
       propertyPath: m_Mesh
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7180855258962356779, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
+      propertyPath: m_text
+      value: '000000
+
+'
       objectReference: {fileID: 0}
     - target: {fileID: 7180855258962356779, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
       propertyPath: m_textAlignment
@@ -313960,6 +313986,12 @@ MonoBehaviour:
   lockedText: Door is locked
   headInventory: {fileID: 0}
   playerInventory: {fileID: 0}
+  changeVisibilityOnInteract: 0
+  interactVisibilityState: 1
+  changeVisibilityOnCorrectCode: 0
+  correctCodeVisibilityState: 1
+  affectColliders: 0
+  visibilityTargets: []
 --- !u!1 &1830367131
 GameObject:
   m_ObjectHideFlags: 0
@@ -565503,6 +565535,7 @@ GameObject:
   - component: {fileID: 33134421968356793}
   - component: {fileID: 23080011559081427}
   - component: {fileID: 64433130514810423}
+  - component: {fileID: 64433130514810424}
   m_Layer: 0
   m_Name: Elevator_Door
   m_TagString: Untagged
@@ -571666,6 +571699,50 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 63054fdc7b5db8543990f13ecdc3bf24, type: 3}
+--- !u!114 &64433130514810424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1087478886806779}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67ed09e9b3cd061469ff7d1ed4eb18b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  openAngle: 90
+  openSpeed: 2
+  isOpen: 0
+  isLocked: 1
+  requiredKeyID: -1
+  requiredKeyItem: {fileID: 0}
+  requiredKeySOId: 
+  consumeKeyOnUnlock: 0
+  useSelectedSOKeyOnly: 0
+  consumeWrongSelectedKey: 1
+  requireSelectedNumericKey: 0
+  linkedDoors: []
+  autoLinkDoors: 0
+  doorAnimator: {fileID: 0}
+  doorAudioSource: {fileID: 0}
+  doorOpenSound: {fileID: 0}
+  doorCloseSound: {fileID: 0}
+  doorLockedSound: {fileID: 0}
+  interactionUI: {fileID: 0}
+  interactionText: {fileID: 0}
+  openText: Press E to open
+  closeText: Press E to close
+  lockedText: Door is locked
+  headInventory: {fileID: 0}
+  playerInventory: {fileID: 0}
+  changeVisibilityOnInteract: 1
+  interactVisibilityState: 1
+  changeVisibilityOnCorrectCode: 0
+  correctCodeVisibilityState: 1
+  affectColliders: 0
+  visibilityTargets:
+  - {fileID: 1087478886806779}
 --- !u!64 &64440076557100752
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -572756,6 +572833,12 @@ MonoBehaviour:
   lockedText: Door is locked
   headInventory: {fileID: 0}
   playerInventory: {fileID: 0}
+  changeVisibilityOnInteract: 0
+  interactVisibilityState: 1
+  changeVisibilityOnCorrectCode: 0
+  correctCodeVisibilityState: 1
+  affectColliders: 0
+  visibilityTargets: []
 --- !u!82 &82448484859595654
 AudioSource:
   m_ObjectHideFlags: 0
@@ -573181,6 +573264,12 @@ MonoBehaviour:
   lockedText: Door is locked
   headInventory: {fileID: 0}
   playerInventory: {fileID: 0}
+  changeVisibilityOnInteract: 0
+  interactVisibilityState: 1
+  changeVisibilityOnCorrectCode: 0
+  correctCodeVisibilityState: 1
+  affectColliders: 0
+  visibilityTargets: []
 --- !u!82 &82697408519272127
 AudioSource:
   m_ObjectHideFlags: 0
@@ -573606,6 +573695,12 @@ MonoBehaviour:
   lockedText: Door is locked
   headInventory: {fileID: 0}
   playerInventory: {fileID: 0}
+  changeVisibilityOnInteract: 0
+  interactVisibilityState: 1
+  changeVisibilityOnCorrectCode: 0
+  correctCodeVisibilityState: 1
+  affectColliders: 0
+  visibilityTargets: []
 --- !u!82 &82846563253517246
 AudioSource:
   m_ObjectHideFlags: 0
@@ -573740,6 +573835,12 @@ MonoBehaviour:
   lockedText: Door is locked
   headInventory: {fileID: 0}
   playerInventory: {fileID: 0}
+  changeVisibilityOnInteract: 0
+  interactVisibilityState: 1
+  changeVisibilityOnCorrectCode: 0
+  correctCodeVisibilityState: 1
+  affectColliders: 0
+  visibilityTargets: []
 --- !u!82 &82846564101254358
 AudioSource:
   m_ObjectHideFlags: 0
@@ -574244,6 +574345,12 @@ MonoBehaviour:
   lockedText: Door is locked
   headInventory: {fileID: 0}
   playerInventory: {fileID: 0}
+  changeVisibilityOnInteract: 0
+  interactVisibilityState: 1
+  changeVisibilityOnCorrectCode: 0
+  correctCodeVisibilityState: 1
+  affectColliders: 0
+  visibilityTargets: []
 --- !u!114 &114410975763925706
 MonoBehaviour:
   m_ObjectHideFlags: 0

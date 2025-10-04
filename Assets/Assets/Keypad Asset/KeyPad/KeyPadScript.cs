@@ -100,6 +100,8 @@ public class KeyPadScript : MonoBehaviour
                 // Small delay before opening door for better feel
                 StartCoroutine(OpenDoorAfterDelay(0.5f));
             }
+
+            targetDoor.ApplyKeypadVisibility();
         }
         
         // Keep the correct code displayed for a moment, then reset
