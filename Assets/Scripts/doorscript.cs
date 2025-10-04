@@ -41,12 +41,23 @@ public class doorscript : MonoBehaviour
     [Header("Integration")]
     public DullahanHeadInventory headInventory;
     public PlayerInventory playerInventory;
+
+    [Header("Visibility Control")]
+    public bool changeVisibilityOnInteract = false;
+    public bool interactVisibilityState = true;
+    public bool changeVisibilityOnCorrectCode = false;
+    public bool correctCodeVisibilityState = true;
+    public bool affectColliders = false;
+    public GameObject[] visibilityTargets;
     
     private Quaternion _closedRotation;
     private Quaternion _openRotation;
     private Coroutine _currentCoroutine;
     private bool _playerInRange = false;
     private bool _isAnimating = false;
+    private readonly List<Renderer> _visibilityRenderers = new List<Renderer>();
+    private readonly List<Collider> _visibilityColliders = new List<Collider>();
+    private bool _visibilityCacheInitialized = false;
 
     void Start()
     {
@@ -94,6 +105,8 @@ public class doorscript : MonoBehaviour
         // Hide UI initially
         if (interactionUI != null)
             interactionUI.SetActive(false);
+
+        CacheVisibilityTargets();
     }
 
     private void HandlePlayerInteraction()
@@ -106,16 +119,20 @@ public class doorscript : MonoBehaviour
             s_lastInteractFrame = Time.frameCount;
             if (isLocked)
             {
-                TryUnlockDoor();
+                if (TryUnlockDoor())
+                {
+                    ApplyInteractVisibility();
+                }
             }
             else
             {
                 ToggleDoor();
+                ApplyInteractVisibility();
             }
         }
     }
 
-    private void TryUnlockDoor()
+    private bool TryUnlockDoor()
     {
         // If an SO key is configured, always use SO logic and selected key interaction
         if (!string.IsNullOrEmpty(requiredKeySOId))
@@ -124,7 +141,7 @@ public class doorscript : MonoBehaviour
             {
                 PlayLockedSound();
                 ShowLockedMessage();
-                return;
+                return false;
             }
 
             var selectedKey = headInventory.GetSelectedKey();
@@ -135,19 +152,20 @@ public class doorscript : MonoBehaviour
                     if (consumeKeyOnUnlock) headInventory.RemoveSelectedKeyIfKey();
                     UnlockDoor();
                     ToggleDoor();
+                    return true;
                 }
                 else
                 {
                     if (consumeWrongSelectedKey) headInventory.RemoveSelectedKeyIfKey();
                     PlayLockedSound();
                     ShowLockedMessage();
+                    return false;
                 }
-                return;
             }
             // No selected key; fall through to locked feedback
             PlayLockedSound();
             ShowLockedMessage();
-            return;
+            return false;
         }
 
         if (HasRequiredKey())
@@ -163,12 +181,16 @@ public class doorscript : MonoBehaviour
                 }
             }
             ToggleDoor();
+            return true;
         }
         else
         {
             PlayLockedSound();
             ShowLockedMessage();
+            return false;
         }
+
+        return false;
     }
 
     private bool HasRequiredKey()
@@ -468,5 +490,106 @@ public class doorscript : MonoBehaviour
     public void SetLinkedDoors(doorscript[] doors)
     {
         linkedDoors = doors;
+    }
+
+    public void SetDoorVisibility(bool visible)
+    {
+        SetVisibilityState(visible);
+    }
+
+    public void ApplyKeypadVisibility()
+    {
+        if (changeVisibilityOnCorrectCode)
+        {
+            SetVisibilityState(correctCodeVisibilityState);
+        }
+    }
+
+    public void RefreshVisibilityTargets()
+    {
+        CacheVisibilityTargets();
+    }
+
+    private void ApplyInteractVisibility()
+    {
+        if (changeVisibilityOnInteract)
+        {
+            SetVisibilityState(interactVisibilityState);
+        }
+    }
+
+    private void CacheVisibilityTargets()
+    {
+        _visibilityRenderers.Clear();
+        _visibilityColliders.Clear();
+
+        if (visibilityTargets == null || visibilityTargets.Length == 0)
+        {
+            AddVisibilityComponents(gameObject);
+        }
+        else
+        {
+            foreach (var target in visibilityTargets)
+            {
+                AddVisibilityComponents(target);
+            }
+        }
+
+        _visibilityCacheInitialized = true;
+    }
+
+    private void EnsureVisibilityCache()
+    {
+        if (!_visibilityCacheInitialized)
+        {
+            CacheVisibilityTargets();
+        }
+    }
+
+    private void AddVisibilityComponents(GameObject target)
+    {
+        if (target == null) return;
+
+        var renderers = target.GetComponentsInChildren<Renderer>(true);
+        foreach (var renderer in renderers)
+        {
+            if (renderer != null && !_visibilityRenderers.Contains(renderer))
+            {
+                _visibilityRenderers.Add(renderer);
+            }
+        }
+
+        var colliders = target.GetComponentsInChildren<Collider>(true);
+        foreach (var collider in colliders)
+        {
+            if (collider != null && !_visibilityColliders.Contains(collider))
+            {
+                _visibilityColliders.Add(collider);
+            }
+        }
+    }
+
+    private void SetVisibilityState(bool visible)
+    {
+        EnsureVisibilityCache();
+
+        foreach (var renderer in _visibilityRenderers)
+        {
+            if (renderer != null)
+            {
+                renderer.enabled = visible;
+            }
+        }
+
+        if (affectColliders)
+        {
+            foreach (var collider in _visibilityColliders)
+            {
+                if (collider != null)
+                {
+                    collider.enabled = visible;
+                }
+            }
+        }
     }
 }
