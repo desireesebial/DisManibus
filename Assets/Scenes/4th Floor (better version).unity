@@ -17336,6 +17336,7 @@ GameObject:
   - component: {fileID: 563603284}
   - component: {fileID: 563603283}
   - component: {fileID: 563603282}
+  - component: {fileID: 563603285}
   m_Layer: 0
   m_Name: Cutscene_Player
   m_TagString: Untagged
@@ -17398,6 +17399,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1983941382}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &563603285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 563603281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 348937bf5c6d62448a42704c8ccad548, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cutsceneDirector: {fileID: 563603283}
+  cutsceneVcamGO: {fileID: 1590177848}
+  playerVcamGO: {fileID: 1387734320}
+  moveScript: {fileID: 2013329656}
+  lookScript: {fileID: 2013329656}
 --- !u!1 &565206232
 GameObject:
   m_ObjectHideFlags: 0
@@ -296228,8 +296246,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1350617412}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.000000014901161, z: -0, w: 1}
-  m_LocalPosition: {x: -266.28552, y: 0, z: -93.51}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -267.64, y: 0, z: -89.59}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -300328,7 +300346,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: -475.258, y: 0, z: -470.10645, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -310435,7 +310453,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 15}
+  m_margin: {x: 0, y: 0, z: -449.38776, w: 15}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
