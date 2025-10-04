@@ -855,6 +855,7 @@ GameObject:
   m_Component:
   - component: {fileID: 58260886}
   - component: {fileID: 58260887}
+  - component: {fileID: 58260888}
   m_Layer: 0
   m_Name: blue key pile
   m_TagString: Untagged
@@ -912,8 +913,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pileSwiper: {fileID: 1815991445}
   pileCanvas: {fileID: 1123927893}
-  interactionRange: 5
-  interactionKey: 101
+  interactionRange: 10
+  interactionKey: 102
   interactionText: Press E to sift papers
   useCrosshairDetection: 1
   crosshairDetectionRange: 10
@@ -926,6 +927,27 @@ MonoBehaviour:
   worldPileObject: {fileID: 0}
   changeCrosshairColor: 1
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+--- !u!65 &58260888
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 58260885}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.9625049, y: 0.803523, z: 2.3937533}
+  m_Center: {x: 0.027923437, y: 6.3451595, z: 5.8988996}
 --- !u!1 &61849678
 GameObject:
   m_ObjectHideFlags: 0
@@ -11147,6 +11169,7 @@ GameObject:
   m_Component:
   - component: {fileID: 464779188}
   - component: {fileID: 464779189}
+  - component: {fileID: 464779190}
   m_Layer: 0
   m_Name: golden key pile
   m_TagString: Untagged
@@ -11218,6 +11241,27 @@ MonoBehaviour:
   worldPileObject: {fileID: 0}
   changeCrosshairColor: 1
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+--- !u!65 &464779190
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 464779187}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.8038695, y: 0.5081839, z: 1.9858088}
+  m_Center: {x: -0.030743377, y: 6.450439, z: 5.931883}
 --- !u!1 &466973746
 GameObject:
   m_ObjectHideFlags: 0
@@ -13399,6 +13443,7 @@ GameObject:
   m_Component:
   - component: {fileID: 551111441}
   - component: {fileID: 551111442}
+  - component: {fileID: 551111443}
   m_Layer: 0
   m_Name: orange key pile
   m_TagString: Untagged
@@ -13470,6 +13515,27 @@ MonoBehaviour:
   worldPileObject: {fileID: 0}
   changeCrosshairColor: 1
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+--- !u!65 &551111443
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 551111440}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.5110343, y: 0.25309327, z: 2.0448003}
+  m_Center: {x: -0.29002696, y: 6.1696053, z: 5.851502}
 --- !u!1 &560531023
 GameObject:
   m_ObjectHideFlags: 0
@@ -153787,6 +153853,7 @@ GameObject:
   m_Component:
   - component: {fileID: 702609890}
   - component: {fileID: 702609891}
+  - component: {fileID: 702609892}
   m_Layer: 0
   m_Name: red key pile
   m_TagString: Untagged
@@ -153858,6 +153925,27 @@ MonoBehaviour:
   worldPileObject: {fileID: 0}
   changeCrosshairColor: 1
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+--- !u!65 &702609892
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 702609889}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.010735, y: 0.859111, z: 2.2784534}
+  m_Center: {x: 0.3964669, y: 6.468852, z: 5.821162}
 --- !u!1 &703174859
 GameObject:
   m_ObjectHideFlags: 0
@@ -155590,7 +155678,7 @@ MonoBehaviour:
   startLocked: 0
   requiredKey: {fileID: 0}
   consumeKeyOnUnlock: 0
-  openLocalEulerOffset: {x: -89, y: 0, z: 0}
+  openLocalEulerOffset: {x: -150, y: 0, z: 0}
   animationDuration: 0.6
   animationCurve:
     serializedVersion: 2
@@ -160047,7 +160135,7 @@ MonoBehaviour:
   startLocked: 0
   requiredKey: {fileID: 0}
   consumeKeyOnUnlock: 0
-  openLocalEulerOffset: {x: -89, y: 0, z: 0}
+  openLocalEulerOffset: {x: -150, y: 0, z: 0}
   animationDuration: 0.6
   animationCurve:
     serializedVersion: 2
@@ -167780,6 +167868,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1284598265}
   - component: {fileID: 1284598266}
+  - component: {fileID: 1284598267}
   m_Layer: 0
   m_Name: yellow key pile
   m_TagString: Untagged
@@ -167851,6 +167940,27 @@ MonoBehaviour:
   worldPileObject: {fileID: 0}
   changeCrosshairColor: 1
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+--- !u!65 &1284598267
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284598264}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.3510325, y: 0.20374478, z: 2.028564}
+  m_Center: {x: -0.11466875, y: 6.1142845, z: 5.8386574}
 --- !u!1 &1285295297
 GameObject:
   m_ObjectHideFlags: 0
@@ -168203,7 +168313,7 @@ MonoBehaviour:
   startLocked: 0
   requiredKey: {fileID: 0}
   consumeKeyOnUnlock: 0
-  openLocalEulerOffset: {x: -89, y: 0, z: 0}
+  openLocalEulerOffset: {x: -150, y: 0, z: 0}
   animationDuration: 0.6
   animationCurve:
     serializedVersion: 2
@@ -171373,6 +171483,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1417390415}
   - component: {fileID: 1417390416}
+  - component: {fileID: 1417390417}
   m_Layer: 0
   m_Name: green key pile
   m_TagString: Untagged
@@ -171444,6 +171555,27 @@ MonoBehaviour:
   worldPileObject: {fileID: 0}
   changeCrosshairColor: 1
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+--- !u!65 &1417390417
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1417390414}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.547426, y: 0.6270314, z: 2.1268678}
+  m_Center: {x: 0.22628577, y: 5.919674, z: 5.8057714}
 --- !u!1 &1434241493
 GameObject:
   m_ObjectHideFlags: 0
@@ -174289,7 +174421,7 @@ MonoBehaviour:
   startLocked: 0
   requiredKey: {fileID: 0}
   consumeKeyOnUnlock: 0
-  openLocalEulerOffset: {x: -89, y: 0, z: 0}
+  openLocalEulerOffset: {x: -150, y: 0, z: 0}
   animationDuration: 0.6
   animationCurve:
     serializedVersion: 2
@@ -176024,6 +176156,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1618559217}
   - component: {fileID: 1618559218}
+  - component: {fileID: 1618559219}
   m_Layer: 0
   m_Name: gray key pile
   m_TagString: Untagged
@@ -176095,6 +176228,27 @@ MonoBehaviour:
   worldPileObject: {fileID: 0}
   changeCrosshairColor: 1
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+--- !u!65 &1618559219
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1618559216}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.0947891, y: 0.43996456, z: 2.0065196}
+  m_Center: {x: -0.17971316, y: 6.3987374, z: 5.885897}
 --- !u!1 &1619821284
 GameObject:
   m_ObjectHideFlags: 0
@@ -180839,7 +180993,7 @@ MonoBehaviour:
   startLocked: 0
   requiredKey: {fileID: 0}
   consumeKeyOnUnlock: 0
-  openLocalEulerOffset: {x: -89, y: 0, z: 0}
+  openLocalEulerOffset: {x: -150, y: 0, z: 0}
   animationDuration: 0.6
   animationCurve:
     serializedVersion: 2
@@ -323614,8 +323768,8 @@ MonoBehaviour:
   startLocked: 0
   requiredKey: {fileID: 0}
   consumeKeyOnUnlock: 0
-  openLocalEulerOffset: {x: -89, y: 0, z: 0}
-  animationDuration: 0.6
+  openLocalEulerOffset: {x: -150, y: 0, z: 0}
+  animationDuration: 1
   animationCurve:
     serializedVersion: 2
     m_Curve:
@@ -342677,7 +342831,7 @@ MonoBehaviour:
   startLocked: 0
   requiredKey: {fileID: 0}
   consumeKeyOnUnlock: 0
-  openLocalEulerOffset: {x: -89, y: 0, z: 0}
+  openLocalEulerOffset: {x: -150, y: 0, z: 0}
   animationDuration: 0.6
   animationCurve:
     serializedVersion: 2
@@ -344967,7 +345121,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 96585288858230127}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.03363809, z: -0.33906555}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
