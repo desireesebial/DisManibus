@@ -17336,6 +17336,7 @@ GameObject:
   - component: {fileID: 563603284}
   - component: {fileID: 563603283}
   - component: {fileID: 563603282}
+  - component: {fileID: 563603286}
   - component: {fileID: 563603285}
   m_Layer: 0
   m_Name: Cutscene_Player
@@ -17411,11 +17412,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 348937bf5c6d62448a42704c8ccad548, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cutsceneDirector: {fileID: 563603283}
-  cutsceneVcamGO: {fileID: 1590177848}
-  playerVcamGO: {fileID: 1387734320}
-  moveScript: {fileID: 2013329656}
-  lookScript: {fileID: 2013329656}
+  cutsceneAnimator: {fileID: 1590177850}
+  cutscenePuppet: {fileID: 1590177849}
+  cutsceneCamera: {fileID: 1590177848}
+  playerCamera: {fileID: 1387734320}
+  playerRb: {fileID: 692502036}
+  playerRoot: {fileID: 164413096}
+  playerScripts:
+  - {fileID: 2013329656}
+--- !u!114 &563603286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 563603281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 576a1a407b938114baab08dc127bc2d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &565206232
 GameObject:
   m_ObjectHideFlags: 0
@@ -305041,12 +305057,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2319d1c312b5aa498cbdee56e3464b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cutsceneAnimator: {fileID: 1590177850}
-  cutsceneCamera: {fileID: 1590177848}
-  playerCamera: {fileID: 1947632595}
-  playerRigidbody: {fileID: 692502036}
-  playerScripts:
-  - {fileID: 2013329656}
 --- !u!114 &1590177853
 MonoBehaviour:
   m_ObjectHideFlags: 0

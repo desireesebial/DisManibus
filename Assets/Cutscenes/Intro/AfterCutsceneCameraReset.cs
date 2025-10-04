@@ -1,37 +1,18 @@
 using UnityEngine;
-using UnityEngine.Playables;
 
-public class AfterCutsceneCameraReset : MonoBehaviour
+public class CutsceneCoordinator : MonoBehaviour
 {
-    [Header("Refs")]
-    public PlayableDirector cutsceneDirector;   // Intro_Cutscene
-    public GameObject cutsceneVcamGO;           // The VCutscene_Main GameObject
-    public GameObject playerVcamGO;             // (optional) your gameplay vcam GameObject
-    public Behaviour moveScript;                // your movement component (e.g., FirstPersonController)
-    public Behaviour lookScript;                // your look component (mouse look)
+    public GameObject player;   // The capsule (with collider + rigidbody)
+    public Camera cutsceneCam;  // The camera used in Timeline
 
-    void Awake()
+    public void OnCutsceneEnd()
     {
-        if (!cutsceneDirector) cutsceneDirector = GetComponent<PlayableDirector>();
-        if (cutsceneDirector) cutsceneDirector.stopped += OnCutsceneStopped;
-    }
+        // Move the player to where the cutscene camera ended
+        player.transform.position = cutsceneCam.transform.position;
 
-    void OnDestroy()
-    {
-        if (cutsceneDirector) cutsceneDirector.stopped -= OnCutsceneStopped;
-    }
-
-    void OnCutsceneStopped(PlayableDirector d)
-    {
-        // Release cutscene camera
-        if (cutsceneVcamGO) cutsceneVcamGO.SetActive(false);
-        if (playerVcamGO) playerVcamGO.SetActive(true);
-
-        // Re-enable controls
-        if (moveScript) moveScript.enabled = true;
-        if (lookScript) lookScript.enabled = true;
-
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        // Align facing direction
+        Vector3 lookDir = cutsceneCam.transform.forward;
+        lookDir.y = 0f; // Keep only horizontal rotation
+        player.transform.rotation = Quaternion.LookRotation(lookDir);
     }
 }
