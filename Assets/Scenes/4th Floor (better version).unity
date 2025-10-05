@@ -313610,6 +313610,7 @@ GameObject:
   - component: {fileID: 1830310040}
   - component: {fileID: 1830310039}
   - component: {fileID: 1830310043}
+  - component: {fileID: 1830310044}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -313819,7 +313820,7 @@ MonoBehaviour:
   openAngle: 90
   openSpeed: 2
   isOpen: 0
-  isLocked: 1
+  isLocked: 0
   requiredKeyID: -1
   requiredKeyItem: {fileID: 0}
   requiredKeySOId: 
@@ -313842,11 +313843,32 @@ MonoBehaviour:
   headInventory: {fileID: 0}
   playerInventory: {fileID: 0}
   changeVisibilityOnInteract: 0
-  interactVisibilityState: 1
+  interactVisibilityState: 0
   changeVisibilityOnCorrectCode: 0
-  correctCodeVisibilityState: 1
+  correctCodeVisibilityState: 0
   affectColliders: 0
   visibilityTargets: []
+--- !u!65 &1830310044
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1830310036}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.0000001, y: 2.1, z: 2.8}
+  m_Center: {x: -0.4999953, y: 1.0500001, z: 0.01750023}
 --- !u!1 &1830367131
 GameObject:
   m_ObjectHideFlags: 0
@@ -559315,7 +559337,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2453725463930292059, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4459864850019384737, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       propertyPath: m_Height
@@ -561191,6 +561213,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d90ba6530d9bfda47abb4610956b2f44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2013329657 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7562252594709440236, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+  m_PrefabInstance: {fileID: 1947632594}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1947632595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e39e3dbc390b04e8a3d3a0161ba377, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2015944001
@@ -565138,6 +565171,7 @@ GameObject:
   - component: {fileID: 65059230253709562}
   - component: {fileID: 82574798829834994}
   - component: {fileID: 114180900345829626}
+  - component: {fileID: 114180900345829628}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -565159,6 +565193,7 @@ GameObject:
   - component: {fileID: 65059228432942609}
   - component: {fileID: 82574800498486297}
   - component: {fileID: 82574800498486298}
+  - component: {fileID: 82574800498486299}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -565707,6 +565742,7 @@ GameObject:
   - component: {fileID: 65558904577669912}
   - component: {fileID: 82846563253517246}
   - component: {fileID: 82846563253517247}
+  - component: {fileID: 82846563253517248}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -565836,6 +565872,7 @@ GameObject:
   - component: {fileID: 65853956217529198}
   - component: {fileID: 82448484004009998}
   - component: {fileID: 82448484004009999}
+  - component: {fileID: 82448484004010000}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -565946,6 +565983,7 @@ GameObject:
   - component: {fileID: 82697408519272127}
   - component: {fileID: 114410975264615429}
   - component: {fileID: 114410975264615430}
+  - component: {fileID: 114410975264615431}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -566027,7 +566065,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1034450315187944}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.000000021855694, y: 0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.5000001, y: 0.00000007510185, z: 0.004844999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -569181,7 +569219,7 @@ MonoBehaviour:
   openAngle: 90
   openSpeed: 2
   isOpen: 0
-  isLocked: 1
+  isLocked: 0
   requiredKeyID: -1
   requiredKeyItem: {fileID: 0}
   requiredKeySOId: 
@@ -569209,6 +569247,27 @@ MonoBehaviour:
   correctCodeVisibilityState: 1
   affectColliders: 0
   visibilityTargets: []
+--- !u!65 &82448484004010000
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1889588450912336}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.0000001, y: 2.1, z: 2.8}
+  m_Center: {x: -0.49999624, y: 1.0500001, z: 0.017496414}
 --- !u!82 &82574798829834994
 AudioSource:
   m_ObjectHideFlags: 0
@@ -569418,13 +569477,13 @@ MonoBehaviour:
   openAngle: 90
   openSpeed: 2
   isOpen: 0
-  isLocked: 1
+  isLocked: 0
   requiredKeyID: -1
   requiredKeyItem: {fileID: 0}
   requiredKeySOId: 
   consumeKeyOnUnlock: 0
   useSelectedSOKeyOnly: 0
-  consumeWrongSelectedKey: 1
+  consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors: []
   autoLinkDoors: 0
@@ -569441,11 +569500,32 @@ MonoBehaviour:
   headInventory: {fileID: 0}
   playerInventory: {fileID: 0}
   changeVisibilityOnInteract: 0
-  interactVisibilityState: 1
+  interactVisibilityState: 0
   changeVisibilityOnCorrectCode: 0
-  correctCodeVisibilityState: 1
+  correctCodeVisibilityState: 0
   affectColliders: 0
   visibilityTargets: []
+--- !u!65 &82574800498486299
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1034450509604867}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.0000001, y: 2.1, z: 2.8}
+  m_Center: {x: -0.49999815, y: 1.05, z: 0.017502137}
 --- !u!82 &82697408519272127
 AudioSource:
   m_ObjectHideFlags: 0
@@ -569655,13 +569735,13 @@ MonoBehaviour:
   openAngle: 90
   openSpeed: 2
   isOpen: 0
-  isLocked: 1
+  isLocked: 0
   requiredKeyID: -1
   requiredKeyItem: {fileID: 0}
   requiredKeySOId: 
   consumeKeyOnUnlock: 0
   useSelectedSOKeyOnly: 0
-  consumeWrongSelectedKey: 1
+  consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors: []
   autoLinkDoors: 0
@@ -569678,11 +569758,32 @@ MonoBehaviour:
   headInventory: {fileID: 0}
   playerInventory: {fileID: 0}
   changeVisibilityOnInteract: 0
-  interactVisibilityState: 1
+  interactVisibilityState: 0
   changeVisibilityOnCorrectCode: 0
-  correctCodeVisibilityState: 1
+  correctCodeVisibilityState: 0
   affectColliders: 0
   visibilityTargets: []
+--- !u!65 &82846563253517248
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1783270908355388}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.0000005, y: 2.1, z: 2.8}
+  m_Center: {x: -0.4999988, y: 1.05, z: 0.01750405}
 --- !u!108 &108475366675961192
 Light:
   m_ObjectHideFlags: 0
@@ -569763,13 +569864,13 @@ MonoBehaviour:
   openAngle: 90
   openSpeed: 2
   isOpen: 0
-  isLocked: 1
+  isLocked: 0
   requiredKeyID: -1
   requiredKeyItem: {fileID: 0}
   requiredKeySOId: 
   consumeKeyOnUnlock: 0
   useSelectedSOKeyOnly: 0
-  consumeWrongSelectedKey: 1
+  consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors: []
   autoLinkDoors: 0
@@ -569784,7 +569885,7 @@ MonoBehaviour:
   closeText: Press E to close
   lockedText: Door is locked
   headInventory: {fileID: 0}
-  playerInventory: {fileID: 0}
+  playerInventory: {fileID: 2013329657}
   changeVisibilityOnInteract: 0
   interactVisibilityState: 1
   changeVisibilityOnCorrectCode: 0
@@ -569806,6 +569907,27 @@ MonoBehaviour:
   action: 1
   questId: leave_room
   questTextIfAdding: 
+--- !u!65 &114180900345829628
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1034450315187944}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.0000001, y: 2.1, z: 2.8}
+  m_Center: {x: -0.50000197, y: 1.05, z: 0.01750023}
 --- !u!114 &114410975264615429
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -569861,6 +569983,27 @@ MonoBehaviour:
   correctCodeVisibilityState: 1
   affectColliders: 0
   visibilityTargets: []
+--- !u!65 &114410975264615431
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1975788131675025}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.0000001, y: 2.1, z: 2.8}
+  m_Center: {x: -0.49999148, y: 1.0500001, z: 0.01750023}
 --- !u!33 &124588191360585949
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -577580,7 +577723,7 @@ GameObject:
   - component: {fileID: 8229688525241914266}
   m_Layer: 0
   m_Name: Kamatayan
-  m_TagString: Untagged
+  m_TagString: Kamatayan
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -578141,7 +578284,7 @@ MonoBehaviour:
   patrolWaypoints: []
   waitTimeAtWaypoint: 2
   patrolSpeed: 3.5
-  useRandomPatrol: 0
+  useRandomPatrol: 1
   autoPatrolRadius: 20
   detectionRadius: 15
   lookingInterval: 5
