@@ -769,7 +769,7 @@ Transform:
   m_GameObject: {fileID: 19891485}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 29.3, y: 67.6, z: 33.3}
+  m_LocalPosition: {x: 29.3, y: -22, z: 33.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -788,7 +788,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 1e112edaf1291f240a0efe2b246454ab, type: 3}
   m_Resource: {fileID: 8300000, guid: 1e112edaf1291f240a0efe2b246454ab, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.2
+  m_Volume: 1
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -17011,6 +17011,12 @@ MonoBehaviour:
   lockedText: Door is locked
   headInventory: {fileID: 4459864850702346306}
   playerInventory: {fileID: 0}
+  changeVisibilityOnInteract: 0
+  interactVisibilityState: 1
+  changeVisibilityOnCorrectCode: 0
+  correctCodeVisibilityState: 1
+  affectColliders: 0
+  visibilityTargets: []
 --- !u!65 &225688412
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -54120,6 +54126,12 @@ MonoBehaviour:
   lockedText: Door is locked
   headInventory: {fileID: 4459864850702346306}
   playerInventory: {fileID: 0}
+  changeVisibilityOnInteract: 0
+  interactVisibilityState: 1
+  changeVisibilityOnCorrectCode: 0
+  correctCodeVisibilityState: 1
+  affectColliders: 0
+  visibilityTargets: []
 --- !u!65 &593401329
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -388924,6 +388936,12 @@ MonoBehaviour:
   lockedText: Door is locked
   headInventory: {fileID: 4459864850702346306}
   playerInventory: {fileID: 0}
+  changeVisibilityOnInteract: 0
+  interactVisibilityState: 1
+  changeVisibilityOnCorrectCode: 0
+  correctCodeVisibilityState: 1
+  affectColliders: 0
+  visibilityTargets: []
 --- !u!33 &3469287837885959309
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -390053,6 +390071,12 @@ MonoBehaviour:
   lockedText: Door is locked
   headInventory: {fileID: 0}
   playerInventory: {fileID: 0}
+  changeVisibilityOnInteract: 0
+  interactVisibilityState: 1
+  changeVisibilityOnCorrectCode: 0
+  correctCodeVisibilityState: 1
+  affectColliders: 0
+  visibilityTargets: []
 --- !u!82 &4272788813988389019
 AudioSource:
   m_ObjectHideFlags: 0
@@ -398046,6 +398070,12 @@ MonoBehaviour:
   lockedText: Door is locked
   headInventory: {fileID: 4459864850702346306}
   playerInventory: {fileID: 0}
+  changeVisibilityOnInteract: 0
+  interactVisibilityState: 1
+  changeVisibilityOnCorrectCode: 0
+  correctCodeVisibilityState: 1
+  affectColliders: 0
+  visibilityTargets: []
 --- !u!82 &8635660095280295202
 AudioSource:
   m_ObjectHideFlags: 0
@@ -398180,6 +398210,12 @@ MonoBehaviour:
   lockedText: Door is locked
   headInventory: {fileID: 0}
   playerInventory: {fileID: 0}
+  changeVisibilityOnInteract: 0
+  interactVisibilityState: 1
+  changeVisibilityOnCorrectCode: 0
+  correctCodeVisibilityState: 1
+  affectColliders: 0
+  visibilityTargets: []
 --- !u!23 &8658694975990634119
 MeshRenderer:
   m_ObjectHideFlags: 0
