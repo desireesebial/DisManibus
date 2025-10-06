@@ -421,6 +421,11 @@ public class NoteLetterPickable : MonoBehaviour
         return false;
     }
     
+    public bool IsInteractionActive()
+    {
+        return isNoteOpen || playerInRange;
+    }
+    
     
     // Public method to force reset player controls (useful for debugging)
     [ContextMenu("Force Reset Player Controls")]

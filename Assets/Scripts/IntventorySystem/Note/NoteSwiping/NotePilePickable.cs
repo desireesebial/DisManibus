@@ -257,6 +257,12 @@ public class NotePilePickable : MonoBehaviour
         }
         catch { }
     }
+
+    public bool HasActiveSessionOrFocus()
+    {
+        if (!isActiveAndEnabled) return false;
+        return isActiveSession || playerInRange;
+    }
 }
 
 

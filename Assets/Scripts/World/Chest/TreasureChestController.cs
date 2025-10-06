@@ -214,9 +214,15 @@ public class TreasureChestController : MonoBehaviour
             Transform t = hit.collider.transform;
             var controller = t.GetComponentInParent<TreasureChestController>();
             Debug.Log($"Raycast hit: {hit.collider.name} on layer {hit.collider.gameObject.layer}. Distance: {hit.distance:F2}");
-            
+
             if (controller != null)
             {
+                if (!controller.ShouldProcessHit(t))
+                {
+                    Debug.Log("TreasureChestController: Hit is handled by an embedded interactable. Skipping chest toggle.");
+                    return;
+                }
+
                 Debug.Log("Hit detected! Interacting with chest controller.");
                 if (controller != this) controller.Interact(); else Interact();
             }
@@ -278,7 +284,12 @@ public class TreasureChestController : MonoBehaviour
 
         Transform t = hit.collider.transform;
         var controller = t.GetComponentInParent<TreasureChestController>();
-        return controller == this;
+        if (controller != this)
+        {
+            return false;
+        }
+
+        return controller.ShouldProcessHit(t);
     }
 
     private IEnumerator ShowLockedPrompt()
@@ -381,6 +392,41 @@ public class TreasureChestController : MonoBehaviour
     public void Toggle()
     {
         if (_isOpen) Close(); else Open();
+    }
+
+    /// <summary>
+    /// Returns false when the hit should be handled by a different interactable embedded in the chest.
+    /// </summary>
+    internal bool ShouldProcessHit(Transform hitTransform)
+    {
+        if (hitTransform == null) return false;
+
+        // Ignore hits that belong to an active NotePile session.
+        NotePilePickable pilePickable = hitTransform.GetComponentInParent<NotePilePickable>();
+        if (pilePickable != null)
+        {
+            // When the pile is active, let it consume the interaction and skip toggling the chest.
+            if (pilePickable.isActiveAndEnabled)
+            {
+                // Extra safety: if the pile requires crosshair focus, only block when it considers itself in range.
+                if (pilePickable.HasActiveSessionOrFocus())
+                {
+                    return false;
+                }
+            }
+        }
+
+        // Ignore direct note pickables so reading notes is not overridden by chest toggle.
+        NoteLetterPickable notePickable = hitTransform.GetComponentInParent<NoteLetterPickable>();
+        if (notePickable != null)
+        {
+            if (notePickable.IsInteractionActive())
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void PlayAnimation(bool open)

@@ -915,7 +915,7 @@ MonoBehaviour:
   pileCanvas: {fileID: 1123927893}
   interactionRange: 10
   interactionKey: 102
-  interactionText: Press E to sift papers
+  interactionText: Press F to sift papers
   useCrosshairDetection: 1
   crosshairDetectionRange: 10
   pileLayerMask:
@@ -923,9 +923,9 @@ MonoBehaviour:
     m_Bits: 4294967295
   interactionUI: {fileID: 0}
   interactionTextUI: {fileID: 0}
-  hideWorldPileOnCleared: 1
+  hideWorldPileOnCleared: 0
   worldPileObject: {fileID: 0}
-  changeCrosshairColor: 1
+  changeCrosshairColor: 0
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!65 &58260888
 BoxCollider:
@@ -6027,9 +6027,9 @@ MonoBehaviour:
   nextPagePopOffset: 10
   nextPagePopScale: 1.02
   keepLastPage: 1
-  cancelKey: 27
-  persistProgress: 1
-  pileId: DefaultPile
+  cancelKey: 9
+  persistProgress: 0
+  pileId: GreenPile
   isActive: 0
 --- !u!1 &296167814
 GameObject:
@@ -7870,7 +7870,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2453725463930292059, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4459864850019384737, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       propertyPath: m_Height
@@ -7933,6 +7933,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4459864850019384740, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+      propertyPath: maxLookAngle
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 4459864850019384740, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       propertyPath: sprintDuration
       value: 3
       objectReference: {fileID: 0}
@@ -7948,6 +7952,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FirstPersonController
       objectReference: {fileID: 0}
+    - target: {fileID: 4459864850190357395, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: be4ce60e2c9768c44b9b10b9c5258045, type: 3}
     - target: {fileID: 4459864850831721272, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -8024,6 +8032,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -143.5
       objectReference: {fileID: 0}
+    - target: {fileID: 7105035103742784172, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+      propertyPath: playerCamera
+      value: 
+      objectReference: {fileID: 369474179}
+    - target: {fileID: 7105035103742784172, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+      propertyPath: playerController
+      value: 
+      objectReference: {fileID: 1790364529}
     - target: {fileID: 7562252594709440236, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       propertyPath: selectedItemNameText
       value: 
@@ -8551,9 +8567,9 @@ MonoBehaviour:
   nextPagePopOffset: 10
   nextPagePopScale: 1.02
   keepLastPage: 1
-  cancelKey: 27
-  persistProgress: 1
-  pileId: DefaultPile
+  cancelKey: 9
+  persistProgress: 0
+  pileId: GreyPile
   isActive: 0
 --- !u!1 &382483198
 GameObject:
@@ -11247,9 +11263,9 @@ MonoBehaviour:
     m_Bits: 4294967295
   interactionUI: {fileID: 0}
   interactionTextUI: {fileID: 0}
-  hideWorldPileOnCleared: 1
+  hideWorldPileOnCleared: 0
   worldPileObject: {fileID: 0}
-  changeCrosshairColor: 1
+  changeCrosshairColor: 0
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!65 &464779190
 BoxCollider:
@@ -13521,9 +13537,9 @@ MonoBehaviour:
     m_Bits: 4294967295
   interactionUI: {fileID: 0}
   interactionTextUI: {fileID: 0}
-  hideWorldPileOnCleared: 1
+  hideWorldPileOnCleared: 0
   worldPileObject: {fileID: 0}
-  changeCrosshairColor: 1
+  changeCrosshairColor: 0
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!65 &551111443
 BoxCollider:
@@ -153971,9 +153987,9 @@ MonoBehaviour:
     m_Bits: 4294967295
   interactionUI: {fileID: 0}
   interactionTextUI: {fileID: 0}
-  hideWorldPileOnCleared: 1
+  hideWorldPileOnCleared: 0
   worldPileObject: {fileID: 0}
-  changeCrosshairColor: 1
+  changeCrosshairColor: 0
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!65 &702609892
 BoxCollider:
@@ -158782,10 +158798,10 @@ MonoBehaviour:
     m_RotationOrder: 4
   nextPagePopOffset: 10
   nextPagePopScale: 1.02
-  keepLastPage: 1
-  cancelKey: 27
-  persistProgress: 1
-  pileId: DefaultPile
+  keepLastPage: 0
+  cancelKey: 9
+  persistProgress: 0
+  pileId: Orangepile
   isActive: 0
 --- !u!114 &891710948
 MonoBehaviour:
@@ -163691,9 +163707,9 @@ MonoBehaviour:
   nextPagePopOffset: 10
   nextPagePopScale: 1.02
   keepLastPage: 0
-  cancelKey: 27
-  persistProgress: 1
-  pileId: DefaultPile
+  cancelKey: 9
+  persistProgress: 0
+  pileId: Redkeypile
   isActive: 0
 --- !u!1 &1137771852
 GameObject:
@@ -167986,9 +168002,9 @@ MonoBehaviour:
     m_Bits: 4294967295
   interactionUI: {fileID: 0}
   interactionTextUI: {fileID: 0}
-  hideWorldPileOnCleared: 1
+  hideWorldPileOnCleared: 0
   worldPileObject: {fileID: 0}
-  changeCrosshairColor: 1
+  changeCrosshairColor: 0
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!65 &1284598267
 BoxCollider:
@@ -176274,9 +176290,9 @@ MonoBehaviour:
     m_Bits: 4294967295
   interactionUI: {fileID: 0}
   interactionTextUI: {fileID: 0}
-  hideWorldPileOnCleared: 1
+  hideWorldPileOnCleared: 0
   worldPileObject: {fileID: 0}
-  changeCrosshairColor: 1
+  changeCrosshairColor: 0
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!65 &1618559219
 BoxCollider:
@@ -176702,9 +176718,9 @@ MonoBehaviour:
   nextPagePopOffset: 10
   nextPagePopScale: 1.02
   keepLastPage: 1
-  cancelKey: 27
-  persistProgress: 1
-  pileId: DefaultPile
+  cancelKey: 9
+  persistProgress: 0
+  pileId: YellowPile
   isActive: 0
 --- !u!1 &1639465343
 GameObject:
@@ -178644,9 +178660,9 @@ MonoBehaviour:
   nextPagePopOffset: 10
   nextPagePopScale: 1.02
   keepLastPage: 1
-  cancelKey: 27
-  persistProgress: 1
-  pileId: DefaultPile
+  cancelKey: 9
+  persistProgress: 0
+  pileId: GoldenPile
   isActive: 0
 --- !u!1 &1715304007
 GameObject:
@@ -181672,9 +181688,9 @@ MonoBehaviour:
   nextPagePopOffset: 10
   nextPagePopScale: 1.02
   keepLastPage: 0
-  cancelKey: 27
-  persistProgress: 1
-  pileId: DefaultPile
+  cancelKey: 9
+  persistProgress: 0
+  pileId: Bluekeypile
   isActive: 0
 --- !u!1 &1817575305
 GameObject:
