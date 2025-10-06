@@ -5,10 +5,12 @@ public class PauseMenu : MonoBehaviour
 {
     [Header("UI Wiring")]
     [Tooltip("The root GameObject of your pause menu (the Panel with all buttons).")]
-    public GameObject pauseRoot;          // The Pause Panel
+    public GameObject pauseRoot;          // Pause Panel
     [Tooltip("CanvasGroup on that same panel (optional but recommended).")]
-    public CanvasGroup pauseGroup;
+    public CanvasGroup pauseGroup;        // CanvasGroup on pauseRoot (optional)
+    [Tooltip("Settings panel GameObject (your Settings Menu).")]
     public GameObject settingsPanel;
+    [Tooltip("Optional: Controls panel GameObject.")]
     public GameObject controlsPanel;
 
     [Header("Scenes")]
@@ -18,7 +20,22 @@ public class PauseMenu : MonoBehaviour
 
     void Start()
     {
+        // Ensure everything is hidden at boot
         IsPaused = false;
+
+        if (pauseGroup)
+        {
+            pauseGroup.alpha = 0f;
+            pauseGroup.blocksRaycasts = false;
+            pauseGroup.interactable = false;
+        }
+        if (pauseRoot) pauseRoot.SetActive(false);
+        if (settingsPanel) settingsPanel.SetActive(false);
+        if (controlsPanel) controlsPanel.SetActive(false);
+
+        Time.timeScale = 1f;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()
@@ -34,67 +51,66 @@ public class PauseMenu : MonoBehaviour
     {
         IsPaused = true;
 
-        // SHOW the menu
-        if (pauseRoot != null)
-            pauseRoot.SetActive(true);
+        if (pauseRoot) pauseRoot.SetActive(true);
 
-        if (pauseGroup != null)
+        if (pauseGroup)
         {
             pauseGroup.alpha = 1f;
             pauseGroup.blocksRaycasts = true;
             pauseGroup.interactable = true;
         }
 
-        Time.timeScale = 0f;
+        // Hide sub-panels while opening pause
+        if (settingsPanel) settingsPanel.SetActive(false);
+        if (controlsPanel) controlsPanel.SetActive(false);
 
+        Time.timeScale = 0f;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
-
-        Debug.Log("[Pause] Game paused + menu shown");
     }
 
     public void Resume()
     {
         IsPaused = false;
 
-        // HIDE the menu
-        if (pauseGroup != null)
+        if (pauseGroup)
         {
             pauseGroup.alpha = 0f;
             pauseGroup.blocksRaycasts = false;
             pauseGroup.interactable = false;
         }
 
-        if (pauseRoot != null)
-            pauseRoot.SetActive(false);
-
-        Time.timeScale = 1f;
-
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
-
+        if (pauseRoot) pauseRoot.SetActive(false);
         if (settingsPanel) settingsPanel.SetActive(false);
         if (controlsPanel) controlsPanel.SetActive(false);
 
-        Debug.Log("[Pause] Game resumed + menu hidden");
+        Time.timeScale = 1f;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
+    // === Buttons ===
     public void OpenSettings()
     {
-        if (settingsPanel) settingsPanel.SetActive(true);
+        // Show only Settings while paused
+        if (pauseRoot) pauseRoot.SetActive(false);
         if (controlsPanel) controlsPanel.SetActive(false);
+        if (settingsPanel) settingsPanel.SetActive(true);
     }
 
     public void OpenControls()
     {
-        if (controlsPanel) controlsPanel.SetActive(true);
+        if (pauseRoot) pauseRoot.SetActive(false);
         if (settingsPanel) settingsPanel.SetActive(false);
+        if (controlsPanel) controlsPanel.SetActive(true);
     }
 
     public void BackFromSubPanel()
     {
+        // Return to main pause panel
         if (settingsPanel) settingsPanel.SetActive(false);
         if (controlsPanel) controlsPanel.SetActive(false);
+        if (pauseRoot) pauseRoot.SetActive(true);
     }
 
     public void GoToMainMenu()
