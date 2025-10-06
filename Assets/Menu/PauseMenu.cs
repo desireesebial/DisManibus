@@ -1,136 +1,204 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
-    [Header("UI Wiring")]
-    [Tooltip("The root GameObject of your pause menu (the Panel with all buttons).")]
-    public GameObject pauseRoot;          // Pause Panel
-    [Tooltip("CanvasGroup on that same panel (optional but recommended).")]
-    public CanvasGroup pauseGroup;        // CanvasGroup on pauseRoot (optional)
-    [Tooltip("Settings panel GameObject (your Settings Menu).")]
-    public GameObject settingsPanel;
-    [Tooltip("Optional: Controls panel GameObject.")]
-    public GameObject controlsPanel;
+    [Header("UI Panels (auto-wires if left empty)")]
+    [SerializeField] private GameObject pauseRoot;
+    [SerializeField] private CanvasGroup pauseGroup;
+    [SerializeField] private GameObject settingsPanel;
+    [SerializeField] private CanvasGroup settingsGroup;  // NEW: for visibility control
+    [SerializeField] private GameObject controlsPanel;
 
-    [Header("Scenes")]
-    public string mainMenuSceneName = "MainMenu";
+    [Header("Scene")]
+    [SerializeField] private string mainMenuSceneName = "MainMenu";
 
-    public bool IsPaused { get; private set; }
+    // add this field with your others
+    [SerializeField] private CanvasGroup controlsGroup; // CanvasGroup on your Controls panel
+
+
+    private bool isPaused;
+
+    void Awake() { AutoWire(); }
 
     void Start()
     {
-        // Ensure everything is hidden at boot
-        IsPaused = false;
+        SafeSetActive(pauseRoot, true);
+        SafeSetActive(settingsPanel, true);
+        SafeSetActive(controlsPanel, true);
 
-        if (pauseGroup)
-        {
-            pauseGroup.alpha = 0f;
-            pauseGroup.blocksRaycasts = false;
-            pauseGroup.interactable = false;
-        }
-        if (pauseRoot) pauseRoot.SetActive(false);
-        if (settingsPanel) settingsPanel.SetActive(false);
-        if (controlsPanel) controlsPanel.SetActive(false);
+        SetCanvasVisible(pauseGroup, false);
+        SetCanvasVisible(settingsGroup, false);
+        SetCanvasVisible(controlsGroup, false);   // <-- hide controls via CanvasGroup
 
         Time.timeScale = 1f;
+        isPaused = false;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
 
+
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (IsPaused) Resume();
-            else Pause();
+            if (!isPaused) { Pause(); return; }
+
+            // if paused already, ESC goes back from subpanel or resumes
+            if ((settingsPanel && settingsGroup.alpha > 0) || (controlsPanel && controlsPanel.activeSelf))
+                BackFromSubPanel();
+            else
+                Resume();
         }
     }
 
+    // ---------- main pause ----------
     public void Pause()
     {
-        IsPaused = true;
+        Debug.Log("[PauseMenu] Pause()");
+        isPaused = true;
 
-        if (pauseRoot) pauseRoot.SetActive(true);
-
-        if (pauseGroup)
-        {
-            pauseGroup.alpha = 1f;
-            pauseGroup.blocksRaycasts = true;
-            pauseGroup.interactable = true;
-        }
-
-        // Hide sub-panels while opening pause
-        if (settingsPanel) settingsPanel.SetActive(false);
-        if (controlsPanel) controlsPanel.SetActive(false);
+        SetCanvasVisible(settingsGroup, false);
+        SafeSetActive(controlsPanel, false);
+        SafeSetActive(pauseRoot, true);
+        SetCanvasVisible(pauseGroup, true);
 
         Time.timeScale = 0f;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+
+        if (pauseRoot) pauseRoot.transform.SetAsLastSibling();
     }
 
     public void Resume()
     {
-        IsPaused = false;
+        Debug.Log("[PauseMenu] Resume()");
+        isPaused = false;
 
-        if (pauseGroup)
-        {
-            pauseGroup.alpha = 0f;
-            pauseGroup.blocksRaycasts = false;
-            pauseGroup.interactable = false;
-        }
-
-        if (pauseRoot) pauseRoot.SetActive(false);
-        if (settingsPanel) settingsPanel.SetActive(false);
-        if (controlsPanel) controlsPanel.SetActive(false);
+        SetCanvasVisible(pauseGroup, false);
+        SetCanvasVisible(settingsGroup, false);
+        SafeSetActive(controlsPanel, false);
 
         Time.timeScale = 1f;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    // === Buttons ===
+    // ---------- settings ----------
     public void OpenSettings()
     {
-        // Show only Settings while paused
-        if (pauseRoot) pauseRoot.SetActive(false);
-        if (controlsPanel) controlsPanel.SetActive(false);
+        Debug.Log("[PauseMenu] OpenSettings()");
+
+        // hide pause, show settings
+        SetCanvasVisible(pauseGroup, false);
+        if (pauseGroup) pauseGroup.blocksRaycasts = false;
+
         if (settingsPanel) settingsPanel.SetActive(true);
+        SetCanvasVisible(settingsGroup, true);
+
+        // ensure everything inside Settings is visible & interactable
+        foreach (CanvasGroup g in settingsPanel.GetComponentsInChildren<CanvasGroup>(true))
+        {
+            g.alpha = 1f;
+            g.interactable = true;
+            g.blocksRaycasts = true;
+        }
+
+        // make sure interactive panel renders above background
+        var panel = settingsPanel.transform.Find("Panel Settings");
+        if (panel) panel.SetAsLastSibling();
+
+        Debug.Log("[PauseMenu] Settings opened successfully.");
     }
 
+    public void CloseSettings()
+    {
+        Debug.Log("[PauseMenu] CloseSettings()");
+        SetCanvasVisible(settingsGroup, false);
+        SetCanvasVisible(pauseGroup, true);
+        if (pauseGroup) pauseGroup.transform.SetAsLastSibling();
+    }
+
+    // ---------- controls ----------
     public void OpenControls()
     {
-        if (pauseRoot) pauseRoot.SetActive(false);
-        if (settingsPanel) settingsPanel.SetActive(false);
+        Debug.Log("[PauseMenu] OpenControls()");
+        SetCanvasVisible(pauseGroup, false);
+        SetCanvasVisible(settingsGroup, false);
+
         if (controlsPanel) controlsPanel.SetActive(true);
+        SetCanvasVisible(controlsGroup, true);    // <-- show controls via CanvasGroup
+
+        // make sure interactive bits render above any background
+        var panel = controlsPanel.transform.Find("Panel Controls");
+        if (panel) panel.SetAsLastSibling();
     }
+
 
     public void BackFromSubPanel()
     {
-        // Return to main pause panel
-        if (settingsPanel) settingsPanel.SetActive(false);
-        if (controlsPanel) controlsPanel.SetActive(false);
-        if (pauseRoot) pauseRoot.SetActive(true);
+        Debug.Log("[PauseMenu] BackFromSubPanel()");
+        SetCanvasVisible(settingsGroup, false);
+        SetCanvasVisible(controlsGroup, false);   // <-- hide controls
+        SetCanvasVisible(pauseGroup, true);
+        if (pauseRoot) pauseRoot.transform.SetAsLastSibling();
     }
 
     public void GoToMainMenu()
     {
         Time.timeScale = 1f;
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
-
-        if (!string.IsNullOrEmpty(mainMenuSceneName))
-            SceneManager.LoadScene(mainMenuSceneName);
-        else
-            Debug.LogWarning("MainMenu scene name not set in PauseMenu script.");
+        SceneManager.LoadScene(mainMenuSceneName);
     }
 
     public void QuitGame()
     {
-        Time.timeScale = 1f;
         Application.Quit();
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#endif
+    }
+
+    // ---------- helpers ----------
+    static void SafeSetActive(GameObject go, bool v)
+    {
+        if (go && go.activeSelf != v) go.SetActive(v);
+    }
+
+    static void SetCanvasVisible(CanvasGroup g, bool visible)
+    {
+        if (!g) return;
+        g.alpha = visible ? 1f : 0f;
+        g.interactable = visible;
+        g.blocksRaycasts = visible;
+        if (!g.gameObject.activeSelf) g.gameObject.SetActive(true);
+    }
+
+    static CanvasGroup GetCanvasGroup(GameObject go)
+    {
+        return go ? go.GetComponent<CanvasGroup>() : null;
+    }
+
+    void AutoWire()
+    {
+        if (!pauseRoot) pauseRoot = GameObject.Find("Pause Menu");
+
+        if (!settingsPanel)
+        {
+            var sm = GameObject.Find("SettingsMenu");
+            if (sm)
+            {
+                var child = sm.transform.Find("Panel Settings");
+                settingsPanel = child ? child.gameObject : sm;
+            }
+        }
+
+        if (!controlsPanel)
+        {
+            var c = GameObject.Find("Controls"); // adjust if your root is named differently
+            if (c) controlsPanel = c;
+        }
+
+        if (!pauseGroup && pauseRoot) pauseGroup = pauseRoot.GetComponent<CanvasGroup>();
+        if (!settingsGroup && settingsPanel) settingsGroup = settingsPanel.GetComponent<CanvasGroup>();
+        if (!controlsGroup && controlsPanel) controlsGroup = controlsPanel.GetComponent<CanvasGroup>(); // <-- new
+
+        Debug.Log($"[PauseMenu] AutoWire → pauseRoot={pauseRoot}, settingsPanel={settingsPanel}, controlsPanel={controlsPanel}, pauseGroup={pauseGroup}, settingsGroup={settingsGroup}, controlsGroup={controlsGroup}");
     }
 }
