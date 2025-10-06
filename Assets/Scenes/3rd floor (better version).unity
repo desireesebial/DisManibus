@@ -7068,7 +7068,7 @@ MonoBehaviour:
   openAngle: -90
   openSpeed: 2
   isOpen: 0
-  isLocked: 0
+  isLocked: 1
   requiredKeyID: 204
   requiredKeyItem: {fileID: 11400000, guid: 2256b810e2bfa5d43bcbd288e1d0926a, type: 2}
   requiredKeySOId: 
@@ -7083,7 +7083,7 @@ MonoBehaviour:
   doorOpenSound: {fileID: 0}
   doorCloseSound: {fileID: 0}
   doorLockedSound: {fileID: 0}
-  interactionUI: {fileID: 1194947264}
+  interactionUI: {fileID: 0}
   interactionText: {fileID: 664776773}
   openText: Press E to open
   closeText: Press E to close
@@ -15048,7 +15048,7 @@ RectTransform:
   m_Father: {fileID: 1436792197}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 9.99988, y: 11}
   m_SizeDelta: {x: 64, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -154074,7 +154074,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &664776771
 RectTransform:
   m_ObjectHideFlags: 0
@@ -155736,7 +155736,7 @@ MonoBehaviour:
   doorOpenSound: {fileID: 0}
   doorCloseSound: {fileID: 0}
   doorLockedSound: {fileID: 0}
-  interactionUI: {fileID: 1194947264}
+  interactionUI: {fileID: 0}
   interactionText: {fileID: 664776773}
   openText: Press E to open
   closeText: Press E to close
@@ -161130,7 +161130,7 @@ RectTransform:
   m_Father: {fileID: 978138877}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 11}
   m_SizeDelta: {x: 64, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -161189,7 +161189,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &902496150
 RectTransform:
   m_ObjectHideFlags: 0
@@ -162387,7 +162387,7 @@ RectTransform:
   m_Father: {fileID: 2045136932}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -168523,11 +168523,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2749210433660060874, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
   m_PrefabInstance: {fileID: 369474177}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1194947264 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2453725463930292059, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
-  m_PrefabInstance: {fileID: 369474177}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1201357597
 GameObject:
   m_ObjectHideFlags: 0
@@ -172471,7 +172466,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1328660738
 Transform:
   m_ObjectHideFlags: 0
@@ -328239,7 +328234,7 @@ RectTransform:
   m_Father: {fileID: 153377809}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -342230,7 +342225,7 @@ MonoBehaviour:
   doorOpenSound: {fileID: 0}
   doorCloseSound: {fileID: 0}
   doorLockedSound: {fileID: 0}
-  interactionUI: {fileID: 1194947264}
+  interactionUI: {fileID: 0}
   interactionText: {fileID: 664776773}
   openText: Press E to open
   closeText: Press E to close
@@ -343510,7 +343505,7 @@ MonoBehaviour:
   openAngle: -90
   openSpeed: 2
   isOpen: 0
-  isLocked: 0
+  isLocked: 1
   requiredKeyID: 200
   requiredKeyItem: {fileID: 11400000, guid: a281c33297b37774aa624e402d4cb8aa, type: 2}
   requiredKeySOId: 
@@ -343525,7 +343520,7 @@ MonoBehaviour:
   doorOpenSound: {fileID: 0}
   doorCloseSound: {fileID: 0}
   doorLockedSound: {fileID: 0}
-  interactionUI: {fileID: 1194947264}
+  interactionUI: {fileID: 0}
   interactionText: {fileID: 664776773}
   openText: Press E to open
   closeText: Press E to close
@@ -343596,7 +343591,7 @@ MonoBehaviour:
   openAngle: -90
   openSpeed: 2
   isOpen: 0
-  isLocked: 0
+  isLocked: 1
   requiredKeyID: 206
   requiredKeyItem: {fileID: 11400000, guid: 7883820c3c029764f8c2bf2ac7e7ebe3, type: 2}
   requiredKeySOId: 
@@ -343611,7 +343606,7 @@ MonoBehaviour:
   doorOpenSound: {fileID: 0}
   doorCloseSound: {fileID: 0}
   doorLockedSound: {fileID: 0}
-  interactionUI: {fileID: 1194947264}
+  interactionUI: {fileID: 0}
   interactionText: {fileID: 664776773}
   openText: Press E to open
   closeText: Press E to close
@@ -350364,7 +350359,7 @@ MonoBehaviour:
   doorOpenSound: {fileID: 0}
   doorCloseSound: {fileID: 0}
   doorLockedSound: {fileID: 0}
-  interactionUI: {fileID: 1194947264}
+  interactionUI: {fileID: 0}
   interactionText: {fileID: 664776773}
   openText: Press E to open
   closeText: Press E to close
