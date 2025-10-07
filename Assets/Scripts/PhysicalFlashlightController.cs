@@ -1,4 +1,5 @@
 using UnityEngine;
+using SaveLoad;
 
 // Simple: attach to your flashlight model prefab. Use PickUp/Drop from inventory.
 public class PhysicalFlashlightController : MonoBehaviour
@@ -37,6 +38,14 @@ public class PhysicalFlashlightController : MonoBehaviour
     public Rigidbody worldRigidbody;        // If present, enabled in World, disabled when Held
     public Collider[] worldColliders;       // Auto-detected if left empty
 
+    [Header("Persistence")]
+    [Tooltip("If true, saves whether the player is currently holding this flashlight across scenes/loads.")]
+    public bool persistHeldState = true;
+    [Tooltip("Key used in PersistentWorldState bools for whether the player holds the flashlight.")]
+    public string heldStateKey = "player_has_flashlight";
+    [Tooltip("If true, reads the saved state on Awake and auto-picks up into Default Hold Socket when saved as held.")]
+    public bool autoApplySavedStateOnAwake = true;
+
     public FlashlightState CurrentState { get; private set; } = FlashlightState.World;
     public bool IsOn => flashlightLight != null && flashlightLight.enabled;
 
@@ -56,6 +65,17 @@ public class PhysicalFlashlightController : MonoBehaviour
         // Always force OFF in world so the pickup never disappears due to lighting
         SetLightState(false);
         ApplyState(CurrentState);
+
+        if (persistHeldState && autoApplySavedStateOnAwake && PersistentWorldState.Instance != null)
+        {
+            bool held;
+            if (PersistentWorldState.Instance.TryGetBool(heldStateKey, out held) && held)
+            {
+                PickUp(defaultHoldSocket);
+                if (startOn && !IsOn && CanTurnOn())
+                    SetLightState(true);
+            }
+        }
     }
 
     void Update()
@@ -104,6 +124,9 @@ public class PhysicalFlashlightController : MonoBehaviour
         // Optionally turn ON when picked up (only if battery allows)
         if (startOn && !IsOn && CanTurnOn())
             SetLightState(true);
+
+        if (persistHeldState)
+            PersistentWorldState.Instance?.SetBool(heldStateKey, true);
     }
 
     // Call when inventory deselects/drops flashlight
@@ -116,6 +139,9 @@ public class PhysicalFlashlightController : MonoBehaviour
 
         CurrentState = FlashlightState.World;
         ApplyState(CurrentState);
+
+        if (persistHeldState)
+            PersistentWorldState.Instance?.SetBool(heldStateKey, false);
     }
 
     void ApplyState(FlashlightState state)
