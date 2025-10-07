@@ -36,6 +36,7 @@ public class KeyPadScript : MonoBehaviour
     private string result;
     private string ScreenText;
     private int reset;
+    private bool isProcessingCode = false; // Prevents multiple simultaneous code processing
 
     void Start()
     {
@@ -89,8 +90,9 @@ public class KeyPadScript : MonoBehaviour
                         PlayButtonPressSound();
                     }
                 }
-               if (Presses == Convert.ToInt32(CodeLength))
+               if (Presses == Convert.ToInt32(CodeLength) && !isProcessingCode)
                 {
+                   isProcessingCode = true;
                    result = String.Join("", new List<int>(Code).ConvertAll(i => i.ToString()).ToArray());
                     Debug.Log(result);
                     if(Correct == result)
@@ -106,6 +108,7 @@ public class KeyPadScript : MonoBehaviour
                         OnWrongCodeEntered();
                         ResetKeypad();
                     }
+                    isProcessingCode = false;
                 }
             }
 
@@ -212,8 +215,15 @@ public class KeyPadScript : MonoBehaviour
         PlaySuccessSound();
         
         // Unlock and/or open door if configured
-        if (targetDoor != null && unlockDoorOnSuccess)
+        if (targetDoor != null && targetDoor.gameObject != null && unlockDoorOnSuccess)
         {
+            // Ensure door is active before unlocking/opening
+            if (!targetDoor.gameObject.activeInHierarchy)
+            {
+                Debug.LogWarning($"Target door {targetDoor.gameObject.name} is inactive. Activating it.");
+                targetDoor.gameObject.SetActive(true);
+            }
+            
             targetDoor.UnlockDoor();
             
             if (openDoorAfterUnlock)
@@ -223,6 +233,10 @@ public class KeyPadScript : MonoBehaviour
             }
 
             targetDoor.ApplyKeypadVisibility();
+        }
+        else if (targetDoor == null)
+        {
+            Debug.LogWarning("[KeyPad] No target door assigned. Code correct but no door to unlock.");
         }
         
         bool visibilityChanged = ApplySuccessVisibility();
@@ -243,6 +257,7 @@ public class KeyPadScript : MonoBehaviour
     private void ResetKeypad()
     {
         Presses = 0;
+        isProcessingCode = false; // Reset processing flag
         reset = Convert.ToInt32(CodeLength) - 1;
         do
         {
@@ -254,9 +269,23 @@ public class KeyPadScript : MonoBehaviour
     private IEnumerator OpenDoorAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        if (targetDoor != null && !targetDoor.IsLocked())
+        if (targetDoor != null && targetDoor.gameObject != null)
         {
-            targetDoor.ToggleDoor();
+            // Ensure door is active before attempting to toggle
+            if (!targetDoor.gameObject.activeInHierarchy)
+            {
+                Debug.LogWarning($"Target door {targetDoor.gameObject.name} is inactive. Activating it before opening.");
+                targetDoor.gameObject.SetActive(true);
+            }
+            
+            if (!targetDoor.IsLocked())
+            {
+                targetDoor.ToggleDoor();
+            }
+        }
+        else
+        {
+            Debug.LogError("[KeyPad] Target door is null or destroyed. Cannot open door.");
         }
     }
     

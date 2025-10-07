@@ -255,6 +255,13 @@ public class doorscript : MonoBehaviour
     {
         if (_isAnimating) return;
         
+        // Ensure the GameObject is active before starting a coroutine
+        if (!gameObject.activeInHierarchy)
+        {
+            Debug.LogWarning($"Cannot start coroutine on inactive door: {gameObject.name}. Activating it first.");
+            gameObject.SetActive(true);
+        }
+        
         if (_currentCoroutine != null)
             StopCoroutine(_currentCoroutine);
             
@@ -265,6 +272,13 @@ public class doorscript : MonoBehaviour
     {
         if (!isOpen && !_isAnimating)
         {
+            // Ensure the GameObject is active before starting a coroutine
+            if (!gameObject.activeInHierarchy)
+            {
+                Debug.LogWarning($"Cannot start coroutine on inactive door: {gameObject.name}. Activating it first.");
+                gameObject.SetActive(true);
+            }
+            
             if (_currentCoroutine != null)
                 StopCoroutine(_currentCoroutine);
             _currentCoroutine = StartCoroutine(AnimateDoor(true));
@@ -275,6 +289,13 @@ public class doorscript : MonoBehaviour
     {
         if (isOpen && !_isAnimating)
         {
+            // Ensure the GameObject is active before starting a coroutine
+            if (!gameObject.activeInHierarchy)
+            {
+                Debug.LogWarning($"Cannot start coroutine on inactive door: {gameObject.name}. Activating it first.");
+                gameObject.SetActive(true);
+            }
+            
             if (_currentCoroutine != null)
                 StopCoroutine(_currentCoroutine);
             _currentCoroutine = StartCoroutine(AnimateDoor(false));
@@ -303,8 +324,15 @@ public class doorscript : MonoBehaviour
         {
             foreach (var linkedDoor in linkedDoors)
             {
-                if (linkedDoor != null)
+                if (linkedDoor != null && linkedDoor.gameObject != null)
                 {
+                    // Ensure linked door is active before starting coroutine
+                    if (!linkedDoor.gameObject.activeInHierarchy)
+                    {
+                        Debug.LogWarning($"Linked door {linkedDoor.gameObject.name} is inactive. Activating it.");
+                        linkedDoor.gameObject.SetActive(true);
+                    }
+                    
                     linkedDoor.StopAllCoroutines();
                     linkedDoor.StartCoroutine(linkedDoor.AnimateDoor(open, false));
                 }
