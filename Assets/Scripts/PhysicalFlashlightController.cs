@@ -9,11 +9,11 @@ public class PhysicalFlashlightController : MonoBehaviour
     public Light flashlightLight;           // Spot Light for the beam (assign from child)
 
     [Header("Input")]
-    public KeyCode toggleKey = KeyCode.F;   // Toggle key
-    [Tooltip("If true, allows toggling even while still in the world (not picked up).")]
+    public KeyCode toggleKey = KeyCode.F;   // Toggle while held
+    [Tooltip("If true, allows toggling the light with the key even while the flashlight is still in the world (not picked up).")]
     public bool allowToggleWhenWorld = false;
-    [Tooltip("If true, the light will turn ON automatically right after PickUp (never in world).")]
-    public bool startOn = false;
+    [Tooltip("If true, the light will turn ON automatically when PICKED UP (never in world).")]
+    public bool startOn = false;            // Only applies when held
 
     [Header("Battery")]
     [Tooltip("Total usable seconds from full to empty while the light is ON.")]
@@ -53,8 +53,7 @@ public class PhysicalFlashlightController : MonoBehaviour
 
         CacheOriginalTransform();
         AutoPopulateColliders();
-
-        // Always start OFF in world so pickups don't "disappear" from lighting changes
+        // Always force OFF in world so the pickup never disappears due to lighting
         SetLightState(false);
         ApplyState(CurrentState);
     }
@@ -72,7 +71,8 @@ public class PhysicalFlashlightController : MonoBehaviour
     {
         if (!IsOn)
         {
-            if (!CanTurnOn()) return;
+            if (!CanTurnOn())
+                return;
             SetLightState(true);
         }
         else
@@ -101,13 +101,12 @@ public class PhysicalFlashlightController : MonoBehaviour
 
         CurrentState = FlashlightState.Held;
         ApplyState(CurrentState);
-
         // Optionally turn ON when picked up (only if battery allows)
         if (startOn && !IsOn && CanTurnOn())
             SetLightState(true);
     }
 
-    // Call if you ever need to return it to the world (not required if you never drop)
+    // Call when inventory deselects/drops flashlight
     public void Drop()
     {
         transform.SetParent(originalParent);
@@ -167,14 +166,14 @@ public class PhysicalFlashlightController : MonoBehaviour
 
     void UpdateBattery()
     {
-        // Infinite battery if capacity <= 0
+        // Clamp configuration and current value
         batteryCapacitySeconds = Mathf.Max(0f, batteryCapacitySeconds);
         if (batteryCapacitySeconds <= 0f)
         {
+            // Treat as infinite battery
             batterySecondsRemaining = 0f;
             return;
         }
-
         batterySecondsRemaining = Mathf.Clamp(batterySecondsRemaining, 0f, batteryCapacitySeconds);
 
         if (IsOn)
@@ -184,19 +183,22 @@ public class PhysicalFlashlightController : MonoBehaviour
             if (batterySecondsRemaining <= 0f)
             {
                 batterySecondsRemaining = 0f;
+                // Auto turn off and start recharge delay
                 SetLightState(false);
                 rechargeTimer = 0f;
             }
         }
         else
         {
-            // OFF: count delay, then recharge
+            // OFF: count recharge delay then recharge
             rechargeTimer += Time.deltaTime;
             if (batterySecondsRemaining < batteryCapacitySeconds && rechargeTimer >= rechargeDelaySeconds)
             {
                 batterySecondsRemaining += rechargeRatePerSecond * Time.deltaTime;
                 if (batterySecondsRemaining >= batteryCapacitySeconds)
+                {
                     batterySecondsRemaining = batteryCapacitySeconds;
+                }
             }
         }
     }
@@ -207,3 +209,4 @@ public class PhysicalFlashlightController : MonoBehaviour
         return Mathf.Clamp01(batterySecondsRemaining / batteryCapacitySeconds);
     }
 }
+

@@ -12,6 +12,24 @@ public class FlashlightController : MonoBehaviour
     public Color lightColor = Color.white;
     public LightType lightType = LightType.Spot;
     public float spotAngle = 60f;
+
+    [Header("Existing Flashlight (Optional)")]
+    [Tooltip("Assign an existing Light component if the flashlight already exists in the scene or prefab. Leave empty to auto-create one on the player camera.")]
+    public Light flashlightLight;
+    [Tooltip("Optional root transform for the flashlight model/light. Used when re-parenting or toggling visuals.")]
+    public Transform flashlightRoot;
+    [Tooltip("Optional visual GameObject (mesh, particles, etc.) to toggle alongside the light when switching on/off.")]
+    public GameObject flashlightVisual;
+    [Tooltip("If true, the assigned flashlightRoot will be parented to the detected player camera on start.")]
+    public bool parentFlashlightRootToCamera = false;
+    [Tooltip("Local position applied to the flashlightRoot after parenting to the camera.")]
+    public Vector3 flashlightRootLocalPosition = Vector3.zero;
+    [Tooltip("Local Euler rotation (degrees) applied to the flashlightRoot after parenting to the camera.")]
+    public Vector3 flashlightRootLocalEulerAngles = Vector3.zero;
+    [Tooltip("If true, flashlightVisual (if assigned) is activated only while the light is ON. Make sure the visual is not the same GameObject as this controller.")]
+    public bool toggleVisualWithLight = false;
+    [Tooltip("If false, the controller will not overwrite the Light component's existing settings when using an assigned flashlightLight.")]
+    public bool applyInspectorSettingsToExistingLight = true;
     
     [Header("Audio")]
     public AudioClip turnOnSound;
@@ -30,23 +48,30 @@ public class FlashlightController : MonoBehaviour
 	public bool lockUseWhenDepleted = true;
 
     // Private variables
-    private Light flashlightLight;
     private AudioSource audioSource;
     private Transform playerCamera;
 	private float rechargeTimer;
+    private bool warnedAboutSelfTogglingVisual;
 
     private void Start()
     {
         // Find the player camera to attach the flashlight to
         FindPlayerCamera();
-        
-        // Create the flashlight light component
-        CreateFlashlightLight();
-        
+
+        // Resolve or create the flashlight light component
+        ResolveFlashlightLight();
+
         // Setup audio source
         SetupAudioSource();
-        
-        Debug.Log("Flashlight Controller initialized. Press T to toggle flashlight.");
+
+        if (flashlightLight == null)
+        {
+            Debug.LogWarning($"[{name}] FlashlightController could not find or create a Light component. Flashlight functionality will be disabled until one is assigned.");
+        }
+        else
+        {
+            Debug.Log("Flashlight Controller initialized. Press T to toggle flashlight.");
+        }
     }
 
     private void FindPlayerCamera()
@@ -83,29 +108,26 @@ public class FlashlightController : MonoBehaviour
 
     private void CreateFlashlightLight()
     {
-        if (playerCamera == null) return;
-        
+        if (playerCamera == null)
+        {
+            Debug.LogWarning($"[{name}] Cannot create flashlight light because no player camera was found.");
+            return;
+        }
+
         // Create a child object for the flashlight light
         GameObject flashlightObject = new GameObject("FlashlightLight");
-        flashlightObject.transform.SetParent(playerCamera);
-        flashlightObject.transform.localPosition = Vector3.zero;
-        flashlightObject.transform.localRotation = Quaternion.identity;
-        
+        flashlightRoot = flashlightObject.transform;
+        flashlightRoot.SetParent(playerCamera);
+        flashlightRoot.localPosition = flashlightRootLocalPosition;
+        flashlightRoot.localRotation = Quaternion.Euler(flashlightRootLocalEulerAngles);
+
         // Add and configure the light component
         flashlightLight = flashlightObject.AddComponent<Light>();
-        flashlightLight.type = lightType;
-        flashlightLight.intensity = lightIntensity;
-        flashlightLight.range = lightRange;
-        flashlightLight.color = lightColor;
-        
-        if (lightType == LightType.Spot)
-        {
-            flashlightLight.spotAngle = spotAngle;
-        }
-        
+        ApplyLightSettings(force: true);
+
         // Start with flashlight off
         flashlightLight.enabled = false;
-        
+
         Debug.Log("Flashlight light created and attached to player camera");
     }
 
@@ -117,7 +139,7 @@ public class FlashlightController : MonoBehaviour
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
-        
+
         audioSource.playOnAwake = false;
         audioSource.spatialBlend = 0f; // 2D sound for UI feedback
     }
@@ -138,14 +160,19 @@ public class FlashlightController : MonoBehaviour
 
     public void ToggleFlashlight()
     {
-		if (flashlightLight == null) return;
+        EnsureFlashlightLight();
+        if (flashlightLight == null)
+        {
+            Debug.LogWarning($"[{name}] No Light assigned to FlashlightController. Assign a Light or enable auto-create to toggle the flashlight.");
+            return;
+        }
 
-		if (!isFlashlightOn && !CanTurnOn())
-		{
-			// Block turning on if depleted/locked
-			PlayAudioEffect(turnOffSound);
-			return;
-		}
+        if (!isFlashlightOn && !CanTurnOn())
+        {
+            // Block turning on if depleted/locked
+            PlayAudioEffect(turnOffSound);
+            return;
+        }
         
         isFlashlightOn = !isFlashlightOn;
         flashlightLight.enabled = isFlashlightOn;
@@ -161,6 +188,8 @@ public class FlashlightController : MonoBehaviour
             PlayAudioEffect(turnOffSound);
             Debug.Log("Flashlight turned OFF");
         }
+
+		UpdateFlashlightVisual();
     }
 
     private void PlayAudioEffect(AudioClip clip)
@@ -174,10 +203,13 @@ public class FlashlightController : MonoBehaviour
     // Public methods for external control
     public void SetFlashlightState(bool state)
     {
-        if (flashlightLight == null) return;
-        
         isFlashlightOn = state;
-        flashlightLight.enabled = state;
+        EnsureFlashlightLight();
+        if (flashlightLight != null)
+        {
+            flashlightLight.enabled = state;
+        }
+        UpdateFlashlightVisual();
     }
 
     public bool IsFlashlightOn()
@@ -185,21 +217,21 @@ public class FlashlightController : MonoBehaviour
         return isFlashlightOn;
     }
 
-	public float GetBatteryPercent()
-	{
-		if (batteryCapacitySeconds <= 0f) return 1f;
-		return Mathf.Clamp01(batterySecondsRemaining / batteryCapacitySeconds);
-	}
+    public float GetBatteryPercent()
+    {
+        if (batteryCapacitySeconds <= 0f) return 1f;
+        return Mathf.Clamp01(batterySecondsRemaining / batteryCapacitySeconds);
+    }
 
-	public bool IsDepleted()
-	{
-		return batterySecondsRemaining <= 0.0001f;
-	}
+    public bool IsDepleted()
+    {
+        return batterySecondsRemaining <= 0.0001f;
+    }
 
-	public bool IsRecharging()
-	{
-		return !isFlashlightOn && batterySecondsRemaining < batteryCapacitySeconds && rechargeTimer >= rechargeDelaySeconds;
-	}
+    public bool IsRecharging()
+    {
+        return !isFlashlightOn && batterySecondsRemaining < batteryCapacitySeconds && rechargeTimer >= rechargeDelaySeconds;
+    }
 
 	// Returns true if the flashlight is currently illuminating the given world position (within cone and range)
 	public bool IsIlluminating(Vector3 worldPosition, bool requireLineOfSight = true, LayerMask obstructionMask = new LayerMask())
@@ -264,11 +296,125 @@ public class FlashlightController : MonoBehaviour
     // Method to update flashlight properties at runtime
     public void UpdateFlashlightProperties(float intensity, float range, Color color)
     {
+        lightIntensity = intensity;
+        lightRange = range;
+        lightColor = color;
+
+        if (flashlightLight == null)
+        {
+            EnsureFlashlightLight();
+        }
+
+        ApplyLightSettings(force: true);
+    }
+
+    private void ResolveFlashlightLight()
+    {
+        bool createdNewLight = false;
+
+        if (flashlightLight == null)
+        {
+            flashlightLight = TryFindLightInHierarchy();
+        }
+
+        if (flashlightLight == null && playerCamera != null)
+        {
+            CreateFlashlightLight();
+            createdNewLight = flashlightLight != null;
+        }
+
+        if (flashlightLight == null)
+        {
+            UpdateFlashlightVisual();
+            return;
+        }
+
+        if (flashlightRoot == null)
+        {
+            flashlightRoot = flashlightLight.transform;
+        }
+
+        ConfigureFlashlightParenting();
+
+        ApplyLightSettings(force: createdNewLight || applyInspectorSettingsToExistingLight);
+
+        flashlightLight.enabled = isFlashlightOn;
+        UpdateFlashlightVisual();
+    }
+
+    private void EnsureFlashlightLight()
+    {
+        if (flashlightLight != null) return;
+        ResolveFlashlightLight();
+    }
+
+    private void ConfigureFlashlightParenting()
+    {
+        if (!parentFlashlightRootToCamera || flashlightRoot == null || playerCamera == null)
+            return;
+
+        flashlightRoot.SetParent(playerCamera);
+        flashlightRoot.localPosition = flashlightRootLocalPosition;
+        flashlightRoot.localRotation = Quaternion.Euler(flashlightRootLocalEulerAngles);
+    }
+
+    private Light TryFindLightInHierarchy()
+    {
+        Light lightFromRoot = null;
+
+        if (flashlightRoot != null)
+        {
+            lightFromRoot = flashlightRoot.GetComponentInChildren<Light>(true);
+        }
+
+        if (lightFromRoot != null)
+        {
+            return lightFromRoot;
+        }
+
+        // Search beneath this controller but ignore the controller's own GameObject if it already has a light assigned to flashlightLight
+        Light[] lights = GetComponentsInChildren<Light>(true);
+        for (int i = 0; i < lights.Length; i++)
+        {
+            if (lights[i] == null) continue;
+            if (flashlightLight != null && lights[i] == flashlightLight) continue;
+            return lights[i];
+        }
+
+        return null;
+    }
+
+    private void ApplyLightSettings(bool force = false)
+    {
         if (flashlightLight == null) return;
-        
-        flashlightLight.intensity = intensity;
-        flashlightLight.range = range;
-        flashlightLight.color = color;
+        if (!force && !applyInspectorSettingsToExistingLight) return;
+
+        flashlightLight.type = lightType;
+        flashlightLight.intensity = lightIntensity;
+        flashlightLight.range = lightRange;
+        flashlightLight.color = lightColor;
+
+        if (flashlightLight.type == LightType.Spot)
+        {
+            flashlightLight.spotAngle = spotAngle;
+        }
+    }
+
+    private void UpdateFlashlightVisual()
+    {
+        if (!toggleVisualWithLight || flashlightVisual == null) return;
+
+        if (flashlightVisual == gameObject)
+        {
+            if (!warnedAboutSelfTogglingVisual)
+            {
+                Debug.LogWarning($"[{name}] Flashlight visual is the same GameObject as the controller. Skipping visual toggle to avoid disabling the controller.");
+                warnedAboutSelfTogglingVisual = true;
+            }
+            return;
+        }
+
+        flashlightVisual.SetActive(isFlashlightOn);
     }
 
 	private bool CanTurnOn()
@@ -298,6 +444,7 @@ public class FlashlightController : MonoBehaviour
 					SetFlashlightState(false);
 					rechargeTimer = 0f;
 					PlayAudioEffect(turnOffSound);
+					UpdateFlashlightVisual();
 				}
 			}
 		}

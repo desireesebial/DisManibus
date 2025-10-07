@@ -9,6 +9,16 @@ namespace SaveLoad
     {
         private static PersistentWorldState instance;
 
+		// Returns true if an instance already exists (without creating a new one)
+		public static bool InstanceExists => instance != null;
+
+		// Returns an existing instance in the scene if present, otherwise null. Does NOT create.
+		public static PersistentWorldState FindExisting()
+		{
+			if (instance != null) return instance;
+			return FindFirstObjectByType<PersistentWorldState>();
+		}
+
         public static PersistentWorldState Instance
         {
             get
