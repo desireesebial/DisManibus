@@ -10796,6 +10796,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 355621418}
+  - component: {fileID: 355621419}
   m_Layer: 0
   m_Name: GoingOutsideTheRoom
   m_TagString: Untagged
@@ -10818,6 +10819,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1983941382}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!320 &355621419
+PlayableDirector:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 355621417}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_PlayableAsset: {fileID: 11400000, guid: 48314b39945c8f3448677db3f37c1603, type: 2}
+  m_InitialState: 1
+  m_WrapMode: 2
+  m_DirectorUpdateMode: 1
+  m_InitialTime: 0
+  m_SceneBindings:
+  - key: {fileID: -575590090916231982, guid: 48314b39945c8f3448677db3f37c1603, type: 2}
+    value: {fileID: 1454146139}
+  m_ExposedReferences:
+    m_References: []
 --- !u!1 &355844460
 GameObject:
   m_ObjectHideFlags: 0
@@ -300872,6 +300892,192 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1452246555}
   m_Mesh: {fileID: -166887373798719108, guid: 4d7a1f2d72196e24bb9a9eefb40859c3, type: 3}
+--- !u!1 &1454146138
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1454146142}
+  - component: {fileID: 1454146139}
+  - component: {fileID: 1454146141}
+  - component: {fileID: 1454146140}
+  m_Layer: 0
+  m_Name: DialogueReceiver_Going OutCutscene
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1454146139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1454146138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e52de21a22b6dd44c9cc19f810c65059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Events:
+    m_Signals:
+    - {fileID: 11400000, guid: 58adc78cc3a9da24d8ac76c24678f4d2, type: 2}
+    - {fileID: 11400000, guid: e841846c664e2ff4da3c551ed8c61705, type: 2}
+    - {fileID: 11400000, guid: 564670651a6422c49891d6eba4c8ac7a, type: 2}
+    - {fileID: 11400000, guid: d5193b0bbf7bc834988b937e198500f7, type: 2}
+    - {fileID: 11400000, guid: fdcb107ce33b0bf44b47ad7737ecf831, type: 2}
+    - {fileID: 11400000, guid: 8bdc88581b89c8c42a3dc93167ddfeae, type: 2}
+    - {fileID: 11400000, guid: c09dcd9b8e689364baf98a3f3c749702, type: 2}
+    m_Events:
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1454146140}
+          m_TargetAssemblyTypeName: DialogueRelay, Assembly-CSharp
+          m_MethodName: ShowLine
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: it's so dark ..
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1454146140}
+          m_TargetAssemblyTypeName: DialogueRelay, Assembly-CSharp
+          m_MethodName: ShowLine
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: Now that I think about it ..
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1454146140}
+          m_TargetAssemblyTypeName: DialogueRelay, Assembly-CSharp
+          m_MethodName: ClearLine
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1454146140}
+          m_TargetAssemblyTypeName: DialogueRelay, Assembly-CSharp
+          m_MethodName: ClearLine
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1454146140}
+          m_TargetAssemblyTypeName: DialogueRelay, Assembly-CSharp
+          m_MethodName: ShowLine
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: They did say strange things happen in this building
+              ,,
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1454146140}
+          m_TargetAssemblyTypeName: DialogueRelay, Assembly-CSharp
+          m_MethodName: ShowLine
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: Something like .. ghosts?
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1454146140}
+          m_TargetAssemblyTypeName: DialogueRelay, Assembly-CSharp
+          m_MethodName: ShowLine
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: haha .. no way right -
+            m_BoolArgument: 0
+          m_CallState: 2
+--- !u!114 &1454146140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1454146138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 955f8709a9a520540b224a3ccffa7b76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogue: {fileID: 1829259594}
+--- !u!114 &1454146141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1454146138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af7eba7627e35b64fbade455c7e55da9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueManager: {fileID: 1829259594}
+  lines: []
+--- !u!224 &1454146142
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1454146138}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1829259592}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1454415480
 GameObject:
   m_ObjectHideFlags: 0
@@ -314190,7 +314396,8 @@ RectTransform:
   m_Children:
   - {fileID: 1454415481}
   - {fileID: 1763085463}
-  m_Father: {fileID: 0}
+  - {fileID: 1454146142}
+  m_Father: {fileID: 1983941382}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -561460,6 +561667,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1829259592}
   - {fileID: 705105212}
   - {fileID: 355621418}
   m_Father: {fileID: 0}
@@ -566537,6 +566745,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4053431291853476}
   - component: {fileID: 114180900345829627}
+  - component: {fileID: 114180900345829629}
   - component: {fileID: 33132423048789538}
   - component: {fileID: 23642372425784454}
   - component: {fileID: 65059230253709562}
@@ -571299,6 +571508,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.0000001, y: 2.1, z: 2.8}
   m_Center: {x: -0.50000197, y: 1.05, z: 0.01750023}
+--- !u!114 &114180900345829629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1034450315187944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00006f2ddd3e9c14c9d0013a723874e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  director: {fileID: 355621419}
+  interactKey: 101
+  playOnce: 1
 --- !u!114 &114410975264615429
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -580791,7 +581015,6 @@ SceneRoots:
   - {fileID: 558064036}
   - {fileID: 637786616}
   - {fileID: 280714406}
-  - {fileID: 1829259592}
   - {fileID: 768389399}
   - {fileID: 1149174381}
   - {fileID: 4645309647403017}
