@@ -13,10 +13,18 @@ public class KeyPadScript : MonoBehaviour
     public string Correct;
     public GameObject Screen;
     
+    [Header("Raycast")]
+    public float raycastDistance = 100f; // Max distance for keypad raycasts
+    public LayerMask raycastLayerMask; // If left empty (0), defaults to Physics.DefaultRaycastLayers
+    public Camera raycastCamera; // Optional override; if null, will fallback to MainCamera or any enabled camera
+    
     [Header("Door Integration")]
     public doorscript targetDoor;
     public bool unlockDoorOnSuccess = true;
     public bool openDoorAfterUnlock = true;
+    
+    [Header("Visibility On Success")]
+    public GameObject[] objectsToHideOnSuccess;
     
     [Header("Audio (Optional)")]
     public AudioSource audioSource;
@@ -38,14 +46,29 @@ public class KeyPadScript : MonoBehaviour
     void Update()
     {
         ScreenText = string.Join("", Code.Select(i => i.ToString()).ToArray());
-        Screen.GetComponent<TMPro.TextMeshPro>().text = ScreenText;
+        // Safely update display text if a TextMeshPro component exists
+        if (Screen != null)
+        {
+            var tmp = Screen.GetComponent<TMPro.TextMeshPro>();
+            if (tmp != null)
+            {
+                tmp.text = ScreenText;
+            }
+        }
 
         if (Input.GetMouseButtonDown(0))
         {
 
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            var cam = GetRaycastCamera();
+            if (cam == null)
+            {
+                Debug.LogWarning("[KeyPad] No camera available for raycasting. Ensure a camera is tagged as MainCamera or assign one on the KeyPadScript.");
+                return;
+            }
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, 10))
+            int effectiveMask = GetEffectiveLayerMask();
+            if (Physics.Raycast(ray, out hit, raycastDistance, effectiveMask))
             {
                 
                if(Presses < Convert.ToInt32(CodeLength))
@@ -54,7 +77,11 @@ public class KeyPadScript : MonoBehaviour
                     else
                     {
                         Debug.Log(hit.transform.gameObject.name);
-                        int buttonNumber = hit.transform.gameObject.GetComponent<Number>().number;
+                        if (!TryGetButtonNumber(hit.transform.gameObject, out int buttonNumber))
+                        {
+                            Debug.LogWarning($"[KeyPad] Unable to resolve button number for '{hit.transform.gameObject.name}'. Ensure it has a Number component or a digit in the name.");
+                            return;
+                        }
                         Code[Presses] = buttonNumber;
                         Presses += 1;
                         
@@ -85,6 +112,100 @@ public class KeyPadScript : MonoBehaviour
         }
     }
     
+    private Camera GetRaycastCamera()
+    {
+        if (raycastCamera != null && raycastCamera.isActiveAndEnabled)
+            return raycastCamera;
+        if (Camera.main != null && Camera.main.isActiveAndEnabled)
+            return Camera.main;
+        if (Camera.current != null && Camera.current.isActiveAndEnabled)
+            return Camera.current;
+        var all = Camera.allCameras;
+        for (int i = 0; i < all.Length; i++)
+        {
+            if (all[i] != null && all[i].isActiveAndEnabled)
+                return all[i];
+        }
+        return null;
+    }
+
+    private int GetEffectiveLayerMask()
+    {
+        // When not set in inspector (value == 0), fallback to Unity's default raycast layers
+        return raycastLayerMask.value == 0 ? Physics.DefaultRaycastLayers : raycastLayerMask.value;
+    }
+
+    private bool TryGetButtonNumber(GameObject buttonObject, out int number)
+    {
+        number = 0;
+
+        if (buttonObject == null)
+            return false;
+
+        // Primary: dedicated Number component on the object
+        var numberComponent = buttonObject.GetComponent<Number>();
+        if (numberComponent != null)
+        {
+            number = numberComponent.number;
+            return true;
+        }
+
+        // Secondary: Number component on children (safety for nested layouts)
+        numberComponent = buttonObject.GetComponentInChildren<Number>();
+        if (numberComponent != null)
+        {
+            number = numberComponent.number;
+            return true;
+        }
+
+        // Fallback: parse trailing digit from object name (e.g., "Button5")
+        string name = buttonObject.name;
+        if (!string.IsNullOrEmpty(name))
+        {
+            for (int i = name.Length - 1; i >= 0; i--)
+            {
+                if (char.IsDigit(name[i]))
+                {
+                    number = name[i] - '0';
+                    return true;
+                }
+            }
+        }
+
+        // Final fallback: check for TextMeshPro display to infer number visually
+        var text = buttonObject.GetComponentInChildren<TMPro.TMP_Text>();
+        if (text != null && !string.IsNullOrEmpty(text.text))
+        {
+            var digits = text.text.Trim();
+            if (digits.Length == 1 && char.IsDigit(digits[0]))
+            {
+                number = digits[0] - '0';
+                return true;
+            }
+        }
+
+        return false;
+    }
+    
+    private bool ApplySuccessVisibility()
+    {
+        bool changed = false;
+        if (objectsToHideOnSuccess != null && objectsToHideOnSuccess.Length > 0)
+        {
+            for (int i = 0; i < objectsToHideOnSuccess.Length; i++)
+            {
+                var target = objectsToHideOnSuccess[i];
+                if (target != null && target.activeSelf)
+                {
+                    target.SetActive(false);
+                    changed = true;
+                }
+            }
+        }
+        
+        return changed;
+    }
+    
     private void OnCorrectCodeEntered()
     {
         // Play success sound
@@ -104,8 +225,13 @@ public class KeyPadScript : MonoBehaviour
             targetDoor.ApplyKeypadVisibility();
         }
         
+        bool visibilityChanged = ApplySuccessVisibility();
+        
         // Keep the correct code displayed for a moment, then reset
-        StartCoroutine(ResetAfterDelay(2f));
+        if (!visibilityChanged)
+        {
+            StartCoroutine(ResetAfterDelay(2f));
+        }
     }
     
     private void OnWrongCodeEntered()
