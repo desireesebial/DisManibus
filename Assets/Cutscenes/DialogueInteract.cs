@@ -1,43 +1,80 @@
 using UnityEngine;
+using System.Collections;
 
+[RequireComponent(typeof(Collider))]
 public class DialogueInteract : MonoBehaviour
 {
-    public DialogueManager dialogueManager;
-    [TextArea(2, 4)]
-    public string[] lines;
-    public KeyCode interactKey = KeyCode.E;
+    [Header("References")]
+    public DialogueManager dialogueManager;     // Drag your DialogueManager here
 
-    bool playerInRange;
-    bool talking;
+    [Header("Dialogue Lines")]
+    [TextArea(2, 4)]
+    public string[] lines;                      // Lines to randomly pick from
+
+    [Header("Interaction Settings")]
+    public KeyCode interactKey = KeyCode.E;
+    public bool mustFinishBeforeNext = true;    // Wait until typing is done before next press
+    public bool avoidImmediateRepeat = true;    // Don’t repeat the same line twice in a row
+
+    private bool inRange = false;
+    private bool typing = false;
+    private int lastIndex = -1;
+
+    void Reset()
+    {
+        // Makes sure the collider is a trigger and has a kinematic rigidbody for triggers to work
+        var col = GetComponent<Collider>();
+        col.isTrigger = true;
+        if (!TryGetComponent<Rigidbody>(out var rb))
+            rb = gameObject.AddComponent<Rigidbody>();
+        rb.isKinematic = true;
+    }
 
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
-            playerInRange = true;
+            inRange = true;
     }
 
     void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
-            playerInRange = false;
+            inRange = false;
     }
 
     void Update()
     {
-        if (playerInRange && Input.GetKeyDown(interactKey) && !talking)
-            StartCoroutine(StartDialogue());
+        if (!inRange) return;
+        if (mustFinishBeforeNext && typing) return;
+
+        if (Input.GetKeyDown(interactKey))
+        {
+            ShowRandomLine();
+        }
     }
 
-    System.Collections.IEnumerator StartDialogue()
+    void ShowRandomLine()
     {
-        talking = true;
-        foreach (string line in lines)
+        if (lines == null || lines.Length == 0) return;
+
+        int index = Random.Range(0, lines.Length);
+
+        // Avoid repeating the same line twice in a row (optional)
+        if (avoidImmediateRepeat && lines.Length > 1)
         {
-            dialogueManager.ShowLine(line);
-            yield return new WaitUntil(() => dialogueManager.lineFinished);
-            yield return new WaitForSeconds(0.5f);
+            while (index == lastIndex)
+                index = Random.Range(0, lines.Length);
         }
-        dialogueManager.ClearLine();
-        talking = false;
+
+        lastIndex = index;
+        StartCoroutine(TypeAndUnlock(lines[index]));
+    }
+
+    IEnumerator TypeAndUnlock(string line)
+    {
+        typing = true;
+        dialogueManager.ShowLine(line);
+        yield return new WaitUntil(() => dialogueManager.lineFinished);
+        typing = false;
     }
 }
