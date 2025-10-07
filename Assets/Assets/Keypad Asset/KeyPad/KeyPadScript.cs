@@ -40,9 +40,30 @@ public class KeyPadScript : MonoBehaviour
 
     void Start()
     {
-      
-        Code = new int[(Convert.ToInt32(CodeLength))];
+        // Validate CodeLength on start
+        int codeLen = 4; // Default
+        try
+        {
+            codeLen = Convert.ToInt32(CodeLength);
+            if (codeLen <= 0 || codeLen > 20)
+            {
+                Debug.LogWarning($"[KeyPad] Invalid CodeLength: {codeLen}. Using default 4.");
+                codeLen = 4;
+                CodeLength = "4";
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[KeyPad] Error parsing CodeLength '{CodeLength}': {e.Message}. Using default 4.");
+            codeLen = 4;
+            CodeLength = "4";
+        }
+        
+        Code = new int[codeLen];
         Presses = 0;
+        isProcessingCode = false;
+        
+        Debug.Log($"[KeyPad] Initialized with code length: {codeLen}, Correct code: {Correct}");
     }
     void Update()
     {
@@ -197,11 +218,19 @@ public class KeyPadScript : MonoBehaviour
         {
             for (int i = 0; i < objectsToHideOnSuccess.Length; i++)
             {
-                var target = objectsToHideOnSuccess[i];
-                if (target != null && target.activeSelf)
+                try
                 {
-                    target.SetActive(false);
-                    changed = true;
+                    var target = objectsToHideOnSuccess[i];
+                    if (target != null && target.activeSelf)
+                    {
+                        target.SetActive(false);
+                        changed = true;
+                        Debug.Log($"[KeyPad] Hidden object: {target.name}");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"[KeyPad] Error hiding object at index {i}: {e.Message}");
                 }
             }
         }
@@ -211,41 +240,79 @@ public class KeyPadScript : MonoBehaviour
     
     private void OnCorrectCodeEntered()
     {
+        Debug.Log("[KeyPad] Correct code entered! Processing...");
+        
         // Play success sound
-        PlaySuccessSound();
+        try
+        {
+            PlaySuccessSound();
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[KeyPad] Error playing success sound: {e.Message}");
+        }
         
         // Unlock and/or open door if configured
         if (targetDoor != null && targetDoor.gameObject != null && unlockDoorOnSuccess)
         {
-            // Ensure door is active before unlocking/opening
-            if (!targetDoor.gameObject.activeInHierarchy)
+            try
             {
-                Debug.LogWarning($"Target door {targetDoor.gameObject.name} is inactive. Activating it.");
-                targetDoor.gameObject.SetActive(true);
-            }
-            
-            targetDoor.UnlockDoor();
-            
-            if (openDoorAfterUnlock)
-            {
-                // Small delay before opening door for better feel
-                StartCoroutine(OpenDoorAfterDelay(0.5f));
-            }
+                // Ensure door is active before unlocking/opening
+                if (!targetDoor.gameObject.activeInHierarchy)
+                {
+                    Debug.LogWarning($"Target door {targetDoor.gameObject.name} is inactive. Activating it.");
+                    targetDoor.gameObject.SetActive(true);
+                }
+                
+                Debug.Log($"[KeyPad] Unlocking door: {targetDoor.gameObject.name}");
+                targetDoor.UnlockDoor();
+                
+                if (openDoorAfterUnlock)
+                {
+                    Debug.Log("[KeyPad] Starting door open coroutine...");
+                    // Small delay before opening door for better feel
+                    StartCoroutine(OpenDoorAfterDelay(0.5f));
+                }
 
-            targetDoor.ApplyKeypadVisibility();
+                targetDoor.ApplyKeypadVisibility();
+                Debug.Log("[KeyPad] Door unlocking sequence completed successfully.");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[KeyPad] Error during door unlock sequence: {e.Message}\n{e.StackTrace}");
+            }
         }
         else if (targetDoor == null)
         {
             Debug.LogWarning("[KeyPad] No target door assigned. Code correct but no door to unlock.");
         }
         
-        bool visibilityChanged = ApplySuccessVisibility();
+        bool visibilityChanged = false;
+        try
+        {
+            visibilityChanged = ApplySuccessVisibility();
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[KeyPad] Error applying visibility: {e.Message}");
+        }
         
         // Keep the correct code displayed for a moment, then reset
-        if (!visibilityChanged)
+        try
         {
-            StartCoroutine(ResetAfterDelay(2f));
+            if (!visibilityChanged)
+            {
+                StartCoroutine(ResetAfterDelay(2f));
+            }
         }
+        catch (Exception e)
+        {
+            Debug.LogError($"[KeyPad] Error starting reset coroutine: {e.Message}");
+            // Fallback: reset immediately if coroutine fails
+            ResetKeypad();
+        }
+        
+        Debug.Log("[KeyPad] OnCorrectCodeEntered completed.");
     }
     
     private void OnWrongCodeEntered()
@@ -258,35 +325,76 @@ public class KeyPadScript : MonoBehaviour
     {
         Presses = 0;
         isProcessingCode = false; // Reset processing flag
-        reset = Convert.ToInt32(CodeLength) - 1;
-        do
+        
+        // Safety check to prevent infinite loops
+        int codeLen = Convert.ToInt32(CodeLength);
+        if (codeLen <= 0 || codeLen > 100)
         {
-            Code[reset] = 0;
-            reset -= 1;
-        } while (reset > -1);
+            Debug.LogError($"[KeyPad] Invalid CodeLength: {codeLen}. Resetting to 4.");
+            CodeLength = "4";
+            codeLen = 4;
+            Code = new int[codeLen];
+        }
+        
+        // Use safer for loop instead of do-while
+        for (int i = 0; i < Code.Length; i++)
+        {
+            Code[i] = 0;
+        }
     }
     
     private IEnumerator OpenDoorAfterDelay(float delay)
     {
+        Debug.Log($"[KeyPad] OpenDoorAfterDelay started. Waiting {delay} seconds...");
         yield return new WaitForSeconds(delay);
+        
+        Debug.Log("[KeyPad] Delay complete. Attempting to open door...");
+        
         if (targetDoor != null && targetDoor.gameObject != null)
         {
             // Ensure door is active before attempting to toggle
-            if (!targetDoor.gameObject.activeInHierarchy)
+            bool needsActivation = !targetDoor.gameObject.activeInHierarchy;
+            if (needsActivation)
             {
-                Debug.LogWarning($"Target door {targetDoor.gameObject.name} is inactive. Activating it before opening.");
-                targetDoor.gameObject.SetActive(true);
+                try
+                {
+                    Debug.LogWarning($"Target door {targetDoor.gameObject.name} is inactive. Activating it before opening.");
+                    targetDoor.gameObject.SetActive(true);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"[KeyPad] Error activating door: {e.Message}");
+                    yield break;
+                }
+                
+                // Wait one frame after activation
+                yield return null;
             }
             
-            if (!targetDoor.IsLocked())
+            try
             {
-                targetDoor.ToggleDoor();
+                if (!targetDoor.IsLocked())
+                {
+                    Debug.Log($"[KeyPad] Toggling door {targetDoor.gameObject.name}...");
+                    targetDoor.ToggleDoor();
+                    Debug.Log("[KeyPad] Door toggle command sent successfully.");
+                }
+                else
+                {
+                    Debug.LogWarning($"[KeyPad] Door {targetDoor.gameObject.name} is still locked!");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[KeyPad] Exception in OpenDoorAfterDelay: {e.Message}\n{e.StackTrace}");
             }
         }
         else
         {
             Debug.LogError("[KeyPad] Target door is null or destroyed. Cannot open door.");
         }
+        
+        Debug.Log("[KeyPad] OpenDoorAfterDelay completed.");
     }
     
     private IEnumerator ResetAfterDelay(float delay)

@@ -260,12 +260,24 @@ public class doorscript : MonoBehaviour
         {
             Debug.LogWarning($"Cannot start coroutine on inactive door: {gameObject.name}. Activating it first.");
             gameObject.SetActive(true);
+            // Start with delay after activation
+            if (_currentCoroutine != null)
+                StopCoroutine(_currentCoroutine);
+            _currentCoroutine = StartCoroutine(ToggleDoorAfterActivation(!isOpen));
+            return;
         }
         
         if (_currentCoroutine != null)
             StopCoroutine(_currentCoroutine);
             
         _currentCoroutine = StartCoroutine(AnimateDoor(!isOpen));
+    }
+    
+    // Helper coroutine to wait a frame after activation
+    private IEnumerator ToggleDoorAfterActivation(bool openState)
+    {
+        yield return null; // Wait one frame for GameObject to fully activate
+        _currentCoroutine = StartCoroutine(AnimateDoor(openState));
     }
 
     public void OpenDoor()
@@ -277,6 +289,11 @@ public class doorscript : MonoBehaviour
             {
                 Debug.LogWarning($"Cannot start coroutine on inactive door: {gameObject.name}. Activating it first.");
                 gameObject.SetActive(true);
+                // Start with delay after activation
+                if (_currentCoroutine != null)
+                    StopCoroutine(_currentCoroutine);
+                _currentCoroutine = StartCoroutine(ToggleDoorAfterActivation(true));
+                return;
             }
             
             if (_currentCoroutine != null)
@@ -294,6 +311,11 @@ public class doorscript : MonoBehaviour
             {
                 Debug.LogWarning($"Cannot start coroutine on inactive door: {gameObject.name}. Activating it first.");
                 gameObject.SetActive(true);
+                // Start with delay after activation
+                if (_currentCoroutine != null)
+                    StopCoroutine(_currentCoroutine);
+                _currentCoroutine = StartCoroutine(ToggleDoorAfterActivation(false));
+                return;
             }
             
             if (_currentCoroutine != null)
@@ -309,6 +331,15 @@ public class doorscript : MonoBehaviour
         Quaternion targetRotation = open ? _openRotation : _closedRotation;
         Quaternion startRotation = transform.rotation;
         float timeElapsed = 0f;
+        float maxAnimationTime = 10f; // Safety timeout (10 seconds max)
+        float animationStartTime = Time.time;
+        
+        // Safety check for openSpeed
+        if (openSpeed <= 0)
+        {
+            Debug.LogWarning($"[Door] Invalid openSpeed: {openSpeed}. Setting to 2.");
+            openSpeed = 2f;
+        }
         
         // Play sound
         PlayDoorSound(open);
@@ -339,8 +370,24 @@ public class doorscript : MonoBehaviour
             }
         }
         
+        // Animation loop with timeout protection
         while (Quaternion.Angle(transform.rotation, targetRotation) > 0.01f)
         {
+            // Check for timeout to prevent infinite loops
+            if (Time.time - animationStartTime > maxAnimationTime)
+            {
+                Debug.LogError($"[Door] Animation timeout for {gameObject.name}! Forcing completion.");
+                break;
+            }
+            
+            // Check for zero deltaTime (can happen on some systems)
+            if (Time.deltaTime <= 0)
+            {
+                Debug.LogWarning($"[Door] Zero deltaTime detected. Skipping frame.");
+                yield return null;
+                continue;
+            }
+            
             timeElapsed += Time.deltaTime * openSpeed;
             transform.rotation = Quaternion.Lerp(startRotation, targetRotation, timeElapsed);
             yield return null;
