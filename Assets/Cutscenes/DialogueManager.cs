@@ -1,30 +1,31 @@
-using UnityEngine;
+﻿using System.Collections;
 using TMPro;
-using System.Collections;
+using UnityEngine;
 
 public class DialogueManager : MonoBehaviour
 {
     public TextMeshProUGUI dialogueText;
-    public float typingSpeed = 0.03f;
+    public float typingSpeed = 0.02f;
 
-    Coroutine typingCoroutine;
+    // ✅ Add this:
+    [HideInInspector] public bool lineFinished = false;
 
     public void ShowLine(string line)
     {
-        if (typingCoroutine != null)
-            StopCoroutine(typingCoroutine);
-
-        typingCoroutine = StartCoroutine(TypeLine(line));
+        StopAllCoroutines();
+        StartCoroutine(TypeLine(line));
     }
 
     IEnumerator TypeLine(string line)
     {
+        lineFinished = false; // reset at start
         dialogueText.text = "";
         foreach (char c in line.ToCharArray())
         {
             dialogueText.text += c;
             yield return new WaitForSeconds(typingSpeed);
         }
+        lineFinished = true; // ✅ mark done when finished typing
     }
 
     public void ClearLine()
