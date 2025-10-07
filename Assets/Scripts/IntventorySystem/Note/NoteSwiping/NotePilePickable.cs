@@ -22,7 +22,7 @@ public class NotePilePickable : MonoBehaviour
     public GameObject interactionUI;
     public TextMeshProUGUI interactionTextUI;
 
-	[Header("On Cleared")]
+    [Header("On Cleared")]
 	public bool hideWorldPileOnCleared = true;
 	public GameObject worldPileObject; // Defaults to this GameObject if null
 
@@ -118,14 +118,17 @@ public class NotePilePickable : MonoBehaviour
             return;
         }
 
-        // If cleared or only the last page remains and we keep it, show final note instead of enabling swipe
+        // If cleared, automatically reset the pile to start over
         if ((pileSwiper.keepLastPage && pileSwiper.IsOnlyLastPageRemaining()) || pileSwiper.IsCleared())
         {
-            if (pileSwiper.finalNote != null && pileSwiper.noteUI != null)
+            pileSwiper.ResetPileToStart();
+            
+            // Re-enable the world pile object if it was hidden
+            if (hideWorldPileOnCleared)
             {
-                pileSwiper.noteUI.ShowNote(pileSwiper.finalNote);
+                GameObject toShow = worldPileObject != null ? worldPileObject : gameObject;
+                if (toShow != null) toShow.SetActive(true);
             }
-            return;
         }
 
         isActiveSession = true;
@@ -140,6 +143,9 @@ public class NotePilePickable : MonoBehaviour
 
     void HandlePileCleared()
     {
+		// Automatically close the canvas and restore controls after all papers are swiped
+		RestoreSession();
+        
 		// Optionally hide the world pile object immediately after all pages are swiped
 		if (hideWorldPileOnCleared)
 		{
@@ -147,18 +153,10 @@ public class NotePilePickable : MonoBehaviour
 			if (toHide != null) toHide.SetActive(false);
 		}
 
-        // Swiping finished; allow note UI to show, and when the player closes the note, re-enable controls.
-        // We don't re-enable here immediately to keep controls disabled while the final note is open.
-        // If there is no final note or UI, end the session now.
+        // Show final note if provided (after controls are restored, so player can read it)
         if (pileSwiper != null && pileSwiper.finalNote != null && pileSwiper.noteUI != null)
         {
-            // Hook into the note UI close to restore controls
-            pileSwiper.noteUI.OnNoteClosed -= RestoreAfterNote;
-            pileSwiper.noteUI.OnNoteClosed += RestoreAfterNote;
-        }
-        else
-        {
-            RestoreSession();
+            pileSwiper.noteUI.ShowNote(pileSwiper.finalNote);
         }
     }
 

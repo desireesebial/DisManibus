@@ -38,6 +38,10 @@ public class NotePileSwiper : MonoBehaviour
     private Vector3 originalScale = Vector3.one;
     private bool clearedFired = false;
     private bool progressApplied = false;
+    private List<RectTransform> allOriginalPages = new List<RectTransform>();
+    private Dictionary<RectTransform, Vector2> originalPositions = new Dictionary<RectTransform, Vector2>();
+    private Dictionary<RectTransform, Vector3> originalRotations = new Dictionary<RectTransform, Vector3>();
+    private Dictionary<RectTransform, Vector3> originalScales = new Dictionary<RectTransform, Vector3>();
 
     // Fired once when the pile is fully cleared (after optional final note is shown)
     public System.Action OnPileCleared;
@@ -58,6 +62,13 @@ public class NotePileSwiper : MonoBehaviour
         NormalizeOrder();
         CacheOriginalScale();
         clearedFired = false;
+        
+        // Store all original pages and their transforms if not already stored
+        if (allOriginalPages.Count == 0 && pilePages != null && pilePages.Count > 0)
+        {
+            StoreOriginalPages();
+        }
+        
         if (!progressApplied)
         {
             LoadAndApplyProgress();
@@ -242,6 +253,74 @@ public class NotePileSwiper : MonoBehaviour
     public bool IsCleared()
     {
         return pilePages == null || pilePages.Count == 0;
+    }
+
+    private void StoreOriginalPages()
+    {
+        allOriginalPages.Clear();
+        originalPositions.Clear();
+        originalRotations.Clear();
+        originalScales.Clear();
+
+        if (pilePages == null) return;
+
+        foreach (var page in pilePages)
+        {
+            if (page != null)
+            {
+                allOriginalPages.Add(page);
+                originalPositions[page] = page.anchoredPosition;
+                originalRotations[page] = page.localEulerAngles;
+                originalScales[page] = page.localScale;
+            }
+        }
+    }
+
+    public void ResetPileToStart()
+    {
+        if (allOriginalPages.Count == 0)
+        {
+            Debug.LogWarning("No original pages stored. Cannot reset pile.");
+            return;
+        }
+
+        // Clear current pile
+        pilePages.Clear();
+
+        // Re-enable and restore all pages to their original state
+        foreach (var page in allOriginalPages)
+        {
+            if (page != null)
+            {
+                page.gameObject.SetActive(true);
+                
+                // Restore original transform
+                if (originalPositions.ContainsKey(page))
+                    page.anchoredPosition = originalPositions[page];
+                if (originalRotations.ContainsKey(page))
+                    page.localEulerAngles = originalRotations[page];
+                if (originalScales.ContainsKey(page))
+                    page.localScale = originalScales[page];
+                
+                pilePages.Add(page);
+            }
+        }
+
+        // Normalize order
+        NormalizeOrder();
+
+        // Clear persistence
+        if (persistProgress)
+        {
+            PlayerPrefs.SetInt(GetPrefsKey(), pilePages.Count);
+            PlayerPrefs.Save();
+        }
+
+        // Reset flags
+        clearedFired = false;
+        isAnimating = false;
+
+        Debug.Log($"Pile reset! {pilePages.Count} pages restored.");
     }
 }
 
