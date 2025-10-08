@@ -17926,6 +17926,75 @@ MonoBehaviour:
   destroyOnPickup: 1
   pickupSound: {fileID: 0}
   pickupEffect: {fileID: 0}
+--- !u!54 &568989107
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 568989105}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!65 &568989108
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 568989105}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.072043225, y: 0.23057182, z: 0.0731546}
+  m_Center: {x: -0.000000020489097, y: 0, z: 0}
+--- !u!114 &568989109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 568989105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cae38d26bcc748249a79da36a74a0a3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueManager: {fileID: 1829259594}
+  defaultLines:
+  - A flashlight .. this would be helpful since it's so dark
+  unlockedLines: []
+  interactKey: 101
+  mustFinishBeforeNext: 1
+  avoidImmediateRepeat: 1
+  unlockFlag: 
+  setFlagWhenUsed: 
 --- !u!1 &569420417
 GameObject:
   m_ObjectHideFlags: 0
@@ -285051,6 +285120,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100000, guid: 9a3b57f0a1248be419dd9c4d54748512, type: 3}
       insertIndex: -1
       addedObject: {fileID: 568989106}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 9a3b57f0a1248be419dd9c4d54748512, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 568989109}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 9a3b57f0a1248be419dd9c4d54748512, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 568989108}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 9a3b57f0a1248be419dd9c4d54748512, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 568989107}
   m_SourcePrefab: {fileID: 100100000, guid: 9a3b57f0a1248be419dd9c4d54748512, type: 3}
 --- !u!1 &1013585171
 GameObject:
@@ -305766,6 +305844,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1574353847}
   - component: {fileID: 1574353852}
+  - component: {fileID: 1574353855}
   - component: {fileID: 1574353851}
   - component: {fileID: 1574353850}
   - component: {fileID: 1574353849}
@@ -305903,6 +305982,25 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 10, y: 20, z: 10}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1574353855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1574353846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af7eba7627e35b64fbade455c7e55da9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueManager: {fileID: 1829259594}
+  lines:
+  - No way ...
+  - How would I go out?!
+  - I don't even know the code !
+  - 'The elevator never had keypad '
+  - what's going on ?!
 --- !u!1 &1574691046
 GameObject:
   m_ObjectHideFlags: 0
@@ -566419,11 +566517,11 @@ PrefabInstance:
       insertIndex: 1
       addedObject: {fileID: 9092374818044363750}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 9092374818044363749}
+      insertIndex: 2
+      addedObject: {fileID: 9092374818044363751}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 9092374818044363748}
+      addedObject: {fileID: 9092374818044363749}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9092374818044363747}
@@ -575003,13 +575101,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  lines:
-  - I don't remember the office having these numbers ..
-  - I wonder what are these for ..
-  - Numbers ? for what ...
+  defaultLines:
+  - Numbers .. ? what for ?
+  - I don't remember the office having this ..
+  - Weird .. why is there a number?
+  unlockedLines:
+  - No .. this is not the clue I needed -
+  - 'I need the yellow ones '
+  - This is wrong ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
 --- !u!65 &2841845876276712017
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -575994,13 +576098,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  lines:
-  - I don't remember the office having these numbers ..
-  - I wonder what are these for ..
-  - Numbers ? for what ...
+  defaultLines:
+  - Numbers .. ? what for ?
+  - I don't remember the office having this ..
+  - Weird .. why is there a number?
+  unlockedLines:
+  - No .. this is not the clue I needed -
+  - 'I need the yellow ones '
+  - This is wrong ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
 --- !u!65 &3820729336096455421
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576157,13 +576267,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  lines:
-  - I don't remember the office having these numbers ..
-  - I wonder what are these for ..
-  - Numbers ? for what ...
+  defaultLines:
+  - Numbers .. ? what for ?
+  - "\rI don't remember the office having this .."
+  - Weird .. why is there a number?
+  unlockedLines:
+  - The last number!
+  - I can finally get out ..
+  - I want to go home .. finally ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
 --- !u!65 &3926446819503251135
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576284,13 +576400,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  lines:
-  - I don't remember the office having these numbers ..
-  - I wonder what are these for ..
-  - Numbers ? for what ...
+  defaultLines:
+  - Numbers .. ? what for ?
+  - I don't remember the office having this ..
+  - Weird .. why is there a number?
+  unlockedLines:
+  - This is the clue!
+  - 'The first number .. '
+  - it's 4!
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
 --- !u!65 &4101447076945351331
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576362,13 +576484,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  lines:
-  - I don't remember the office having these numbers ..
-  - I wonder what are these for ..
-  - Numbers ? for what ...
+  defaultLines:
+  - Numbers .. ? what for ?
+  - I don't remember the office having this ..
+  - Weird .. why is there a number?
+  unlockedLines:
+  - The 5th!
+  - Finally !
+  - it's the 5th number code!
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
 --- !u!65 &4127809355510062880
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576418,13 +576546,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  lines:
-  - I don't remember the office having these numbers ..
-  - I wonder what are these for ..
-  - Numbers ? for what ...
+  defaultLines:
+  - Numbers .. ? what for ?
+  - I don't remember the office having this ..
+  - Weird .. why is there a number?
+  unlockedLines:
+  - Finally !
+  - The 3rd number for the code is ..
+  - This is it!
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
 --- !u!65 &4128267336491680294
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576479,13 +576613,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  lines:
-  - I don't remember the office having these numbers ..
-  - I wonder what are these for ..
-  - Numbers ? for what ...
+  defaultLines:
+  - Numbers .. ? what for ?
+  - I don't remember the office having this ..
+  - Weird .. why is there a number?
+  unlockedLines:
+  - No .. this is not the clue I needed -
+  - 'I need the yellow ones '
+  - This is wrong ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
 --- !u!65 &4137843608653503658
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576774,13 +576914,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  lines:
-  - I don't remember the office having these numbers ..
-  - I wonder what are these for ..
-  - Numbers ? for what ...
+  defaultLines:
+  - Numbers .. ? what for ?
+  - I don't remember the office having this ..
+  - Weird .. why is there a number?
+  unlockedLines:
+  - No .. this is not the clue I needed -
+  - 'I need the yellow ones '
+  - This is wrong ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
 --- !u!65 &4346779125378179176
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -579725,13 +579871,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  lines:
-  - I don't remember the office having these numbers ..
-  - I wonder what are these for ..
-  - Numbers ? for what ...
+  defaultLines:
+  - Numbers .. ? what for ?
+  - I don't remember the office having this ..
+  - Weird .. why is there a number?
+  unlockedLines:
+  - No .. this is not the clue I needed -
+  - 'I need the yellow ones '
+  - This is wrong ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
 --- !u!65 &7144840838372032894
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -580142,13 +580294,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  lines:
-  - I don't remember the office having these numbers ..
-  - I wonder what are these for ..
-  - Numbers ? for what ...
+  defaultLines:
+  - Numbers .. ? what for ?
+  - I don't remember the office having this ..
+  - Weird .. why is there a number?
+  unlockedLines:
+  - No .. this is not the clue I needed -
+  - 'I need the yellow ones '
+  - This is wrong ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
 --- !u!65 &7455341337422442786
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -580840,13 +580998,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  lines:
-  - I don't remember the office having these numbers ..
-  - I wonder what are these for ..
-  - Numbers ? for what ...
+  defaultLines:
+  - Numbers .. ? what for ?
+  - I don't remember the office having this ..
+  - Weird .. why is there a number?
+  unlockedLines:
+  - No .. this is not the clue I needed -
+  - 'I need the yellow ones '
+  - This is wrong ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
 --- !u!65 &8123558312416985871
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -581498,13 +581662,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  lines:
-  - I don't remember the office having these numbers ..
-  - I wonder what are these for ..
-  - Numbers ? for what ...
+  defaultLines:
+  - Numbers .. ? what for ?
+  - I don't remember the office having this ..
+  - Weird .. why is there a number?
+  unlockedLines:
+  - No .. this is not the clue I needed -
+  - 'I need the yellow ones '
+  - This is wrong ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
 --- !u!65 &8645905013145467158
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -581647,13 +581817,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  lines:
-  - I don't remember the office having these numbers ..
-  - I wonder what are these for ..
-  - Numbers ? for what ...
+  defaultLines:
+  - Numbers .. ? what for ?
+  - "\rI don't remember the office having this .."
+  - Weird .. why is there a number?
+  unlockedLines:
+  - The 4th number!
+  - I finally saw it!
+  - Finally!
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
 --- !u!65 &8756982406611040694
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -581827,13 +582003,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  lines:
-  - I don't remember the office having these numbers ..
-  - I wonder what are these for ..
-  - Numbers ? for what ...
+  defaultLines:
+  - Numbers .. ? what for ?
+  - I don't remember the office having this ..
+  - I don't remember the office having this ..
+  - Weird .. why is there a number?
+  unlockedLines:
+  - 'This is it! '
+  - The second number is ..
+  - 'it''s .. '
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
 --- !u!65 &8959663095471726088
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -582041,13 +582224,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  lines:
-  - I don't remember the office having these numbers ..
-  - I wonder what are these for ..
-  - Numbers ? for what ...
+  defaultLines:
+  - Numbers .. ? what for ?
+  - I don't remember the office having this ..
+  - Weird .. why is there a number?
+  unlockedLines:
+  - No .. this is not the clue I needed -
+  - 'I need the yellow ones '
+  - This is wrong ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
 --- !u!65 &9067208057072471401
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -582101,24 +582290,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &9092374818044363748
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8459248931833747800}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cae38d26bcc748249a79da36a74a0a3b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dialogueManager: {fileID: 1829259594}
-  lines:
-  - what is this paper .. ?      oh! A clue?
-  interactKey: 101
-  mustFinishBeforeNext: 0
-  avoidImmediateRepeat: 1
 --- !u!65 &9092374818044363749
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -582155,6 +582326,27 @@ MonoBehaviour:
   action: 0
   questId: input_code
   questTextIfAdding: Input the right code to open the elevator
+--- !u!114 &9092374818044363751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8459248931833747800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cae38d26bcc748249a79da36a74a0a3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueManager: {fileID: 1829259594}
+  defaultLines:
+  - 'what is this paper '
+  unlockedLines: []
+  interactKey: 101
+  mustFinishBeforeNext: 1
+  avoidImmediateRepeat: 1
+  unlockFlag: 
+  setFlagWhenUsed: code_clue
 --- !u!4 &9124498640929406655
 Transform:
   m_ObjectHideFlags: 0
@@ -582191,13 +582383,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  lines:
-  - I don't remember the office having these numbers ..
-  - I wonder what are these for ..
-  - Numbers ? for what ...
+  defaultLines:
+  - Numbers .. ? what for ?
+  - I don't remember the office having this ..
+  - Weird .. why is there a number?
+  unlockedLines:
+  - No .. this is not the clue I needed -
+  - 'I need the yellow ones '
+  - This is wrong ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
 --- !u!65 &9137298296227072332
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -582337,13 +582535,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  lines:
-  - I don't remember the office having these numbers ..
-  - I wonder what are these for ..
-  - Numbers ? for what ...
+  defaultLines:
+  - Numbers .. ? what for ?
+  - I don't remember the office having this ..
+  - Weird .. why is there a number?
+  unlockedLines:
+  - No .. this is not the clue I needed -
+  - 'I need the yellow ones '
+  - This is wrong ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
 --- !u!65 &9179952499519370463
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -582405,13 +582609,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  lines:
-  - I don't remember the office having these numbers ..
-  - I wonder what are these for ..
-  - Numbers ? for what ...
+  defaultLines:
+  - Numbers .. ? what for ?
+  - I don't remember the office having this ..
+  - Weird .. why is there a number?
+  unlockedLines:
+  - No .. this is not the clue I needed -
+  - 'I need the yellow ones '
+  - This is wrong ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
 --- !u!65 &9184436768278945389
 BoxCollider:
   m_ObjectHideFlags: 0

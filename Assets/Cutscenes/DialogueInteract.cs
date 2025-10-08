@@ -5,24 +5,26 @@ using System.Collections;
 public class DialogueInteract : MonoBehaviour
 {
     [Header("References")]
-    public DialogueManager dialogueManager;     // Drag your DialogueManager here
+    public DialogueManager dialogueManager;
 
     [Header("Dialogue Lines")]
-    [TextArea(2, 4)]
-    public string[] lines;                      // Lines to randomly pick from
+    [TextArea(2, 4)] public string[] defaultLines;      // normal lines
+    [TextArea(2, 4)] public string[] unlockedLines;     // lines shown after flag is unlocked
 
     [Header("Interaction Settings")]
     public KeyCode interactKey = KeyCode.E;
-    public bool mustFinishBeforeNext = true;    // Wait until typing is done before next press
-    public bool avoidImmediateRepeat = true;    // Don’t repeat the same line twice in a row
+    public bool mustFinishBeforeNext = true;
+    public bool avoidImmediateRepeat = true;
 
-    private bool inRange = false;
-    private bool typing = false;
-    private int lastIndex = -1;
+    [Header("Flag Settings")]
+    public string unlockFlag;          // which flag unlocks these new lines
+    public string setFlagWhenUsed;     // which flag this object sets when interacted
+
+    bool inRange, typing;
+    int lastIndex = -1;
 
     void Reset()
     {
-        // Makes sure the collider is a trigger and has a kinematic rigidbody for triggers to work
         var col = GetComponent<Collider>();
         col.isTrigger = true;
         if (!TryGetComponent<Rigidbody>(out var rb))
@@ -30,17 +32,8 @@ public class DialogueInteract : MonoBehaviour
         rb.isKinematic = true;
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
-            inRange = true;
-    }
-
-    void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player"))
-            inRange = false;
-    }
+    void OnTriggerEnter(Collider other) { if (other.CompareTag("Player")) inRange = true; }
+    void OnTriggerExit(Collider other) { if (other.CompareTag("Player")) inRange = false; }
 
     void Update()
     {
@@ -48,26 +41,25 @@ public class DialogueInteract : MonoBehaviour
         if (mustFinishBeforeNext && typing) return;
 
         if (Input.GetKeyDown(interactKey))
-        {
             ShowRandomLine();
-        }
     }
 
     void ShowRandomLine()
     {
-        if (lines == null || lines.Length == 0) return;
+        // Choose which pool to use
+        string[] pool = (DialogueFlags.Has(unlockFlag) && unlockedLines.Length > 0)
+                        ? unlockedLines
+                        : defaultLines;
 
-        int index = Random.Range(0, lines.Length);
+        if (pool == null || pool.Length == 0) return;
 
-        // Avoid repeating the same line twice in a row (optional)
-        if (avoidImmediateRepeat && lines.Length > 1)
-        {
+        int index = Random.Range(0, pool.Length);
+        if (avoidImmediateRepeat && pool.Length > 1)
             while (index == lastIndex)
-                index = Random.Range(0, lines.Length);
-        }
+                index = Random.Range(0, pool.Length);
 
         lastIndex = index;
-        StartCoroutine(TypeAndUnlock(lines[index]));
+        StartCoroutine(TypeAndUnlock(pool[index]));
     }
 
     IEnumerator TypeAndUnlock(string line)
@@ -76,5 +68,8 @@ public class DialogueInteract : MonoBehaviour
         dialogueManager.ShowLine(line);
         yield return new WaitUntil(() => dialogueManager.lineFinished);
         typing = false;
+
+        if (!string.IsNullOrEmpty(setFlagWhenUsed))
+            DialogueFlags.Set(setFlagWhenUsed);
     }
 }
