@@ -19,7 +19,7 @@ namespace World.SceneTransition
         [SerializeField] private KeyCode interactKey = KeyCode.E;
         [SerializeField] private string playerTag = "Player";
         [SerializeField] private bool saveOnTransition = true;
-        [SerializeField] private bool requireHoldToActivate = false;
+        [SerializeField] private bool requireHoldToActivate = true;
         [SerializeField, Min(0f)] private float holdDuration = 1.5f;
 
         [Header("Interaction UI")]
@@ -37,7 +37,6 @@ namespace World.SceneTransition
 
         [Header("Loading Screen")]
         [SerializeField] private string loadingMessage = "Loading...";
-        [SerializeField] private bool preferTransitionManagerLoadingScreen = true;
 
         private bool playerInRange;
         private GameObject playerReference;
@@ -179,11 +178,11 @@ namespace World.SceneTransition
             {
                 if (!string.IsNullOrEmpty(targetSceneName))
                 {
-                    SceneTransitionManager.Instance.LoadScene(targetSceneName, loadingMessage, preferTransitionManagerLoadingScreen);
+                    SceneTransitionManager.Instance.LoadScene(targetSceneName, loadingMessage);
                 }
                 else
                 {
-                    SceneTransitionManager.Instance.LoadScene(targetSceneBuildIndex, loadingMessage, preferTransitionManagerLoadingScreen);
+                    SceneTransitionManager.Instance.LoadScene(targetSceneBuildIndex, loadingMessage);
                 }
             }
             else
@@ -291,18 +290,36 @@ namespace World.SceneTransition
         {
             if (!requireHoldToActivate)
             {
-                progress = 0f;
+                // Hide progress UI when not using hold-to-activate
+                if (holdProgressImage != null)
+                {
+                    holdProgressImage.gameObject.SetActive(false);
+                }
+                if (holdProgressSlider != null)
+                {
+                    holdProgressSlider.gameObject.SetActive(false);
+                }
+                return;
             }
 
+            // Show and update progress UI when using hold-to-activate
             float clampedProgress = Mathf.Clamp01(progress);
 
             if (holdProgressImage != null)
             {
+                if (!holdProgressImage.gameObject.activeSelf)
+                {
+                    holdProgressImage.gameObject.SetActive(true);
+                }
                 holdProgressImage.fillAmount = clampedProgress;
             }
 
             if (holdProgressSlider != null)
             {
+                if (!holdProgressSlider.gameObject.activeSelf)
+                {
+                    holdProgressSlider.gameObject.SetActive(true);
+                }
                 holdProgressSlider.normalizedValue = clampedProgress;
             }
         }
