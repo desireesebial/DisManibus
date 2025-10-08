@@ -1084,9 +1084,10 @@ GameObject:
   - component: {fileID: 58260886}
   - component: {fileID: 58260887}
   - component: {fileID: 58260891}
+  - component: {fileID: 58260892}
   - component: {fileID: 58260888}
-  - component: {fileID: 58260890}
   - component: {fileID: 58260889}
+  - component: {fileID: 58260893}
   m_Layer: 0
   m_Name: blue key pile
   m_TagString: Untagged
@@ -1206,27 +1207,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &58260890
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 58260885}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 20, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &58260891
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1248,6 +1228,42 @@ MonoBehaviour:
   interactKey: 101
   closeKey: 27
   pausePlayerMovement: 1
+--- !u!114 &58260892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 58260885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8977c3dcec846034e9d9da314a88a319, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  action: 0
+  questId: find_clues
+  questTextIfAdding: Find the clue for the exit
+--- !u!65 &58260893
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 58260885}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.9625049, y: 20, z: 2.3937533}
+  m_Center: {x: 0.027923437, y: 6.3451595, z: 5.8988996}
 --- !u!1 &61849678
 GameObject:
   m_ObjectHideFlags: 0
@@ -12357,6 +12373,8 @@ GameObject:
   - component: {fileID: 464779188}
   - component: {fileID: 464779189}
   - component: {fileID: 464779190}
+  - component: {fileID: 464779192}
+  - component: {fileID: 464779191}
   m_Layer: 0
   m_Name: golden key pile
   m_TagString: Untagged
@@ -12448,6 +12466,42 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 1.8038695, y: 0.5081839, z: 1.9858088}
+  m_Center: {x: -0.030743377, y: 6.450439, z: 5.931883}
+--- !u!114 &464779191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 464779187}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8977c3dcec846034e9d9da314a88a319, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  action: 1
+  questId: find_clue
+  questTextIfAdding: 
+--- !u!65 &464779192
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 464779187}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.8038695, y: 20, z: 1.9858088}
   m_Center: {x: -0.030743377, y: 6.450439, z: 5.931883}
 --- !u!1 &466973746
 GameObject:
