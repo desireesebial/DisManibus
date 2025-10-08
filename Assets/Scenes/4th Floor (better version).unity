@@ -305767,7 +305767,6 @@ GameObject:
   - component: {fileID: 1574353847}
   - component: {fileID: 1574353852}
   - component: {fileID: 1574353851}
-  - component: {fileID: 1574353853}
   - component: {fileID: 1574353850}
   - component: {fileID: 1574353849}
   - component: {fileID: 1574353854}
@@ -305883,21 +305882,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1574353846}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1574353853
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1574353846}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8977c3dcec846034e9d9da314a88a319, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  action: 0
-  questId: input_code
-  questTextIfAdding: Input the right code to open the elevator
 --- !u!65 &1574353854
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -562206,6 +562190,7 @@ Transform:
   - {fileID: 608403134}
   - {fileID: 705105212}
   - {fileID: 355621418}
+  - {fileID: 9092374818044363746}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1987130947
@@ -566370,6 +566355,79 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2125996701}
   m_Mesh: {fileID: -2600649239184529759, guid: 4d7a1f2d72196e24bb9a9eefb40859c3, type: 3}
+--- !u!1001 &2127512561
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1983941382}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 211.83
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 39.1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: fae598791cdaa3845b47b24a1ac2fc3b, type: 2}
+    - target: {fileID: 919132149155446097, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
+      propertyPath: m_Name
+      value: code clue
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 9092374818044363750}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9092374818044363749}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9092374818044363748}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9092374818044363747}
+  m_SourcePrefab: {fileID: 100100000, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
 --- !u!1 &2128532981
 GameObject:
   m_ObjectHideFlags: 0
@@ -581229,6 +581287,11 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1330944720815219654, guid: 377835cb3fa2b9141894051f66db8b1f, type: 3}
+--- !u!1 &8459248931833747800 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
+  m_PrefabInstance: {fileID: 2127512561}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &8497003349740217349
 GameObject:
   m_ObjectHideFlags: 0
@@ -582006,6 +582069,92 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.08, y: 0.05, z: 0.05}
   m_Center: {x: 0.000002389308, y: 0.000090240035, z: 0.00009064493}
+--- !u!4 &9092374818044363746 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
+  m_PrefabInstance: {fileID: 2127512561}
+  m_PrefabAsset: {fileID: 0}
+--- !u!54 &9092374818044363747
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8459248931833747800}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &9092374818044363748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8459248931833747800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cae38d26bcc748249a79da36a74a0a3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueManager: {fileID: 1829259594}
+  lines:
+  - what is this paper .. ?      oh! A clue?
+  interactKey: 101
+  mustFinishBeforeNext: 0
+  avoidImmediateRepeat: 1
+--- !u!65 &9092374818044363749
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8459248931833747800}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.05, y: 0.03, z: 0.1}
+  m_Center: {x: -0.000041245017, y: 0.000001735054, z: 0.00006863965}
+--- !u!114 &9092374818044363750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8459248931833747800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8977c3dcec846034e9d9da314a88a319, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  action: 0
+  questId: input_code
+  questTextIfAdding: Input the right code to open the elevator
 --- !u!4 &9124498640929406655
 Transform:
   m_ObjectHideFlags: 0
