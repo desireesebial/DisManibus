@@ -35,6 +35,14 @@ public class FlashlightController : MonoBehaviour
     public AudioClip turnOnSound;
     public AudioClip turnOffSound;
 
+	[Header("Pickup System")]
+	[Tooltip("If true, player must pick up the flashlight before they can use it.")]
+	public bool requirePickup = true;
+	[Tooltip("Has the player picked up the flashlight? Set this to true to start with flashlight unlocked.")]
+	public bool hasFlashlight = false;
+	[Tooltip("Message displayed when player tries to use flashlight before picking it up.")]
+	public string needPickupMessage = "You need to find a flashlight first!";
+
 	[Header("Battery")]
 	[Tooltip("Total usable seconds the flashlight can stay on from full to empty.")]
 	public float batteryCapacitySeconds = 60f;
@@ -154,6 +162,13 @@ public class FlashlightController : MonoBehaviour
     {
         if (Input.GetKeyDown(flashlightKey))
         {
+            // Check if player has picked up the flashlight
+            if (requirePickup && !hasFlashlight)
+            {
+                Debug.Log(needPickupMessage);
+                return;
+            }
+            
             ToggleFlashlight();
         }
     }
@@ -231,6 +246,18 @@ public class FlashlightController : MonoBehaviour
     public bool IsRecharging()
     {
         return !isFlashlightOn && batterySecondsRemaining < batteryCapacitySeconds && rechargeTimer >= rechargeDelaySeconds;
+    }
+
+    // Called when the player picks up the flashlight
+    public void PickupFlashlight()
+    {
+        hasFlashlight = true;
+        Debug.Log("Flashlight acquired! Press T to toggle.");
+    }
+
+    public bool HasFlashlight()
+    {
+        return hasFlashlight;
     }
 
 	// Returns true if the flashlight is currently illuminating the given world position (within cone and range)
