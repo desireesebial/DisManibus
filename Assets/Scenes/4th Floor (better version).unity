@@ -295030,11 +295030,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7180855258625915340, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -23.881
+      value: -23.8932
       objectReference: {fileID: 0}
     - target: {fileID: 7180855258625915340, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.548
+      value: 1.5503
       objectReference: {fileID: 0}
     - target: {fileID: 7180855258625915340, guid: 3746a92b9db103d4883100bbd4232c72, type: 3}
       propertyPath: m_LocalRotation.w
@@ -297304,7 +297304,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Hold E to enter (1.5s)
+  m_text: Hold E to enter
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -305081,7 +305081,7 @@ MonoBehaviour:
   holdProgressSlider: {fileID: 1235492096}
   tapPromptFormat: Press {0} to enter
   holdPromptFormat: Hold {0} to enter
-  showHoldDurationInPrompt: 1
+  showHoldDurationInPrompt: 0
   onPortalActivated:
     m_PersistentCalls:
       m_Calls: []
@@ -305089,7 +305089,6 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   loadingMessage: Loading...
-  preferTransitionManagerLoadingScreen: 1
 --- !u!65 &1551321540
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -570671,9 +570670,9 @@ MonoBehaviour:
   headInventory: {fileID: 0}
   playerInventory: {fileID: 0}
   changeVisibilityOnInteract: 1
-  interactVisibilityState: 1
+  interactVisibilityState: 0
   changeVisibilityOnCorrectCode: 1
-  correctCodeVisibilityState: 1
+  correctCodeVisibilityState: 0
   affectColliders: 1
   visibilityTargets:
   - {fileID: 1087478886806779}
