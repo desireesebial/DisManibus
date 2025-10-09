@@ -7011,6 +7011,142 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 228529536}
   m_Mesh: {fileID: -2051524722243156114, guid: 9c356ccbadb302f4c99fbe7879889240, type: 3}
+--- !u!1 &233312014
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 233312015}
+  - component: {fileID: 233312017}
+  - component: {fileID: 233312016}
+  m_Layer: 0
+  m_Name: ClueCodeText
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &233312015
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233312014}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1302567618}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 1120.0001, y: -109}
+  m_SizeDelta: {x: 200, y: 50}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &233312016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233312014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: 
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 36
+  m_fontSizeBase: 36
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 1
+  m_VerticalAlignment: 256
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!222 &233312017
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233312014}
+  m_CullTransparentMesh: 1
 --- !u!1 &234463811
 GameObject:
   m_ObjectHideFlags: 0
@@ -10760,7 +10896,7 @@ PlayableDirector:
   m_InitialTime: 0
   m_SceneBindings:
   - key: {fileID: -575590090916231982, guid: 48314b39945c8f3448677db3f37c1603, type: 2}
-    value: {fileID: 1454146139}
+    value: {fileID: 0}
   m_ExposedReferences:
     m_References: []
 --- !u!1 &355844460
@@ -295991,6 +296127,56 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1299859553}
   m_Mesh: {fileID: 8948185083169316812, guid: 4d7a1f2d72196e24bb9a9eefb40859c3, type: 3}
+--- !u!1 &1302567617
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1302567618}
+  - component: {fileID: 1302567619}
+  m_Layer: 0
+  m_Name: ClueUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1302567618
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1302567617}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1964902340}
+  - {fileID: 233312015}
+  m_Father: {fileID: 1829259592}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -465.00003, y: 260}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &1302567619
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1302567617}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1306950502
 GameObject:
   m_ObjectHideFlags: 0
@@ -301283,192 +301469,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1452246555}
   m_Mesh: {fileID: -166887373798719108, guid: 4d7a1f2d72196e24bb9a9eefb40859c3, type: 3}
---- !u!1 &1454146138
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1454146142}
-  - component: {fileID: 1454146139}
-  - component: {fileID: 1454146141}
-  - component: {fileID: 1454146140}
-  m_Layer: 0
-  m_Name: DialogueReceiver_Going OutCutscene
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1454146139
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1454146138}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e52de21a22b6dd44c9cc19f810c65059, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Events:
-    m_Signals:
-    - {fileID: 11400000, guid: 58adc78cc3a9da24d8ac76c24678f4d2, type: 2}
-    - {fileID: 11400000, guid: e841846c664e2ff4da3c551ed8c61705, type: 2}
-    - {fileID: 11400000, guid: 564670651a6422c49891d6eba4c8ac7a, type: 2}
-    - {fileID: 11400000, guid: d5193b0bbf7bc834988b937e198500f7, type: 2}
-    - {fileID: 11400000, guid: fdcb107ce33b0bf44b47ad7737ecf831, type: 2}
-    - {fileID: 11400000, guid: 8bdc88581b89c8c42a3dc93167ddfeae, type: 2}
-    - {fileID: 11400000, guid: c09dcd9b8e689364baf98a3f3c749702, type: 2}
-    m_Events:
-    - m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1454146140}
-          m_TargetAssemblyTypeName: DialogueRelay, Assembly-CSharp
-          m_MethodName: ShowLine
-          m_Mode: 5
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: it's so dark ..
-            m_BoolArgument: 0
-          m_CallState: 2
-    - m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1454146140}
-          m_TargetAssemblyTypeName: DialogueRelay, Assembly-CSharp
-          m_MethodName: ShowLine
-          m_Mode: 5
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: Now that I think about it ..
-            m_BoolArgument: 0
-          m_CallState: 2
-    - m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1454146140}
-          m_TargetAssemblyTypeName: DialogueRelay, Assembly-CSharp
-          m_MethodName: ClearLine
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-    - m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1454146140}
-          m_TargetAssemblyTypeName: DialogueRelay, Assembly-CSharp
-          m_MethodName: ClearLine
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-    - m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1454146140}
-          m_TargetAssemblyTypeName: DialogueRelay, Assembly-CSharp
-          m_MethodName: ShowLine
-          m_Mode: 5
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: They did say strange things happen in this building
-              ,,
-            m_BoolArgument: 0
-          m_CallState: 2
-    - m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1454146140}
-          m_TargetAssemblyTypeName: DialogueRelay, Assembly-CSharp
-          m_MethodName: ShowLine
-          m_Mode: 5
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: Something like .. ghosts?
-            m_BoolArgument: 0
-          m_CallState: 2
-    - m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1454146140}
-          m_TargetAssemblyTypeName: DialogueRelay, Assembly-CSharp
-          m_MethodName: ShowLine
-          m_Mode: 5
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: haha .. no way right -
-            m_BoolArgument: 0
-          m_CallState: 2
---- !u!114 &1454146140
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1454146138}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 955f8709a9a520540b224a3ccffa7b76, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dialogue: {fileID: 1829259594}
---- !u!114 &1454146141
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1454146138}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af7eba7627e35b64fbade455c7e55da9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dialogueManager: {fileID: 1829259594}
-  lines: []
---- !u!224 &1454146142
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1454146138}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1829259592}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1454415480
 GameObject:
   m_ObjectHideFlags: 0
@@ -314202,6 +314202,57 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1805620240}
   m_Mesh: {fileID: 4762477281045989054, guid: 2bb8e74e51bc707479666db31fc93b4d, type: 3}
+--- !u!1 &1808700060
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1808700061}
+  - component: {fileID: 1808700062}
+  m_Layer: 0
+  m_Name: ClueManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1808700061
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1808700060}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1935672426}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1808700062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1808700060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c96c86bffdb781340b711b31d1922aea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clueCanvas: {fileID: 1302567619}
+  progressText: {fileID: 1964902341}
+  codeText: {fileID: 233312016}
+  totalClues: 6
+  fadeSpeed: 2
+  fadeOutDelay: 5
+  completeMessageDuration: 20
 --- !u!1 &1810800382
 GameObject:
   m_ObjectHideFlags: 0
@@ -314900,7 +314951,7 @@ RectTransform:
   m_Children:
   - {fileID: 1454415481}
   - {fileID: 1763085463}
-  - {fileID: 1454146142}
+  - {fileID: 1302567618}
   m_Father: {fileID: 1983941382}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -560868,6 +560919,7 @@ Transform:
   - {fileID: 129479019}
   - {fileID: 855943352}
   - {fileID: 602267774}
+  - {fileID: 1808700061}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1938337346
@@ -561562,6 +561614,142 @@ Transform:
   - {fileID: 492353109}
   m_Father: {fileID: 1674753311}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!1 &1964902339
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1964902340}
+  - component: {fileID: 1964902342}
+  - component: {fileID: 1964902341}
+  m_Layer: 0
+  m_Name: ClueProgressText
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1964902340
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1964902339}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1302567618}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 1120.0001, y: 2}
+  m_SizeDelta: {x: 200, y: 50}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1964902341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1964902339}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: 
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 36
+  m_fontSizeBase: 36
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 1
+  m_VerticalAlignment: 256
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: -139.68736, y: 0, z: -30.768906, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!222 &1964902342
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1964902339}
+  m_CullTransparentMesh: 1
 --- !u!1 &1966085689
 GameObject:
   m_ObjectHideFlags: 0
@@ -566367,6 +566555,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9092374818044363752}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9092374818044363755}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2e0750fff1386fa4d929c77a2629ee7f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9092374818044363749}
@@ -574956,7 +575147,7 @@ MonoBehaviour:
   unlockedLines:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
-  - This is wrong ..
+  - This is wrong .. I need the yellow ones ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
@@ -575228,6 +575419,9 @@ GameObject:
   - component: {fileID: 1268183161106655863}
   - component: {fileID: 3926446819503251133}
   - component: {fileID: 3926446819503251134}
+  - component: {fileID: 3926446819503251137}
+  - component: {fileID: 3926446819503251136}
+  - component: {fileID: 3926446819503251138}
   - component: {fileID: 3926446819503251135}
   m_Layer: 0
   m_Name: 6
@@ -575676,6 +575870,9 @@ GameObject:
   - component: {fileID: 1073359539285282177}
   - component: {fileID: 2954820511406799179}
   - component: {fileID: 4128267336491680293}
+  - component: {fileID: 4128267336491680296}
+  - component: {fileID: 4128267336491680295}
+  - component: {fileID: 4128267336491680297}
   - component: {fileID: 4128267336491680294}
   m_Layer: 0
   m_Name: 3
@@ -575803,6 +576000,9 @@ GameObject:
   - component: {fileID: 1100180094613937412}
   - component: {fileID: 2927454925098822094}
   - component: {fileID: 4101447076945351330}
+  - component: {fileID: 4101447076945351333}
+  - component: {fileID: 4101447076945351332}
+  - component: {fileID: 4101447076945351334}
   - component: {fileID: 4101447076945351331}
   m_Layer: 0
   m_Name: 1
@@ -575953,7 +576153,7 @@ MonoBehaviour:
   unlockedLines:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
-  - This is wrong ..
+  - This is wrong .. I need the yellow ones ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
@@ -576121,13 +576321,11 @@ MonoBehaviour:
   - Weird .. why is there a number?
   unlockedLines:
   - The last number!
-  - I can finally get out ..
-  - I want to go home .. finally ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
   unlockFlag: code_clue
-  setFlagWhenUsed: 
+  setFlagWhenUsed: clue_found6
 --- !u!65 &3926446819503251135
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576149,6 +576347,55 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.08, y: 0.05, z: 0.05}
   m_Center: {x: 0.0000023148023, y: 0.000090240035, z: 0.00009058532}
+--- !u!114 &3926446819503251136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3277906827422711656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e8eec424523faa4fbfcd86a6e4d16b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clueIndex: 5
+  clueValue: 51
+  interactKey: 101
+--- !u!114 &3926446819503251137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3277906827422711656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0147165ce2767c74c80f95f4fecfcc1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flagName: clue_found6
+  clueIndex: 5
+  clueValue: 51
+--- !u!114 &3926446819503251138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3277906827422711656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85ccb635e8b1f184cb93b669f94a7781, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  requiredFlag: quest_find_clues_started
+  behaviours:
+  - {fileID: 3926446819503251136}
+  - {fileID: 3926446819503251137}
+  colliders:
+  - {fileID: 3926446819503251135}
+  objects: []
 --- !u!4 &3941156939130079998
 Transform:
   m_ObjectHideFlags: 0
@@ -576260,7 +576507,7 @@ MonoBehaviour:
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
   unlockFlag: code_clue
-  setFlagWhenUsed: 
+  setFlagWhenUsed: clue_found1
 --- !u!65 &4101447076945351331
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576282,6 +576529,55 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.08, y: 0.05, z: 0.05}
   m_Center: {x: 0.0000023446046, y: 0.00009024097, z: 0.00009063189}
+--- !u!114 &4101447076945351332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3720136905981167643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e8eec424523faa4fbfcd86a6e4d16b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clueIndex: 0
+  clueValue: 52
+  interactKey: 101
+--- !u!114 &4101447076945351333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3720136905981167643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0147165ce2767c74c80f95f4fecfcc1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flagName: clue_found1
+  clueIndex: 0
+  clueValue: 52
+--- !u!114 &4101447076945351334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3720136905981167643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85ccb635e8b1f184cb93b669f94a7781, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  requiredFlag: quest_find_clues_started
+  behaviours:
+  - {fileID: 4101447076945351333}
+  - {fileID: 4101447076945351332}
+  colliders:
+  - {fileID: 4101447076945351331}
+  objects: []
 --- !u!1 &4101548190139617880
 GameObject:
   m_ObjectHideFlags: 0
@@ -576311,6 +576607,9 @@ GameObject:
   - component: {fileID: 408956223577737729}
   - component: {fileID: 2470242868956610251}
   - component: {fileID: 4127809355510062879}
+  - component: {fileID: 4127809355510062882}
+  - component: {fileID: 4127809355510062881}
+  - component: {fileID: 4127809355510062883}
   - component: {fileID: 4127809355510062880}
   m_Layer: 0
   m_Name: 5
@@ -576344,7 +576643,7 @@ MonoBehaviour:
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
   unlockFlag: code_clue
-  setFlagWhenUsed: 
+  setFlagWhenUsed: clue_found5
 --- !u!65 &4127809355510062880
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576366,6 +576665,55 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.08, y: 0.05, z: 0.05}
   m_Center: {x: 0.0000023446078, y: 0.000090240035, z: 0.00009064495}
+--- !u!114 &4127809355510062881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4127809355510062878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e8eec424523faa4fbfcd86a6e4d16b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clueIndex: 4
+  clueValue: 49
+  interactKey: 101
+--- !u!114 &4127809355510062882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4127809355510062878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0147165ce2767c74c80f95f4fecfcc1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flagName: clue_found5
+  clueIndex: 4
+  clueValue: 49
+--- !u!114 &4127809355510062883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4127809355510062878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85ccb635e8b1f184cb93b669f94a7781, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  requiredFlag: quest_find_clues_started
+  behaviours:
+  - {fileID: 4127809355510062882}
+  - {fileID: 4127809355510062881}
+  colliders:
+  - {fileID: 4127809355510062880}
+  objects: []
 --- !u!4 &4128267336491680292
 Transform:
   m_ObjectHideFlags: 0
@@ -576406,7 +576754,7 @@ MonoBehaviour:
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
   unlockFlag: code_clue
-  setFlagWhenUsed: 
+  setFlagWhenUsed: clue_found3
 --- !u!65 &4128267336491680294
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576428,6 +576776,55 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.08, y: 0.05, z: 0.05}
   m_Center: {x: 0.000002225395, y: 0.000090240035, z: 0.00009064492}
+--- !u!114 &4128267336491680295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3603264435333830814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e8eec424523faa4fbfcd86a6e4d16b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clueIndex: 2
+  clueValue: 50
+  interactKey: 101
+--- !u!114 &4128267336491680296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3603264435333830814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0147165ce2767c74c80f95f4fecfcc1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flagName: clue_found3
+  clueIndex: 2
+  clueValue: 50
+--- !u!114 &4128267336491680297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3603264435333830814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85ccb635e8b1f184cb93b669f94a7781, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  requiredFlag: quest_find_clues_started
+  behaviours:
+  - {fileID: 4128267336491680296}
+  - {fileID: 4128267336491680295}
+  colliders:
+  - {fileID: 4128267336491680294}
+  objects: []
 --- !u!1 &4137843608653503656
 GameObject:
   m_ObjectHideFlags: 0
@@ -576468,7 +576865,7 @@ MonoBehaviour:
   unlockedLines:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
-  - This is wrong ..
+  - This is wrong .. I need the yellow ones ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
@@ -576769,7 +577166,7 @@ MonoBehaviour:
   unlockedLines:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
-  - This is wrong ..
+  - This is wrong .. I need the yellow ones ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
@@ -577393,6 +577790,9 @@ GameObject:
   - component: {fileID: 8756982406611040692}
   - component: {fileID: 6801555100280393086}
   - component: {fileID: 8756982406611040693}
+  - component: {fileID: 8756982406611040696}
+  - component: {fileID: 8756982406611040695}
+  - component: {fileID: 8756982406611040697}
   - component: {fileID: 8756982406611040694}
   m_Layer: 0
   m_Name: 4
@@ -579726,7 +580126,7 @@ MonoBehaviour:
   unlockedLines:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
-  - This is wrong ..
+  - This is wrong .. I need the yellow ones ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
@@ -580149,7 +580549,7 @@ MonoBehaviour:
   unlockedLines:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
-  - This is wrong ..
+  - This is wrong .. I need the yellow ones ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
@@ -580853,7 +581253,7 @@ MonoBehaviour:
   unlockedLines:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
-  - This is wrong ..
+  - This is wrong .. I need the yellow ones ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
@@ -581377,6 +581777,9 @@ GameObject:
   - component: {fileID: 5474342535894389155}
   - component: {fileID: 7790157263659541865}
   - component: {fileID: 8959663095471726087}
+  - component: {fileID: 8959663095471726089}
+  - component: {fileID: 8959663095471726090}
+  - component: {fileID: 8959663095471726091}
   - component: {fileID: 8959663095471726088}
   m_Layer: 0
   m_Name: 2
@@ -581517,7 +581920,7 @@ MonoBehaviour:
   unlockedLines:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
-  - This is wrong ..
+  - This is wrong .. I need the yellow ones ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
@@ -581677,7 +582080,7 @@ MonoBehaviour:
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
   unlockFlag: code_clue
-  setFlagWhenUsed: 
+  setFlagWhenUsed: clue_found4
 --- !u!65 &8756982406611040694
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -581699,6 +582102,55 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.08, y: 0.05, z: 0.05}
   m_Center: {x: 0.0000023446044, y: 0.000090240035, z: 0.00009061512}
+--- !u!114 &8756982406611040695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4999846762712280235}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e8eec424523faa4fbfcd86a6e4d16b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clueIndex: 3
+  clueValue: 57
+  interactKey: 101
+--- !u!114 &8756982406611040696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4999846762712280235}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0147165ce2767c74c80f95f4fecfcc1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flagName: 
+  clueIndex: 3
+  clueValue: 57
+--- !u!114 &8756982406611040697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4999846762712280235}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85ccb635e8b1f184cb93b669f94a7781, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  requiredFlag: quest_find_clues_started
+  behaviours:
+  - {fileID: 8756982406611040696}
+  - {fileID: 8756982406611040695}
+  colliders:
+  - {fileID: 8756982406611040694}
+  objects: []
 --- !u!1 &8795536461077079808
 GameObject:
   m_ObjectHideFlags: 0
@@ -581864,7 +582316,7 @@ MonoBehaviour:
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
   unlockFlag: code_clue
-  setFlagWhenUsed: 
+  setFlagWhenUsed: clue_found2
 --- !u!65 &8959663095471726088
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -581886,6 +582338,55 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.08, y: 0.05, z: 0.05}
   m_Center: {x: 0.0000023446046, y: 0.000090240035, z: 0.00009064493}
+--- !u!114 &8959663095471726089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8582962253399360700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e8eec424523faa4fbfcd86a6e4d16b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clueIndex: 1
+  clueValue: 55
+  interactKey: 101
+--- !u!114 &8959663095471726090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8582962253399360700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0147165ce2767c74c80f95f4fecfcc1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flagName: clue_found2
+  clueIndex: 1
+  clueValue: 55
+--- !u!114 &8959663095471726091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8582962253399360700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85ccb635e8b1f184cb93b669f94a7781, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  requiredFlag: quest_find_clues_started
+  behaviours:
+  - {fileID: 8959663095471726089}
+  - {fileID: 8959663095471726090}
+  colliders:
+  - {fileID: 8959663095471726088}
+  objects: []
 --- !u!23 &8966185348820080240
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -582079,7 +582580,7 @@ MonoBehaviour:
   unlockedLines:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
-  - This is wrong ..
+  - This is wrong .. I need the yellow ones ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
@@ -582213,6 +582714,20 @@ MonoBehaviour:
   interactKey: 101
   closeKey: 27
   pausePlayerMovement: 0
+--- !u!114 &9092374818044363755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8459248931833747800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 169d86b13fdc2364480a920528626338, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flagToSet: quest_find_clues_started
+  once: 1
 --- !u!4 &9124498640929406655
 Transform:
   m_ObjectHideFlags: 0
@@ -582256,7 +582771,7 @@ MonoBehaviour:
   unlockedLines:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
-  - This is wrong ..
+  - This is wrong .. I need the yellow ones ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
@@ -582408,7 +582923,7 @@ MonoBehaviour:
   unlockedLines:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
-  - This is wrong ..
+  - This is wrong .. I need the yellow ones ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
@@ -582482,7 +582997,7 @@ MonoBehaviour:
   unlockedLines:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
-  - This is wrong ..
+  - This is wrong .. I need the yellow ones ..
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
