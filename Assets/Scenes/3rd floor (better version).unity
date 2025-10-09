@@ -1083,10 +1083,10 @@ GameObject:
   m_Component:
   - component: {fileID: 58260886}
   - component: {fileID: 58260887}
-  - component: {fileID: 58260894}
   - component: {fileID: 58260892}
   - component: {fileID: 58260888}
   - component: {fileID: 58260889}
+  - component: {fileID: 58260893}
   m_Layer: 0
   m_Name: blue key pile
   m_TagString: Untagged
@@ -1221,7 +1221,7 @@ MonoBehaviour:
   action: 0
   questId: find_clues
   questTextIfAdding: Find the clue for the exit
---- !u!114 &58260894
+--- !u!114 &58260893
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1230,21 +1230,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 58260885}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cae38d26bcc748249a79da36a74a0a3b, type: 3}
+  m_Script: {fileID: 11500000, guid: 41ed13c4c4634934d90fb6ecc98aa8bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pickable: {fileID: 58260887}
   dialogueManager: {fileID: 1726014300}
-  defaultLines:
+  onPileCleared: 1
+  onCancelled: 0
+  linesBeforeFlag:
+  - 'Wait ... '
   - B ...
-  - huh ?
-  unlockedLines:
-  - B .. L .. U ... E ... Blue ? oh ! it makes a word!
-  - 
-  interactKey: 101
-  mustFinishBeforeNext: 1
-  avoidImmediateRepeat: 1
-  unlockFlag: Interacteed_clue
-  setFlagWhenUsed: Interacteed_clue
+  - L ..
+  - U ..
+  - 'E ... '
+  - uh .. Blue ?
+  - oh it makes up a word ..
+  linesAfterFlag: []
+  unlockFlag: 
+  setFlagWhenDone: 
+  betweenLinesDelay: 1
 --- !u!1 &61849678
 GameObject:
   m_ObjectHideFlags: 0
@@ -12402,7 +12406,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -14896,7 +14900,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -155709,7 +155713,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -171515,7 +171519,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -175496,7 +175500,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -180459,7 +180463,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
