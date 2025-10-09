@@ -4232,6 +4232,8 @@ GameObject:
   - component: {fileID: 179887152}
   - component: {fileID: 179887151}
   - component: {fileID: 179887154}
+  - component: {fileID: 179887156}
+  - component: {fileID: 179887155}
   m_Layer: 0
   m_Name: Exit Key
   m_TagString: Untagged
@@ -4342,6 +4344,42 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemScriptableObject: {fileID: 11400000, guid: 71240ced46456724db9c6d22d05d79e0, type: 2}
   highlightEffect: {fileID: 0}
+--- !u!114 &179887155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 179887149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8977c3dcec846034e9d9da314a88a319, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  action: 1
+  questId: find_key
+  questTextIfAdding: 
+--- !u!65 &179887156
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 179887149}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.011956646, y: 0.11683194, z: 0.038119446}
+  m_Center: {x: 0.00002278342, y: -0.058416266, z: -0.00085154356}
 --- !u!1 &180038581
 GameObject:
   m_ObjectHideFlags: 0
@@ -8559,9 +8597,7 @@ MonoBehaviour:
   movementScript: {fileID: 0}
   strikeDuration: 5
   hideWhenEmptyDelay: 2
-  initialQuests:
-  - id: leave_room
-    text: Leave room to get some water
+  initialQuests: []
   sfxSource: {fileID: 0}
   questAppearClip: {fileID: 0}
   questCompleteClip: {fileID: 0}
