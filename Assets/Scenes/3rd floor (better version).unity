@@ -5253,7 +5253,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1773455331}
+      - m_Target: {fileID: 927138159}
         m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
         m_MethodName: OpenControls
         m_Mode: 1
@@ -5682,81 +5682,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1259482884}
   m_LocalEulerAnglesHint: {x: 0, y: 270, z: 0}
---- !u!1 &231417968
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 231417971}
-  - component: {fileID: 231417970}
-  - component: {fileID: 231417969}
-  m_Layer: 5
-  m_Name: Brightness
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &231417969
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 231417968}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f42eed794fdc78246a912283d989f1b6, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &231417970
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 231417968}
-  m_CullTransparentMesh: 1
---- !u!224 &231417971
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 231417968}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 12.7, y: 6.8, z: 0.6429293}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 637, y: 338}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &233122389
 GameObject:
   m_ObjectHideFlags: 0
@@ -7785,9 +7710,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 822915450}
-        m_TargetAssemblyTypeName: SettingsScript, Assembly-CSharp
-        m_MethodName: ShowSettingsMenu
+      - m_Target: {fileID: 927138159}
+        m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
+        m_MethodName: OpenSettings
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -159416,9 +159341,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: World.UI.PauseMenuController, Assembly-CSharp
-        m_MethodName: ExitToMainMenu
+      - m_Target: {fileID: 927138159}
+        m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
+        m_MethodName: GoToMainMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -162632,11 +162557,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pauseRoot: {fileID: 1640626154}
   pauseGroup: {fileID: 1640626159}
-  settingsPanel: {fileID: 706969229}
+  settingsPanel: {fileID: 1895420314}
   settingsGroup: {fileID: 1895420319}
-  controlsPanel: {fileID: 41381129}
-  mainMenuSceneName: MainMenu
+  controlsPanel: {fileID: 1181616201}
   controlsGroup: {fileID: 41381131}
+  mainMenuSceneName: MainMenu
 --- !u!1 &927628494
 GameObject:
   m_ObjectHideFlags: 0
@@ -173205,7 +173130,7 @@ Transform:
   m_GameObject: {fileID: 1328660737}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 32.963745, y: -158.77948, z: -26.69057}
+  m_LocalPosition: {x: 32.963745, y: -158.77948, z: -26.690573}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -181388,7 +181313,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 100
   m_TargetDisplay: 0
 --- !u!224 &1640626158
 RectTransform:
@@ -183586,8 +183511,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: World.UI.PauseMenuController, Assembly-CSharp
+      - m_Target: {fileID: 927138159}
+        m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
         m_MethodName: Resume
         m_Mode: 1
         m_Arguments:
@@ -185338,8 +185263,8 @@ MonoBehaviour:
   settingsPanel: {fileID: 0}
   settingsGroup: {fileID: 0}
   controlsPanel: {fileID: 0}
-  mainMenuSceneName: MainMenu
   controlsGroup: {fileID: 0}
+  mainMenuSceneName: MainMenu
 --- !u!4 &1773455332
 Transform:
   m_ObjectHideFlags: 0
@@ -325145,7 +325070,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -351918,7 +351843,6 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 231417971}
   - {fileID: 2125209887}
   - {fileID: 4373200964293738}
   - {fileID: 369474177}
