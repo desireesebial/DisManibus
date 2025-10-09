@@ -42,6 +42,7 @@ namespace World.SceneTransition
         private GameObject playerReference;
         private float holdTimer;
         private bool holdActivationTriggered;
+        private bool isActivating;
 
         private void Start()
         {
@@ -90,6 +91,12 @@ namespace World.SceneTransition
 
         private void HandleInteractionInput()
         {
+            // Don't accept input if already activating
+            if (isActivating)
+            {
+                return;
+            }
+
             if (!requireHoldToActivate)
             {
                 UpdateHoldProgressUI(0f);
@@ -100,22 +107,27 @@ namespace World.SceneTransition
                 return;
             }
 
+            // Handle hold-to-activate
             if (Input.GetKey(interactKey))
             {
                 holdTimer += Time.deltaTime;
-                float requiredTime = Mathf.Max(holdDuration, 0f);
-                float progress = requiredTime <= 0f ? 1f : Mathf.Clamp01(holdTimer / requiredTime);
+                
+                // Calculate progress - ensure it matches the actual hold time
+                float progress = Mathf.Clamp01(holdTimer / holdDuration);
                 UpdateHoldProgressUI(progress);
 
-                if (!holdActivationTriggered && (requiredTime <= 0f || holdTimer >= requiredTime))
+                // Check if hold duration is complete
+                if (!holdActivationTriggered && holdTimer >= holdDuration)
                 {
                     holdActivationTriggered = true;
+                    UpdateHoldProgressUI(1f); // Ensure slider shows complete
                     ActivatePortal();
                 }
             }
             else
             {
-                if (holdTimer > 0f || holdActivationTriggered)
+                // Reset if player releases the key before completing
+                if (holdTimer > 0f)
                 {
                     ResetHoldState();
                 }
@@ -152,12 +164,22 @@ namespace World.SceneTransition
 
         public void ActivatePortal()
         {
+            // Prevent multiple activations
+            if (isActivating)
+            {
+                return;
+            }
+
             if (string.IsNullOrEmpty(targetSceneName) && targetSceneBuildIndex < 0)
             {
                 Debug.LogError($"ScenePortal '{name}' cannot activate without a valid scene target.");
                 onPortalFailed?.Invoke();
                 return;
             }
+
+            // Mark as activating to prevent further input
+            isActivating = true;
+            Debug.Log($"ScenePortal '{name}' activating - transitioning to scene");
 
             if (saveOnTransition)
             {
@@ -283,19 +305,27 @@ namespace World.SceneTransition
                 interactionUIPanel.SetActive(false);
             }
 
-            UpdateHoldProgressUI(0f);
+            // Explicitly hide progress UI elements
+            if (holdProgressImage != null && holdProgressImage.gameObject.activeSelf)
+            {
+                holdProgressImage.gameObject.SetActive(false);
+            }
+            if (holdProgressSlider != null && holdProgressSlider.gameObject.activeSelf)
+            {
+                holdProgressSlider.gameObject.SetActive(false);
+            }
         }
 
         private void UpdateHoldProgressUI(float progress)
         {
-            if (!requireHoldToActivate)
+            if (!requireHoldToActivate || progress <= 0f)
             {
-                // Hide progress UI when not using hold-to-activate
-                if (holdProgressImage != null)
+                // Hide progress UI when not using hold-to-activate or progress is 0
+                if (holdProgressImage != null && holdProgressImage.gameObject.activeSelf)
                 {
                     holdProgressImage.gameObject.SetActive(false);
                 }
-                if (holdProgressSlider != null)
+                if (holdProgressSlider != null && holdProgressSlider.gameObject.activeSelf)
                 {
                     holdProgressSlider.gameObject.SetActive(false);
                 }
