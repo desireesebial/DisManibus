@@ -6,17 +6,11 @@ public class FlashlightPickup : MonoBehaviour
     [Tooltip("The FlashlightController to unlock when picked up. If null, will search for one in the scene.")]
     public FlashlightController flashlightController;
     
-    [Tooltip("Optional: The GameObject containing the flashlight functionality to enable on pickup. Leave null if flashlight is already active.")]
-    public GameObject flashlightGameObject;
-    
     [Tooltip("Trigger-based pickup (player walks into it) or require interaction key press?")]
     public bool autoPickupOnTrigger = true;
     
     [Tooltip("Key to press to pick up if autoPickupOnTrigger is false.")]
     public KeyCode pickupKey = KeyCode.E;
-    
-    [Tooltip("Radius within which the player can pick up the flashlight (used for both trigger and manual pickup).")]
-    public float pickupRadius = 2f;
     
     [Tooltip("Tag of the player GameObject. Used to detect when player is near.")]
     public string playerTag = "Player";
@@ -39,6 +33,10 @@ public class FlashlightPickup : MonoBehaviour
     [Tooltip("Optional particle effect to spawn when picked up.")]
     public GameObject pickupEffect;
     
+    [Header("Debug")]
+    [Tooltip("Enable detailed debug logging for troubleshooting")]
+    public bool enableDebugLogs = false;
+    
     // Private variables
     private bool isPickedUp = false;
     private bool playerInRange = false;
@@ -47,38 +45,7 @@ public class FlashlightPickup : MonoBehaviour
 
     private void Start()
     {
-        // Find FlashlightController if not assigned
-        if (flashlightController == null)
-        {
-            flashlightController = FindAnyObjectByType<FlashlightController>();
-            if (flashlightController == null)
-            {
-                Debug.LogWarning($"[{name}] FlashlightPickup could not find a FlashlightController in the scene. Assign one manually.");
-            }
-        }
-
-        // Setup audio source for pickup sound
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource == null && pickupSound != null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>();
-            audioSource.playOnAwake = false;
-            audioSource.spatialBlend = 1f; // 3D sound
-        }
-
-        // Ensure we have a collider for trigger detection
-        Collider col = GetComponent<Collider>();
-        if (col == null)
-        {
-            SphereCollider sphereCol = gameObject.AddComponent<SphereCollider>();
-            sphereCol.isTrigger = true;
-            sphereCol.radius = pickupRadius;
-            Debug.Log($"[{name}] Added SphereCollider for pickup detection.");
-        }
-        else if (!col.isTrigger)
-        {
-            Debug.LogWarning($"[{name}] Collider exists but isTrigger is false. Set it to true for pickup detection.");
-        }
+        InitializePickup();
     }
 
     private void Update()
@@ -86,59 +53,201 @@ public class FlashlightPickup : MonoBehaviour
         if (isPickedUp) return;
 
         // Manual pickup mode: check for pickup key press when player is in range
-        if (!autoPickupOnTrigger && playerInRange)
+        if (!autoPickupOnTrigger && playerInRange && Input.GetKeyDown(pickupKey))
         {
-            if (Input.GetKeyDown(pickupKey))
-            {
-                Pickup();
-            }
-        }
-
-        // Optional: Check distance manually if not using triggers
-        if (!autoPickupOnTrigger && playerTransform != null)
-        {
-            float distance = Vector3.Distance(transform.position, playerTransform.position);
-            playerInRange = distance <= pickupRadius;
+            ExecutePickup();
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (isPickedUp) return;
-
-        // Check if the player entered the trigger
-        if (other.CompareTag(playerTag))
+        // Always log trigger events for debugging
+        Debug.Log($"[FlashlightPickup] OnTriggerEnter called! Object: '{other.gameObject.name}', Tag: '{other.tag}'");
+        
+        if (isPickedUp)
         {
-            playerTransform = other.transform;
-            playerInRange = true;
+            Debug.Log($"[FlashlightPickup] Already picked up, ignoring.");
+            return;
+        }
+        
+        if (!other.CompareTag(playerTag))
+        {
+            Debug.Log($"[FlashlightPickup] Not the player. Expected tag: '{playerTag}', Got: '{other.tag}'");
+            return;
+        }
 
-            // Auto pickup if enabled
-            if (autoPickupOnTrigger)
-            {
-                Pickup();
-            }
-            else
-            {
-                // Show pickup prompt (you can implement UI display here)
-                Debug.Log(pickupPrompt);
-            }
+        Debug.Log($"[FlashlightPickup] ✓ PLAYER DETECTED! Executing pickup...");
+        playerTransform = other.transform;
+        playerInRange = true;
+
+        if (autoPickupOnTrigger)
+        {
+            ExecutePickup();
+        }
+        else
+        {
+            Debug.Log($"[FlashlightPickup] {pickupPrompt}");
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
+        Debug.Log($"[FlashlightPickup] OnTriggerExit called! Object: '{other.gameObject.name}'");
+        
         if (other.CompareTag(playerTag))
         {
+            Debug.Log($"[FlashlightPickup] Player exited trigger area");
             playerInRange = false;
             playerTransform = null;
         }
     }
 
-    private void Pickup()
+    /// <summary>
+    /// Initialize the pickup system and validate all required components
+    /// </summary>
+    private void InitializePickup()
+    {
+        Debug.Log($"[FlashlightPickup - {name}] ===== INITIALIZING =====");
+        Debug.Log($"[FlashlightPickup - {name}] Position: {transform.position}");
+        Debug.Log($"[FlashlightPickup - {name}] Layer: {LayerMask.LayerToName(gameObject.layer)}");
+
+        // Find FlashlightController if not assigned
+        if (flashlightController == null)
+        {
+            flashlightController = FindAnyObjectByType<FlashlightController>();
+            if (flashlightController == null)
+            {
+                Debug.LogError($"[{name}] CRITICAL ERROR: No FlashlightController found in scene! Pickup will NOT work. " +
+                    $"Make sure you have a GameObject with FlashlightController component in your scene.");
+                return;
+            }
+            Debug.Log($"[FlashlightPickup - {name}] ✓ Auto-found FlashlightController: {flashlightController.name}");
+        }
+        else
+        {
+            Debug.Log($"[FlashlightPickup - {name}] ✓ FlashlightController assigned: {flashlightController.name}");
+        }
+
+        // Validate the FlashlightController is set to require pickup
+        if (!flashlightController.requirePickup)
+        {
+            Debug.LogWarning($"[{name}] FlashlightController.requirePickup is FALSE. " +
+                $"The flashlight can be used without picking up this object. " +
+                $"Set requirePickup to TRUE on FlashlightController if you want to enforce the pickup.");
+        }
+
+        // Setup audio source
+        SetupAudioSource();
+
+        // Validate components
+        ValidateComponents();
+
+        Debug.Log($"[FlashlightPickup - {name}] Initialization complete - Auto-pickup: {autoPickupOnTrigger}, Pickup key: {pickupKey}");
+        Debug.Log($"[FlashlightPickup - {name}] ===== READY - Walk into the trigger area to test =====");
+    }
+
+    /// <summary>
+    /// Setup audio source for pickup sound
+    /// </summary>
+    private void SetupAudioSource()
+    {
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null && pickupSound != null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+            audioSource.spatialBlend = 1f; // 3D sound
+        }
+    }
+
+    /// <summary>
+    /// Validate that all required components are present
+    /// </summary>
+    private void ValidateComponents()
+    {
+        Debug.Log($"[FlashlightPickup - {name}] --- Validating Components ---");
+        
+        // Check for collider
+        Collider col = GetComponent<Collider>();
+        if (col == null)
+        {
+            Debug.LogError($"[{name}] CRITICAL ERROR: No Collider found! Add a Collider and set 'Is Trigger' to TRUE. Pickup will NOT work!");
+        }
+        else if (!col.isTrigger)
+        {
+            Debug.LogError($"[{name}] CRITICAL ERROR: Collider 'Is Trigger' is FALSE! Set it to TRUE in the Inspector. Pickup will NOT work!");
+        }
+        else
+        {
+            Debug.Log($"[FlashlightPickup - {name}] ✓ Collider OK: {col.GetType().Name}, IsTrigger: {col.isTrigger}");
+            if (col is SphereCollider sphere)
+                Debug.Log($"  - Sphere radius: {sphere.radius}");
+            else if (col is BoxCollider box)
+                Debug.Log($"  - Box size: {box.size}");
+        }
+
+        // Check for Rigidbody
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            Debug.LogError($"[{name}] CRITICAL ERROR: No Rigidbody found! Add a Rigidbody (set to Kinematic). Pickup will NOT work!");
+        }
+        else
+        {
+            Debug.Log($"[FlashlightPickup - {name}] ✓ Rigidbody OK: Kinematic={rb.isKinematic}, UseGravity={rb.useGravity}");
+        }
+
+        // Check for player
+        GameObject player = GameObject.FindGameObjectWithTag(playerTag);
+        if (player == null)
+        {
+            Debug.LogError($"[{name}] CRITICAL ERROR: No GameObject with tag '{playerTag}' found! " +
+                $"Make sure your player has the '{playerTag}' tag. Pickup will NOT work!");
+        }
+        else
+        {
+            Debug.Log($"[FlashlightPickup - {name}] ✓ Player found: {player.name}, Layer: {LayerMask.LayerToName(player.layer)}");
+            
+            // Check player collider
+            Collider playerCol = player.GetComponent<Collider>();
+            CharacterController charController = player.GetComponent<CharacterController>();
+            Rigidbody playerRb = player.GetComponent<Rigidbody>();
+            
+            if (playerCol != null)
+                Debug.Log($"  - Player has Collider: {playerCol.GetType().Name}");
+            if (charController != null)
+                Debug.Log($"  - Player has CharacterController");
+            if (playerRb != null)
+                Debug.Log($"  - Player has Rigidbody: Kinematic={playerRb.isKinematic}");
+            
+            if (playerCol == null && charController == null && playerRb == null)
+                Debug.LogWarning($"  - WARNING: Player has no Collider, CharacterController, or Rigidbody!");
+                
+            // Check layer collision
+            int pickupLayer = gameObject.layer;
+            int playerLayer = player.layer;
+            if (!Physics.GetIgnoreLayerCollision(pickupLayer, playerLayer))
+            {
+                Debug.Log($"  - ✓ Layers can collide: Pickup({LayerMask.LayerToName(pickupLayer)}) <-> Player({LayerMask.LayerToName(playerLayer)})");
+            }
+            else
+            {
+                Debug.LogError($"  - ✗ LAYER COLLISION BLOCKED! Pickup layer '{LayerMask.LayerToName(pickupLayer)}' cannot collide with Player layer '{LayerMask.LayerToName(playerLayer)}'!");
+                Debug.LogError($"    Fix: Edit → Project Settings → Physics → Layer Collision Matrix");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Execute the pickup sequence - unlocks the flashlight controller
+    /// </summary>
+    private void ExecutePickup()
     {
         if (isPickedUp) return;
 
-        // Check if we have a flashlight controller to notify
+        Debug.Log($"[FlashlightPickup] ========== EXECUTING PICKUP ==========");
+
+        // Validate flashlight controller
         if (flashlightController == null)
         {
             Debug.LogError($"[{name}] Cannot pickup flashlight - no FlashlightController assigned!");
@@ -147,69 +256,104 @@ public class FlashlightPickup : MonoBehaviour
 
         isPickedUp = true;
 
-        // Enable the flashlight GameObject if assigned (this activates the flashlight functionality)
-        if (flashlightGameObject != null)
-        {
-            flashlightGameObject.SetActive(true);
-            Debug.Log($"Flashlight GameObject '{flashlightGameObject.name}' enabled!");
-        }
-
-        // Notify the flashlight controller
+        // Unlock the flashlight controller
         flashlightController.PickupFlashlight();
+        Debug.Log($"[FlashlightPickup] ✓ FlashlightController unlocked - Player can now use flashlight with key '{flashlightController.flashlightKey}'!");
 
+        // Play effects
+        PlayPickupEffects();
+
+        // Cleanup
+        CleanupPickup();
+        
+        Debug.Log($"[FlashlightPickup] ========== PICKUP COMPLETE ==========");
+    }
+
+    /// <summary>
+    /// Play all pickup effects (sound, particles, etc.)
+    /// </summary>
+    private void PlayPickupEffects()
+    {
         // Play pickup sound
         if (audioSource != null && pickupSound != null)
         {
             audioSource.PlayOneShot(pickupSound);
         }
 
-        // Spawn pickup effect
+        // Spawn particle effect
         if (pickupEffect != null)
         {
             Instantiate(pickupEffect, transform.position, Quaternion.identity);
         }
+    }
 
-        // Hide or destroy visual
+    /// <summary>
+    /// Cleanup the pickup object after collection
+    /// </summary>
+    private void CleanupPickup()
+    {
+        // Hide visual
         if (visualObject != null)
         {
             visualObject.SetActive(false);
         }
 
-        // Disable this pickup script component to prevent further pickups
+        // Disable this script
         this.enabled = false;
 
-        // Destroy or disable this pickup object
+        // Destroy or disable GameObject
         if (destroyOnPickup)
         {
-            // Delay destruction slightly if we need to play the sound
-            if (audioSource != null && pickupSound != null)
-            {
-                Destroy(gameObject, pickupSound.length);
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            float delay = (audioSource != null && pickupSound != null) ? pickupSound.length : 0f;
+            Destroy(gameObject, delay);
         }
         else
         {
             gameObject.SetActive(false);
         }
 
-        Debug.Log("Flashlight picked up!");
+        DebugLog($"Flashlight picked up successfully!");
     }
 
-    // Public method to manually trigger pickup (e.g., from another script or interaction system)
+    /// <summary>
+    /// Public method to manually trigger pickup (e.g., from another script or interaction system)
+    /// </summary>
     public void TriggerPickup()
     {
-        Pickup();
+        ExecutePickup();
     }
 
-    // For debugging in the editor
+    /// <summary>
+    /// Log debug messages only if debug logging is enabled
+    /// </summary>
+    private void DebugLog(string message)
+    {
+        if (enableDebugLogs)
+        {
+            Debug.Log($"[FlashlightPickup - {name}] {message}");
+        }
+    }
+
+    /// <summary>
+    /// Draw gizmo for pickup radius in the editor
+    /// </summary>
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, pickupRadius);
+        // Draw trigger radius for visualization
+        Collider col = GetComponent<Collider>();
+        if (col != null)
+        {
+            Gizmos.color = Color.yellow;
+            if (col is SphereCollider sphere)
+            {
+                Gizmos.DrawWireSphere(transform.position, sphere.radius);
+            }
+            else if (col is BoxCollider box)
+            {
+                Gizmos.matrix = transform.localToWorldMatrix;
+                Gizmos.DrawWireCube(box.center, box.size);
+            }
+        }
     }
 }
 
