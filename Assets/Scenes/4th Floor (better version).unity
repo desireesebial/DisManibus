@@ -580988,19 +580988,19 @@ MonoBehaviour:
   - {fileID: 981357949}
   - {fileID: 492443795}
   waitTimeAtWaypoint: 2
-  patrolSpeed: 3.5
+  patrolSpeed: 15
   useRandomPatrol: 1
   autoPatrolRadius: 20
   detectionRadius: 15
-  lookingInterval: 5
-  lookingDuration: 3
+  lookingInterval: 15
+  lookingDuration: 2
   requireLineOfSight: 1
   lineOfSightObstructionMask:
     serializedVersion: 2
     m_Bits: 4294967295
   rotationSpeed: 2
-  fieldOfViewAngle: 60
-  chaseSpeed: 2
+  fieldOfViewAngle: 90
+  chaseSpeed: 3.5
   loseChaseDistance: 25
   chaseTimeout: 30
   persistentChase: 1
@@ -581028,7 +581028,7 @@ NavMeshAgent:
   m_AutoRepath: 1
   m_Height: 0.01903538
   m_BaseOffset: 0.00951769
-  m_WalkableMask: 4294967295
+  m_WalkableMask: 3
   m_ObstacleAvoidanceType: 4
 --- !u!4 &8230934492284542711
 Transform:
