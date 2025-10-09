@@ -10848,57 +10848,6 @@ Transform:
   - {fileID: 486040078}
   m_Father: {fileID: 2070421227}
   m_LocalEulerAnglesHint: {x: 0, y: 359.999, z: 0}
---- !u!1 &355621417
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 355621418}
-  - component: {fileID: 355621419}
-  m_Layer: 0
-  m_Name: GoingOutsideTheRoom
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &355621418
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 355621417}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1983941382}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!320 &355621419
-PlayableDirector:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 355621417}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: 48314b39945c8f3448677db3f37c1603, type: 2}
-  m_InitialState: 1
-  m_WrapMode: 2
-  m_DirectorUpdateMode: 1
-  m_InitialTime: 0
-  m_SceneBindings:
-  - key: {fileID: -575590090916231982, guid: 48314b39945c8f3448677db3f37c1603, type: 2}
-    value: {fileID: 0}
-  m_ExposedReferences:
-    m_References: []
 --- !u!1 &355844460
 GameObject:
   m_ObjectHideFlags: 0
@@ -18098,11 +18047,15 @@ MonoBehaviour:
   defaultLines:
   - A flashlight .. this would be helpful since it's so dark
   unlockedLines: []
+  unlockFlag: 
+  setFlagWhenUsed: 
   interactKey: 101
   mustFinishBeforeNext: 1
   avoidImmediateRepeat: 1
-  unlockFlag: 
-  setFlagWhenUsed: 
+  randomize: 0
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!54 &568989114
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -295201,6 +295154,156 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1276745244}
   m_Mesh: {fileID: -1693695024572694020, guid: 4d7a1f2d72196e24bb9a9eefb40859c3, type: 3}
+--- !u!1 &1279048850
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1279048854}
+  - component: {fileID: 1279048853}
+  - component: {fileID: 1279048852}
+  - component: {fileID: 1279048851}
+  - component: {fileID: 1279048855}
+  - component: {fileID: 1279048856}
+  m_Layer: 0
+  m_Name: Plane (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!64 &1279048851
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1279048850}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &1279048852
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1279048850}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1279048853
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1279048850}
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1279048854
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1279048850}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -179.71, y: -2.02, z: -54.25}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1279048855
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1279048850}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 10, y: 20, z: 10}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1279048856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1279048850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af7eba7627e35b64fbade455c7e55da9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueManager: {fileID: 1829259594}
+  lines:
+  - Oh now that I think about it ...
+  - 'My team often joke about them seeing ghosts around here - '
+  - or ... what was it ? being spirited away?
+  - 'haha what am I even thinking about '
 --- !u!1 &1283851956
 GameObject:
   m_ObjectHideFlags: 0
@@ -562396,7 +562499,6 @@ Transform:
   - {fileID: 1829259592}
   - {fileID: 608403134}
   - {fileID: 705105212}
-  - {fileID: 355621418}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1987130947
@@ -572238,7 +572340,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00006f2ddd3e9c14c9d0013a723874e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  director: {fileID: 355621419}
+  director: {fileID: 0}
   interactKey: 101
   playOnce: 1
 --- !u!114 &114410975264615429
@@ -575148,11 +575250,15 @@ MonoBehaviour:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
   - This is wrong .. I need the yellow ones ..
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
+  randomize: 0
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!65 &2841845876276712017
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576154,11 +576260,15 @@ MonoBehaviour:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
   - This is wrong .. I need the yellow ones ..
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
+  randomize: 0
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!65 &3820729336096455421
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576321,11 +576431,15 @@ MonoBehaviour:
   - Weird .. why is there a number?
   unlockedLines:
   - The last number!
+  unlockFlag: code_clue
+  setFlagWhenUsed: clue_found6
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
-  unlockFlag: code_clue
-  setFlagWhenUsed: clue_found6
+  randomize: 0
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!65 &3926446819503251135
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576393,8 +576507,7 @@ MonoBehaviour:
   behaviours:
   - {fileID: 3926446819503251136}
   - {fileID: 3926446819503251137}
-  colliders:
-  - {fileID: 3926446819503251135}
+  colliders: []
   objects: []
 --- !u!4 &3941156939130079998
 Transform:
@@ -576503,11 +576616,15 @@ MonoBehaviour:
   - This is the clue!
   - 'The first number .. '
   - it's 4!
+  unlockFlag: code_clue
+  setFlagWhenUsed: clue_found1
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
-  unlockFlag: code_clue
-  setFlagWhenUsed: clue_found1
+  randomize: 0
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!65 &4101447076945351331
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576575,8 +576692,7 @@ MonoBehaviour:
   behaviours:
   - {fileID: 4101447076945351333}
   - {fileID: 4101447076945351332}
-  colliders:
-  - {fileID: 4101447076945351331}
+  colliders: []
   objects: []
 --- !u!1 &4101548190139617880
 GameObject:
@@ -576639,11 +576755,15 @@ MonoBehaviour:
   - The 5th!
   - Finally !
   - it's the 5th number code!
+  unlockFlag: code_clue
+  setFlagWhenUsed: clue_found5
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
-  unlockFlag: code_clue
-  setFlagWhenUsed: clue_found5
+  randomize: 0
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!65 &4127809355510062880
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576711,8 +576831,7 @@ MonoBehaviour:
   behaviours:
   - {fileID: 4127809355510062882}
   - {fileID: 4127809355510062881}
-  colliders:
-  - {fileID: 4127809355510062880}
+  colliders: []
   objects: []
 --- !u!4 &4128267336491680292
 Transform:
@@ -576750,11 +576869,15 @@ MonoBehaviour:
   - Finally !
   - The 3rd number for the code is ..
   - This is it!
+  unlockFlag: code_clue
+  setFlagWhenUsed: clue_found3
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
-  unlockFlag: code_clue
-  setFlagWhenUsed: clue_found3
+  randomize: 0
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!65 &4128267336491680294
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576822,8 +576945,7 @@ MonoBehaviour:
   behaviours:
   - {fileID: 4128267336491680296}
   - {fileID: 4128267336491680295}
-  colliders:
-  - {fileID: 4128267336491680294}
+  colliders: []
   objects: []
 --- !u!1 &4137843608653503656
 GameObject:
@@ -576866,11 +576988,15 @@ MonoBehaviour:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
   - This is wrong .. I need the yellow ones ..
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
+  randomize: 0
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!65 &4137843608653503658
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -577167,11 +577293,15 @@ MonoBehaviour:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
   - This is wrong .. I need the yellow ones ..
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
+  randomize: 0
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!65 &4346779125378179176
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -580127,11 +580257,15 @@ MonoBehaviour:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
   - This is wrong .. I need the yellow ones ..
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
+  randomize: 0
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!65 &7144840838372032894
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -580550,11 +580684,15 @@ MonoBehaviour:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
   - This is wrong .. I need the yellow ones ..
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
+  randomize: 0
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!65 &7455341337422442786
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -581254,11 +581392,15 @@ MonoBehaviour:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
   - This is wrong .. I need the yellow ones ..
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
+  randomize: 0
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!65 &8123558312416985871
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -581921,11 +582063,15 @@ MonoBehaviour:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
   - This is wrong .. I need the yellow ones ..
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
+  randomize: 0
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!65 &8645905013145467158
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -582076,11 +582222,15 @@ MonoBehaviour:
   - The 4th number!
   - I finally saw it!
   - Finally!
+  unlockFlag: code_clue
+  setFlagWhenUsed: clue_found4
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
-  unlockFlag: code_clue
-  setFlagWhenUsed: clue_found4
+  randomize: 0
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!65 &8756982406611040694
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -582148,8 +582298,7 @@ MonoBehaviour:
   behaviours:
   - {fileID: 8756982406611040696}
   - {fileID: 8756982406611040695}
-  colliders:
-  - {fileID: 8756982406611040694}
+  colliders: []
   objects: []
 --- !u!1 &8795536461077079808
 GameObject:
@@ -582312,11 +582461,15 @@ MonoBehaviour:
   - 'This is it! '
   - The second number is ..
   - 'it''s .. '
+  unlockFlag: code_clue
+  setFlagWhenUsed: clue_found2
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
-  unlockFlag: code_clue
-  setFlagWhenUsed: clue_found2
+  randomize: 0
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!65 &8959663095471726088
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -582384,8 +582537,7 @@ MonoBehaviour:
   behaviours:
   - {fileID: 8959663095471726089}
   - {fileID: 8959663095471726090}
-  colliders:
-  - {fileID: 8959663095471726088}
+  colliders: []
   objects: []
 --- !u!23 &8966185348820080240
 MeshRenderer:
@@ -582581,11 +582733,15 @@ MonoBehaviour:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
   - This is wrong .. I need the yellow ones ..
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
+  randomize: 0
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!65 &9067208057072471401
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -582691,11 +582847,15 @@ MonoBehaviour:
   defaultLines:
   - 'what is this paper '
   unlockedLines: []
+  unlockFlag: 
+  setFlagWhenUsed: code_clue
   interactKey: 101
   mustFinishBeforeNext: 1
   avoidImmediateRepeat: 1
-  unlockFlag: 
-  setFlagWhenUsed: code_clue
+  randomize: 0
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!114 &9092374818044363752
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -582772,11 +582932,15 @@ MonoBehaviour:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
   - This is wrong .. I need the yellow ones ..
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
+  randomize: 0
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!65 &9137298296227072332
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -582924,11 +583088,15 @@ MonoBehaviour:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
   - This is wrong .. I need the yellow ones ..
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
+  randomize: 0
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!65 &9179952499519370463
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -582998,11 +583166,15 @@ MonoBehaviour:
   - No .. this is not the clue I needed -
   - 'I need the yellow ones '
   - This is wrong .. I need the yellow ones ..
+  unlockFlag: code_clue
+  setFlagWhenUsed: 
   interactKey: 101
   mustFinishBeforeNext: 0
   avoidImmediateRepeat: 1
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
+  randomize: 0
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!65 &9184436768278945389
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -583059,3 +583231,4 @@ SceneRoots:
   - {fileID: 1284550130}
   - {fileID: 1983941382}
   - {fileID: 1012195333}
+  - {fileID: 1279048854}
