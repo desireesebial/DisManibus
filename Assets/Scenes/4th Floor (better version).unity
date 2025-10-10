@@ -10673,6 +10673,61 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 326822280}
   m_Mesh: {fileID: -7867000627326549587, guid: 11493361a00a45c4cb8edc10de4df39c, type: 3}
+--- !u!1 &327880351
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 327880352}
+  - component: {fileID: 327880353}
+  m_Layer: 0
+  m_Name: ItemTracker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &327880352
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 327880351}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 885374091}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &327880353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 327880351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6d34d5694fec4548869894e7481e13d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clueUI: {fileID: 1302567619}
+  progressText: {fileID: 1964902341}
+  listText: {fileID: 233312016}
+  requiredItems:
+  - flashlight
+  - notebook
+  startHidden: 1
+  fadeSpeed: 2
+  autoHideDelayWhenComplete: 2
+  completionFlag: items_complete
+  setCompletionFlag: 1
 --- !u!1 &329278008
 GameObject:
   m_ObjectHideFlags: 0
@@ -278042,6 +278097,40 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1529112240}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &885374090
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 885374091}
+  m_Layer: 0
+  m_Name: Items
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &885374091
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885374090}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1012195334}
+  - {fileID: 327880352}
+  - {fileID: 1792147303}
+  m_Father: {fileID: 1935672426}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &885647045
 GameObject:
   m_ObjectHideFlags: 0
@@ -287103,7 +287192,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 885374091}
     m_Modifications:
     - target: {fileID: 100000, guid: 9a3b57f0a1248be419dd9c4d54748512, type: 3}
       propertyPath: m_Name
@@ -287123,15 +287212,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9a3b57f0a1248be419dd9c4d54748512, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -212.34
+      value: -92.34
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9a3b57f0a1248be419dd9c4d54748512, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.216
+      value: 1.8780801
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9a3b57f0a1248be419dd9c4d54748512, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -69.962
+      value: 19.479706
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9a3b57f0a1248be419dd9c4d54748512, type: 3}
       propertyPath: m_LocalRotation.w
@@ -287170,6 +287259,9 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 100000, guid: 9a3b57f0a1248be419dd9c4d54748512, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 1012195335}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 9a3b57f0a1248be419dd9c4d54748512, type: 3}
       insertIndex: -1
       addedObject: {fileID: 568989108}
     - targetCorrespondingSourceObject: {fileID: 100000, guid: 9a3b57f0a1248be419dd9c4d54748512, type: 3}
@@ -287185,6 +287277,27 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 568989115}
   m_SourcePrefab: {fileID: 100100000, guid: 9a3b57f0a1248be419dd9c4d54748512, type: 3}
+--- !u!4 &1012195334 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400000, guid: 9a3b57f0a1248be419dd9c4d54748512, type: 3}
+  m_PrefabInstance: {fileID: 1012195333}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1012195335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 568989105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba2185d0b81a950488cebb1a55b325d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemName: flashlight
+  interactKey: 101
+  destroyOnPickup: 1
+  once: 1
 --- !u!1 &1013585171
 GameObject:
   m_ObjectHideFlags: 0
@@ -316915,6 +317028,183 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1788251676}
   m_Mesh: {fileID: -8930740714778682797, guid: 4d7a1f2d72196e24bb9a9eefb40859c3, type: 3}
+--- !u!1 &1792147302
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1792147303}
+  - component: {fileID: 1792147309}
+  - component: {fileID: 1792147307}
+  - component: {fileID: 1792147306}
+  - component: {fileID: 1792147305}
+  - component: {fileID: 1792147304}
+  - component: {fileID: 1792147310}
+  - component: {fileID: 1792147308}
+  m_Layer: 0
+  m_Name: Item Quest Trigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1792147303
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1792147302}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -69.1, y: -4.26, z: 32.69}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 885374091}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1792147304
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1792147302}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 10, y: 20, z: 10}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!64 &1792147305
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1792147302}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &1792147306
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1792147302}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1792147307
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1792147302}
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1792147308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1792147302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8977c3dcec846034e9d9da314a88a319, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  action: 0
+  questId: find items
+  questTextIfAdding: Find Items to help you navigate around the map
+--- !u!114 &1792147309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1792147302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb029925cd02ece46ad283e07c9bd2c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1792147310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1792147302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af7eba7627e35b64fbade455c7e55da9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueManager: {fileID: 1829259594}
+  lines:
+  - 'It''s too dark .. '
+  - I would love to have something to help me navigate around
 --- !u!1 &1792630134
 GameObject:
   m_ObjectHideFlags: 0
@@ -564419,6 +564709,7 @@ Transform:
   - {fileID: 855943352}
   - {fileID: 602267774}
   - {fileID: 1808700061}
+  - {fileID: 885374091}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1938337346
@@ -571268,6 +571559,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4053431291853476}
+  - component: {fileID: 114180900345829629}
   - component: {fileID: 33132423048789538}
   - component: {fileID: 23642372425784454}
   - component: {fileID: 65059230253709562}
@@ -575072,7 +575364,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -576130,6 +576422,31 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.0000001, y: 2.1, z: 2.8}
   m_Center: {x: -0.50000197, y: 1.05, z: 0.01750023}
+--- !u!114 &114180900345829629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1034450315187944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe513d7a335e9a04fb4a02b1e67d0716, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactKey: 101
+  mustLookAtDoor: 1
+  lookMaxAngle: 35
+  animator: {fileID: 0}
+  openTrigger: Open
+  blockingCollider: {fileID: 65059230253709562}
+  sfx: {fileID: 0}
+  lockedClip: {fileID: 0}
+  openClip: {fileID: 0}
+  requireItemsQuestComplete: 1
+  requiredFlag: items_complete
+  dialogueManager: {fileID: 1829259594}
+  lockedLine: I would love to have some items first ..
 --- !u!114 &114410975264615429
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -587630,4 +587947,3 @@ SceneRoots:
   - {fileID: 2128532983}
   - {fileID: 1284550130}
   - {fileID: 1983941382}
-  - {fileID: 1012195333}
