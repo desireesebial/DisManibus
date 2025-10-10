@@ -18044,12 +18044,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  defaultLines:
-  - A flashlight .. this would be helpful since it's so dark
-  unlockedLines: []
-  unlockFlag: 
-  setFlagWhenUsed: 
-  setFlagEveryTime: 1
+  poolA: []
+  poolB: []
+  switchFlag: 
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 1
   playSequentially: 1
@@ -18059,7 +18060,6 @@ MonoBehaviour:
   clearAfterEachLine: 1
   clearDelay: 1
   clearOnExit: 1
-  showClueUIOnInteract: 1
 --- !u!54 &568989114
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -295173,7 +295173,7 @@ GameObject:
   - component: {fileID: 1279048855}
   - component: {fileID: 1279048856}
   m_Layer: 0
-  m_Name: Plane (1)
+  m_Name: ghost dialogue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -295262,12 +295262,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1279048850}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -179.71, y: -2.02, z: -54.25}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 43.2968, y: -3.06092, z: 21.766922}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1983941382}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1279048855
 BoxCollider:
@@ -562501,6 +562501,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1829259592}
+  - {fileID: 1279048854}
   - {fileID: 608403134}
   - {fileID: 705105212}
   m_Father: {fileID: 0}
@@ -575233,17 +575234,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  defaultLines:
-  - Numbers .. ? what for ?
-  - I don't remember the office having this ..
-  - Weird .. why is there a number?
-  unlockedLines:
-  - No .. this is not the clue I needed -
-  - 'I need the yellow ones '
-  - This is wrong .. I need the yellow ones ..
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
-  setFlagEveryTime: 1
+  poolA:
+  - 'What are these numbers for '
+  - I don't remember the office have these papers
+  - What a weird paper
+  poolB:
+  - I don't need this .. I need the yellow ones ..
+  - where's the yellow ones ..
+  - Not this, but the yellow papers
+  switchFlag: code_dialogue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 0
   playSequentially: 1
@@ -575253,7 +575256,6 @@ MonoBehaviour:
   clearAfterEachLine: 1
   clearDelay: 1
   clearOnExit: 1
-  showClueUIOnInteract: 0
 --- !u!65 &2841845876276712017
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576247,17 +576249,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  defaultLines:
-  - Numbers .. ? what for ?
-  - I don't remember the office having this ..
-  - Weird .. why is there a number?
-  unlockedLines:
-  - No .. this is not the clue I needed -
-  - 'I need the yellow ones '
-  - This is wrong .. I need the yellow ones ..
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
-  setFlagEveryTime: 1
+  poolA:
+  - 'What are these numbers for '
+  - I don't remember the office have these papers
+  - What a weird paper
+  poolB:
+  - I don't need this .. I need the yellow ones ..
+  - where's the yellow ones ..
+  - Not this, but the yellow papers
+  switchFlag: code_dialogue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 0
   playSequentially: 1
@@ -576267,7 +576271,6 @@ MonoBehaviour:
   clearAfterEachLine: 1
   clearDelay: 1
   clearOnExit: 1
-  showClueUIOnInteract: 0
 --- !u!65 &3820729336096455421
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576424,15 +576427,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  defaultLines:
-  - Numbers .. ? what for ?
-  - "\rI don't remember the office having this .."
-  - Weird .. why is there a number?
-  unlockedLines:
-  - The last number!
-  unlockFlag: code_clue
-  setFlagWhenUsed: clue_found6
-  setFlagEveryTime: 1
+  poolA:
+  - 'What are these numbers for '
+  - I don't remember the office have these papers
+  - What a weird paper
+  poolB:
+  - The yellow paper ! The code !
+  - This is what I need
+  switchFlag: code_dialogue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 0
   playSequentially: 1
@@ -576442,7 +576448,6 @@ MonoBehaviour:
   clearAfterEachLine: 1
   clearDelay: 1
   clearOnExit: 1
-  showClueUIOnInteract: 0
 --- !u!65 &3926446819503251135
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576611,17 +576616,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  defaultLines:
-  - Numbers .. ? what for ?
-  - I don't remember the office having this ..
-  - Weird .. why is there a number?
-  unlockedLines:
-  - This is the clue!
-  - 'The first number .. '
-  - it's 4!
-  unlockFlag: code_clue
-  setFlagWhenUsed: clue_found1
-  setFlagEveryTime: 1
+  poolA:
+  - 'What are these numbers for '
+  - I don't remember the office have these papers
+  - What a weird paper
+  poolB:
+  - The yellow paper ! The code !
+  - This is what I need
+  switchFlag: code_dialogue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 0
   playSequentially: 1
@@ -576631,7 +576637,6 @@ MonoBehaviour:
   clearAfterEachLine: 1
   clearDelay: 1
   clearOnExit: 1
-  showClueUIOnInteract: 0
 --- !u!65 &4101447076945351331
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576754,17 +576759,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  defaultLines:
-  - Numbers .. ? what for ?
-  - I don't remember the office having this ..
-  - Weird .. why is there a number?
-  unlockedLines:
-  - The 5th!
-  - Finally !
-  - it's the 5th number code!
-  unlockFlag: code_clue
-  setFlagWhenUsed: clue_found5
-  setFlagEveryTime: 1
+  poolA:
+  - 'What are these numbers for '
+  - I don't remember the office have these papers
+  - What a weird paper
+  poolB:
+  - The yellow paper ! The code !
+  - This is what I need
+  switchFlag: code_dialogue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 0
   playSequentially: 1
@@ -576774,7 +576780,6 @@ MonoBehaviour:
   clearAfterEachLine: 1
   clearDelay: 1
   clearOnExit: 1
-  showClueUIOnInteract: 0
 --- !u!65 &4127809355510062880
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576872,17 +576877,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  defaultLines:
-  - Numbers .. ? what for ?
-  - I don't remember the office having this ..
-  - Weird .. why is there a number?
-  unlockedLines:
-  - Finally !
-  - The 3rd number for the code is ..
-  - This is it!
-  unlockFlag: code_clue
-  setFlagWhenUsed: clue_found3
-  setFlagEveryTime: 1
+  poolA:
+  - 'What are these numbers for '
+  - I don't remember the office have these papers
+  - What a weird paper
+  poolB:
+  - The yellow paper ! The code !
+  - This is what I need
+  switchFlag: code_dialogue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 0
   playSequentially: 1
@@ -576892,7 +576898,6 @@ MonoBehaviour:
   clearAfterEachLine: 1
   clearDelay: 1
   clearOnExit: 1
-  showClueUIOnInteract: 0
 --- !u!65 &4128267336491680294
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -576995,17 +577000,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  defaultLines:
-  - Numbers .. ? what for ?
-  - I don't remember the office having this ..
-  - Weird .. why is there a number?
-  unlockedLines:
-  - No .. this is not the clue I needed -
-  - 'I need the yellow ones '
-  - This is wrong .. I need the yellow ones ..
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
-  setFlagEveryTime: 1
+  poolA:
+  - 'What are these numbers for '
+  - I don't remember the office have these papers
+  - What a weird paper
+  poolB:
+  - I don't need this .. I need the yellow ones ..
+  - where's the yellow ones ..
+  - Not this, but the yellow papers
+  switchFlag: code_dialogue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 0
   playSequentially: 1
@@ -577015,7 +577022,6 @@ MonoBehaviour:
   clearAfterEachLine: 1
   clearDelay: 1
   clearOnExit: 1
-  showClueUIOnInteract: 0
 --- !u!65 &4137843608653503658
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -577304,17 +577310,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  defaultLines:
-  - Numbers .. ? what for ?
-  - I don't remember the office having this ..
-  - Weird .. why is there a number?
-  unlockedLines:
-  - No .. this is not the clue I needed -
-  - 'I need the yellow ones '
-  - This is wrong .. I need the yellow ones ..
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
-  setFlagEveryTime: 1
+  poolA:
+  - 'What are these numbers for '
+  - I don't remember the office have these papers
+  - What a weird paper
+  poolB:
+  - I don't need this .. I need the yellow ones ..
+  - where's the yellow ones ..
+  - Not this, but the yellow papers
+  switchFlag: code_dialogue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 0
   playSequentially: 1
@@ -577324,7 +577332,6 @@ MonoBehaviour:
   clearAfterEachLine: 1
   clearDelay: 1
   clearOnExit: 1
-  showClueUIOnInteract: 0
 --- !u!65 &4346779125378179176
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -580272,17 +580279,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  defaultLines:
-  - Numbers .. ? what for ?
-  - I don't remember the office having this ..
-  - Weird .. why is there a number?
-  unlockedLines:
-  - No .. this is not the clue I needed -
-  - 'I need the yellow ones '
-  - This is wrong .. I need the yellow ones ..
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
-  setFlagEveryTime: 1
+  poolA:
+  - 'What are these numbers for '
+  - I don't remember the office have these papers
+  - What a weird paper
+  poolB:
+  - I don't need this .. I need the yellow ones ..
+  - where's the yellow ones ..
+  - Not this, but the yellow papers
+  switchFlag: code_dialogue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 0
   playSequentially: 1
@@ -580292,7 +580301,6 @@ MonoBehaviour:
   clearAfterEachLine: 1
   clearDelay: 1
   clearOnExit: 1
-  showClueUIOnInteract: 0
 --- !u!65 &7144840838372032894
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -580703,17 +580711,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  defaultLines:
-  - Numbers .. ? what for ?
-  - I don't remember the office having this ..
-  - Weird .. why is there a number?
-  unlockedLines:
-  - No .. this is not the clue I needed -
-  - 'I need the yellow ones '
-  - This is wrong .. I need the yellow ones ..
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
-  setFlagEveryTime: 1
+  poolA:
+  - 'What are these numbers for '
+  - I don't remember the office have these papers
+  - What a weird paper
+  poolB:
+  - I don't need this .. I need the yellow ones ..
+  - where's the yellow ones ..
+  - Not this, but the yellow papers
+  switchFlag: code_dialogue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 0
   playSequentially: 1
@@ -580723,7 +580733,6 @@ MonoBehaviour:
   clearAfterEachLine: 1
   clearDelay: 1
   clearOnExit: 1
-  showClueUIOnInteract: 0
 --- !u!65 &7455341337422442786
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -581415,17 +581424,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  defaultLines:
-  - Numbers .. ? what for ?
-  - I don't remember the office having this ..
-  - Weird .. why is there a number?
-  unlockedLines:
-  - No .. this is not the clue I needed -
-  - 'I need the yellow ones '
-  - This is wrong .. I need the yellow ones ..
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
-  setFlagEveryTime: 1
+  poolA:
+  - 'What are these numbers for '
+  - I don't remember the office have these papers
+  - What a weird paper
+  poolB:
+  - I don't need this .. I need the yellow ones ..
+  - where's the yellow ones ..
+  - Not this, but the yellow papers
+  switchFlag: code_dialogue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 0
   playSequentially: 1
@@ -581435,7 +581446,6 @@ MonoBehaviour:
   clearAfterEachLine: 1
   clearDelay: 1
   clearOnExit: 1
-  showClueUIOnInteract: 0
 --- !u!65 &8123558312416985871
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -581564,19 +581574,21 @@ MonoBehaviour:
   - {fileID: 1582752741}
   - {fileID: 981357949}
   - {fileID: 492443795}
-  waitTimeAtWaypoint: 2
   patrolSpeed: 15
+  waypointReachedDistance: 1.5
+  waitTimeAtWaypoint: 2
   useRandomPatrol: 1
   autoPatrolRadius: 20
-  detectionRadius: 15
+  minWaypointsToGenerate: 4
   lookingInterval: 15
   lookingDuration: 2
+  rotationSpeed: 2
+  detectionRadius: 15
+  fieldOfViewAngle: 90
   requireLineOfSight: 1
   lineOfSightObstructionMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  rotationSpeed: 2
-  fieldOfViewAngle: 90
   chaseSpeed: 3.5
   loseChaseDistance: 25
   chaseTimeout: 30
@@ -581585,6 +581597,7 @@ MonoBehaviour:
   animParamIsWalking: IsWalking
   animParamIsLooking: IsLooking
   animParamIsChasing: IsChasing
+  enableDebugLogs: 1
 --- !u!195 &8229688525241914266
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -582090,17 +582103,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  defaultLines:
-  - Numbers .. ? what for ?
-  - I don't remember the office having this ..
-  - Weird .. why is there a number?
-  unlockedLines:
-  - No .. this is not the clue I needed -
-  - 'I need the yellow ones '
-  - This is wrong .. I need the yellow ones ..
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
-  setFlagEveryTime: 1
+  poolA:
+  - 'What are these numbers for '
+  - I don't remember the office have these papers
+  - What a weird paper
+  poolB:
+  - I don't need this .. I need the yellow ones ..
+  - where's the yellow ones ..
+  - Not this, but the yellow papers
+  switchFlag: code_dialogue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 0
   playSequentially: 1
@@ -582110,7 +582125,6 @@ MonoBehaviour:
   clearAfterEachLine: 1
   clearDelay: 1
   clearOnExit: 1
-  showClueUIOnInteract: 0
 --- !u!65 &8645905013145467158
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -582253,17 +582267,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  defaultLines:
-  - Numbers .. ? what for ?
-  - "\rI don't remember the office having this .."
-  - Weird .. why is there a number?
-  unlockedLines:
-  - The 4th number!
-  - I finally saw it!
-  - Finally!
-  unlockFlag: code_clue
-  setFlagWhenUsed: clue_found4
-  setFlagEveryTime: 1
+  poolA:
+  - 'What are these numbers for '
+  - I don't remember the office have these papers
+  - What a weird paper
+  poolB:
+  - The yellow paper ! The code !
+  - This is what I need
+  switchFlag: code_dialogue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 0
   playSequentially: 1
@@ -582273,7 +582288,6 @@ MonoBehaviour:
   clearAfterEachLine: 1
   clearDelay: 1
   clearOnExit: 1
-  showClueUIOnInteract: 0
 --- !u!65 &8756982406611040694
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -582495,18 +582509,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  defaultLines:
-  - Numbers .. ? what for ?
-  - I don't remember the office having this ..
-  - I don't remember the office having this ..
-  - Weird .. why is there a number?
-  unlockedLines:
-  - 'This is it! '
-  - The second number is ..
-  - 'it''s .. '
-  unlockFlag: code_clue
-  setFlagWhenUsed: clue_found2
-  setFlagEveryTime: 1
+  poolA:
+  - 'What are these numbers for '
+  - I don't remember the office have these papers
+  - What a weird paper
+  poolB:
+  - The yellow paper ! The code !
+  - This is what I need
+  switchFlag: code_dialogue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 0
   playSequentially: 1
@@ -582516,7 +582530,6 @@ MonoBehaviour:
   clearAfterEachLine: 1
   clearDelay: 1
   clearOnExit: 1
-  showClueUIOnInteract: 0
 --- !u!65 &8959663095471726088
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -582772,17 +582785,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  defaultLines:
-  - Numbers .. ? what for ?
-  - I don't remember the office having this ..
-  - Weird .. why is there a number?
-  unlockedLines:
-  - No .. this is not the clue I needed -
-  - 'I need the yellow ones '
-  - This is wrong .. I need the yellow ones ..
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
-  setFlagEveryTime: 1
+  poolA:
+  - 'What are these numbers for '
+  - I don't remember the office have these papers
+  - What a weird paper
+  poolB:
+  - I don't need this .. I need the yellow ones ..
+  - where's the yellow ones ..
+  - Not this, but the yellow papers
+  switchFlag: code_dialogue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 0
   playSequentially: 1
@@ -582792,7 +582807,6 @@ MonoBehaviour:
   clearAfterEachLine: 1
   clearDelay: 1
   clearOnExit: 1
-  showClueUIOnInteract: 0
 --- !u!65 &9067208057072471401
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -582895,12 +582909,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  defaultLines:
-  - 'what is this paper '
-  unlockedLines: []
-  unlockFlag: 
-  setFlagWhenUsed: code_clue
-  setFlagEveryTime: 1
+  poolA:
+  - 'What is this paper for '
+  poolB: []
+  switchFlag: 
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract:
+  - code_dialogue
+  setFlagsWhen: 0
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 1
   playSequentially: 1
@@ -582910,7 +582927,6 @@ MonoBehaviour:
   clearAfterEachLine: 1
   clearDelay: 1
   clearOnExit: 1
-  showClueUIOnInteract: 1
 --- !u!114 &9092374818044363752
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -582929,6 +582945,11 @@ MonoBehaviour:
   interactKey: 101
   closeKey: 101
   pausePlayerMovement: 0
+  showClueUIOnOpen: 1
+  registerClueOnFirstOpen: 0
+  clueIndex: -1
+  clueValue: 95
+  giveClueOnce: 1
 --- !u!114 &9092374818044363755
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -583001,17 +583022,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  defaultLines:
-  - Numbers .. ? what for ?
-  - I don't remember the office having this ..
-  - Weird .. why is there a number?
-  unlockedLines:
-  - No .. this is not the clue I needed -
-  - 'I need the yellow ones '
-  - This is wrong .. I need the yellow ones ..
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
-  setFlagEveryTime: 1
+  poolA:
+  - 'What are these numbers for '
+  - I don't remember the office have these papers
+  - What a weird paper
+  poolB:
+  - I don't need this .. I need the yellow ones ..
+  - where's the yellow ones ..
+  - Not this, but the yellow papers
+  switchFlag: code_dialogue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 0
   playSequentially: 1
@@ -583021,7 +583044,6 @@ MonoBehaviour:
   clearAfterEachLine: 1
   clearDelay: 1
   clearOnExit: 1
-  showClueUIOnInteract: 0
 --- !u!65 &9137298296227072332
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -583161,17 +583183,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  defaultLines:
-  - Numbers .. ? what for ?
-  - I don't remember the office having this ..
-  - Weird .. why is there a number?
-  unlockedLines:
-  - No .. this is not the clue I needed -
-  - 'I need the yellow ones '
-  - This is wrong .. I need the yellow ones ..
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
-  setFlagEveryTime: 1
+  poolA:
+  - 'What are these numbers for '
+  - I don't remember the office have these papers
+  - What a weird paper
+  poolB:
+  - I don't need this .. I need the yellow ones ..
+  - where's the yellow ones ..
+  - Not this, but the yellow papers
+  switchFlag: code_dialogue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 0
   playSequentially: 1
@@ -583181,7 +583205,6 @@ MonoBehaviour:
   clearAfterEachLine: 1
   clearDelay: 1
   clearOnExit: 1
-  showClueUIOnInteract: 0
 --- !u!65 &9179952499519370463
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -583243,17 +583266,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 1829259594}
-  defaultLines:
-  - Numbers .. ? what for ?
-  - I don't remember the office having this ..
-  - Weird .. why is there a number?
-  unlockedLines:
-  - No .. this is not the clue I needed -
-  - 'I need the yellow ones '
-  - This is wrong .. I need the yellow ones ..
-  unlockFlag: code_clue
-  setFlagWhenUsed: 
-  setFlagEveryTime: 1
+  poolA:
+  - 'What are these numbers for '
+  - I don't remember the office have these papers
+  - What a weird paper
+  poolB:
+  - I don't need this .. I need the yellow ones ..
+  - where's the yellow ones ..
+  - Not this, but the yellow papers
+  switchFlag: code_dialogue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 0
   playSequentially: 1
@@ -583263,7 +583288,6 @@ MonoBehaviour:
   clearAfterEachLine: 1
   clearDelay: 1
   clearOnExit: 1
-  showClueUIOnInteract: 0
 --- !u!65 &9184436768278945389
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -583320,4 +583344,3 @@ SceneRoots:
   - {fileID: 1284550130}
   - {fileID: 1983941382}
   - {fileID: 1012195333}
-  - {fileID: 1279048854}

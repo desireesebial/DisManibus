@@ -4,20 +4,28 @@ using System.Collections;
 [RequireComponent(typeof(Collider))]
 public class DialogueInteract : MonoBehaviour
 {
+    public enum FlagTiming { BeforePlayback, AfterPlayback }
+
     [Header("References")]
-    public DialogueManager dialogueManager;   // Assign or will auto-find
+    public DialogueManager dialogueManager;   // Auto-finds if left empty
 
-    [Header("Dialogue Lines")]
-    [TextArea(2, 4)] public string[] defaultLines;
-    [TextArea(2, 4)] public string[] unlockedLines;
+    [Header("Dialogue Pools")]
+    [TextArea(2, 4)] public string[] poolA;    // used depending on switch flag logic
+    [TextArea(2, 4)] public string[] poolB;
 
-    [Header("Flag Settings")]
-    [Tooltip("If set, unlockedLines are used when this flag exists.")]
-    public string unlockFlag;
-    [Tooltip("If set, this flag will be set when the player interacts.")]
-    public string setFlagWhenUsed;
-    [Tooltip("If true, the flag is set every time; otherwise, only once.")]
-    public bool setFlagEveryTime = true;
+    [Header("Switching Logic")]
+    [Tooltip("Flag name that controls which pool is active, e.g. 'code_clue'.")]
+    public string switchFlag = "code_clue";
+    [Tooltip("If TRUE: Use Pool B when the flag is PRESENT, otherwise use Pool A.\nIf FALSE: Use Pool B when the flag is ABSENT, otherwise use Pool A.")]
+    public bool usePoolBWhenFlagPresent = true;
+
+    [Header("Flags To Set On Interact")]
+    [Tooltip("Flags to set when the player interacts with this object.")]
+    public string[] flagsToSetOnInteract;
+    [Tooltip("When to set those flags (before the line is chosen, or after it finishes typing).")]
+    public FlagTiming setFlagsWhen = FlagTiming.AfterPlayback;
+    [Tooltip("Set each listed flag only once from this object.")]
+    public bool setFlagsOnlyOnce = true;   // <-- correct name
 
     [Header("Interaction")]
     public KeyCode interactKey = KeyCode.E;
@@ -31,16 +39,16 @@ public class DialogueInteract : MonoBehaviour
 
     [Header("Clear Settings")]
     public bool clearAfterEachLine = true;
-    public float clearDelay = 1f;
+    public float clearDelay = 1f;          // UN-SCALED seconds
     public bool clearOnExit = true;
 
-    // internal
+    // ---- internal state ----
     bool inRange;
     bool typing;
     int lastIndex = -1;
-    int seqDefault = 0;
-    int seqUnlocked = 0;
-    bool hasSetFlag = false;
+    int seqA = 0;
+    int seqB = 0;
+    bool flagsSetAlready = false;
 
     void Reset()
     {
@@ -66,8 +74,7 @@ public class DialogueInteract : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
-            inRange = true;
+        if (other.CompareTag("Player")) inRange = true;
     }
 
     void OnTriggerExit(Collider other)
@@ -86,42 +93,51 @@ public class DialogueInteract : MonoBehaviour
         if (mustFinishBeforeNext && typing) return;
 
         if (Input.GetKeyDown(interactKey))
+        {
+            if (setFlagsWhen == FlagTiming.BeforePlayback)
+                TrySetFlags();
+
             ShowOneLine();
+
+            if (setFlagsWhen == FlagTiming.AfterPlayback && !mustFinishBeforeNext)
+                TrySetFlags(); // immediate if overlapping presses allowed
+        }
     }
 
     void ShowOneLine()
     {
         if (!dialogueManager) return;
 
-        bool useUnlocked = (!string.IsNullOrEmpty(unlockFlag) && DialogueFlags.Has(unlockFlag));
-        var pool = useUnlocked ? unlockedLines : defaultLines;
-        if (pool == null || pool.Length == 0) return;
+        bool flagPresent = !string.IsNullOrEmpty(switchFlag) && DialogueFlags.Has(switchFlag);
+        string[] active = (usePoolBWhenFlagPresent == flagPresent) ? poolB : poolA;
+
+        if (active == null || active.Length == 0) return;
 
         int index = 0;
         if (randomize)
         {
-            index = Random.Range(0, pool.Length);
-            if (avoidImmediateRepeat && pool.Length > 1)
+            index = Random.Range(0, active.Length);
+            if (avoidImmediateRepeat && active.Length > 1)
             {
                 int guard = 0;
                 while (index == lastIndex && guard++ < 10)
-                    index = Random.Range(0, pool.Length);
+                    index = Random.Range(0, active.Length);
             }
             lastIndex = index;
         }
         else if (playSequentially)
         {
-            if (useUnlocked)
+            if (active == poolA)
             {
-                index = Mathf.Clamp(seqUnlocked, 0, pool.Length - 1);
-                if (seqUnlocked < pool.Length - 1) seqUnlocked++;
-                else if (wrapSequence) seqUnlocked = 0;
+                index = Mathf.Clamp(seqA, 0, active.Length - 1);
+                if (seqA < active.Length - 1) seqA++;
+                else if (wrapSequence) seqA = 0;
             }
             else
             {
-                index = Mathf.Clamp(seqDefault, 0, pool.Length - 1);
-                if (seqDefault < pool.Length - 1) seqDefault++;
-                else if (wrapSequence) seqDefault = 0;
+                index = Mathf.Clamp(seqB, 0, active.Length - 1);
+                if (seqB < active.Length - 1) seqB++;
+                else if (wrapSequence) seqB = 0;
             }
         }
         else
@@ -130,61 +146,76 @@ public class DialogueInteract : MonoBehaviour
         }
 
         StopAllCoroutines();
-        StartCoroutine(TypeThenMaybeClear(pool[index]));
+        StartCoroutine(TypeThenMaybeClear(active[index]));
     }
 
     IEnumerator TypeThenMaybeClear(string line)
     {
         typing = true;
-
         dialogueManager.ShowLine(line);
         yield return new WaitUntil(() => dialogueManager.lineFinished);
         typing = false;
 
-        if (!string.IsNullOrEmpty(setFlagWhenUsed))
-        {
-            if (setFlagEveryTime || !hasSetFlag)
-            {
-                DialogueFlags.Set(setFlagWhenUsed);
-                hasSetFlag = true;
-            }
-        }
+        if (setFlagsWhen == FlagTiming.AfterPlayback)
+            TrySetFlags();
 
         if (clearAfterEachLine)
         {
-            if (clearDelay > 0f) yield return new WaitForSeconds(clearDelay);
+            if (clearDelay > 0f)
+            {
+                float t = 0f;
+                while (t < clearDelay)
+                {
+                    t += Time.unscaledDeltaTime; // unscaled so it clears even if timeScale == 0
+                    yield return null;
+                }
+            }
             dialogueManager.ClearLine();
         }
     }
 
-    public void PlayNow(bool preferUnlocked = true)
+    void TrySetFlags()
+    {
+        if (setFlagsOnlyOnce && flagsSetAlready) return;     // <-- fixed reference
+        if (flagsToSetOnInteract == null || flagsToSetOnInteract.Length == 0) return;
+
+        foreach (var f in flagsToSetOnInteract)
+        {
+            if (!string.IsNullOrEmpty(f))
+                DialogueFlags.Set(f);
+        }
+        flagsSetAlready = true;
+    }
+
+    // Optional external trigger
+    public void PlayNow(bool forceUsePoolB = false)
     {
         if (!dialogueManager)
             dialogueManager = FindObjectOfType<DialogueManager>();
         if (!dialogueManager) return;
 
-        bool useUnlocked = (preferUnlocked && !string.IsNullOrEmpty(unlockFlag) && DialogueFlags.Has(unlockFlag));
-        var pool = useUnlocked ? unlockedLines : defaultLines;
-        if (pool == null || pool.Length == 0) return;
+        bool flagPresent = !string.IsNullOrEmpty(switchFlag) && DialogueFlags.Has(switchFlag);
+        string[] active = forceUsePoolB ? poolB : (usePoolBWhenFlagPresent == flagPresent ? poolB : poolA);
+        if (active == null || active.Length == 0) return;
 
         int index = 0;
         if (playSequentially)
         {
-            if (useUnlocked)
+            if (active == poolA)
             {
-                index = Mathf.Clamp(seqUnlocked, 0, pool.Length - 1);
-                if (seqUnlocked < pool.Length - 1) seqUnlocked++;
-                else if (wrapSequence) seqUnlocked = 0;
+                index = Mathf.Clamp(seqA, 0, active.Length - 1);
+                if (seqA < active.Length - 1) seqA++;
+                else if (wrapSequence) seqA = 0;
             }
             else
             {
-                index = Mathf.Clamp(seqDefault, 0, pool.Length - 1);
-                if (seqDefault < pool.Length - 1) seqDefault++;
-                else if (wrapSequence) seqDefault = 0;
+                index = Mathf.Clamp(seqB, 0, active.Length - 1);
+                if (seqB < active.Length - 1) seqB++;
+                else if (wrapSequence) seqB = 0;
             }
         }
 
         StopAllCoroutines();
-        StartCoroutine(TypeThenMaybeClear(pool[index]));
+        StartCoroutine(TypeThenMaybeClear(active[index]));
     }
 }
