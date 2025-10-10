@@ -18,6 +18,7 @@ public class SceneTransitionManager : MonoBehaviour
     [Header("Loading Screen")]
     [SerializeField] private bool useLoadingScreenByDefault = true;
     [SerializeField] private string defaultLoadingMessage = "Loading...";
+    [SerializeField] private float minimumLoadingTime = 2.0f;
     
     private static SceneTransitionManager instance;
     private bool isTransitioning = false;
@@ -168,13 +169,32 @@ public class SceneTransitionManager : MonoBehaviour
             yield break;
         }
 
-        if (useLoadingScreen && LoadingScreenController.Instance != null)
+        float startTime = Time.realtimeSinceStartup;
+
+        if (useLoadingScreen)
         {
-            string status = string.IsNullOrWhiteSpace(loadingMessage) ? defaultLoadingMessage : loadingMessage;
-            yield return LoadingScreenController.Instance.TrackAsyncOperation(operation, status);
+            if (LoadingScreenController.Instance != null)
+            {
+                string status = string.IsNullOrWhiteSpace(loadingMessage) ? defaultLoadingMessage : loadingMessage;
+                Debug.Log($"SceneTransitionManager: Using LoadingScreenController with message '{status}'");
+                yield return LoadingScreenController.Instance.TrackAsyncOperation(operation, status);
+            }
+            else
+            {
+                Debug.LogWarning("SceneTransitionManager: LoadingScreenController not found! Loading without loading screen.");
+                yield return operation;
+                
+                // Ensure minimum loading time even without loading screen UI
+                float elapsedTime = Time.realtimeSinceStartup - startTime;
+                if (elapsedTime < minimumLoadingTime)
+                {
+                    yield return new WaitForSecondsRealtime(minimumLoadingTime - elapsedTime);
+                }
+            }
         }
         else
         {
+            Debug.Log("SceneTransitionManager: Loading without loading screen (useLoadingScreen = false)");
             yield return operation;
         }
 
