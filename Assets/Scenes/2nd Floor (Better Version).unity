@@ -17155,13 +17155,13 @@ MonoBehaviour:
   openAngle: -90
   openSpeed: 2
   isOpen: 0
-  isLocked: 1
+  isLocked: 0
   requiredKeyID: 20
   requiredKeyItem: {fileID: 0}
   requiredKeySOId: 20
   consumeKeyOnUnlock: 1
-  useSelectedSOKeyOnly: 1
-  consumeWrongSelectedKey: 1
+  useSelectedSOKeyOnly: 0
+  consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors:
   - {fileID: 593401328}
@@ -17309,11 +17309,18 @@ MonoBehaviour:
   unlockedLines:
   - I finally found the key out -
   - I just need to insert the right key ..
-  interactKey: 101
-  mustFinishBeforeNext: 1
-  avoidImmediateRepeat: 1
   unlockFlag: key_found
   setFlagWhenUsed: 
+  setFlagEveryTime: 1
+  interactKey: 101
+  mustFinishBeforeNext: 1
+  playSequentially: 1
+  wrapSequence: 0
+  randomize: 0
+  avoidImmediateRepeat: 1
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!1 &227348787
 GameObject:
   m_ObjectHideFlags: 0
@@ -37723,7 +37730,7 @@ MonoBehaviour:
   audioSource: {fileID: 0}
   pickupSound: {fileID: 0}
   dropSound: {fileID: 0}
-  interactionRange: 6
+  interactionRange: 10
   interactionKey: 101
   interactionText: Press E to pick up head
   interactionUI: {fileID: 1365719}
@@ -45923,7 +45930,7 @@ MonoBehaviour:
   audioSource: {fileID: 0}
   pickupSound: {fileID: 0}
   dropSound: {fileID: 0}
-  interactionRange: 6
+  interactionRange: 10
   interactionKey: 101
   interactionText: Press E to pick up head
   interactionUI: {fileID: 1365719}
@@ -54700,13 +54707,13 @@ MonoBehaviour:
   openAngle: 90
   openSpeed: 2
   isOpen: 0
-  isLocked: 1
+  isLocked: 0
   requiredKeyID: 20
   requiredKeyItem: {fileID: 0}
   requiredKeySOId: 20
   consumeKeyOnUnlock: 1
-  useSelectedSOKeyOnly: 1
-  consumeWrongSelectedKey: 1
+  useSelectedSOKeyOnly: 0
+  consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors:
   - {fileID: 225688411}
@@ -54943,11 +54950,18 @@ MonoBehaviour:
   unlockedLines:
   - I finally found the key out -
   - I just need to insert the right key ..
-  interactKey: 101
-  mustFinishBeforeNext: 1
-  avoidImmediateRepeat: 1
   unlockFlag: key_found
   setFlagWhenUsed: 
+  setFlagEveryTime: 1
+  interactKey: 101
+  mustFinishBeforeNext: 1
+  playSequentially: 1
+  wrapSequence: 0
+  randomize: 0
+  avoidImmediateRepeat: 1
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!1 &604321286
 GameObject:
   m_ObjectHideFlags: 0
@@ -62725,7 +62739,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &682901322
 RectTransform:
   m_ObjectHideFlags: 0
@@ -82285,7 +82299,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1498404468}
   m_HandleRect: {fileID: 1498404467}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0.99999845
   m_Size: 0.60999995
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -117652,7 +117666,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &897301925
 RectTransform:
   m_ObjectHideFlags: 0
@@ -129437,7 +129451,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   noteData: {fileID: 11400000, guid: 7dba98fe121aa114292211c71e1b0c90, type: 2}
-  interactionRange: 3
+  interactionRange: 5
   interactionKey: 114
   interactionText: Press R to read note
   useCrosshairDetection: 1
@@ -162873,8 +162887,7 @@ MonoBehaviour:
   headSpawnDelay: 2
   headCollectionTime: 120
   exitDoors:
-  - {fileID: 8635660095280295203}
-  - {fileID: 4272788813988389018}
+  - {fileID: 3469287837868409382}
   realHeadDoor: {fileID: 3469287837868409382}
   exitDoorKeyID: 999
   realHeadDoorKeyID: 203
@@ -194288,7 +194301,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   noteData: {fileID: 11400000, guid: 82cb703661bcf8d4db742aab30b2af15, type: 2}
-  interactionRange: 3
+  interactionRange: 7
   interactionKey: 114
   interactionText: Press R to read note
   useCrosshairDetection: 1
@@ -366864,8 +366877,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1475373238}
   m_HandleRect: {fileID: 1475373237}
   m_Direction: 0
-  m_Value: 1
-  m_Size: 0.99999994
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -390829,11 +390842,18 @@ MonoBehaviour:
   defaultLines:
   - This is the final key .. right?
   unlockedLines: []
-  interactKey: 101
-  mustFinishBeforeNext: 1
-  avoidImmediateRepeat: 1
   unlockFlag: 
   setFlagWhenUsed: key_found
+  setFlagEveryTime: 1
+  interactKey: 101
+  mustFinishBeforeNext: 1
+  playSequentially: 1
+  wrapSequence: 0
+  randomize: 0
+  avoidImmediateRepeat: 1
+  clearAfterEachLine: 1
+  clearDelay: 1
+  clearOnExit: 1
 --- !u!23 &3469907313956155779
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -391789,14 +391809,15 @@ MonoBehaviour:
   openSpeed: 2
   isOpen: 0
   isLocked: 1
-  requiredKeyID: 999
+  requiredKeyID: 20
   requiredKeyItem: {fileID: 0}
-  requiredKeySOId: 
-  consumeKeyOnUnlock: 0
+  requiredKeySOId: 20
+  consumeKeyOnUnlock: 1
   useSelectedSOKeyOnly: 0
-  consumeWrongSelectedKey: 1
+  consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
-  linkedDoors: []
+  linkedDoors:
+  - {fileID: 8635660095280295203}
   autoLinkDoors: 0
   doorAnimator: {fileID: 0}
   doorAudioSource: {fileID: 0}
@@ -392983,7 +393004,7 @@ MonoBehaviour:
     keyItem: {fileID: 0}
     itemType: 0
   maxInventorySize: 3
-  playerReach: 5
+  playerReach: 10
   selectedItem: 0
   cam: {fileID: 4459864849948344996}
   pressToPickup_gameobject: {fileID: 1365719}
@@ -393008,7 +393029,7 @@ MonoBehaviour:
   throwObject_gameobject: {fileID: 0}
   throwForce: 5
   hasLantern: 0
-  isLanternOn: 0
+  isLanternOn: 1
   currentLantern: {fileID: 11400000, guid: 107c3a5530c7cdf40beb0e4ffbf6e606, type: 2}
   lanternLight: {fileID: 2049750886}
   hasFlashlight: 0
@@ -395789,7 +395810,7 @@ NavMeshAgent:
   m_AutoRepath: 1
   m_Height: 2
   m_BaseOffset: 0
-  m_WalkableMask: 4294967295
+  m_WalkableMask: 3
   m_ObstacleAvoidanceType: 4
 --- !u!114 &5866666021144979878
 MonoBehaviour:
@@ -399224,7 +399245,7 @@ MonoBehaviour:
   audioSource: {fileID: 0}
   pickupSound: {fileID: 0}
   dropSound: {fileID: 0}
-  interactionRange: 3
+  interactionRange: 10
   interactionKey: 101
   interactionText: Press E to pick up head
   interactionUI: {fileID: 1365719}
@@ -399944,14 +399965,15 @@ MonoBehaviour:
   openSpeed: 2
   isOpen: 0
   isLocked: 1
-  requiredKeyID: -1
+  requiredKeyID: 20
   requiredKeyItem: {fileID: 0}
-  requiredKeySOId: 
+  requiredKeySOId: 20
   consumeKeyOnUnlock: 0
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 1
   requireSelectedNumericKey: 0
-  linkedDoors: []
+  linkedDoors:
+  - {fileID: 4272788813988389018}
   autoLinkDoors: 0
   doorAnimator: {fileID: 0}
   doorAudioSource: {fileID: 0}

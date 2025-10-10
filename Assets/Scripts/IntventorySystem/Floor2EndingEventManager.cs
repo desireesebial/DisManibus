@@ -451,7 +451,13 @@ public class Floor2EndingEventManager : MonoBehaviour
     
     public void OnRealHeadAttached()
     {
-        if (currentState != EventState.GoodEnding) return;
+        // Allow head attachment in GoodEnding state OR if event hasn't been triggered yet
+        // This allows the puzzle to work even if Floor2EndingEventManager isn't being used
+        if (currentState != EventState.GoodEnding && currentState != EventState.Waiting && eventActive) 
+        {
+            Debug.LogWarning($"Floor2EndingEventManager: Cannot attach real head in state {currentState}. Expected GoodEnding state.");
+            return;
+        }
         
         Debug.Log("Real head attached - Good ending path confirmed!");
         

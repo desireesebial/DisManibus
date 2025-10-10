@@ -389,14 +389,44 @@ public class DullahanHeadInventory : MonoBehaviour
 
     private void HandleItemSelection()
     {
-        if (!HasItems()) return;
+        if (!HasItems())
+        {
+            // Debug logging only when player tries to select something
+            if (Input.anyKeyDown)
+            {
+                // Only log if a number key or scroll is detected
+                bool numberKeyPressed = Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2) || 
+                                      Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4) ||
+                                      Input.GetKeyDown(KeyCode.Alpha5) || Input.GetKeyDown(KeyCode.Alpha6) ||
+                                      Input.GetKeyDown(KeyCode.Alpha7) || Input.GetKeyDown(KeyCode.Alpha8) ||
+                                      Input.GetKeyDown(KeyCode.Alpha9);
+                                      
+                if (numberKeyPressed)
+                {
+                    Debug.Log("[Inventory Selection] Cannot select - no items in inventory");
+                }
+            }
+            return;
+        }
 
         int newSelection = -1;
 
         // Allow selection via number keys 1-9 (up to maxInventorySize)
-        if (Input.GetKeyDown(KeyCode.Alpha1) && maxInventorySize >= 1 && inventorySlots.Count >= 1 && inventorySlots[0].isOccupied) newSelection = 0;
-        else if (Input.GetKeyDown(KeyCode.Alpha2) && maxInventorySize >= 2 && inventorySlots.Count >= 2 && inventorySlots[1].isOccupied) newSelection = 1;
-        else if (Input.GetKeyDown(KeyCode.Alpha3) && maxInventorySize >= 3 && inventorySlots.Count >= 3 && inventorySlots[2].isOccupied) newSelection = 2;
+        if (Input.GetKeyDown(KeyCode.Alpha1) && maxInventorySize >= 1 && inventorySlots.Count >= 1 && inventorySlots[0].isOccupied)
+        {
+            newSelection = 0;
+            Debug.Log("[Inventory Selection] Number key 1 pressed - selecting slot 0");
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2) && maxInventorySize >= 2 && inventorySlots.Count >= 2 && inventorySlots[1].isOccupied)
+        {
+            newSelection = 1;
+            Debug.Log("[Inventory Selection] Number key 2 pressed - selecting slot 1");
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3) && maxInventorySize >= 3 && inventorySlots.Count >= 3 && inventorySlots[2].isOccupied)
+        {
+            newSelection = 2;
+            Debug.Log("[Inventory Selection] Number key 3 pressed - selecting slot 2");
+        }
         else if (Input.GetKeyDown(KeyCode.Alpha4) && maxInventorySize >= 4 && inventorySlots.Count >= 4 && inventorySlots[3].isOccupied) newSelection = 3;
         else if (Input.GetKeyDown(KeyCode.Alpha5) && maxInventorySize >= 5 && inventorySlots.Count >= 5 && inventorySlots[4].isOccupied) newSelection = 4;
         else if (Input.GetKeyDown(KeyCode.Alpha6) && maxInventorySize >= 6 && inventorySlots.Count >= 6 && inventorySlots[5].isOccupied) newSelection = 5;
@@ -408,29 +438,56 @@ public class DullahanHeadInventory : MonoBehaviour
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (scroll > 0.01f)
         {
+            Debug.Log("[Inventory Selection] Mouse wheel UP - finding next occupied slot");
             // next occupied
             int i = selectedItem;
+            int startIndex = i;
             for (int steps = 0; steps < inventorySlots.Count; steps++)
             {
                 i = (i + 1) % maxInventorySize;
-                if (i < inventorySlots.Count && inventorySlots[i].isOccupied) { newSelection = i; break; }
+                if (i < inventorySlots.Count && inventorySlots[i].isOccupied)
+                {
+                    newSelection = i;
+                    Debug.Log($"[Inventory Selection] Found next occupied slot: {i} (from {startIndex})");
+                    break;
+                }
+            }
+            if (newSelection == -1)
+            {
+                Debug.Log($"[Inventory Selection] No next occupied slot found");
             }
         }
         else if (scroll < -0.01f)
         {
+            Debug.Log("[Inventory Selection] Mouse wheel DOWN - finding previous occupied slot");
             // previous occupied
             int i = selectedItem;
+            int startIndex = i;
             for (int steps = 0; steps < inventorySlots.Count; steps++)
             {
                 i = (i - 1 + maxInventorySize) % maxInventorySize;
-                if (i < inventorySlots.Count && inventorySlots[i].isOccupied) { newSelection = i; break; }
+                if (i < inventorySlots.Count && inventorySlots[i].isOccupied)
+                {
+                    newSelection = i;
+                    Debug.Log($"[Inventory Selection] Found previous occupied slot: {i} (from {startIndex})");
+                    break;
+                }
+            }
+            if (newSelection == -1)
+            {
+                Debug.Log($"[Inventory Selection] No previous occupied slot found");
             }
         }
 
         if (newSelection != -1 && newSelection != selectedItem)
         {
+            Debug.Log($"[Inventory Selection] ✓ Switching from slot {selectedItem} to slot {newSelection}");
             selectedItem = newSelection;
             NewItemSelected();
+        }
+        else if (newSelection != -1 && newSelection == selectedItem)
+        {
+            Debug.Log($"[Inventory Selection] Already on slot {selectedItem} - no change");
         }
     }
 
@@ -451,6 +508,9 @@ public class DullahanHeadInventory : MonoBehaviour
 
     public void NewItemSelected()
     {
+        Debug.Log($"[NewItemSelected] ═══ METHOD CALLED ═══");
+        Debug.Log($"[NewItemSelected] Current selectedItem index: {selectedItem}");
+        
         // Store current lantern state before deactivating
         bool wasLanternOn = isLanternOn;
         bool hadLantern = hasLantern;
@@ -458,26 +518,37 @@ public class DullahanHeadInventory : MonoBehaviour
 
         // Always deactivate all items first
         DeactivateAllItems();
+        Debug.Log($"[NewItemSelected] All items deactivated");
 
         if (!HasItems())
         {
+            Debug.Log($"[NewItemSelected] No items in inventory - returning");
             return;
         }
 
         // Clamp selected item to valid range
+        int originalSelectedItem = selectedItem;
         selectedItem = Mathf.Clamp(selectedItem, 0, maxInventorySize - 1);
+        if (originalSelectedItem != selectedItem)
+        {
+            Debug.Log($"[NewItemSelected] Clamped selectedItem from {originalSelectedItem} to {selectedItem}");
+        }
 
         // Check if selected slot has an item
         if (!inventorySlots[selectedItem].isOccupied)
         {
+            Debug.LogWarning($"[NewItemSelected] Slot {selectedItem} is not occupied - returning");
             return;
         }
 
         // Activate the selected item based on its type
         InventorySlot currentSlot = inventorySlots[selectedItem];
+        Debug.Log($"[NewItemSelected] Current slot type: {currentSlot.itemType}");
         
         if (currentSlot.itemType == InventorySlot.ItemType.Head && currentSlot.headItem != null)
         {
+            Debug.Log($"[NewItemSelected] ► Activating HEAD: {currentSlot.headItem.headName}");
+            
             // Activate head item
             if (itemSetActive.ContainsKey(currentSlot.headItem.headType))
             {
@@ -485,16 +556,26 @@ public class DullahanHeadInventory : MonoBehaviour
                 if (itemObject != null)
                 {
                     itemObject.SetActive(true);
+                    Debug.Log($"[NewItemSelected] ✓ Activated GameObject for {currentSlot.headItem.headType}");
                 }
+                else
+                {
+                    Debug.LogWarning($"[NewItemSelected] GameObject is null for head type {currentSlot.headItem.headType}");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"[NewItemSelected] No GameObject mapped for head type {currentSlot.headItem.headType}");
             }
             
             // Play sound
             if (audioSource != null && headSelectSound != null)
             {
                 audioSource.PlayOneShot(headSelectSound);
+                Debug.Log($"[NewItemSelected] ✓ Played head select sound");
             }
             
-            Debug.Log($"Selected head: {currentSlot.headItem.headName} in slot {selectedItem + 1}");
+            Debug.Log($"[NewItemSelected] ✓ Selected head: {currentSlot.headItem.headName} in slot {selectedItem + 1}");
         }
         else if (currentSlot.itemType == InventorySlot.ItemType.Lantern && currentSlot.lanternItem != null)
         {

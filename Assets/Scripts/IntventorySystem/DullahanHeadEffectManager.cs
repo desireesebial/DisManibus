@@ -100,7 +100,25 @@ public class DullahanHeadEffectManager : MonoBehaviour
     
     public void ApplyHeadEffect(DullahanHeadSO headData)
     {
-        if (headData == null || !headData.hasEffect) return;
+        Debug.Log("[EffectManager] ═══════════════════════════════════════");
+        Debug.Log("[EffectManager] ► APPLYING PLAYER EFFECT");
+        
+        if (headData == null)
+        {
+            Debug.LogError("[EffectManager] ✗ headData is null!");
+            return;
+        }
+        
+        if (!headData.hasEffect)
+        {
+            Debug.Log($"[EffectManager] {headData.headName} has no effect to apply");
+            return;
+        }
+        
+        Debug.Log($"[EffectManager] Head: {headData.headName}");
+        Debug.Log($"[EffectManager] Effect Type: {headData.effectType}");
+        Debug.Log($"[EffectManager] Strength: {headData.effectStrength}");
+        Debug.Log($"[EffectManager] Duration: {headData.effectDuration}s");
         
         // Create new active effect
         ActiveEffect newEffect = new ActiveEffect
@@ -112,10 +130,12 @@ public class DullahanHeadEffectManager : MonoBehaviour
         };
         
         // Apply the effect immediately
+        Debug.Log($"[EffectManager] Applying effect to player...");
         ApplyEffect(newEffect);
         
         // Add to active effects list
         activeEffects.Add(newEffect);
+        Debug.Log($"[EffectManager] Effect added to active effects list (total: {activeEffects.Count})");
         
         // Show notification
         if (showEffectNotifications)
@@ -126,44 +146,85 @@ public class DullahanHeadEffectManager : MonoBehaviour
         // Play effect sound
         PlayEffectSound(headData);
         
-        Debug.Log($"Applied {headData.effectType} effect from {headData.headName}");
+        Debug.Log($"[EffectManager] ✓ Successfully applied {headData.effectType} effect from {headData.headName}");
+        Debug.Log("[EffectManager] ═══════════════════════════════════════");
     }
     
     private void ApplyEffect(ActiveEffect effect)
     {
+        Debug.Log($"[Effect Apply] Processing effect type: {effect.effectType}");
+        
         // Movement/vision effects require controller; health effects can run without it
         switch (effect.effectType)
         {
             case EffectType.SpeedBoost:
-                if (playerController == null) return;
-                playerController.walkSpeed = originalWalkSpeed * (1f + effect.strength);
-                playerController.sprintSpeed = originalSprintSpeed * (1f + effect.strength);
+                if (playerController == null)
+                {
+                    Debug.LogError("[Effect Apply] ✗ playerController is null! Cannot apply SpeedBoost");
+                    return;
+                }
+                float newWalkSpeed = originalWalkSpeed * (1f + effect.strength);
+                float newSprintSpeed = originalSprintSpeed * (1f + effect.strength);
+                playerController.walkSpeed = newWalkSpeed;
+                playerController.sprintSpeed = newSprintSpeed;
+                Debug.Log($"[Effect Apply] ✓ SpeedBoost: Walk {originalWalkSpeed:F1} → {newWalkSpeed:F1}, Sprint {originalSprintSpeed:F1} → {newSprintSpeed:F1}");
                 break;
                 
             case EffectType.SpeedDebuff:
-                if (playerController == null) return;
-                playerController.walkSpeed = originalWalkSpeed * (1f - effect.strength);
-                playerController.sprintSpeed = originalSprintSpeed * (1f - effect.strength);
+                if (playerController == null)
+                {
+                    Debug.LogError("[Effect Apply] ✗ playerController is null! Cannot apply SpeedDebuff");
+                    return;
+                }
+                float newWalkSpeedDebuff = originalWalkSpeed * (1f - effect.strength);
+                float newSprintSpeedDebuff = originalSprintSpeed * (1f - effect.strength);
+                playerController.walkSpeed = newWalkSpeedDebuff;
+                playerController.sprintSpeed = newSprintSpeedDebuff;
+                Debug.Log($"[Effect Apply] ✓ SpeedDebuff: Walk {originalWalkSpeed:F1} → {newWalkSpeedDebuff:F1}, Sprint {originalSprintSpeed:F1} → {newSprintSpeedDebuff:F1}");
                 break;
                 
             case EffectType.VisionBoost:
-                if (playerController == null) return;
-                playerController.fov = originalFOV + (effect.strength * 10f);
+                if (playerController == null)
+                {
+                    Debug.LogError("[Effect Apply] ✗ playerController is null! Cannot apply VisionBoost");
+                    return;
+                }
+                float newFOVBoost = originalFOV + (effect.strength * 10f);
+                playerController.fov = newFOVBoost;
+                Debug.Log($"[Effect Apply] ✓ VisionBoost: FOV {originalFOV:F1} → {newFOVBoost:F1}");
                 break;
                 
             case EffectType.VisionDebuff:
-                if (playerController == null) return;
-                playerController.fov = originalFOV - (effect.strength * 10f);
+                if (playerController == null)
+                {
+                    Debug.LogError("[Effect Apply] ✗ playerController is null! Cannot apply VisionDebuff");
+                    return;
+                }
+                float newFOVDebuff = originalFOV - (effect.strength * 10f);
+                playerController.fov = newFOVDebuff;
+                Debug.Log($"[Effect Apply] ✓ VisionDebuff: FOV {originalFOV:F1} → {newFOVDebuff:F1}");
                 break;
                 
             case EffectType.StaminaBoost:
-                if (playerController == null) return;
-                playerController.sprintDuration = originalSprintDuration * (1f + effect.strength);
+                if (playerController == null)
+                {
+                    Debug.LogError("[Effect Apply] ✗ playerController is null! Cannot apply StaminaBoost");
+                    return;
+                }
+                float newStaminaBoost = originalSprintDuration * (1f + effect.strength);
+                playerController.sprintDuration = newStaminaBoost;
+                Debug.Log($"[Effect Apply] ✓ StaminaBoost: Duration {originalSprintDuration:F1} → {newStaminaBoost:F1}");
                 break;
                 
             case EffectType.StaminaDebuff:
-                if (playerController == null) return;
-                playerController.sprintDuration = originalSprintDuration * (1f - effect.strength);
+                if (playerController == null)
+                {
+                    Debug.LogError("[Effect Apply] ✗ playerController is null! Cannot apply StaminaDebuff");
+                    return;
+                }
+                float newStaminaDebuff = originalSprintDuration * (1f - effect.strength);
+                playerController.sprintDuration = newStaminaDebuff;
+                Debug.Log($"[Effect Apply] ✓ StaminaDebuff: Duration {originalSprintDuration:F1} → {newStaminaDebuff:F1}");
                 break;
 
             case EffectType.HealthBoost:
@@ -171,6 +232,11 @@ public class DullahanHeadEffectManager : MonoBehaviour
                 {
                     int healAmount = Mathf.Max(1, Mathf.RoundToInt(effect.strength));
                     playerHealthSystem.Heal(healAmount);
+                    Debug.Log($"[Effect Apply] ✓ HealthBoost: Healed {healAmount} HP");
+                }
+                else
+                {
+                    Debug.LogWarning("[Effect Apply] ⚠ playerHealthSystem is null! Cannot apply HealthBoost");
                 }
                 break;
 
@@ -179,23 +245,42 @@ public class DullahanHeadEffectManager : MonoBehaviour
                 {
                     int damageAmount = Mathf.Max(1, Mathf.RoundToInt(effect.strength));
                     playerHealthSystem.TakeDamage(damageAmount);
+                    Debug.Log($"[Effect Apply] ✓ HealthDebuff: Dealt {damageAmount} damage to player");
+                }
+                else
+                {
+                    Debug.LogWarning("[Effect Apply] ⚠ playerHealthSystem is null! Cannot apply HealthDebuff");
                 }
                 break;
                 
             case EffectType.FearEffect:
                 if (dullahanChase != null)
                 {
+                    Debug.Log("[Effect Apply] ✓ Applying FearEffect (increases Dullahan intensity)");
                     // Increase chase intensity
                     StartCoroutine(ApplyFearEffect(effect));
+                }
+                else
+                {
+                    Debug.LogWarning("[Effect Apply] ⚠ dullahanChase is null! Cannot apply FearEffect");
                 }
                 break;
                 
             case EffectType.CalmEffect:
                 if (dullahanChase != null)
                 {
+                    Debug.Log("[Effect Apply] ✓ Applying CalmEffect (decreases Dullahan intensity)");
                     // Decrease chase intensity
                     StartCoroutine(ApplyCalmEffect(effect));
                 }
+                else
+                {
+                    Debug.LogWarning("[Effect Apply] ⚠ dullahanChase is null! Cannot apply CalmEffect");
+                }
+                break;
+                
+            default:
+                Debug.LogWarning($"[Effect Apply] ⚠ Unknown effect type: {effect.effectType}");
                 break;
         }
     }
