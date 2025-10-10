@@ -5,36 +5,45 @@ using System.Collections;
 public class DialogueInteract : MonoBehaviour
 {
     [Header("References")]
-    public DialogueManager dialogueManager;   // Assign in Inspector (auto-finds if left empty)
+    public DialogueManager dialogueManager;   // Assign or will auto-find
 
     [Header("Dialogue Lines")]
-    [TextArea(2, 4)] public string[] defaultLines;   // before flag
-    [TextArea(2, 4)] public string[] unlockedLines;  // after flag
+    [TextArea(2, 4)] public string[] defaultLines;
+    [TextArea(2, 4)] public string[] unlockedLines;
 
     [Header("Flag Settings")]
-    public string unlockFlag;                 // e.g. "clue_blue_found" (leave empty if not gating)
-    public string setFlagWhenUsed;            // e.g. "clue_blue_found" (leave empty if not setting)
+    [Tooltip("If set, unlockedLines are used when this flag exists.")]
+    public string unlockFlag;
+    [Tooltip("If set, this flag will be set when the player interacts.")]
+    public string setFlagWhenUsed;
+    [Tooltip("If true, the flag is set every time; otherwise, only once.")]
+    public bool setFlagEveryTime = true;
 
     [Header("Interaction")]
     public KeyCode interactKey = KeyCode.E;
-    public bool mustFinishBeforeNext = true;  // ignore presses while typing
-    public bool avoidImmediateRepeat = true;  // prevent same random line twice in a row
-    public bool randomize = false;            // if false: always pick index 0 (ordered)
+    public bool mustFinishBeforeNext = true;
+
+    [Header("Pick Mode")]
+    public bool playSequentially = true;
+    public bool wrapSequence = false;
+    public bool randomize = false;
+    public bool avoidImmediateRepeat = true;
 
     [Header("Clear Settings")]
-    public bool clearAfterEachLine = true;    // auto-clear after showing a line
-    public float clearDelay = 1f;             // delay before clearing (seconds, scaled time)
-    public bool clearOnExit = true;           // clear text when player leaves trigger
+    public bool clearAfterEachLine = true;
+    public float clearDelay = 1f;
+    public bool clearOnExit = true;
 
-    // internal state
+    // internal
     bool inRange;
     bool typing;
     int lastIndex = -1;
+    int seqDefault = 0;
+    int seqUnlocked = 0;
     bool hasSetFlag = false;
 
     void Reset()
     {
-        // Make sure this collider is a trigger and has a kinematic RB so CharacterController triggers fire reliably
         var col = GetComponent<Collider>();
         col.isTrigger = true;
 
@@ -47,12 +56,11 @@ public class DialogueInteract : MonoBehaviour
 
     void Awake()
     {
-        // Auto-find DialogueManager if not assigned
         if (!dialogueManager)
         {
             dialogueManager = FindObjectOfType<DialogueManager>();
             if (!dialogueManager)
-                Debug.LogError("[DialogueInteract] No DialogueManager found in scene. Assign one in the Inspector.", this);
+                Debug.LogError("[DialogueInteract] No DialogueManager found in scene.", this);
         }
     }
 
@@ -83,81 +91,100 @@ public class DialogueInteract : MonoBehaviour
 
     void ShowOneLine()
     {
-        if (!dialogueManager)
-        {
-            Debug.LogWarning("[DialogueInteract] dialogueManager is null – cannot show dialogue.", this);
-            return;
-        }
+        if (!dialogueManager) return;
 
-        // Choose the pool (flag-aware)
-        string[] pool = (!string.IsNullOrEmpty(unlockFlag) && DialogueFlags.Has(unlockFlag))
-                        ? unlockedLines
-                        : defaultLines;
+        bool useUnlocked = (!string.IsNullOrEmpty(unlockFlag) && DialogueFlags.Has(unlockFlag));
+        var pool = useUnlocked ? unlockedLines : defaultLines;
+        if (pool == null || pool.Length == 0) return;
 
-        if (pool == null || pool.Length == 0)
+        int index = 0;
+        if (randomize)
         {
-            Debug.LogWarning("[DialogueInteract] No lines to show (pool empty).", this);
-            return;
+            index = Random.Range(0, pool.Length);
+            if (avoidImmediateRepeat && pool.Length > 1)
+            {
+                int guard = 0;
+                while (index == lastIndex && guard++ < 10)
+                    index = Random.Range(0, pool.Length);
+            }
+            lastIndex = index;
         }
-
-        // Pick index
-        int index = randomize ? Random.Range(0, pool.Length) : 0;
-        if (randomize && avoidImmediateRepeat && pool.Length > 1)
+        else if (playSequentially)
         {
-            while (index == lastIndex)
-                index = Random.Range(0, pool.Length);
+            if (useUnlocked)
+            {
+                index = Mathf.Clamp(seqUnlocked, 0, pool.Length - 1);
+                if (seqUnlocked < pool.Length - 1) seqUnlocked++;
+                else if (wrapSequence) seqUnlocked = 0;
+            }
+            else
+            {
+                index = Mathf.Clamp(seqDefault, 0, pool.Length - 1);
+                if (seqDefault < pool.Length - 1) seqDefault++;
+                else if (wrapSequence) seqDefault = 0;
+            }
         }
-        lastIndex = index;
+        else
+        {
+            index = 0;
+        }
 
         StopAllCoroutines();
-        StartCoroutine(TypeAndUnlock(pool[index]));
+        StartCoroutine(TypeThenMaybeClear(pool[index]));
     }
 
-    IEnumerator TypeAndUnlock(string line)
+    IEnumerator TypeThenMaybeClear(string line)
     {
         typing = true;
-
-        // Guard again in case DM got destroyed mid-game
-        if (!dialogueManager)
-        {
-            typing = false;
-            yield break;
-        }
 
         dialogueManager.ShowLine(line);
         yield return new WaitUntil(() => dialogueManager.lineFinished);
         typing = false;
 
-        // Optionally set a flag once after a successful interaction
-        if (!hasSetFlag && !string.IsNullOrEmpty(setFlagWhenUsed))
+        if (!string.IsNullOrEmpty(setFlagWhenUsed))
         {
-            DialogueFlags.Set(setFlagWhenUsed);
-            hasSetFlag = true;
+            if (setFlagEveryTime || !hasSetFlag)
+            {
+                DialogueFlags.Set(setFlagWhenUsed);
+                hasSetFlag = true;
+            }
         }
 
-        // Optionally clear after a short delay
-        if (clearAfterEachLine && dialogueManager)
+        if (clearAfterEachLine)
         {
-            if (clearDelay > 0f)
-                yield return new WaitForSeconds(clearDelay); // uses scaled time (consistent with rest of your project)
+            if (clearDelay > 0f) yield return new WaitForSeconds(clearDelay);
             dialogueManager.ClearLine();
         }
     }
 
-    // Optional public helper if other scripts (e.g., a paper system) want to force a line now.
     public void PlayNow(bool preferUnlocked = true)
     {
         if (!dialogueManager)
             dialogueManager = FindObjectOfType<DialogueManager>();
         if (!dialogueManager) return;
 
-        string[] pool = (preferUnlocked && !string.IsNullOrEmpty(unlockFlag) && DialogueFlags.Has(unlockFlag))
-                        ? unlockedLines
-                        : defaultLines;
-
+        bool useUnlocked = (preferUnlocked && !string.IsNullOrEmpty(unlockFlag) && DialogueFlags.Has(unlockFlag));
+        var pool = useUnlocked ? unlockedLines : defaultLines;
         if (pool == null || pool.Length == 0) return;
 
+        int index = 0;
+        if (playSequentially)
+        {
+            if (useUnlocked)
+            {
+                index = Mathf.Clamp(seqUnlocked, 0, pool.Length - 1);
+                if (seqUnlocked < pool.Length - 1) seqUnlocked++;
+                else if (wrapSequence) seqUnlocked = 0;
+            }
+            else
+            {
+                index = Mathf.Clamp(seqDefault, 0, pool.Length - 1);
+                if (seqDefault < pool.Length - 1) seqDefault++;
+                else if (wrapSequence) seqDefault = 0;
+            }
+        }
+
         StopAllCoroutines();
-        StartCoroutine(TypeAndUnlock(pool[0]));
+        StartCoroutine(TypeThenMaybeClear(pool[index]));
     }
 }

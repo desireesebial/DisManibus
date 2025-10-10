@@ -1,30 +1,48 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Collider))]
 public class SetFlagOnTrigger : MonoBehaviour
 {
-    public string flagToSet = "quest_find_clues_started";
+    [Header("Settings")]
+    public string flagToSet;
     public bool once = true;
+    public KeyCode interactKey = KeyCode.E;
+    public bool mustLookAt = false; // optional if you want raycast check
 
-    bool done;
-
-    void Reset()
-    {
-        var col = GetComponent<Collider>();
-        col.isTrigger = true;
-        if (!TryGetComponent<Rigidbody>(out var rb))
-        {
-            rb = gameObject.AddComponent<Rigidbody>();
-            rb.isKinematic = true;
-        }
-    }
+    bool hasSet;
+    bool inRange;
 
     void OnTriggerEnter(Collider other)
     {
-        if (done && once) return;
-        if (!other.CompareTag("Player")) return;
+        if (other.CompareTag("Player"))
+            inRange = true;
+    }
 
-        DialogueFlags.Set(flagToSet); // uses the tiny DialogueFlags helper you already have
-        done = true;
+    void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+            inRange = false;
+    }
+
+    void Update()
+    {
+        if (!inRange) return;
+        if (once && hasSet) return;
+
+        // Wait for player to actually press E
+        if (Input.GetKeyDown(interactKey))
+        {
+            // optional: check if player is looking at this object (forward ray)
+            if (mustLookAt)
+            {
+                Camera cam = Camera.main;
+                if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, 3f))
+                {
+                    if (hit.collider.gameObject != gameObject) return;
+                }
+            }
+
+            FlagManager.SetFlag(flagToSet);
+            hasSet = true;
+        }
     }
 }

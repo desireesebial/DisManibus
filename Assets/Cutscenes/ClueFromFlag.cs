@@ -3,23 +3,27 @@ using UnityEngine;
 public class ClueFromFlag : MonoBehaviour
 {
     [Header("Watch this dialogue flag")]
-    public string flagName;   // must match DialogueInteract.SetFlagWhenUsed
+    public string flagName;
 
     [Header("Which code slot/value to fill")]
-    public int clueIndex;     // 0..5 for a 6-digit code
-    public char clueValue;    // e.g., '7'
+    public int clueIndex;   // 0..5
+    public char clueValue;  // e.g., '7'
 
-    bool consumed;
+    bool lastSeen = false;
 
     void Update()
     {
-        if (consumed) return;
         if (string.IsNullOrEmpty(flagName)) return;
 
-        if (DialogueFlags.Has(flagName))
+        bool now = DialogueFlags.Has(flagName);
+        if (now && !lastSeen)   // false -> true edge
         {
-            if (ClueManager.Instance) ClueManager.Instance.RegisterClue(clueIndex, clueValue);
-            consumed = true;  // fire only once
+            if (ClueManager.Instance)
+                ClueManager.Instance.RegisterClue(clueIndex, clueValue);
         }
+        lastSeen = now;
     }
+
+    // Optional: allow external resets (e.g., from a restart button)
+    public void ResetWatcher() { lastSeen = false; }
 }

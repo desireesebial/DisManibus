@@ -4,31 +4,44 @@ using UnityEngine;
 public class PaperInteract : MonoBehaviour
 {
     [Header("References")]
-    public GameObject paperCanvas;        // The Canvas that displays the paper image
-    public Sprite paperSprite;            // The image to show when opened
-    public UnityEngine.UI.Image paperImage; // Reference to the Image inside the Canvas
+    public GameObject paperCanvas;             // Canvas that displays the paper image
+    public Sprite paperSprite;                 // The sprite to show when opened
+    public UnityEngine.UI.Image paperImage;    // The Image inside the canvas that renders the sprite
 
-    [Header("Interaction Settings")]
+    [Header("Interaction")]
     public KeyCode interactKey = KeyCode.E;
     public KeyCode closeKey = KeyCode.Escape;
     public bool pausePlayerMovement = true;
 
+    [Header("Clue UI / Pickup")]
+    public bool showClueUIOnOpen = true;       // Show the "X/6" + code UI when opening the paper
+    public bool registerClueOnFirstOpen = false; // If true, register a clue once when opened
+    [Tooltip("0..(TotalClues-1). Set to -1 to disable.")]
+    public int clueIndex = -1;                 // Which slot to fill (0-based)
+    public char clueValue = '_';               // Digit/char to put in that slot
+    public bool giveClueOnce = true;           // Only register once from this paper
+
     bool inRange = false;
     bool isOpen = false;
+    bool clueGiven = false;
 
     void Reset()
     {
         var col = GetComponent<Collider>();
         col.isTrigger = true;
+
         if (!TryGetComponent<Rigidbody>(out var rb))
+        {
             rb = gameObject.AddComponent<Rigidbody>();
-        rb.isKinematic = true;
+            rb.isKinematic = true;
+        }
     }
 
     void Start()
     {
         if (paperCanvas)
             paperCanvas.SetActive(false);
+        clueGiven = false;
     }
 
     void OnTriggerEnter(Collider other)
@@ -55,15 +68,27 @@ public class PaperInteract : MonoBehaviour
     {
         if (!paperCanvas || !paperImage || !paperSprite)
         {
-            Debug.LogWarning("PaperInteract missing references!", this);
+            Debug.LogWarning("[PaperInteract] Missing references.", this);
             return;
         }
 
+        // Show paper
         paperImage.sprite = paperSprite;
         paperCanvas.SetActive(true);
         isOpen = true;
 
-        // Optional: pause player movement & unlock cursor
+        // Show the Clue UI immediately if requested
+        if (showClueUIOnOpen && ClueManager.Instance != null)
+            ClueManager.Instance.ShowClueUI();
+
+        // Optionally register a clue on the first open (no second press needed)
+        if (registerClueOnFirstOpen && !clueGiven && ClueManager.Instance != null && clueIndex >= 0)
+        {
+            ClueManager.Instance.RegisterClue(clueIndex, clueValue);
+            if (giveClueOnce) clueGiven = true;
+        }
+
+        // Optional: pause game and unlock cursor while reading
         if (pausePlayerMovement)
         {
             Time.timeScale = 0f;
