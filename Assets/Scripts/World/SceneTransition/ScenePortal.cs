@@ -254,29 +254,49 @@ namespace World.SceneTransition
 
         private System.Collections.IEnumerator LoadSceneWithFallback(string sceneName)
         {
+            float startTime = Time.realtimeSinceStartup;
             var operation = SceneManager.LoadSceneAsync(sceneName);
 
             if (LoadingScreenController.Instance != null)
             {
-                yield return LoadingScreenController.Instance.TrackAsyncOperation(operation, "Loading...");
+                yield return LoadingScreenController.Instance.TrackAsyncOperation(operation, loadingMessage);
             }
             else
             {
+                Debug.LogWarning($"ScenePortal '{name}': LoadingScreenController not found - loading without loading screen");
                 yield return operation;
+                
+                // Ensure minimum loading time of 2 seconds even without loading screen
+                float elapsedTime = Time.realtimeSinceStartup - startTime;
+                float minTime = 2.0f;
+                if (elapsedTime < minTime)
+                {
+                    yield return new WaitForSecondsRealtime(minTime - elapsedTime);
+                }
             }
         }
 
         private System.Collections.IEnumerator LoadSceneWithFallback(int buildIndex)
         {
+            float startTime = Time.realtimeSinceStartup;
             var operation = SceneManager.LoadSceneAsync(buildIndex);
 
             if (LoadingScreenController.Instance != null)
             {
-                yield return LoadingScreenController.Instance.TrackAsyncOperation(operation, "Loading...");
+                yield return LoadingScreenController.Instance.TrackAsyncOperation(operation, loadingMessage);
             }
             else
             {
+                Debug.LogWarning($"ScenePortal '{name}': LoadingScreenController not found - loading without loading screen");
                 yield return operation;
+                
+                // Ensure minimum loading time of 2 seconds even without loading screen
+                float elapsedTime = Time.realtimeSinceStartup - startTime;
+                float minTime = 2.0f;
+                if (elapsedTime < minTime)
+                {
+                    yield return new WaitForSecondsRealtime(minTime - elapsedTime);
+                }
             }
         }
 

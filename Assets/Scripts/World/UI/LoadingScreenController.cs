@@ -18,7 +18,7 @@ namespace World.UI
         [SerializeField] private bool hideOnStart = true;
 
         [Header("Behaviour")]
-        [SerializeField] private float minimumDisplayTime = 0.35f;
+        [SerializeField] private float minimumDisplayTime = 2.0f;
 
         private static LoadingScreenController instance;
         private Coroutine fadeRoutine;
