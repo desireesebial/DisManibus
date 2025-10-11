@@ -57,7 +57,7 @@ public class PlayerInventory : MonoBehaviour
     }
 
     [Header("Key Visuals (Optional)")]
-    [SerializeField] List<KeyVisualMapping> keyVisuals = new List<KeyVisualMapping>();
+    [SerializeField] private List<KeyVisualMapping> keyVisuals = new List<KeyVisualMapping>();
     private readonly Dictionary<int, GameObject> keyVisualById = new Dictionary<int, GameObject>();
 
     void Start()
@@ -369,6 +369,10 @@ public class PlayerInventory : MonoBehaviour
             var item = inventoryList[i];
             if (item != null && item.item_type == itemType.Keys && item.itemID == keyID)
             {
+                if (keyVisualById.TryGetValue(item.itemID, out var visual) && visual != null)
+                {
+                    visual.SetActive(false);
+                }
                 inventoryList.RemoveAt(i);
                 // Adjust selected index if needed
                 if (selectedItem >= inventoryList.Count)

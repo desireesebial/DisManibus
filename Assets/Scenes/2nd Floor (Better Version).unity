@@ -17303,15 +17303,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 580426793}
-  defaultLines:
-  - I need a key ..
-  - it's locked ..
-  unlockedLines:
-  - I finally found the key out -
-  - I just need to insert the right key ..
-  unlockFlag: key_found
-  setFlagWhenUsed: 
-  setFlagEveryTime: 1
+  poolA: []
+  poolB: []
+  switchFlag: code_clue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 1
   playSequentially: 1
@@ -37723,10 +37721,10 @@ MonoBehaviour:
   headData: {fileID: 11400000, guid: 719bd4d659910c44a8565fe2dba5d710, type: 2}
   isPickedUp: 0
   headLight: {fileID: 0}
-  headRenderer: {fileID: 405935604}
+  headRenderer: {fileID: -7511558181221131132, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
   originalMaterial: {fileID: 2100000, guid: a398b1cedcdf229499a90b20b680d3a2, type: 2}
   glowMaterial: {fileID: 0}
-  headVisual: {fileID: 1462732053699718131, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+  headVisual: {fileID: 919132149155446097, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
   audioSource: {fileID: 0}
   pickupSound: {fileID: 0}
   dropSound: {fileID: 0}
@@ -45923,10 +45921,10 @@ MonoBehaviour:
   headData: {fileID: 11400000, guid: 3d1322954e9d75f47af424fe47296286, type: 2}
   isPickedUp: 0
   headLight: {fileID: 0}
-  headRenderer: {fileID: 484884271}
+  headRenderer: {fileID: -7511558181221131132, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
   originalMaterial: {fileID: 2100000, guid: a398b1cedcdf229499a90b20b680d3a2, type: 2}
   glowMaterial: {fileID: 0}
-  headVisual: {fileID: 1462732053699718131, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+  headVisual: {fileID: 919132149155446097, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
   audioSource: {fileID: 0}
   pickupSound: {fileID: 0}
   dropSound: {fileID: 0}
@@ -51617,81 +51615,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 791317601}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!1 &497915714
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 497915715}
-  - component: {fileID: 497915717}
-  - component: {fileID: 497915716}
-  m_Layer: 5
-  m_Name: ItemImage4
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &497915715
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 497915714}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 978360093}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1, y: -0.000020742416}
-  m_SizeDelta: {x: 80, y: 80}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &497915716
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 497915714}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.1, g: 0.1, b: 0.1, a: 0.68235296}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &497915717
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 497915714}
-  m_CullTransparentMesh: 1
 --- !u!1 &502321412
 GameObject:
   m_ObjectHideFlags: 0
@@ -54944,15 +54867,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 580426793}
-  defaultLines:
-  - I need a key ..
-  - it's locked ..
-  unlockedLines:
-  - I finally found the key out -
-  - I just need to insert the right key ..
-  unlockFlag: key_found
-  setFlagWhenUsed: 
-  setFlagEveryTime: 1
+  poolA: []
+  poolB: []
+  switchFlag: code_clue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 1
   playSequentially: 1
@@ -141606,82 +141527,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
   m_PrefabInstance: {fileID: 976084118}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &978360092
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 978360093}
-  - component: {fileID: 978360095}
-  - component: {fileID: 978360094}
-  m_Layer: 5
-  m_Name: Slot4
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &978360093
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 978360092}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 497915715}
-  m_Father: {fileID: 1369198882}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 306, y: 2}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &978360094
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 978360092}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.1, g: 0.1, b: 0.1, a: 0.5176471}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &978360095
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 978360092}
-  m_CullTransparentMesh: 1
 --- !u!1 &980380935
 GameObject:
   m_ObjectHideFlags: 0
@@ -182616,7 +182461,6 @@ RectTransform:
   - {fileID: 618364209}
   - {fileID: 1002261634}
   - {fileID: 1843187387}
-  - {fileID: 978360093}
   m_Father: {fileID: 347053575}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -361154,37 +360998,6 @@ MonoBehaviour:
   interactionText: Press E to pick up head
   interactionUI: {fileID: 1365719}
   interactionTextUI: {fileID: 1365721}
---- !u!1 &1992139909
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1992139910}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1992139910
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1992139909}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.60696, y: 0.0001, z: 19.85053}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &1993135378
 Mesh:
   m_ObjectHideFlags: 0
@@ -390839,12 +390652,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 0}
-  defaultLines:
-  - This is the final key .. right?
-  unlockedLines: []
-  unlockFlag: 
-  setFlagWhenUsed: key_found
-  setFlagEveryTime: 1
+  poolA: []
+  poolB: []
+  switchFlag: code_clue
+  usePoolBWhenFlagPresent: 1
+  flagsToSetOnInteract: []
+  setFlagsWhen: 1
+  setFlagsOnlyOnce: 1
   interactKey: 101
   mustFinishBeforeNext: 1
   playSequentially: 1
@@ -392817,7 +392631,7 @@ MonoBehaviour:
   invertCamera: 0
   cameraCanMove: 1
   mouseSensitivity: 2
-  maxLookAngle: 50
+  maxLookAngle: 40
   lockCursor: 1
   crosshair: 1
   crosshairImage: {fileID: 21300000, guid: be4ce60e2c9768c44b9b10b9c5258045, type: 3}
@@ -392984,25 +392798,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 4459864850702346288}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b3c39099d4357b4b99c79a89d3e79d9, type: 3}
+  m_Script: {fileID: 11500000, guid: 3de092b5253295b4a992e4480342db40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inventorySlots:
-  - isOccupied: 0
-    headItem: {fileID: 0}
-    lanternItem: {fileID: 0}
-    keyItem: {fileID: 0}
-    itemType: 0
-  - isOccupied: 0
-    headItem: {fileID: 0}
-    lanternItem: {fileID: 0}
-    keyItem: {fileID: 0}
-    itemType: 0
-  - isOccupied: 0
-    headItem: {fileID: 0}
-    lanternItem: {fileID: 0}
-    keyItem: {fileID: 0}
-    itemType: 0
+  inventorySlots: []
   maxInventorySize: 3
   playerReach: 10
   selectedItem: 0
@@ -393017,19 +392816,24 @@ MonoBehaviour:
   - {fileID: 1002261635}
   - {fileID: 1843187388}
   emptySlotImage: {fileID: 0}
+  selectedItemNameText: {fileID: 0}
+  selectedItemNameVisibleSeconds: 2
+  setHandVisualsToIgnoreRaycast: 1
   pickUpItemKey: 101
+  throwItemKey: 0
   realHead_item: {fileID: 1487340715}
   fakeHead1_item: {fileID: 1900828134}
   fakeHead2_item: {fileID: 419146971}
   lantern_item: {fileID: 1187507823}
-  realHead_prefab: {fileID: 6164527200153850554}
-  fakeHead1_prefab: {fileID: 405935602}
-  fakeHead2_prefab: {fileID: 484884269}
-  lantern_prefab: {fileID: 5852954894848626285, guid: 2967ab90ba266de42a377d4bd856a6c6, type: 3}
+  realHead_prefab: {fileID: 0}
+  fakeHead1_prefab: {fileID: 0}
+  fakeHead2_prefab: {fileID: 0}
+  lantern_prefab: {fileID: 0}
   throwObject_gameobject: {fileID: 0}
   throwForce: 5
+  enableDropping: 0
   hasLantern: 0
-  isLanternOn: 1
+  isLanternOn: 0
   currentLantern: {fileID: 11400000, guid: 107c3a5530c7cdf40beb0e4ffbf6e606, type: 2}
   lanternLight: {fileID: 2049750886}
   hasFlashlight: 0
@@ -393043,12 +392847,12 @@ MonoBehaviour:
   headSelectSound: {fileID: 0}
   flashlightToggleSound: {fileID: 0}
   keyVisuals:
-  - key: {fileID: 11400000, guid: 5e1566aa05af7864ca6a66e956289aaa, type: 2}
-    keyObject: {fileID: 938577611}
-  - key: {fileID: 11400000, guid: 3818a7a51e55fa245ab7c7176a97963a, type: 2}
-    keyObject: {fileID: 717875084}
   - key: {fileID: 11400000, guid: 124b2c05d3667724d8a6cf745a57030d, type: 2}
     keyObject: {fileID: 9162370}
+  - key: {fileID: 11400000, guid: 3818a7a51e55fa245ab7c7176a97963a, type: 2}
+    keyObject: {fileID: 717875084}
+  - key: {fileID: 11400000, guid: 5e1566aa05af7864ca6a66e956289aaa, type: 2}
+    keyObject: {fileID: 938577611}
   - key: {fileID: 11400000, guid: 931e33dea1e63184a989ebd45c610dd1, type: 2}
     keyObject: {fileID: 1968573700}
 --- !u!114 &4459864850702346307
@@ -399238,10 +399042,10 @@ MonoBehaviour:
   headData: {fileID: 11400000, guid: 5eef2721c5ce5534587eb17c12f68bbe, type: 2}
   isPickedUp: 0
   headLight: {fileID: 0}
-  headRenderer: {fileID: 5659952312157270895}
+  headRenderer: {fileID: -7511558181221131132, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
   originalMaterial: {fileID: 2100000, guid: a398b1cedcdf229499a90b20b680d3a2, type: 2}
   glowMaterial: {fileID: 0}
-  headVisual: {fileID: 1462732053699718131, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+  headVisual: {fileID: 919132149155446097, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
   audioSource: {fileID: 0}
   pickupSound: {fileID: 0}
   dropSound: {fileID: 0}
@@ -400794,5 +400598,4 @@ SceneRoots:
   - {fileID: 53885238}
   - {fileID: 1047622878}
   - {fileID: 2125196242}
-  - {fileID: 1992139910}
   - {fileID: 1156897165}

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class DullahanHeadInventory : MonoBehaviour
 {
@@ -19,8 +21,14 @@ public class DullahanHeadInventory : MonoBehaviour
     [SerializeField] Image[] inventoryBackgroundImage = new Image[3];
     [SerializeField] Sprite emptySlotImage;
 
+    [Header("Selected Item UI (Optional)")]
+    [SerializeField] TextMeshProUGUI selectedItemNameText;
+    [SerializeField] float selectedItemNameVisibleSeconds = 2f;
+    [SerializeField] bool setHandVisualsToIgnoreRaycast = false; // optional safety; off by default
+
     [Header("Input Keys")]
     [SerializeField] KeyCode pickUpItemKey = KeyCode.E;
+    [SerializeField] KeyCode throwItemKey = KeyCode.G;
 
     [Header("Player Item GameObjects")]
     [SerializeField] GameObject realHead_item;
@@ -37,6 +45,7 @@ public class DullahanHeadInventory : MonoBehaviour
     [Header("Throwing Settings")]
     [SerializeField] GameObject throwObject_gameobject;
     [SerializeField] float throwForce = 5f;
+    [SerializeField] bool enableDropping = true;
 
     [Header("Lantern System")]
     public bool hasLantern = false;
@@ -59,6 +68,8 @@ public class DullahanHeadInventory : MonoBehaviour
     public AudioClip flashlightToggleSound;
 
     private Dictionary<HeadType, GameObject> itemSetActive = new Dictionary<HeadType, GameObject>();
+    private GameObject spawnedHeldVisual; // runtime instance of selected head's held visual
+    private Coroutine selectedItemNameRoutine;
     
     [System.Serializable]
     public class KeyVisualMapping
@@ -180,11 +191,37 @@ public class DullahanHeadInventory : MonoBehaviour
 
     void Update()
     {
+        HandleItemThrowing();
         HandleItemPickup();
         HandleItemSelection();
         HandleLanternAndFlashlight();
         HandleFlashlightBattery();
         UpdateInventoryUI();
+    }
+
+    private void HandleItemThrowing()
+    {
+        if (!enableDropping) return;
+        if (Input.GetKeyDown(throwItemKey))
+        {
+            if (!HasItems() || selectedItem < 0 || selectedItem >= inventorySlots.Count) return;
+
+            var slot = inventorySlots[selectedItem];
+            if (!slot.isOccupied) return;
+
+            // Determine what to drop (heads and lantern supported)
+            if (slot.itemType == InventorySlot.ItemType.Head && slot.headItem != null)
+            {
+                DropItemWithPhysics(slot);
+                RemoveItemFromSlot(selectedItem);
+            }
+            else if (slot.itemType == InventorySlot.ItemType.Lantern && slot.lanternItem != null)
+            {
+                DropItemWithPhysics(slot);
+                RemoveItemFromSlot(selectedItem);
+            }
+            // Keys: intentionally not handled here to avoid altering key pickable behavior
+        }
     }
 
     private void InitializeInventorySlots()
@@ -203,9 +240,21 @@ public class DullahanHeadInventory : MonoBehaviour
     {
         itemSetActive.Clear();
 
-        if (realHead_item != null) itemSetActive.Add(HeadType.Real, realHead_item);
-        if (fakeHead1_item != null) itemSetActive.Add(HeadType.Fake1, fakeHead1_item);
-        if (fakeHead2_item != null) itemSetActive.Add(HeadType.Fake2, fakeHead2_item);
+        if (realHead_item != null)
+        {
+            itemSetActive.Add(HeadType.Real, realHead_item);
+            SanitizeAnchor(realHead_item);
+        }
+        if (fakeHead1_item != null)
+        {
+            itemSetActive.Add(HeadType.Fake1, fakeHead1_item);
+            SanitizeAnchor(fakeHead1_item);
+        }
+        if (fakeHead2_item != null)
+        {
+            itemSetActive.Add(HeadType.Fake2, fakeHead2_item);
+            SanitizeAnchor(fakeHead2_item);
+        }
 
         // Initially deactivate all items
         DeactivateAllItems();
@@ -222,6 +271,7 @@ public class DullahanHeadInventory : MonoBehaviour
                 {
                     keyVisualById.Add(id, entry.keyObject);
                     entry.keyObject.SetActive(false);
+                    TrySetIgnoreRaycastLayer(entry.keyObject);
                 }
             }
         }
@@ -389,105 +439,35 @@ public class DullahanHeadInventory : MonoBehaviour
 
     private void HandleItemSelection()
     {
-        if (!HasItems())
-        {
-            // Debug logging only when player tries to select something
-            if (Input.anyKeyDown)
-            {
-                // Only log if a number key or scroll is detected
-                bool numberKeyPressed = Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2) || 
-                                      Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4) ||
-                                      Input.GetKeyDown(KeyCode.Alpha5) || Input.GetKeyDown(KeyCode.Alpha6) ||
-                                      Input.GetKeyDown(KeyCode.Alpha7) || Input.GetKeyDown(KeyCode.Alpha8) ||
-                                      Input.GetKeyDown(KeyCode.Alpha9);
-                                      
-                if (numberKeyPressed)
-                {
-                    Debug.Log("[Inventory Selection] Cannot select - no items in inventory");
-                }
-            }
-            return;
-        }
-
         int newSelection = -1;
 
-        // Allow selection via number keys 1-9 (up to maxInventorySize)
-        if (Input.GetKeyDown(KeyCode.Alpha1) && maxInventorySize >= 1 && inventorySlots.Count >= 1 && inventorySlots[0].isOccupied)
-        {
-            newSelection = 0;
-            Debug.Log("[Inventory Selection] Number key 1 pressed - selecting slot 0");
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2) && maxInventorySize >= 2 && inventorySlots.Count >= 2 && inventorySlots[1].isOccupied)
-        {
-            newSelection = 1;
-            Debug.Log("[Inventory Selection] Number key 2 pressed - selecting slot 1");
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3) && maxInventorySize >= 3 && inventorySlots.Count >= 3 && inventorySlots[2].isOccupied)
-        {
-            newSelection = 2;
-            Debug.Log("[Inventory Selection] Number key 3 pressed - selecting slot 2");
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha4) && maxInventorySize >= 4 && inventorySlots.Count >= 4 && inventorySlots[3].isOccupied) newSelection = 3;
-        else if (Input.GetKeyDown(KeyCode.Alpha5) && maxInventorySize >= 5 && inventorySlots.Count >= 5 && inventorySlots[4].isOccupied) newSelection = 4;
-        else if (Input.GetKeyDown(KeyCode.Alpha6) && maxInventorySize >= 6 && inventorySlots.Count >= 6 && inventorySlots[5].isOccupied) newSelection = 5;
-        else if (Input.GetKeyDown(KeyCode.Alpha7) && maxInventorySize >= 7 && inventorySlots.Count >= 7 && inventorySlots[6].isOccupied) newSelection = 6;
-        else if (Input.GetKeyDown(KeyCode.Alpha8) && maxInventorySize >= 8 && inventorySlots.Count >= 8 && inventorySlots[7].isOccupied) newSelection = 7;
-        else if (Input.GetKeyDown(KeyCode.Alpha9) && maxInventorySize >= 9 && inventorySlots.Count >= 9 && inventorySlots[8].isOccupied) newSelection = 8;
+        // Number keys 1-9 select slot index 0-8 within maxInventorySize (regardless of occupancy)
+        if (Input.GetKeyDown(KeyCode.Alpha1) && maxInventorySize >= 1) newSelection = 0;
+        else if (Input.GetKeyDown(KeyCode.Alpha2) && maxInventorySize >= 2) newSelection = 1;
+        else if (Input.GetKeyDown(KeyCode.Alpha3) && maxInventorySize >= 3) newSelection = 2;
+        else if (Input.GetKeyDown(KeyCode.Alpha4) && maxInventorySize >= 4) newSelection = 3;
+        else if (Input.GetKeyDown(KeyCode.Alpha5) && maxInventorySize >= 5) newSelection = 4;
+        else if (Input.GetKeyDown(KeyCode.Alpha6) && maxInventorySize >= 6) newSelection = 5;
+        else if (Input.GetKeyDown(KeyCode.Alpha7) && maxInventorySize >= 7) newSelection = 6;
+        else if (Input.GetKeyDown(KeyCode.Alpha8) && maxInventorySize >= 8) newSelection = 7;
+        else if (Input.GetKeyDown(KeyCode.Alpha9) && maxInventorySize >= 9) newSelection = 8;
 
-        // Mouse wheel scroll selection
+        // Mouse wheel scroll cycles selection across all slots (including empty)
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (scroll > 0.01f)
         {
-            Debug.Log("[Inventory Selection] Mouse wheel UP - finding next occupied slot");
-            // next occupied
-            int i = selectedItem;
-            int startIndex = i;
-            for (int steps = 0; steps < inventorySlots.Count; steps++)
-            {
-                i = (i + 1) % maxInventorySize;
-                if (i < inventorySlots.Count && inventorySlots[i].isOccupied)
-                {
-                    newSelection = i;
-                    Debug.Log($"[Inventory Selection] Found next occupied slot: {i} (from {startIndex})");
-                    break;
-                }
-            }
-            if (newSelection == -1)
-            {
-                Debug.Log($"[Inventory Selection] No next occupied slot found");
-            }
+            newSelection = (selectedItem + 1) % Mathf.Max(1, maxInventorySize);
         }
         else if (scroll < -0.01f)
         {
-            Debug.Log("[Inventory Selection] Mouse wheel DOWN - finding previous occupied slot");
-            // previous occupied
-            int i = selectedItem;
-            int startIndex = i;
-            for (int steps = 0; steps < inventorySlots.Count; steps++)
-            {
-                i = (i - 1 + maxInventorySize) % maxInventorySize;
-                if (i < inventorySlots.Count && inventorySlots[i].isOccupied)
-                {
-                    newSelection = i;
-                    Debug.Log($"[Inventory Selection] Found previous occupied slot: {i} (from {startIndex})");
-                    break;
-                }
-            }
-            if (newSelection == -1)
-            {
-                Debug.Log($"[Inventory Selection] No previous occupied slot found");
-            }
+            int size = Mathf.Max(1, maxInventorySize);
+            newSelection = (selectedItem - 1 + size) % size;
         }
 
         if (newSelection != -1 && newSelection != selectedItem)
         {
-            Debug.Log($"[Inventory Selection] ✓ Switching from slot {selectedItem} to slot {newSelection}");
-            selectedItem = newSelection;
+            selectedItem = Mathf.Clamp(newSelection, 0, Mathf.Max(0, maxInventorySize - 1));
             NewItemSelected();
-        }
-        else if (newSelection != -1 && newSelection == selectedItem)
-        {
-            Debug.Log($"[Inventory Selection] Already on slot {selectedItem} - no change");
         }
     }
 
@@ -508,104 +488,64 @@ public class DullahanHeadInventory : MonoBehaviour
 
     public void NewItemSelected()
     {
-        Debug.Log($"[NewItemSelected] ═══ METHOD CALLED ═══");
-        Debug.Log($"[NewItemSelected] Current selectedItem index: {selectedItem}");
-        
-        // Store current lantern state before deactivating
-        bool wasLanternOn = isLanternOn;
-        bool hadLantern = hasLantern;
-        LanternSO previousLantern = currentLantern;
-
-        // Always deactivate all items first
-        DeactivateAllItems();
-        Debug.Log($"[NewItemSelected] All items deactivated");
-
         if (!HasItems())
         {
-            Debug.Log($"[NewItemSelected] No items in inventory - returning");
+            DeactivateAllItems();
+            DestroySpawnedHeldVisual();
+            UpdateSelectedItemNameUI();
             return;
         }
 
-        // Clamp selected item to valid range
-        int originalSelectedItem = selectedItem;
-        selectedItem = Mathf.Clamp(selectedItem, 0, maxInventorySize - 1);
-        if (originalSelectedItem != selectedItem)
-        {
-            Debug.Log($"[NewItemSelected] Clamped selectedItem from {originalSelectedItem} to {selectedItem}");
-        }
+        selectedItem = Mathf.Clamp(selectedItem, 0, Mathf.Max(0, maxInventorySize - 1));
 
-        // Check if selected slot has an item
-        if (!inventorySlots[selectedItem].isOccupied)
-        {
-            Debug.LogWarning($"[NewItemSelected] Slot {selectedItem} is not occupied - returning");
-            return;
-        }
+        DeactivateAllItems();
 
-        // Activate the selected item based on its type
-        InventorySlot currentSlot = inventorySlots[selectedItem];
-        Debug.Log($"[NewItemSelected] Current slot type: {currentSlot.itemType}");
-        
-        if (currentSlot.itemType == InventorySlot.ItemType.Head && currentSlot.headItem != null)
+        InventorySlot currentSlot = (selectedItem >= 0 && selectedItem < inventorySlots.Count && inventorySlots[selectedItem].isOccupied)
+            ? inventorySlots[selectedItem] : null;
+
+        if (currentSlot != null)
         {
-            Debug.Log($"[NewItemSelected] ► Activating HEAD: {currentSlot.headItem.headName}");
-            
-            // Activate head item
-            if (itemSetActive.ContainsKey(currentSlot.headItem.headType))
+            if (currentSlot.itemType == InventorySlot.ItemType.Head && currentSlot.headItem != null)
             {
-                GameObject itemObject = itemSetActive[currentSlot.headItem.headType];
-                if (itemObject != null)
+                if (itemSetActive.ContainsKey(currentSlot.headItem.headType))
                 {
-                    itemObject.SetActive(true);
-                    Debug.Log($"[NewItemSelected] ✓ Activated GameObject for {currentSlot.headItem.headType}");
+                    GameObject itemObject = itemSetActive[currentSlot.headItem.headType];
+                    if (itemObject != null)
+                    {
+                        itemObject.SetActive(true);
+                    }
                 }
                 else
                 {
-                    Debug.LogWarning($"[NewItemSelected] GameObject is null for head type {currentSlot.headItem.headType}");
+                    GameObject anchor = null;
+                    itemSetActive.TryGetValue(HeadType.Real, out anchor);
+                    TrySpawnHeldVisual(currentSlot.headItem, anchor);
                 }
-            }
-            else
-            {
-                Debug.LogWarning($"[NewItemSelected] No GameObject mapped for head type {currentSlot.headItem.headType}");
-            }
-            
-            // Play sound
-            if (audioSource != null && headSelectSound != null)
-            {
-                audioSource.PlayOneShot(headSelectSound);
-                Debug.Log($"[NewItemSelected] ✓ Played head select sound");
-            }
-            
-            Debug.Log($"[NewItemSelected] ✓ Selected head: {currentSlot.headItem.headName} in slot {selectedItem + 1}");
-        }
-        else if (currentSlot.itemType == InventorySlot.ItemType.Lantern && currentSlot.lanternItem != null)
-        {
-            // Update lantern system
-            currentLantern = currentSlot.lanternItem;
-            hasLantern = true;
-            
-            // Show lantern in hand (but keep current on/off state)
-            SetLanternVisual(isLanternOn);
-            
-            Debug.Log($"Selected lantern: {currentSlot.lanternItem.lanternName} in slot {selectedItem + 1} - Lantern GameObject active: {(lantern_item != null ? lantern_item.activeInHierarchy : false)}");
-        }
-        else if (currentSlot.itemType == InventorySlot.ItemType.Key && currentSlot.keyItem != null)
-        {
-            // Show associated key visual if mapped
-            foreach (var kv in keyVisualById)
-            {
-                if (kv.Value != null) kv.Value.SetActive(false);
-            }
-            if (currentSlot.keyItem != null)
-            {
-                string id = currentSlot.keyItem.keyId;
-                if (!string.IsNullOrEmpty(id) && keyVisualById.ContainsKey(id) && keyVisualById[id] != null)
-                {
-                    keyVisualById[id].SetActive(true);
-                }
-            }
 
-            Debug.Log($"Selected key: {currentSlot.keyItem.keyName} in slot {selectedItem + 1}");
+                if (audioSource != null && headSelectSound != null)
+                {
+                    audioSource.PlayOneShot(headSelectSound);
+                }
+            }
+            else if (currentSlot.itemType == InventorySlot.ItemType.Lantern && currentSlot.lanternItem != null)
+            {
+                currentLantern = currentSlot.lanternItem;
+                hasLantern = true;
+                SetLanternVisual(isLanternOn);
+            }
+            else if (currentSlot.itemType == InventorySlot.ItemType.Key && currentSlot.keyItem != null)
+            {
+                ShowKeyVisual(currentSlot.keyItem);
+            }
         }
+        else
+        {
+            HideAllKeyVisuals();
+            DestroySpawnedHeldVisual();
+        }
+
+        UpdateSelectedItemNameUI();
+        ShowSelectedNameTemporarily();
     }
 
     private void UpdateInventoryUI()
@@ -641,18 +581,18 @@ public class DullahanHeadInventory : MonoBehaviour
             }
         }
 
-        // Update background colors for selection
+        // Update background colors for selection (always highlight the selected slot)
         for (int i = 0; i < inventoryBackgroundImage.Length; i++)
         {
             if (inventoryBackgroundImage[i] != null)
             {
-                if (i == selectedItem && inventorySlots[i].isOccupied)
+                if (i == selectedItem)
                 {
-                    inventoryBackgroundImage[i].color = new Color32(145, 255, 126, 255); // Green for selected
+                    inventoryBackgroundImage[i].color = new Color32(145, 255, 126, 255);
                 }
                 else
                 {
-                    inventoryBackgroundImage[i].color = new Color32(219, 219, 219, 255); // Default gray
+                    inventoryBackgroundImage[i].color = new Color32(219, 219, 219, 255);
                 }
             }
         }
@@ -760,6 +700,264 @@ public class DullahanHeadInventory : MonoBehaviour
             }
         }
         return items;
+    }
+
+    private void DropItemWithPhysics(InventorySlot slot)
+    {
+        GameObject prefabToThrow = GetPrefabForItem(slot);
+        if (prefabToThrow == null) return;
+
+        Vector3 throwPosition;
+        if (throwObject_gameobject != null)
+        {
+            throwPosition = throwObject_gameobject.transform.position;
+        }
+        else if (cam != null)
+        {
+            throwPosition = cam.transform.position + cam.transform.forward * 1f;
+        }
+        else
+        {
+            throwPosition = transform.position + transform.forward * 1f;
+        }
+
+        GameObject droppedItem = Instantiate(prefabToThrow, throwPosition, Quaternion.identity);
+
+        if (slot.itemType == InventorySlot.ItemType.Head)
+        {
+            var droppedPickable = droppedItem.GetComponent<DullahanHeadPickable>();
+            if (droppedPickable != null)
+            {
+                droppedPickable.headData = slot.headItem;
+            }
+        }
+        else if (slot.itemType == InventorySlot.ItemType.Lantern)
+        {
+            var droppedLantern = droppedItem.GetComponent<LanternPickable>();
+            if (droppedLantern != null)
+            {
+                droppedLantern.lanternData = slot.lanternItem;
+            }
+        }
+
+        Rigidbody rb = droppedItem.GetComponent<Rigidbody>();
+        if (rb == null) rb = droppedItem.AddComponent<Rigidbody>();
+        rb.mass = GetItemMass(slot);
+#if UNITY_6000_0_OR_NEWER
+        if (rb.linearDamping == 0) rb.linearDamping = 1f;
+        if (rb.angularDamping == 0) rb.angularDamping = 5f;
+#endif
+        Vector3 throwDirection = (cam != null)
+            ? (cam.transform.forward + Vector3.up * 0.3f).normalized
+            : (transform.forward + Vector3.up * 0.3f).normalized;
+
+        rb.AddForce(throwDirection * throwForce, ForceMode.VelocityChange);
+        rb.AddTorque(Random.insideUnitSphere * 3f, ForceMode.VelocityChange);
+    }
+
+    private GameObject GetPrefabForItem(InventorySlot slot)
+    {
+        if (slot.itemType == InventorySlot.ItemType.Head)
+        {
+            if (slot.headItem != null && slot.headItem.headPrefab != null)
+                return slot.headItem.headPrefab;
+            if (slot.headItem != null)
+            {
+                switch (slot.headItem.headType)
+                {
+                    case HeadType.Real: return realHead_prefab;
+                    case HeadType.Fake1: return fakeHead1_prefab;
+                    case HeadType.Fake2: return fakeHead2_prefab;
+                }
+            }
+        }
+        else if (slot.itemType == InventorySlot.ItemType.Lantern)
+        {
+            return lantern_prefab;
+        }
+        return null;
+    }
+
+    private float GetItemMass(InventorySlot slot)
+    {
+        switch (slot.itemType)
+        {
+            case InventorySlot.ItemType.Head:
+                return 1.0f;
+            case InventorySlot.ItemType.Lantern:
+                return 0.8f;
+            default:
+                return 0.2f;
+        }
+    }
+
+    private void DestroySpawnedHeldVisual()
+    {
+        if (spawnedHeldVisual != null)
+        {
+            Destroy(spawnedHeldVisual);
+            spawnedHeldVisual = null;
+        }
+    }
+
+    private void TrySpawnHeldVisual(DullahanHeadSO head, GameObject anchor)
+    {
+        DestroySpawnedHeldVisual();
+        if (head == null || head.headPrefab == null || anchor == null) return;
+        DisablePhysicsOnHierarchy(anchor);
+        spawnedHeldVisual = Instantiate(head.headPrefab, anchor.transform);
+        spawnedHeldVisual.transform.localPosition = Vector3.zero;
+        spawnedHeldVisual.transform.localRotation = Quaternion.identity;
+        spawnedHeldVisual.transform.localScale = Vector3.one;
+        var rb = spawnedHeldVisual.GetComponent<Rigidbody>();
+        if (rb != null) Destroy(rb);
+        var collider = spawnedHeldVisual.GetComponent<Collider>();
+        if (collider != null) Destroy(collider);
+        DisablePhysicsOnHierarchy(spawnedHeldVisual);
+        TrySetIgnoreRaycastLayer(spawnedHeldVisual);
+    }
+
+    private void ShowKeyVisual(KeySO key)
+    {
+        foreach (var kv in keyVisualById)
+        {
+            if (kv.Value != null) kv.Value.SetActive(false);
+        }
+        if (key == null) return;
+        if (!string.IsNullOrEmpty(key.keyId) && keyVisualById.TryGetValue(key.keyId, out var visual) && visual != null)
+        {
+            visual.SetActive(true);
+            TrySetIgnoreRaycastLayer(visual);
+        }
+    }
+
+    private void HideAllKeyVisuals()
+    {
+        foreach (var kv in keyVisualById)
+        {
+            if (kv.Value != null)
+            {
+                kv.Value.SetActive(false);
+            }
+        }
+    }
+
+    private void DisablePhysicsOnHierarchy(GameObject root)
+    {
+        if (root == null) return;
+        var colliders = root.GetComponentsInChildren<Collider>(true);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            colliders[i].enabled = false;
+        }
+        var bodies = root.GetComponentsInChildren<Rigidbody>(true);
+        for (int i = 0; i < bodies.Length; i++)
+        {
+            if (Application.isPlaying)
+            {
+                Destroy(bodies[i]);
+            }
+            else
+            {
+                DestroyImmediate(bodies[i]);
+            }
+        }
+    }
+
+    private void SetIgnoreRaycastLayer(GameObject root)
+    {
+        if (root == null) return;
+        int ignoreLayer = LayerMask.NameToLayer("Ignore Raycast");
+        if (ignoreLayer < 0) return;
+        SetLayerRecursive(root.transform, ignoreLayer);
+    }
+
+    private void TrySetIgnoreRaycastLayer(GameObject root)
+    {
+        if (!setHandVisualsToIgnoreRaycast) return;
+        SetIgnoreRaycastLayer(root);
+    }
+
+    private void SetLayerRecursive(Transform t, int layer)
+    {
+        t.gameObject.layer = layer;
+        for (int i = 0; i < t.childCount; i++)
+        {
+            SetLayerRecursive(t.GetChild(i), layer);
+        }
+    }
+
+    private void SanitizeAnchor(GameObject anchor)
+    {
+        TrySetIgnoreRaycastLayer(anchor);
+        if (anchor != null)
+        {
+            var collider = anchor.GetComponent<Collider>();
+            if (collider != null)
+            {
+                Debug.LogWarning($"DullahanHeadInventory: Anchor '{anchor.name}' has a Collider. Consider removing it or placing the anchor on a child without gameplay colliders to avoid interaction issues.");
+            }
+        }
+    }
+
+    private void UpdateSelectedItemNameUI()
+    {
+        if (selectedItemNameText == null)
+            return;
+
+        if (!HasItems() || selectedItem < 0 || selectedItem >= inventorySlots.Count || !inventorySlots[selectedItem].isOccupied)
+        {
+            selectedItemNameText.text = string.Empty;
+            selectedItemNameText.enabled = false;
+            return;
+        }
+
+        var slot = inventorySlots[selectedItem];
+        if (slot.itemType == InventorySlot.ItemType.Head && slot.headItem != null)
+        {
+            selectedItemNameText.text = slot.headItem.headName;
+        }
+        else if (slot.itemType == InventorySlot.ItemType.Lantern && slot.lanternItem != null)
+        {
+            selectedItemNameText.text = slot.lanternItem.lanternName;
+        }
+        else if (slot.itemType == InventorySlot.ItemType.Key && slot.keyItem != null)
+        {
+            selectedItemNameText.text = slot.keyItem.keyName;
+        }
+        if (!selectedItemNameText.enabled) selectedItemNameText.enabled = true;
+    }
+
+    private void ShowSelectedNameTemporarily()
+    {
+        if (selectedItemNameText == null) return;
+        if (selectedItemNameRoutine != null)
+        {
+            StopCoroutine(selectedItemNameRoutine);
+            selectedItemNameRoutine = null;
+        }
+        if (!HasItems() || selectedItem < 0 || selectedItem >= inventorySlots.Count || !inventorySlots[selectedItem].isOccupied)
+        {
+            selectedItemNameText.enabled = false;
+            return;
+        }
+        selectedItemNameText.enabled = true;
+        selectedItemNameRoutine = StartCoroutine(HideSelectedNameAfterDelay(selectedItemNameVisibleSeconds));
+    }
+
+    private IEnumerator HideSelectedNameAfterDelay(float seconds)
+    {
+        float t = 0f;
+        while (t < seconds)
+        {
+            t += Time.deltaTime;
+            yield return null;
+        }
+        if (selectedItemNameText != null)
+        {
+            selectedItemNameText.enabled = false;
+        }
+        selectedItemNameRoutine = null;
     }
 
     // Lantern and Flashlight methods
