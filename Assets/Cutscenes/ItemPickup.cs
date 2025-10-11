@@ -29,9 +29,18 @@ public class ItemPickup : MonoBehaviour
     void Update()
     {
         if (!inRange || taken) return;
+
         if (Input.GetKeyDown(interactKey))
         {
-            if (ItemTracker.Instance) ItemTracker.Instance.RegisterItem(itemName);
+            // Always set a persistent flag so progress survives if the quest UI starts later
+            var norm = itemName == null ? "" : itemName.Trim().ToLowerInvariant();
+            if (!string.IsNullOrEmpty(norm))
+                DialogueFlags.Set("got_" + norm);
+
+            // Update live tracker UI if it exists
+            if (ItemTracker.Instance)
+                ItemTracker.Instance.RegisterItem(itemName);
+
             taken = once;
             if (destroyOnPickup) Destroy(gameObject);
             else enabled = false;
