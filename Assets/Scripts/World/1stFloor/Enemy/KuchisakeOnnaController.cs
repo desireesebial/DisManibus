@@ -31,6 +31,15 @@ public class KuchisakeOnnaController : MonoBehaviour
     [SerializeField] private Material slitMouthMaterial;
     [SerializeField] private Renderer faceRenderer;
 
+    [Header("First Encounter")]
+    [SerializeField] private bool requireFirstEncounter = true;
+    [SerializeField] private Transform firstEncounterPosition; // Where she sits initially
+    [SerializeField] private float firstEncounterTriggerDistance = 5f; // Distance to trigger first encounter
+    [SerializeField] private Animator animator; // For sitting/standing animations
+    [SerializeField] private string sittingAnimationTrigger = "Sitting"; // Animation state name
+    [SerializeField] private string standUpAnimationTrigger = "StandUp"; // Stand up animation
+    [SerializeField] private float standUpDuration = 2f; // Time for stand up animation
+    
     [Header("References")]
     [SerializeField] private KuchisakeQuestionUI questionUI;
     [SerializeField] private Transform player;
@@ -40,9 +49,14 @@ public class KuchisakeOnnaController : MonoBehaviour
     private float chaseTimer;
     private float ambientScissorTimer;
     private bool isActive = true;
+    private bool hasHadFirstEncounter = false;
+    private bool isStandingUp = false;
 
     public enum EnemyState
     {
+        WaitingFirstEncounter, // Sitting, waiting for player
+        FirstEncounter,        // First question encounter
+        StandingUp,           // Animation of standing up
         Patrol,
         Question,
         Chase,
@@ -50,7 +64,7 @@ public class KuchisakeOnnaController : MonoBehaviour
         Disabled
     }
 
-    private EnemyState currentState = EnemyState.Patrol;
+    private EnemyState currentState = EnemyState.WaitingFirstEncounter;
     
     void Start()
     {
@@ -66,28 +80,77 @@ public class KuchisakeOnnaController : MonoBehaviour
             player = GameObject.FindGameObjectWithTag("Player")?.transform;
         }
 
-        if (patrolPoints.Length > 0)
-        {
-            GoToNextPatrolPoint();
-        }
-
         ambientScissorTimer = ambientScissorInterval;
+
+        // Setup first encounter behavior
+        if (requireFirstEncounter)
+        {
+            SetupFirstEncounter();
+        }
+        else
+        {
+            // Skip first encounter, start patrolling immediately
+            hasHadFirstEncounter = true;
+            currentState = EnemyState.Patrol;
+            
+            if (patrolPoints.Length > 0)
+            {
+                GoToNextPatrolPoint();
+            }
+        }
+    }
+
+    void SetupFirstEncounter()
+    {
+        hasHadFirstEncounter = false;
+        currentState = EnemyState.WaitingFirstEncounter;
+        
+        // Position at first encounter location if set
+        if (firstEncounterPosition != null)
+        {
+            transform.position = firstEncounterPosition.position;
+            transform.rotation = firstEncounterPosition.rotation;
+        }
+        
+        // Disable NavMesh agent during first encounter
+        if (agent != null)
+        {
+            agent.enabled = false;
+        }
+        
+        // Play sitting animation if available
+        if (animator != null && !string.IsNullOrEmpty(sittingAnimationTrigger))
+        {
+            animator.SetTrigger(sittingAnimationTrigger);
+        }
     }
 
     void Update()
     {
         if (!isActive || player == null) return;
 
-        // Ambient scissor sounds
-        ambientScissorTimer -= Time.deltaTime;
-        if (ambientScissorTimer <= 0)
+        // Ambient scissor sounds (only after first encounter)
+        if (hasHadFirstEncounter)
         {
-            PlayAmbientScissors();
-            ambientScissorTimer = ambientScissorInterval;
+            ambientScissorTimer -= Time.deltaTime;
+            if (ambientScissorTimer <= 0)
+            {
+                PlayAmbientScissors();
+                ambientScissorTimer = ambientScissorInterval;
+            }
         }
 
         switch (currentState)
         {
+            case EnemyState.WaitingFirstEncounter:
+                HandleWaitingForFirstEncounter();
+                break;
+            case EnemyState.FirstEncounter:
+                HandleQuestion();
+                break;
+            case EnemyState.StandingUp:
+                // Wait for stand up animation to complete
+                break;
             case EnemyState.Patrol:
                 HandlePatrol();
                 break;
@@ -100,6 +163,17 @@ public class KuchisakeOnnaController : MonoBehaviour
             case EnemyState.Retreat:
                 HandleRetreat();
                 break;
+        }
+    }
+
+    void HandleWaitingForFirstEncounter()
+    {
+        // Check if player is close enough to trigger first encounter
+        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+        
+        if (distanceToPlayer <= firstEncounterTriggerDistance)
+        {
+            StartFirstEncounter();
         }
     }
 
@@ -189,6 +263,52 @@ public class KuchisakeOnnaController : MonoBehaviour
         currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
     }
 
+    void StartFirstEncounter()
+    {
+        currentState = EnemyState.FirstEncounter;
+        
+        // Slowly face the player (no sudden movements)
+        Vector3 direction = (player.position - transform.position).normalized;
+        StartCoroutine(SmoothLookAt(direction, 1.5f)); // Slow, eerie turn
+
+        // Play question voice after a delay (more atmospheric)
+        StartCoroutine(DelayedFirstQuestion());
+    }
+
+    IEnumerator SmoothLookAt(Vector3 direction, float duration)
+    {
+        Quaternion startRotation = transform.rotation;
+        Quaternion targetRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            transform.rotation = Quaternion.Slerp(startRotation, targetRotation, elapsed / duration);
+            yield return null;
+        }
+
+        transform.rotation = targetRotation;
+    }
+
+    IEnumerator DelayedFirstQuestion()
+    {
+        // Wait a moment for tension
+        yield return new WaitForSeconds(1f);
+
+        // Play question voice
+        if (questionVoiceClip != null)
+        {
+            audioSource.PlayOneShot(questionVoiceClip);
+        }
+
+        // Show question UI
+        if (questionUI != null)
+        {
+            questionUI.ShowQuestion(questionTimer, this);
+        }
+    }
+
     void StartQuestionSequence()
     {
         currentState = EnemyState.Question;
@@ -217,6 +337,14 @@ public class KuchisakeOnnaController : MonoBehaviour
 
     public void OnPlayerAnswered(KuchisakeQuestionUI.Answer answer)
     {
+        // Check if this is the first encounter
+        if (!hasHadFirstEncounter)
+        {
+            HandleFirstEncounterAnswer(answer);
+            return;
+        }
+
+        // Normal encounter behavior
         switch (answer)
         {
             case KuchisakeQuestionUI.Answer.Yes:
@@ -251,10 +379,146 @@ public class KuchisakeOnnaController : MonoBehaviour
         }
     }
 
+    void HandleFirstEncounterAnswer(KuchisakeQuestionUI.Answer answer)
+    {
+        hasHadFirstEncounter = true;
+        
+        switch (answer)
+        {
+            case KuchisakeQuestionUI.Answer.Yes:
+                // She seems pleased but reveals her true face
+                StartCoroutine(FirstEncounterYesSequence());
+                break;
+
+            case KuchisakeQuestionUI.Answer.No:
+                // She's offended - removes mask and stands
+                StartCoroutine(FirstEncounterNoSequence());
+                break;
+
+            case KuchisakeQuestionUI.Answer.Maybe:
+                // Confused but intrigued - stands up slowly
+                StartCoroutine(FirstEncounterMaybeSequence());
+                break;
+        }
+    }
+
+    IEnumerator FirstEncounterYesSequence()
+    {
+        // She removes mask slowly to show slit mouth
+        yield return new WaitForSeconds(1f);
+        RemoveMask();
+        
+        // Brief pause for player to see
+        yield return new WaitForSeconds(2f);
+        
+        // Stand up animation
+        BeginStandUp();
+        yield return new WaitForSeconds(standUpDuration);
+        
+        // Activate patrol behavior
+        ActivatePatrolMode();
+    }
+
+    IEnumerator FirstEncounterNoSequence()
+    {
+        // Quick mask removal
+        RemoveMask();
+        
+        if (angerSound != null)
+        {
+            audioSource.PlayOneShot(angerSound);
+        }
+        
+        yield return new WaitForSeconds(1f);
+        
+        // Stand up faster
+        BeginStandUp();
+        yield return new WaitForSeconds(standUpDuration * 0.7f);
+        
+        // Immediately start chasing
+        ActivatePatrolMode();
+        StartChase();
+    }
+
+    IEnumerator FirstEncounterMaybeSequence()
+    {
+        // Tilts head (if animation available), then removes mask
+        yield return new WaitForSeconds(1.5f);
+        RemoveMask();
+        
+        yield return new WaitForSeconds(1.5f);
+        
+        // Stand up slowly
+        BeginStandUp();
+        yield return new WaitForSeconds(standUpDuration);
+        
+        // Activate patrol
+        ActivatePatrolMode();
+    }
+
+    void BeginStandUp()
+    {
+        currentState = EnemyState.StandingUp;
+        isStandingUp = true;
+        
+        if (animator != null && !string.IsNullOrEmpty(standUpAnimationTrigger))
+        {
+            animator.SetTrigger(standUpAnimationTrigger);
+        }
+    }
+
+    void ActivatePatrolMode()
+    {
+        isStandingUp = false;
+        currentState = EnemyState.Patrol;
+        
+        // Enable NavMesh agent
+        if (agent != null)
+        {
+            agent.enabled = true;
+            agent.speed = patrolSpeed;
+        }
+        
+        // Start patrolling
+        if (patrolPoints.Length > 0)
+        {
+            GoToNextPatrolPoint();
+        }
+    }
+
     public void OnQuestionTimeout()
     {
-        // Player didn't answer in time - instant death
-        KillPlayer();
+        // Check if this is first encounter
+        if (!hasHadFirstEncounter)
+        {
+            // First encounter timeout - she stands and becomes active threat
+            hasHadFirstEncounter = true;
+            RemoveMask();
+            
+            if (angerSound != null)
+            {
+                audioSource.PlayOneShot(angerSound);
+            }
+            
+            StartCoroutine(TimeoutStandAndActivate());
+        }
+        else
+        {
+            // Normal encounter timeout - instant death
+            KillPlayer();
+        }
+    }
+
+    IEnumerator TimeoutStandAndActivate()
+    {
+        // Stand up menacingly
+        BeginStandUp();
+        yield return new WaitForSeconds(standUpDuration);
+        
+        // Start patrolling aggressively
+        ActivatePatrolMode();
+        
+        // Player escaped this time, but she's now active
     }
 
     void RemoveMask()
@@ -362,6 +626,20 @@ public class KuchisakeOnnaController : MonoBehaviour
     // Visualization in editor
     void OnDrawGizmosSelected()
     {
+        // Draw first encounter trigger range
+        if (requireFirstEncounter && firstEncounterPosition != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(firstEncounterPosition.position, firstEncounterTriggerDistance);
+            
+            // Draw line from first encounter to first patrol point
+            if (patrolPoints != null && patrolPoints.Length > 0 && patrolPoints[0] != null)
+            {
+                Gizmos.color = Color.magenta;
+                Gizmos.DrawLine(firstEncounterPosition.position, patrolPoints[0].position);
+            }
+        }
+
         // Draw detection range
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRange);

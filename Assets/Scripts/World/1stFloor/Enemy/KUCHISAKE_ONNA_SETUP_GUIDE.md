@@ -7,12 +7,13 @@ This guide will walk you through setting up the Kuchisake-onna (Slit-Mouthed Wom
 ## Table of Contents
 1. [Prerequisites](#prerequisites)
 2. [Enemy Setup](#enemy-setup)
-3. [UI Setup](#ui-setup)
-4. [Player Setup](#player-setup)
-5. [Audio Setup](#audio-setup)
-6. [Testing](#testing)
-7. [Customization](#customization)
-8. [Troubleshooting](#troubleshooting)
+3. [First Encounter Setup](#first-encounter-setup)
+4. [UI Setup](#ui-setup)
+5. [Player Setup](#player-setup)
+6. [Audio Setup](#audio-setup)
+7. [Testing](#testing)
+8. [Customization](#customization)
+9. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -100,7 +101,7 @@ This guide will walk you through setting up the Kuchisake-onna (Slit-Mouthed Wom
 2. Configure in Inspector:
 
 **AI Settings:**
-- **Patrol Points**: Drag all patrol point GameObjects here
+- **Patrol Points**: Drag all patrol point GameObjects here (she'll patrol after first encounter)
 - **Patrol Speed**: `2`
 - **Chase Speed**: `4`
 - **Detection Range**: `8`
@@ -117,9 +118,202 @@ This guide will walk you through setting up the Kuchisake-onna (Slit-Mouthed Wom
 - **Slit Mouth Material**: Drag SlitMouthMaterial here
 - **Face Renderer**: Drag the renderer showing the face
 
+**First Encounter:** (see dedicated section below)
+- **Require First Encounter**: ✓ (checked)
+- **First Encounter Position**: Will setup next
+- **First Encounter Trigger Distance**: `5`
+- **Animator**: Drag animator component if using animations
+- **Sitting Animation Trigger**: `"Sitting"`
+- **Stand Up Animation Trigger**: `"StandUp"`
+- **Stand Up Duration**: `2` (seconds)
+
 **References:**
 - **Question UI**: Will assign after UI setup
 - **Player**: Leave empty (auto-finds player with "Player" tag)
+
+---
+
+## First Encounter Setup
+
+This section covers the atmospheric first encounter where Kuchisake-onna is sitting and waiting for the player.
+
+### Concept Overview
+
+**The First Encounter Experience:**
+1. Player explores area
+2. Encounters sitting Kuchisake-onna (no jumpscare)
+3. When player gets close, she **slowly** turns to face them
+4. After brief tension, she asks "Am I beautiful?"
+5. Player answers (or times out)
+6. She **slowly** removes mask, revealing slit mouth
+7. She **slowly** stands up (eerie, not rushed)
+8. After standing, she becomes an active enemy and patrols
+9. Future encounters = instant death if timer runs out
+
+**Key Design Philosophy:**
+- ✅ Slow, deliberate movements (unsettling)
+- ✅ Build tension through stillness
+- ✅ No sudden jumpscares
+- ✅ Player sees the threat coming
+- ✅ Memorable first impression
+- ❌ No screaming or rushing at player
+- ❌ No teleporting in front of player
+
+### Step 1: Create First Encounter Location
+
+1. **Find a good spot in your level:**
+   - Hallway corner
+   - End of corridor
+   - Room entrance
+   - Against a wall
+   - Somewhere player will naturally walk toward
+
+2. **Create the encounter marker:**
+   - `Right-click in Hierarchy → Create Empty`
+   - Name it `KuchisakeFirstEncounter`
+   - Position it where you want her to sit
+   - Rotate it to face the direction player will approach from
+
+3. **Visual setup:**
+   - The enemy GameObject will be teleported here on Start
+   - She'll sit here waiting for player
+   - When player enters trigger radius, encounter begins
+
+### Step 2: Configure First Encounter Settings
+
+1. Select KuchisakeOnna GameObject
+2. In `KuchisakeOnnaController` component:
+
+**First Encounter Settings:**
+- **Require First Encounter**: ✓ (checked)
+- **First Encounter Position**: Drag `KuchisakeFirstEncounter` GameObject here
+- **First Encounter Trigger Distance**: `5` (adjust based on space)
+  - Smaller value = player must get closer
+  - Larger value = triggers from farther away
+  - Recommended: 4-6 for hallways, 6-8 for large rooms
+
+### Step 3: Setup Sitting Pose
+
+**Option A: With Animator (Recommended)**
+
+If you have sitting/standing animations:
+
+1. Add **Animator** component to KuchisakeOnna
+2. Create Animator Controller:
+   - `Right-click in Project → Create → Animator Controller`
+   - Name it `KuchisakeAnimator`
+3. Add animation states:
+   - **Sitting** (idle sitting loop)
+   - **StandUp** (transition from sit to stand)
+   - **Idle** (normal standing idle)
+4. Create transitions:
+   - Any State → Sitting (trigger: "Sitting")
+   - Sitting → StandUp (trigger: "StandUp")
+   - StandUp → Idle (exit time)
+5. Assign to KuchisakeOnna:
+   - **Animator**: Drag Animator component
+   - **Sitting Animation Trigger**: `"Sitting"`
+   - **Stand Up Animation Trigger**: `"StandUp"`
+   - **Stand Up Duration**: Match your animation length
+
+**Option B: Without Animator (Simple)**
+
+If you don't have animations:
+
+1. Manually position the enemy in sitting pose:
+   - Lower Y position (sitting height)
+   - Tilt forward slightly
+   - Position legs/body to look seated
+2. In script settings:
+   - Leave **Animator** empty (None)
+   - **Stand Up Duration**: `2` (time for smooth lerp to standing)
+3. Script will smoothly move her to standing position
+
+**Option C: Really Simple (Static)**
+
+Just have her standing from the start:
+- **Require First Encounter**: ✓ (still checked)
+- **Animator**: None
+- **Stand Up Duration**: `0.5` (very quick)
+- She'll just turn and ask question
+
+### Step 4: Test First Encounter Flow
+
+1. Press Play
+2. Walk toward first encounter location
+3. You should see:
+   - ✓ Enemy is at first encounter position
+   - ✓ No patrol behavior yet
+   - ✓ No ambient scissor sounds yet
+   - ✓ Enemy slowly turns to face you when close
+   - ✓ After ~1 second, question appears
+   - ✓ Timer counts down
+
+4. Answer the question:
+   - **"Yes"**: Mask removes slowly → she stands → begins patrolling
+   - **"No"**: Mask removes → anger sound → stands faster → chases you
+   - **"Maybe"**: Mask removes → tilts head → stands → patrols
+   - **Timeout**: Mask removes → stands → begins patrolling (mercy on first time)
+
+5. After first encounter:
+   - ✓ She now patrols the map
+   - ✓ Ambient scissor sounds start
+   - ✓ Future encounters = death if timer expires
+   - ✓ Normal chase behavior active
+
+### Step 5: Visual Polish for First Encounter
+
+**Lighting:**
+- Add dim spotlight on her sitting position
+- Single lamp/candle nearby
+- Creates silhouette effect
+- Player sees her from distance
+
+**Environment:**
+- Place her against wall or in corner
+- Maybe a chair (optional prop)
+- Blood stains nearby (optional)
+- Creates unsettling scene
+
+**Camera Effects:**
+When player gets close, consider adding:
+- Slight vignette increase
+- Subtle film grain
+- Muffled audio (optional)
+- Heartbeat sound start
+
+### Step 6: Adjust Timing for Atmosphere
+
+The timing is crucial for building dread:
+
+**Slow Timing (More Atmospheric):**
+```
+firstEncounterTriggerDistance: 6-8
+standUpDuration: 3
+DelayedFirstQuestion: 2 seconds
+```
+
+**Medium Timing (Balanced):**
+```
+firstEncounterTriggerDistance: 5
+standUpDuration: 2
+DelayedFirstQuestion: 1 second
+```
+
+**Fast Timing (More Action):**
+```
+firstEncounterTriggerDistance: 3-4
+standUpDuration: 1
+DelayedFirstQuestion: 0.5 seconds
+```
+
+### Step 7: Optional - Disable First Encounter
+
+If you want to skip straight to patrol behavior:
+
+1. Select KuchisakeOnna GameObject
+2. **Require First Encounter**: ✗ (uncheck)
+3. She'll start patrolling immediately when scene loads
 
 ---
 
@@ -364,15 +558,26 @@ You'll need these sound effects (can find free ones on freesound.org):
 
 ### Step 2: Initial Test
 
+**First Encounter Test:**
 1. Press Play
-2. Check:
-   - ✓ Enemy patrols between points
-   - ✓ Ambient scissor sounds play
-   - ✓ Enemy detects player when approaching
-   - ✓ Question UI appears
-   - ✓ Timer counts down
-   - ✓ Buttons work
-   - ✓ Timer expiration causes death
+2. Walk toward first encounter position
+3. Check:
+   - ✓ Enemy is sitting/waiting at encounter position
+   - ✓ NO ambient sounds yet
+   - ✓ NO patrol behavior yet
+   - ✓ When you get close, she slowly turns
+   - ✓ Question appears after brief delay
+   - ✓ Timer counts down correctly
+
+**Post-First Encounter Test:**
+1. Answer the question (any answer)
+2. Wait for her to stand
+3. Check:
+   - ✓ She stands up (animation or position change)
+   - ✓ NavMesh agent activates
+   - ✓ She begins patrolling
+   - ✓ Ambient scissor sounds start playing
+   - ✓ Normal behavior is now active
 
 ### Step 3: Test Each Answer
 
@@ -394,12 +599,25 @@ You'll need these sound effects (can find free ones on freesound.org):
 3. Should pause, then chase
 
 **Test Timer Expiration:**
-1. Approach enemy
-2. Don't answer
+
+*First Encounter Timer:*
+1. Start new game/reset
+2. Approach sitting enemy
+3. Don't answer question
+4. When timer hits 0:
+   - She removes mask
+   - Makes angry sound
+   - Stands up
+   - Begins patrolling
+   - **Player survives** (mercy on first encounter)
+
+*Subsequent Encounter Timer:*
+1. After first encounter, let her find you again
+2. Don't answer the question
 3. When timer hits 0:
-   - Should play death animation
-   - Show death screen
-   - Respawn after delay
+   - Instant death
+   - Death screen
+   - Respawn
 
 ### Step 4: Test Chase Behavior
 
@@ -506,12 +724,24 @@ void StartQuestionSequence() {
 
 ### Enemy Not Moving
 
-**Problem:** Enemy stands still
+**Problem:** Enemy stands still at start
 **Solutions:**
-- Check NavMesh is baked
-- Ensure patrol points are on NavMesh
-- Check NavMesh Agent is not stopped
-- Verify agent speed > 0
+- If **Require First Encounter** is checked:
+  - This is CORRECT behavior - she waits for player
+  - Walk toward her to trigger encounter
+  - After first encounter, she'll patrol
+- If she should be patrolling immediately:
+  - Uncheck **Require First Encounter**
+  - Check NavMesh is baked
+  - Ensure patrol points are on NavMesh
+  - Verify agent speed > 0
+
+**Problem:** Enemy doesn't move after first encounter
+**Solutions:**
+- Check stand up animation completed
+- Verify NavMesh Agent is being re-enabled
+- Ensure patrol points are assigned
+- Check Console for errors
 
 ### Question UI Not Showing
 
@@ -661,9 +891,12 @@ Feel free to modify and expand upon this system!
 - ✓ Audio Source component
 - ✓ KuchisakeOnnaController script
 - ✓ Patrol points assigned (minimum 2)
+- ✓ First encounter position assigned
+- ✓ First encounter trigger distance set (4-6)
 - ✓ Mask object assigned
 - ✓ Face materials assigned
 - ✓ Question UI reference assigned
+- ✓ Animator (optional, for sitting/standing)
 
 **UIController GameObject:**
 - ✓ KuchisakeQuestionUI script
