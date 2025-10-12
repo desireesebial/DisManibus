@@ -105,7 +105,10 @@ public class DullahanHeadPlacementPuzzle : MonoBehaviour
     public Transform rewardSpawnPoint;
     
     [Header("Dullahan Chase Integration")]
-    [Tooltip("Stop Dullahan from moving when player has a head")]
+    [Tooltip("Keep Dullahan frozen in place as soon as the scene starts (until a head is held or puzzle is completed)")]
+    public bool freezeDullahanAtStart = true;
+    
+    [Tooltip("Stop Dullahan from moving while the player is actively holding a head (selected in inventory)")]
     public bool freezeDullahanWhenPlayerHasHead = true;
     
     [Tooltip("Reference to Dullahan Chase System (auto-found if not assigned)")]
@@ -113,6 +116,9 @@ public class DullahanHeadPlacementPuzzle : MonoBehaviour
     
     [Tooltip("Reference to NavMeshAgent to freeze (auto-found if not assigned)")]
     public UnityEngine.AI.NavMeshAgent dullahanAgent;
+    
+    [Tooltip("Keep puzzle root aligned to the Dullahan as he moves")]
+    public bool followDullahanTransform = true;
     
     // Private variables
     private bool playerInRange = false;
@@ -124,23 +130,34 @@ public class DullahanHeadPlacementPuzzle : MonoBehaviour
     private GameObject currentFakeHeadInstance;
     private bool isShowingPrompt = false;
     private bool isDullahanFrozen = false;
-    private bool playerPreviouslyHadHead = false;
+    private bool playerPreviouslyHoldingHead = false;
+    private bool keepDullahanFrozenUntilPlayerHasHead = false;
+    private Transform dullahanTransform;
+    private Vector3 dullahanInitialOffset;
+    private bool dullahanOffsetCaptured = false;
     
     void Start()
     {
         InitializeComponents();
         SetupPlaceholder();
         SetupVisuals();
+        CaptureDullahanOffset();
+        SetupInitialDullahanState();
     }
     
     void Update()
     {
         if (puzzleCompleted) return;
         
-        // Check if player has a head and freeze/unfreeze Dullahan accordingly
-        if (freezeDullahanWhenPlayerHasHead)
+        // Check if player is holding a head and freeze/unfreeze Dullahan accordingly
+        if (freezeDullahanAtStart || freezeDullahanWhenPlayerHasHead)
         {
             CheckAndFreezeDullahan();
+        }
+
+        if (followDullahanTransform)
+        {
+            FollowDullahan();
         }
         
         if (useRaycastInteraction)
@@ -189,7 +206,20 @@ public class DullahanHeadPlacementPuzzle : MonoBehaviour
             if (dullahanObj != null)
             {
                 dullahanAgent = dullahanObj.GetComponent<UnityEngine.AI.NavMeshAgent>();
+                if (dullahanTransform == null)
+                {
+                    dullahanTransform = dullahanObj.transform;
+                }
             }
+        }
+        else if (dullahanTransform == null)
+        {
+            dullahanTransform = dullahanAgent.transform;
+        }
+
+        if (dullahanTransform == null && dullahanChaseSystem != null)
+        {
+            dullahanTransform = dullahanChaseSystem.dullahanTransform;
         }
         
         // Setup audio source
@@ -209,6 +239,38 @@ public class DullahanHeadPlacementPuzzle : MonoBehaviour
                 originalPlaceholderMaterial = placeholderRenderer.material;
             }
         }
+    }
+    
+    private void SetupInitialDullahanState()
+    {
+        if (!freezeDullahanAtStart) return;
+        keepDullahanFrozenUntilPlayerHasHead = true;
+        FreezeDullahan();
+    }
+
+    private void CaptureDullahanOffset()
+    {
+        if (!followDullahanTransform)
+        {
+            dullahanOffsetCaptured = false;
+            return;
+        }
+
+        if (dullahanTransform == null)
+        {
+            Debug.LogWarning("[Puzzle] followDullahanTransform enabled but no dullahanTransform found.");
+            dullahanOffsetCaptured = false;
+            return;
+        }
+
+        dullahanInitialOffset = transform.position - dullahanTransform.position;
+        dullahanOffsetCaptured = true;
+    }
+
+    private void FollowDullahan()
+    {
+        if (!followDullahanTransform || !dullahanOffsetCaptured || dullahanTransform == null) return;
+        transform.position = dullahanTransform.position + dullahanInitialOffset;
     }
     
     private void SetupPlaceholder()
@@ -422,21 +484,20 @@ public class DullahanHeadPlacementPuzzle : MonoBehaviour
         if (attachedHeadVisual != null)
         {
             attachedHeadVisual.SetActive(true);
+        }
+        else if (headData.headPrefab != null && headAttachmentPoint != null)
+        {
+            GameObject instantiatedHead = Instantiate(headData.headPrefab, headAttachmentPoint);
+            instantiatedHead.transform.localPosition = Vector3.zero;
+            instantiatedHead.transform.localRotation = Quaternion.identity;
+            instantiatedHead.transform.localScale = Vector3.one;
             
-            // If headData has a prefab, instantiate it at attachment point
-            if (headData.headPrefab != null && headAttachmentPoint != null)
-            {
-                GameObject instantiatedHead = Instantiate(headData.headPrefab, headAttachmentPoint);
-                instantiatedHead.transform.localPosition = Vector3.zero;
-                instantiatedHead.transform.localRotation = Quaternion.identity;
-                
-                // Remove any physics components from the instantiated head
-                Rigidbody rb = instantiatedHead.GetComponent<Rigidbody>();
-                if (rb != null) Destroy(rb);
-                
-                Collider col = instantiatedHead.GetComponent<Collider>();
-                if (col != null) Destroy(col);
-            }
+            // Remove any physics components from the instantiated head
+            Rigidbody rb = instantiatedHead.GetComponent<Rigidbody>();
+            if (rb != null) Destroy(rb);
+            
+            Collider col = instantiatedHead.GetComponent<Collider>();
+            if (col != null) Destroy(col);
         }
         
         // Play effects
@@ -453,11 +514,15 @@ public class DullahanHeadPlacementPuzzle : MonoBehaviour
     {
         Debug.Log($"[Puzzle] ✗ WRONG HEAD PLACED: {headData.headName}");
         
-        // Remove head from inventory
-        headInventory.RemoveSelectedHeadIfHead();
+        // Remove head from inventory (fallback to direct removal if selection changed)
+        bool removed = headInventory.RemoveSelectedHeadIfHead();
+        if (!removed)
+        {
+            headInventory.RemoveFromInventoryList(headData);
+        }
         
-        // Show wrong head briefly if enabled
-        if (showFakeHeadBriefly)
+        // Show wrong head briefly if enabled (only if we have a prefab)
+        if (showFakeHeadBriefly && headData.headPrefab != null)
         {
             StartCoroutine(ShowFakeHeadTemporarily(headData));
         }
@@ -490,6 +555,8 @@ public class DullahanHeadPlacementPuzzle : MonoBehaviour
         if (rb != null) Destroy(rb);
         Collider col = currentFakeHeadInstance.GetComponent<Collider>();
         if (col != null) Destroy(col);
+        var pickable = currentFakeHeadInstance.GetComponent<DullahanHeadPickable>();
+        if (pickable != null) Destroy(pickable);
         
         Debug.Log($"[Puzzle] Showing fake head for {fakeHeadDisplayDuration} seconds");
         
@@ -687,22 +754,49 @@ public class DullahanHeadPlacementPuzzle : MonoBehaviour
     private void CheckAndFreezeDullahan()
     {
         if (headInventory == null) return;
-        
-        bool playerHasHead = headInventory.HasHeads();
-        
-        // Check if state changed
-        if (playerHasHead && !playerPreviouslyHadHead)
+
+        bool playerHoldingHead = IsPlayerHoldingHead();
+
+        if (keepDullahanFrozenUntilPlayerHasHead && playerHoldingHead)
+        {
+            keepDullahanFrozenUntilPlayerHasHead = false;
+        }
+
+        if (freezeDullahanAtStart && keepDullahanFrozenUntilPlayerHasHead)
+        {
+            FreezeDullahan();
+            return;
+        }
+
+        if (!freezeDullahanWhenPlayerHasHead)
+        {
+            if (isDullahanFrozen)
+            {
+                UnfreezeDullahan();
+            }
+            return;
+        }
+
+        if (playerHoldingHead && !playerPreviouslyHoldingHead)
         {
             // Player just picked up a head - freeze Dullahan
             FreezeDullahan();
         }
-        else if (!playerHasHead && playerPreviouslyHadHead)
+        else if (!playerHoldingHead && playerPreviouslyHoldingHead)
         {
             // Player no longer has a head (placed it or dropped it) - unfreeze Dullahan
             UnfreezeDullahan();
         }
-        
-        playerPreviouslyHadHead = playerHasHead;
+
+        playerPreviouslyHoldingHead = playerHoldingHead;
+    }
+
+    private bool IsPlayerHoldingHead()
+    {
+        if (headInventory == null) return false;
+
+        var selected = headInventory.GetCurrentHead();
+        return selected != null;
     }
     
     /// <summary>
@@ -834,7 +928,7 @@ public class DullahanHeadPlacementPuzzle : MonoBehaviour
         }
         
         // Reset state tracking
-        playerPreviouslyHadHead = false;
+        playerPreviouslyHoldingHead = false;
         
         Debug.Log("[Puzzle] Puzzle reset");
     }

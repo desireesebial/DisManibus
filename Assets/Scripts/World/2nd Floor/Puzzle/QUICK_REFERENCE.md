@@ -37,6 +37,7 @@ DullahanHeadPlacementPuzzle Inspector:
 - **Dullahan stops moving when player picks up a head**
 - Player can safely place the head without being chased
 - Dullahan resumes movement when head is placed/dropped
+- Puzzle root can follow Dullahan to keep placeholder aligned
 - Can be toggled on/off in inspector
 
 ### ✓ Placeholder Visibility
@@ -75,6 +76,7 @@ DullahanHeadPlacementPuzzle Inspector:
 | Interaction Range | 3 | Distance in meters |
 | Interaction Key | F | Key to place head |
 | **Freeze Dullahan When Player Has Head** | **true** | **Stop Dullahan when head picked up** |
+| **Follow Dullahan Transform** | **true** | **Keep puzzle anchored to Dullahan** |
 | Placeholder Initially Visible | false | Hidden until player approaches |
 | Use Raycast Interaction | true | Must look at puzzle |
 | Show Fake Head Briefly | true | Show wrong heads temporarily |

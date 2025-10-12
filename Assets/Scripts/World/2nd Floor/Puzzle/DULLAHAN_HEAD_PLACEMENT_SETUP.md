@@ -40,6 +40,8 @@ This puzzle requires the player to place the correct Dullahan head onto the body
   - Dullahan resumes movement when head is placed or dropped
 - **Dullahan Chase System**: Auto-found (optional manual assignment)
 - **Dullahan Agent**: Auto-found (optional manual assignment)
+- **Follow Dullahan Transform**: Check this to keep the puzzle anchor moving with the Dullahan so the placeholder stays on the neck (recommended: true)
+- **Freeze Dullahan At Start**: Leave checked by default so he stays still until the player picks up a head
 
 #### References:
 - **Head Placeholder**: Drag the `HeadPlaceholder` GameObject here
