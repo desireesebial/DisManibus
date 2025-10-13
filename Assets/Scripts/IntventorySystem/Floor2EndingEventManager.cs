@@ -54,8 +54,7 @@ public class Floor2EndingEventManager : MonoBehaviour
     
     [Header("Integration")]
     public DullahanHeadInventory headInventory;
-    public DullahanBody dullahanBody;
-    public DullahanPuzzleManager puzzleManager;
+    public SimpleHeadPlacement headPlacement; // Updated to use new simple system
     public DullahanChaseEventManager chaseEventManager;
     public QuestSystem questSystem;
     
@@ -117,11 +116,8 @@ public class Floor2EndingEventManager : MonoBehaviour
         if (headInventory == null)
             headInventory = FindObjectOfType<DullahanHeadInventory>();
             
-        if (dullahanBody == null)
-            dullahanBody = FindObjectOfType<DullahanBody>();
-            
-        if (puzzleManager == null)
-            puzzleManager = FindObjectOfType<DullahanPuzzleManager>();
+        if (headPlacement == null)
+            headPlacement = FindObjectOfType<SimpleHeadPlacement>();
             
         if (chaseEventManager == null)
             chaseEventManager = FindObjectOfType<DullahanChaseEventManager>();
@@ -390,10 +386,11 @@ public class Floor2EndingEventManager : MonoBehaviour
             chaseEventManager.choiceMade = true;
         }
         
-        // Activate puzzle manager
-        if (puzzleManager != null)
+        // Activate head placement system
+        if (headPlacement != null)
         {
-            puzzleManager.puzzleActive = true;
+            // SimpleHeadPlacement doesn't need activation - it's always active
+            Debug.Log("[Floor2EndingEventManager] Head placement system is ready");
         }
         
         // Open exit door to Floor 1 (final level)

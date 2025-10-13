@@ -62,8 +62,7 @@ public class DullahanChaseEventManager : MonoBehaviour
     public DullahanChaseSystem dullahanChaseSystem;
     public DullahanAudioManager audioManager;
     public DullahanHeadInventory headInventory;
-    public DullahanBody dullahanBody;
-    public DullahanPuzzleManager puzzleManager;
+    public SimpleHeadPlacement headPlacement; // Updated to use new simple system
     
     [Header("Scene Management")]
     public string nextSceneName = "NextLevel";
@@ -118,11 +117,8 @@ public class DullahanChaseEventManager : MonoBehaviour
         if (headInventory == null)
             headInventory = FindObjectOfType<DullahanHeadInventory>();
             
-        if (dullahanBody == null)
-            dullahanBody = FindObjectOfType<DullahanBody>();
-            
-        if (puzzleManager == null)
-            puzzleManager = FindObjectOfType<DullahanPuzzleManager>();
+        if (headPlacement == null)
+            headPlacement = FindObjectOfType<SimpleHeadPlacement>();
         
         // Find player
         GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -517,10 +513,11 @@ public class DullahanChaseEventManager : MonoBehaviour
         maxTimer = headCollectionTime;
         timerWarningPlayed = false;
         
-        // Spawn all three heads
-        if (puzzleManager != null)
+        // Spawn all three heads (handled by existing head pickables in scene)
+        if (headPlacement != null)
         {
-            puzzleManager.SpawnAllHeads();
+            // SimpleHeadPlacement works with existing head pickables
+            Debug.Log("[DullahanChaseEventManager] Head placement system is ready");
         }
         
         // Open door to real head
