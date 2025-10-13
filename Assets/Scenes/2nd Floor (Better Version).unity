@@ -77433,7 +77433,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isVisibleByDefault: 0
   useFadeTransition: 1
-  fadeDuration: 0.5
+  fadeDuration: 2
   enablePulsing: 1
   pulseSpeed: 2
   pulseMinScale: 0.95
@@ -77529,7 +77529,7 @@ Transform:
   m_GameObject: {fileID: 767292879}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 72.05, y: 2.72, z: 4.57}
+  m_LocalPosition: {x: 72.201, y: 2.754, z: 5.063}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -168140,7 +168140,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1126344187}
   m_SourcePrefab: {fileID: 100100000, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
 --- !u!1 &1126344181 stripped
 GameObject:
@@ -168152,6 +168155,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
   m_PrefabInstance: {fileID: 1126344180}
   m_PrefabAsset: {fileID: 0}
+--- !u!64 &1126344187
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1126344181}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 1588110511326799053, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
 --- !u!1 &1127426258
 GameObject:
   m_ObjectHideFlags: 0
@@ -384225,7 +384250,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2103375968}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b0c6d8e5f3a7a9b1c2d3e4f5a6b7c8d, type: 3}
   m_Name: 
@@ -384236,7 +384261,7 @@ MonoBehaviour:
   interactionKey: 102
   interactionPrompt: Press F to place head on Dullahan's body
   noHeadPrompt: You need a head to place here
-  useRaycastInteraction: 1
+  useRaycastInteraction: 0
   headPlaceholder: {fileID: 767292879}
   placeholderInitiallyVisible: 1
   placeholderEmptyMaterial: {fileID: 0}
@@ -384272,14 +384297,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2103375968}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.08698, y: 3.84232, z: 4.46838}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: 0, z: -0, w: 1}
+  m_LocalPosition: {x: -14.410604, y: 0.768444, z: -0.95032406}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 767292884}
   - {fileID: 2069946963}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 543450652837065689}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2108982216
 GameObject:
@@ -387686,6 +387711,7 @@ Transform:
   - {fileID: 2119985051}
   - {fileID: 135402265}
   - {fileID: 1200267728}
+  - {fileID: 2103375970}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &543450653593624715
@@ -396175,7 +396201,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 6
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -401170,5 +401196,4 @@ SceneRoots:
   - {fileID: 1047622878}
   - {fileID: 2125196242}
   - {fileID: 1156897165}
-  - {fileID: 2103375970}
   - {fileID: 1676519759}
