@@ -19356,7 +19356,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.072043225, y: 1, z: 1}
+  m_Size: {x: 0.072043225, y: 1.6, z: 1.5}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &568989109
 MonoBehaviour:
@@ -287517,7 +287517,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 100000, guid: 9a3b57f0a1248be419dd9c4d54748512, type: 3}
       insertIndex: 1
-      addedObject: {fileID: 1012195335}
+      addedObject: {fileID: 1012195343}
     - targetCorrespondingSourceObject: {fileID: 100000, guid: 9a3b57f0a1248be419dd9c4d54748512, type: 3}
       insertIndex: 2
       addedObject: {fileID: 1012195339}
@@ -287542,22 +287542,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 9a3b57f0a1248be419dd9c4d54748512, type: 3}
   m_PrefabInstance: {fileID: 1012195333}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1012195335
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 568989105}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba2185d0b81a950488cebb1a55b325d5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemName: flashlight
-  interactKey: 101
-  destroyOnPickup: 0
-  once: 1
 --- !u!114 &1012195339
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -287573,6 +287557,22 @@ MonoBehaviour:
   action: 1
   questId: find items
   questTextIfAdding: 
+--- !u!114 &1012195343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 568989105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba2185d0b81a950488cebb1a55b325d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemName: flashlight
+  interactKey: 101
+  destroyOnPickup: 0
+  once: 1
 --- !u!1 &1013585171
 GameObject:
   m_ObjectHideFlags: 0
@@ -298510,7 +298510,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 15c11194291e3d04fb28a6f8547469cf, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 15c11194291e3d04fb28a6f8547469cf, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
