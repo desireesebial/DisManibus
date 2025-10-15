@@ -40,6 +40,11 @@ public class KuchisakeOnnaController : MonoBehaviour
     [SerializeField] private string standUpAnimationTrigger = "StandUp"; // Stand up animation
     [SerializeField] private float standUpDuration = 2f; // Time for stand up animation
     
+    [Header("Movement Animations")]
+    [SerializeField] private string walkAnimationParameter = "IsWalking"; // Walk animation parameter
+    [SerializeField] private string runAnimationParameter = "IsRunning"; // Run animation parameter
+    [SerializeField] private string idleAnimationParameter = "IsIdle"; // Idle animation parameter
+    
     [Header("References")]
     [SerializeField] private KuchisakeQuestionUI questionUI;
     [SerializeField] private Transform player;
@@ -64,7 +69,15 @@ public class KuchisakeOnnaController : MonoBehaviour
         Disabled
     }
 
+    public enum AnimationState
+    {
+        Idle,
+        Walking,
+        Running
+    }
+
     private EnemyState currentState = EnemyState.WaitingFirstEncounter;
+    private AnimationState currentAnimationState = AnimationState.Idle;
     
     void Start()
     {
@@ -179,6 +192,16 @@ public class KuchisakeOnnaController : MonoBehaviour
 
     void HandlePatrol()
     {
+        // Set walking animation if moving
+        if (agent != null && agent.velocity.magnitude > 0.1f)
+        {
+            ChangeAnimationState(AnimationState.Walking);
+        }
+        else
+        {
+            ChangeAnimationState(AnimationState.Idle);
+        }
+
         // Check if reached patrol point
         if (agent != null && !agent.pathPending && agent.remainingDistance < 0.5f)
         {
@@ -205,6 +228,9 @@ public class KuchisakeOnnaController : MonoBehaviour
 
     void HandleQuestion()
     {
+        // Set idle animation while asking question
+        ChangeAnimationState(AnimationState.Idle);
+        
         // Question UI handles the timer and player input
         // This is managed by the UI script
     }
@@ -215,6 +241,9 @@ public class KuchisakeOnnaController : MonoBehaviour
         {
             agent.SetDestination(player.position);
         }
+
+        // Set running animation during chase
+        ChangeAnimationState(AnimationState.Running);
 
         chaseTimer -= Time.deltaTime;
         
@@ -235,6 +264,9 @@ public class KuchisakeOnnaController : MonoBehaviour
 
     void HandleRetreat()
     {
+        // Set idle animation during retreat teleport
+        ChangeAnimationState(AnimationState.Idle);
+        
         // Teleport to random patrol point
         if (patrolPoints.Length > 0)
         {
@@ -602,6 +634,7 @@ public class KuchisakeOnnaController : MonoBehaviour
     public void ResetEnemy()
     {
         currentState = EnemyState.Patrol;
+        currentAnimationState = AnimationState.Idle;
         isActive = true;
         
         if (maskObject != null)
@@ -620,7 +653,66 @@ public class KuchisakeOnnaController : MonoBehaviour
             agent.speed = patrolSpeed;
         }
 
+        // Reset animation to idle
+        ChangeAnimationState(AnimationState.Idle);
+
         GoToNextPatrolPoint();
+    }
+
+    // Animation Methods
+    void ChangeAnimationState(AnimationState newAnimationState)
+    {
+        if (currentAnimationState == newAnimationState)
+            return;
+
+        currentAnimationState = newAnimationState;
+        UpdateAnimationParameters();
+    }
+
+    void UpdateAnimationParameters()
+    {
+        if (animator == null)
+            return;
+
+        // Reset all animation parameters
+        SetAnimBool(idleAnimationParameter, false);
+        SetAnimBool(walkAnimationParameter, false);
+        SetAnimBool(runAnimationParameter, false);
+
+        // Set current animation state
+        switch (currentAnimationState)
+        {
+            case AnimationState.Idle:
+                SetAnimBool(idleAnimationParameter, true);
+                break;
+            case AnimationState.Walking:
+                SetAnimBool(walkAnimationParameter, true);
+                break;
+            case AnimationState.Running:
+                SetAnimBool(runAnimationParameter, true);
+                break;
+        }
+    }
+
+    void SetAnimBool(string paramName, bool value)
+    {
+        if (animator != null && !string.IsNullOrEmpty(paramName) && HasAnimationParameter(paramName))
+        {
+            animator.SetBool(paramName, value);
+        }
+    }
+
+    bool HasAnimationParameter(string paramName)
+    {
+        if (animator == null || string.IsNullOrEmpty(paramName))
+            return false;
+
+        foreach (var param in animator.parameters)
+        {
+            if (param.name == paramName)
+                return true;
+        }
+        return false;
     }
 
     // Visualization in editor
