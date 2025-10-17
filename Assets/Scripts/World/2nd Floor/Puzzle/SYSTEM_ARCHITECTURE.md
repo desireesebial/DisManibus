@@ -24,14 +24,14 @@
             │                    ├─────────────────────────────┤
             │                    │ • Check player distance     │
             │                    │ • Raycast interaction       │
-            └────────────────────┤ • Get selected head         │
-                                 │ • Validate head type        │
-                                 │ • Handle placement          │
-                                 │ • Complete puzzle           │
-                                 │ • Grant rewards             │
-                                 └─────────────────────────────┘
-                                     │         │         │
-                    ┌────────────────┘         │         └────────────────┐
+            │                    │ • Get selected head         │
+            │                    │ • Validate head type        │
+            │                    │ • Handle placement          │
+            │                    │ • Complete puzzle           │
+            │                    │ • Grant rewards             │
+            │                    └─────────────────────────────┘
+            │                        │         │         │
+            └────────────────────┘         │         └────────────────┐
                     ▼                          ▼                          ▼
         ┌────────────────────┐   ┌──────────────────────┐   ┌────────────────────┐
         │ HeadPlaceholder    │   │  Visual Effects      │   │  Event Managers    │
@@ -477,4 +477,3 @@ Total: < 1 KB per puzzle instance
 ---
 
 **This architecture diagram provides a comprehensive overview of how all components work together. Use it as a reference when extending or debugging the system.**
-

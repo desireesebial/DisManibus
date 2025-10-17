@@ -331,4 +331,3 @@ public class SimpleHeadPlacement : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, interactionDistance);
     }
 }
-

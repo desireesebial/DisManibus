@@ -1,383 +1,463 @@
-# 🥶 Dullahan Freeze Feature - Visual Guide
+# Dullahan Freeze Feature - Visual Implementation Guide
 
-## Quick Overview
+## Overview
 
-**The Dullahan now STOPS MOVING when you pick up a head!**
+This guide provides visual examples and step-by-step instructions for implementing the Dullahan freeze feature in your Unity project.
 
-This gives you time to safely place the head without being chased.
-
----
-
-## 📊 Visual Flow Diagram
-
-```
-╔══════════════════════════════════════════════════════════════╗
-║                    DULLAHAN FREEZE SYSTEM                     ║
-╚══════════════════════════════════════════════════════════════╝
-
-BEFORE PICKUP
-┌─────────────────────────────────────────────────────────────┐
-│  🏃 Player exploring                                         │
-│  👻 Dullahan chasing player (MOVING)                        │
-│  💀 Dullahan head on ground                                 │
-└─────────────────────────────────────────────────────────────┘
-                         │
-                         │ Player presses E to pick up head
-                         ▼
-                    ╔═══════════╗
-                    ║ 🥶 FREEZE ║
-                    ╚═══════════╝
-                         │
-                         ▼
-AFTER PICKUP (FROZEN STATE)
-┌─────────────────────────────────────────────────────────────┐
-│  🏃 Player holding head in inventory                        │
-│  🧊 Dullahan FROZEN (NOT MOVING)                           │
-│  ✨ Player can safely approach body                         │
-│  📍 Placeholder becomes visible                             │
-└─────────────────────────────────────────────────────────────┘
-                         │
-                         │ Player approaches body
-                         ▼
-PLACING HEAD
-┌─────────────────────────────────────────────────────────────┐
-│  🎯 Player at Dullahan body                                 │
-│  🧊 Dullahan still FROZEN                                   │
-│  💚 Placeholder turns green (correct head)                  │
-│   OR                                                         │
-│  ❤️ Placeholder turns red (wrong head)                      │
-│  [Press F to place head]                                    │
-└─────────────────────────────────────────────────────────────┘
-                         │
-                         │ Player presses F
-                         ▼
-                    ╔═══════════╗
-                    ║ 🔥 UNFREEZE ║
-                    ╚═══════════╝
-                         │
-                         ▼
-AFTER PLACEMENT
-┌─────────────────────────────────────────────────────────────┐
-│  IF CORRECT HEAD:                                           │
-│  ✅ Puzzle complete!                                        │
-│  🚪 Door unlocks                                            │
-│  🎉 Rewards granted                                         │
-│  🚶 Dullahan patrols peacefully                             │
-│                                                              │
-│  IF WRONG HEAD:                                             │
-│  ❌ Head was wrong!                                         │
-│  👻 Dullahan unfreezes                                      │
-│  🏃 Dullahan resumes chase                                  │
-│  💀 Find another head and try again!                        │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 🎮 Player Experience Timeline
-
-```
-TIME │ PLAYER ACTION          │ DULLAHAN STATE      │ VISUAL FEEDBACK
-─────┼───────────────────────┼─────────────────────┼─────────────────────
-0:00 │ Exploring             │ 👻 Chasing         │ Normal gameplay
-     │                       │ Moving normally     │
-─────┼───────────────────────┼─────────────────────┼─────────────────────
-0:05 │ Finds head on ground  │ 👻 Still chasing   │ Head glowing
-     │ Approaches head       │ Getting closer!     │ Pickup prompt
-─────┼───────────────────────┼─────────────────────┼─────────────────────
-0:10 │ ⚡ PICKS UP HEAD!     │ 🥶 FREEZES!        │ ⭐ Console message
-     │ Head in inventory     │ Stops immediately   │    "FREEZING DULLAHAN"
-     │                       │ isStopped = true    │ 🧊 Ice effect (optional)
-─────┼───────────────────────┼─────────────────────┼─────────────────────
-0:15 │ Walking to body       │ 🧊 Frozen          │ Dullahan statue-still
-     │ Carrying head         │ Not moving          │ Placeholder appears
-─────┼───────────────────────┼─────────────────────┼─────────────────────
-0:20 │ At body               │ 🧊 Still frozen    │ 💚 Green placeholder
-     │ Looking at placeholder│ Waiting patiently   │    (correct head)
-─────┼───────────────────────┼─────────────────────┼─────────────────────
-0:25 │ ⚡ PLACES HEAD!       │ 🔥 UNFREEZES!      │ ⭐ Console message
-     │ Presses F             │ Resumes movement    │    "UNFREEZING"
-     │ Head leaves inventory │ isStopped = false   │ ✅ Puzzle complete!
-─────┼───────────────────────┼─────────────────────┼─────────────────────
-0:30 │ Puzzle complete!      │ 🚶 Patrolling      │ 🎉 Celebration effects
-     │ Rewards granted       │ Peaceful mode       │ 🚪 Door unlocks
-```
-
----
-
-## 🔄 State Transitions
-
-### State Diagram
-
-```
-                    ┌──────────────────┐
-                    │   DULLAHAN       │
-                    │   CHASING        │
-                    │  (Moving)        │
-                    └──────────────────┘
-                           │
-                           │ Event: Player picks up head
-                           │ Trigger: CheckAndFreezeDullahan()
-                           ▼
-                    ┌──────────────────┐
-                    │   DULLAHAN       │
-                    │   FROZEN         │
-                    │  (Stopped)       │
-                    └──────────────────┘
-                           │
-                           │ Event: Player places/drops head
-                           │ Trigger: CheckAndFreezeDullahan()
-                           ▼
-                    ┌──────────────────┐
-                    │   DULLAHAN       │
-                    │   CHASING        │
-                    │  (Moving)        │
-                    └──────────────────┘
-```
-
-### Detailed State Machine
+## Visual Concept
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ STATE 1: DULLAHAN_MOVING                                    │
-│ • NavMeshAgent.isStopped = false                           │
-│ • DullahanChaseSystem active                               │
-│ • Chasing or patrolling                                    │
-│ • isDullahanFrozen = false                                 │
+│                    DULLAHAN FREEZE MECHANIC                 │
 └─────────────────────────────────────────────────────────────┘
-                         │
-    ┌────────────────────┴────────────────────┐
-    │ CONDITION: Player picks up head         │
-    │ CHECK: headInventory.HasHeads() == true │
-    │ PREVIOUS: playerPreviouslyHadHead == false │
-    └────────────────────┬────────────────────┘
-                         ▼
-    ┌─────────────────────────────────────────┐
-    │ ACTION: FreezeDullahan()                │
-    │ • EndChase()                            │
-    │ • isStopped = true                      │
-    │ • velocity = Vector3.zero               │
-    │ • isDullahanFrozen = true               │
-    └─────────────────────────────────────────┘
-                         │
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│ STATE 2: DULLAHAN_FROZEN                                    │
-│ • NavMeshAgent.isStopped = true                            │
-│ • DullahanChaseSystem inactive                             │
-│ • Completely stationary                                    │
-│ • isDullahanFrozen = true                                  │
-└─────────────────────────────────────────────────────────────┘
-                         │
-    ┌────────────────────┴────────────────────┐
-    │ CONDITION: Player places/drops head     │
-    │ CHECK: headInventory.HasHeads() == false │
-    │ PREVIOUS: playerPreviouslyHadHead == true │
-    └────────────────────┬────────────────────┘
-                         ▼
-    ┌─────────────────────────────────────────┐
-    │ ACTION: UnfreezeDullahan()              │
-    │ • isStopped = false                     │
-    │ • StartChase() or StartPatrol()         │
-    │ • isDullahanFrozen = false              │
-    └─────────────────────────────────────────┘
-                         │
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│ STATE 1: DULLAHAN_MOVING                                    │
-│ (Return to top)                                             │
-└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   NORMAL STATE  │    │  FROZEN STATE   │    │  PATROL STATE   │
+│                 │    │                 │    │                 │
+│  🏃 Dullahan    │    │  🧊 Dullahan    │    │  🚶 Dullahan    │
+│     Chasing     │    │     Frozen      │    │    Patrolling   │
+│                 │    │                 │    │                 │
+│  ⚡ Fast Speed  │    │  ❄️ No Movement │    │  🐌 Slow Speed  │
+│  🎯 Targeting   │    │  😴 Inactive    │    │  🔄 Wandering   │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         │ Player picks up head  │ Player drops head     │ Puzzle complete
+         ▼                       ▼                       ▼
+    ┌─────────┐              ┌─────────┐              ┌─────────┐
+    │ FREEZE  │              │ UNFREEZE│              │ PATROL  │
+    │ TRIGGER │              │ TRIGGER │              │ MODE    │
+    └─────────┘              └─────────┘              └─────────┘
 ```
 
----
+## Implementation Steps
 
-## 🎯 Inspector Setup
-
-### Visual Inspector Layout
+### Step 1: Inspector Setup
 
 ```
-╔════════════════════════════════════════════════════════════╗
-║  DullahanHeadPlacementPuzzle (Script)                      ║
-╠════════════════════════════════════════════════════════════╣
-║                                                             ║
-║  ... (other settings) ...                                  ║
-║                                                             ║
-║  ┌──────────────────────────────────────────────────────┐ ║
-║  │ Dullahan Chase Integration                           │ ║
-║  ├──────────────────────────────────────────────────────┤ ║
-║  │                                                       │ ║
-║  │  ☑ Freeze Dullahan When Player Has Head             │ ║
-║  │  ↑                                                    │ ║
-║  │  └─ CHECK THIS to enable freeze feature!             │ ║
-║  │     (Recommended: ENABLED)                            │ ║
-║  │                                                       │ ║
-║  │  Dullahan Chase System                               │ ║
-║  │  ├─ [None (DullahanChaseSystem)]  ← Auto-found      │ ║
-║  │  └─ Optional: Drag reference here                    │ ║
-║  │                                                       │ ║
-║  │  Dullahan Agent                                      │ ║
-║  │  ├─ [None (NavMeshAgent)]  ← Auto-found             │ ║
-║  │  └─ Optional: Drag reference here                    │ ║
-║  │                                                       │ ║
-║  └──────────────────────────────────────────────────────┘ ║
-║                                                             ║
-╚════════════════════════════════════════════════════════════╝
+DullahanHeadPuzzle (GameObject)
+├─ SimpleHeadPlacement Component
+│  ├─ 🎯 Puzzle Settings
+│  │  ├─ Correct Head ID: 1
+│  │  └─ Interaction Distance: 5.0
+│  │
+│  ├─ 🧊 Dullahan Freeze (Optional)
+│  │  ├─ Freeze Dullahan With Head: ☑
+│  │  └─ Start Frozen: ☐
+│  │
+│  ├─ 🎵 Audio (Optional)
+│  │  ├─ Correct Head Sound: [AudioClip]
+│  │  └─ Wrong Head Sound: [AudioClip]
+│  │
+│  └─ 🎁 Rewards (Optional)
+│     ├─ Reward Door: [Door]
+│     └─ Reward Items: [GameObject[]]
 ```
 
-### Toggle States
+### Step 2: Dullahan Setup
 
 ```
-☑ ENABLED (Recommended)
-├─ Dullahan freezes when head picked up
-├─ Player can place head safely
-└─ Dullahan unfreezes after placement
-
-☐ DISABLED
-├─ Dullahan never freezes
-├─ Player must avoid Dullahan while placing head
-└─ More difficult gameplay
+Dullahan (GameObject)
+├─ Transform
+│  ├─ Position: (0, 0, 0)
+│  ├─ Rotation: (0, 0, 0)
+│  └─ Scale: (1, 1, 1)
+│
+├─ DullahanChaseSystem Component
+│  ├─ Chase Settings
+│  │  ├─ Max Chase Speed: 8.0
+│  │  ├─ Min Chase Speed: 3.0
+│  │  └─ Max Detection Range: 20.0
+│  │
+│  ├─ Patrol Settings
+│  │  ├─ Patrol Speed: 2.0
+│  │  ├─ Patrol Radius: 15.0
+│  │  └─ Patrol Wait Time: 3.0
+│  │
+│  └─ Dullahan References
+│     ├─ Dullahan Transform: [Self]
+│     ├─ Dullahan Agent: [NavMeshAgent]
+│     └─ Dullahan Animator: [Animator]
+│
+├─ NavMeshAgent Component
+│  ├─ Speed: 8.0
+│  ├─ Angular Speed: 120
+│  ├─ Acceleration: 8.0
+│  └─ Stopping Distance: 0.0
+│
+├─ Animator Component
+│  └─ Controller: [DullahanAnimatorController]
+│
+└─ Tag: "Dullahan"
 ```
 
----
+### Step 3: Visual Feedback Setup
 
-## 🔍 Debug Console Output
-
-### When Picking Up Head
-
+#### Freeze Effect Materials
 ```
-═══════════════════════════════════════════════════════════
-[Puzzle] 🥶 FREEZING DULLAHAN - Player has picked up a head!
-[Puzzle] Dullahan chase ended
-[Puzzle] Dullahan NavMeshAgent stopped
-[Puzzle] ✓ Dullahan is now frozen. Player can safely place the head!
-═══════════════════════════════════════════════════════════
-```
-
-### When Placing Head
-
-```
-═══════════════════════════════════════════════════════════
-[Puzzle] 🔥 UNFREEZING DULLAHAN - Player no longer has a head!
-[Puzzle] Dullahan NavMeshAgent resumed
-[Puzzle] Dullahan resuming chase
-[Puzzle] ✓ Dullahan is now unfrozen and can move again!
-═══════════════════════════════════════════════════════════
+Materials/
+├─ DullahanNormal.mat
+│  ├─ Albedo: Normal color
+│  ├─ Metallic: 0.8
+│  └─ Smoothness: 0.6
+│
+├─ DullahanFrozen.mat
+│  ├─ Albedo: Ice blue color
+│  ├─ Metallic: 0.9
+│  ├─ Smoothness: 0.9
+│  └─ Emission: Light blue glow
+│
+└─ DullahanPatrol.mat
+│  ├─ Albedo: Calm color
+│  ├─ Metallic: 0.5
+│  └─ Smoothness: 0.4
 ```
 
----
-
-## 💡 Gameplay Tips
-
-### For Players
-
+#### Freeze Effect Particles
 ```
-✅ DO:
-• Pick up head when you've found the body location
-• Use freeze time to approach safely
-• Place head quickly while frozen
-• Try different heads if wrong
-
-❌ DON'T:
-• Pick up head before finding body (wastes freeze opportunity)
-• Hold head too long (takes inventory slot)
-• Forget Dullahan will unfreeze after placement
-```
-
-### Strategic Considerations
-
-```
-🎯 BEST STRATEGY:
-1. Find Dullahan body first
-2. Locate a head
-3. Pick up head (Dullahan freezes)
-4. Run to body (safe!)
-5. Place head
-6. If wrong: Find another head and repeat
-
-⚠️ RISKY STRATEGY:
-1. Pick up head first
-2. Search for body while holding head
-3. Inventory slot occupied
-4. If you drop head accidentally, Dullahan unfreezes!
+Particle Systems/
+├─ FreezeEffect.prefab
+│  ├─ Shape: Sphere
+│  ├─ Start Lifetime: 2.0
+│  ├─ Start Speed: 1.0
+│  ├─ Start Size: 0.5
+│  ├─ Start Color: Light blue
+│  └─ Emission Rate: 50
+│
+└─ UnfreezeEffect.prefab
+│  ├─ Shape: Sphere
+│  ├─ Start Lifetime: 1.0
+│  ├─ Start Speed: 2.0
+│  ├─ Start Size: 0.3
+│  ├─ Start Color: White
+│  └─ Emission Rate: 100
 ```
 
----
+## Visual States
 
-## 🧪 Testing Scenarios
+### State 1: Normal Chase Mode
+```
+┌─────────────────────────────────────┐
+│           NORMAL CHASE MODE         │
+├─────────────────────────────────────┤
+│  🏃 Dullahan is actively chasing    │
+│  ⚡ High speed movement             │
+│  🎯 Direct path to player           │
+│  🔴 Red glow effect                 │
+│  🔊 Chase audio playing             │
+│  📊 NavMeshAgent.isStopped = false  │
+└─────────────────────────────────────┘
 
-### Test 1: Basic Freeze
-```
-1. Start game with Dullahan chasing
-2. Pick up any head
-3. ✓ Verify: Dullahan stops moving
-4. ✓ Verify: Console shows freeze message
-5. Walk around
-6. ✓ Verify: Dullahan stays frozen
-```
-
-### Test 2: Correct Placement
-```
-1. Pick up correct head (Dullahan freezes)
-2. Approach body
-3. Place correct head
-4. ✓ Verify: Dullahan unfreezes
-5. ✓ Verify: Puzzle completes
-6. ✓ Verify: Dullahan goes to patrol mode
-```
-
-### Test 3: Wrong Placement
-```
-1. Pick up wrong head (Dullahan freezes)
-2. Approach body
-3. Place wrong head
-4. ✓ Verify: Dullahan unfreezes
-5. ✓ Verify: Dullahan resumes chase
-6. ✓ Verify: Can repeat with another head
+Visual Indicators:
+- Dullahan moving at chase speed
+- Red glow around Dullahan
+- Chase audio playing
+- Aggressive animation
+- Direct pathfinding to player
 ```
 
-### Test 4: Drop Head
+### State 2: Frozen Mode
 ```
-1. Pick up head (Dullahan freezes)
-2. Press G to drop head (or throw)
-3. ✓ Verify: Dullahan unfreezes immediately
-4. ✓ Verify: Dullahan resumes chase
-```
+┌─────────────────────────────────────┐
+│            FROZEN MODE              │
+├─────────────────────────────────────┤
+│  🧊 Dullahan is completely frozen   │
+│  ❄️ No movement at all              │
+│  😴 Inactive/idle animation         │
+│  🔵 Blue glow effect                │
+│  🔇 No chase audio                  │
+│  📊 NavMeshAgent.isStopped = true   │
+└─────────────────────────────────────┘
 
----
-
-## 📚 Quick Reference
-
-| Action | Dullahan State | Player Safety |
-|--------|----------------|---------------|
-| No head in inventory | 👻 Chasing | ⚠️ Dangerous |
-| Pick up head | 🥶 Frozen | ✅ Safe |
-| Holding head | 🧊 Frozen | ✅ Safe |
-| Place correct head | ✅ Complete | ✅ Safe (puzzle done) |
-| Place wrong head | 👻 Chasing | ⚠️ Dangerous |
-| Drop head | 👻 Chasing | ⚠️ Dangerous |
-
----
-
-## 🎨 Visual Effects Ideas (Optional)
-
-You can add these visual effects to make the freeze more obvious:
-
-```
-WHEN FROZEN:
-• Blue ice particles around Dullahan
-• Frost shader on Dullahan model
-• Slow-motion effect on Dullahan
-• Blue glow or aura
-• Ice sound effect
-
-WHEN UNFROZEN:
-• Steam/thaw particles
-• Red glow returns
-• Speed lines when resuming chase
-• Unfreeze sound effect
+Visual Indicators:
+- Dullahan completely stationary
+- Blue glow around Dullahan
+- No audio playing
+- Idle/frozen animation
+- Ice particle effects
 ```
 
----
+### State 3: Patrol Mode
+```
+┌─────────────────────────────────────┐
+│            PATROL MODE              │
+├─────────────────────────────────────┤
+│  🚶 Dullahan is patrolling          │
+│  🐌 Slow, wandering movement        │
+│  🔄 Random waypoint navigation      │
+│  🟢 Green glow effect               │
+│  🎵 Calm ambient audio              │
+│  📊 NavMeshAgent.isStopped = false  │
+└─────────────────────────────────────┘
 
-**This freeze mechanic creates a fair and fun gameplay loop where picking up the head is a strategic decision that provides temporary safety!**
+Visual Indicators:
+- Dullahan moving at patrol speed
+- Green glow around Dullahan
+- Calm ambient audio
+- Relaxed animation
+- Random waypoint movement
+```
 
+## Code Implementation
+
+### Freeze State Management
+```csharp
+public class DullahanFreezeManager : MonoBehaviour
+{
+    [Header("Visual Effects")]
+    public Material normalMaterial;
+    public Material frozenMaterial;
+    public Material patrolMaterial;
+    public ParticleSystem freezeEffect;
+    public ParticleSystem unfreezeEffect;
+    public Light stateLight;
+    
+    [Header("Audio")]
+    public AudioClip freezeSound;
+    public AudioClip unfreezeSound;
+    public AudioClip patrolSound;
+    
+    private Renderer dullahanRenderer;
+    private AudioSource audioSource;
+    
+    void Start()
+    {
+        dullahanRenderer = GetComponent<Renderer>();
+        audioSource = GetComponent<AudioSource>();
+    }
+    
+    public void SetFreezeState(FreezeState state)
+    {
+        switch (state)
+        {
+            case FreezeState.Normal:
+                SetNormalState();
+                break;
+            case FreezeState.Frozen:
+                SetFrozenState();
+                break;
+            case FreezeState.Patrol:
+                SetPatrolState();
+                break;
+        }
+    }
+    
+    void SetNormalState()
+    {
+        // Visual
+        dullahanRenderer.material = normalMaterial;
+        stateLight.color = Color.red;
+        stateLight.intensity = 2f;
+        
+        // Audio
+        audioSource.clip = null; // Stop current audio
+        audioSource.Stop();
+        
+        // Particles
+        if (unfreezeEffect) unfreezeEffect.Play();
+    }
+    
+    void SetFrozenState()
+    {
+        // Visual
+        dullahanRenderer.material = frozenMaterial;
+        stateLight.color = Color.blue;
+        stateLight.intensity = 1f;
+        
+        // Audio
+        audioSource.clip = freezeSound;
+        audioSource.Play();
+        
+        // Particles
+        if (freezeEffect) freezeEffect.Play();
+    }
+    
+    void SetPatrolState()
+    {
+        // Visual
+        dullahanRenderer.material = patrolMaterial;
+        stateLight.color = Color.green;
+        stateLight.intensity = 0.5f;
+        
+        // Audio
+        audioSource.clip = patrolSound;
+        audioSource.Play();
+        
+        // Particles
+        if (unfreezeEffect) unfreezeEffect.Play();
+    }
+}
+
+public enum FreezeState
+{
+    Normal,
+    Frozen,
+    Patrol
+}
+```
+
+### Integration with SimpleHeadPlacement
+```csharp
+// In SimpleHeadPlacement.cs
+private DullahanFreezeManager freezeManager;
+
+void Start()
+{
+    // Find freeze manager
+    freezeManager = FindObjectOfType<DullahanFreezeManager>();
+}
+
+void FreezeDullahan()
+{
+    if (isDullahanFrozen) return;
+    
+    Debug.Log("[SimpleHeadPlacement] Freezing Dullahan");
+    
+    // Stop movement
+    if (chaseSystem) chaseSystem.EndChase();
+    if (dullahanAgent)
+    {
+        dullahanAgent.isStopped = true;
+        dullahanAgent.velocity = Vector3.zero;
+    }
+    
+    // Visual effects
+    if (freezeManager) freezeManager.SetFreezeState(FreezeState.Frozen);
+    
+    isDullahanFrozen = true;
+}
+
+void UnfreezeDullahan()
+{
+    if (!isDullahanFrozen) return;
+    
+    Debug.Log("[SimpleHeadPlacement] Unfreezing Dullahan");
+    
+    // Resume movement
+    if (dullahanAgent) dullahanAgent.isStopped = false;
+    
+    // Visual effects
+    if (freezeManager) 
+    {
+        if (puzzleComplete)
+            freezeManager.SetFreezeState(FreezeState.Patrol);
+        else
+            freezeManager.SetFreezeState(FreezeState.Normal);
+    }
+    
+    if (chaseSystem)
+    {
+        if (puzzleComplete)
+            chaseSystem.StartPatrol();
+        else
+            chaseSystem.StartChase();
+    }
+    
+    isDullahanFrozen = false;
+}
+```
+
+## Visual Feedback Timeline
+
+### Freeze Transition
+```
+T=0.0s  │ Player picks up head
+        │ ├─ FreezeDullahan() called
+        │ └─ Transition starts
+        │
+T=0.1s  │ Visual effects begin
+        │ ├─ Material changes to frozen
+        │ ├─ Light changes to blue
+        │ └─ Freeze particles start
+        │
+T=0.2s  │ Audio effects
+        │ ├─ Chase audio stops
+        │ └─ Freeze sound plays
+        │
+T=0.3s  │ Movement stops
+        │ ├─ NavMeshAgent.isStopped = true
+        │ └─ Velocity set to zero
+        │
+T=0.5s  │ Freeze complete
+        │ └─ Dullahan fully frozen
+```
+
+### Unfreeze Transition
+```
+T=0.0s  │ Player drops/places head
+        │ ├─ UnfreezeDullahan() called
+        │ └─ Transition starts
+        │
+T=0.1s  │ Visual effects begin
+        │ ├─ Material changes to normal/patrol
+        │ ├─ Light changes to red/green
+        │ └─ Unfreeze particles start
+        │
+T=0.2s  │ Audio effects
+        │ ├─ Freeze audio stops
+        │ └─ Chase/patrol audio starts
+        │
+T=0.3s  │ Movement resumes
+        │ ├─ NavMeshAgent.isStopped = false
+        │ └─ Chase/patrol behavior starts
+        │
+T=0.5s  │ Unfreeze complete
+        │ └─ Dullahan fully active
+```
+
+## Testing Checklist
+
+### Visual Testing
+- [ ] Dullahan freezes when player picks up head
+- [ ] Dullahan unfreezes when player drops head
+- [ ] Dullahan switches to patrol when puzzle completes
+- [ ] Visual effects (materials, lights, particles) work correctly
+- [ ] Audio effects play at correct times
+- [ ] Animations change appropriately
+
+### Functional Testing
+- [ ] Freeze mechanic works with all head types
+- [ ] Freeze state persists correctly
+- [ ] Unfreeze triggers at correct times
+- [ ] Puzzle completion affects freeze state
+- [ ] Multiple freeze/unfreeze cycles work
+- [ ] Performance is acceptable
+
+### Edge Cases
+- [ ] Freeze works when Dullahan is far from player
+- [ ] Freeze works when Dullahan is close to player
+- [ ] Freeze works during chase
+- [ ] Freeze works during patrol
+- [ ] Freeze works when puzzle is already complete
+- [ ] Freeze works when inventory is full
+
+## Performance Optimization
+
+### Visual Effects
+- Use object pooling for particles
+- Limit particle count and lifetime
+- Use LOD system for distant effects
+- Cache material references
+
+### Audio
+- Use audio pooling for sound effects
+- Limit concurrent audio sources
+- Use compression for audio files
+- Implement audio distance culling
+
+### Movement
+- Use efficient NavMeshAgent properties
+- Minimize state change frequency
+- Cache component references
+- Use coroutines for smooth transitions
+
+## Conclusion
+
+The Dullahan freeze feature adds significant visual and gameplay value to the head placement puzzle. When properly implemented with visual effects, audio feedback, and smooth transitions, it creates an engaging and polished experience for players.
+
+The key to success is:
+1. **Clear Visual Feedback** - Players should immediately understand the freeze state
+2. **Smooth Transitions** - State changes should feel natural and polished
+3. **Consistent Behavior** - Freeze mechanic should work reliably in all scenarios
+4. **Performance** - Visual effects should not impact game performance
+
+This implementation provides a solid foundation that can be extended with additional effects, animations, and gameplay mechanics as needed.

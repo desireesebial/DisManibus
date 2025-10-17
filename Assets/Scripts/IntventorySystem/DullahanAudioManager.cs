@@ -1,464 +1,434 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class DullahanAudioManager : MonoBehaviour
 {
     [Header("Audio Sources")]
-    public AudioSource dullahanAudioSource; // For Dullahan-specific sounds
-    public AudioSource playerAudioSource;   // For player-related sounds
-    public AudioSource ambientAudioSource;  // For ambient sounds
-    public AudioSource effectAudioSource;   // For effect sounds
+    public AudioSource musicSource;
+    public AudioSource sfxSource;
+    public AudioSource voiceSource;
     
-    [Header("Chase Audio")]
-    public AudioClip[] chaseStartClips;
-    public AudioClip[] chaseIntensityClips;
-    public AudioClip[] chaseEndClips;
-    public AudioClip[] heartbeatClips;
+    [Header("Music Tracks")]
+    public AudioClip ambientMusic;
+    public AudioClip chaseMusic;
+    public AudioClip puzzleMusic;
+    public AudioClip victoryMusic;
     
-    [Header("Head Audio")]
-    public AudioClip[] headPickupClips;
-    public AudioClip[] headDropClips;
-    public AudioClip[] headEffectClips;
-    public AudioClip wrongHeadSound;
-    public AudioClip puzzleCompleteSound;
-    
-    [Header("Flashlight Audio")]
-    public AudioClip flashlightOnSound;
-    public AudioClip flashlightOffSound;
-    public AudioClip batteryLowSound;
-    public AudioClip batteryDeadSound;
-    
-    [Header("Lantern Audio")]
-    public AudioClip lanternPickupSound;
-    public AudioClip lanternOnSound;
-    public AudioClip lanternOffSound;
-    public AudioClip lanternFlickerSound;
-    
-    [Header("Timer Audio")]
-    public AudioClip timerWarningSound;
+    [Header("Sound Effects")]
+    public AudioClip footstepSound;
+    public AudioClip headPickupSound;
+    public AudioClip headDropSound;
     public AudioClip doorOpenSound;
+    public AudioClip doorCloseSound;
+    public AudioClip puzzleCompleteSound;
+    public AudioClip puzzleFailSound;
+    
+    [Header("Voice Lines")]
+    public AudioClip[] dullahanVoiceLines;
+    public AudioClip[] playerVoiceLines;
     
     [Header("Audio Settings")]
-    public float maxVolume = 1f;
-    public float minVolume = 0.1f;
-    public float crossfadeTime = 1f;
-    public bool useSpatialAudio = true;
+    public float musicVolume = 0.7f;
+    public float sfxVolume = 0.8f;
+    public float voiceVolume = 0.9f;
+    public float fadeTime = 2f;
     
-    [Header("Chase Intensity Audio")]
-    public float maxChaseVolume = 1f;
-    public float minChaseVolume = 0.3f;
-    public float maxChasePitch = 1.2f;
-    public float minChasePitch = 0.8f;
+    [Header("Dynamic Audio")]
+    public bool enableDynamicAudio = true;
+    public float chaseIntensityThreshold = 0.5f;
+    public float musicTransitionSpeed = 1f;
     
-    private AudioSource currentChaseSource;
-    private AudioSource currentHeartbeatSource;
-    private bool isInitialized = false;
+    // Private variables
+    private AudioClip currentMusic;
+    private Coroutine musicFadeCoroutine;
+    private Dictionary<string, AudioClip> audioClips = new Dictionary<string, AudioClip>();
+    private bool isChasing = false;
+    private float currentChaseIntensity = 0f;
     
     void Start()
     {
-        // Setup audio sources
-        SetupAudioSources();
-        
-        // Find missing references
-        FindMissingReferences();
-        
-        isInitialized = true;
+        InitializeAudioSources();
+        LoadAudioClips();
+        PlayAmbientMusic();
     }
     
-    private void SetupAudioSources()
+    void InitializeAudioSources()
     {
-        // Setup Dullahan audio source
-        if (dullahanAudioSource == null)
+        // Create audio sources if they don't exist
+        if (musicSource == null)
         {
-            GameObject dullahanAudioObj = new GameObject("DullahanAudio");
-            dullahanAudioObj.transform.SetParent(transform);
-            dullahanAudioSource = dullahanAudioObj.AddComponent<AudioSource>();
+            musicSource = gameObject.AddComponent<AudioSource>();
+            musicSource.loop = true;
+            musicSource.volume = musicVolume;
         }
         
-        // Setup player audio source
-        if (playerAudioSource == null)
+        if (sfxSource == null)
         {
-            GameObject playerAudioObj = new GameObject("PlayerAudio");
-            playerAudioObj.transform.SetParent(transform);
-            playerAudioSource = playerAudioObj.AddComponent<AudioSource>();
+            sfxSource = gameObject.AddComponent<AudioSource>();
+            sfxSource.loop = false;
+            sfxSource.volume = sfxVolume;
         }
         
-        // Setup ambient audio source
-        if (ambientAudioSource == null)
+        if (voiceSource == null)
         {
-            GameObject ambientAudioObj = new GameObject("AmbientAudio");
-            ambientAudioObj.transform.SetParent(transform);
-            ambientAudioSource = ambientAudioObj.AddComponent<AudioSource>();
+            voiceSource = gameObject.AddComponent<AudioSource>();
+            voiceSource.loop = false;
+            voiceSource.volume = voiceVolume;
         }
-        
-        // Setup effect audio source
-        if (effectAudioSource == null)
-        {
-            GameObject effectAudioObj = new GameObject("EffectAudio");
-            effectAudioObj.transform.SetParent(transform);
-            effectAudioSource = effectAudioObj.AddComponent<AudioSource>();
-        }
-        
-        // Configure audio sources
-        ConfigureAudioSource(dullahanAudioSource, true);
-        ConfigureAudioSource(playerAudioSource, false);
-        ConfigureAudioSource(ambientAudioSource, true);
-        ConfigureAudioSource(effectAudioSource, false);
     }
     
-    private void ConfigureAudioSource(AudioSource source, bool spatial)
+    void LoadAudioClips()
     {
-        if (source == null) return;
+        // Load music tracks
+        if (ambientMusic != null) audioClips["ambient"] = ambientMusic;
+        if (chaseMusic != null) audioClips["chase"] = chaseMusic;
+        if (puzzleMusic != null) audioClips["puzzle"] = puzzleMusic;
+        if (victoryMusic != null) audioClips["victory"] = victoryMusic;
         
-        source.spatialBlend = spatial ? 1f : 0f; // 1f = 3D, 0f = 2D
-        source.volume = maxVolume;
-        source.loop = false;
-        source.playOnAwake = false;
+        // Load sound effects
+        if (footstepSound != null) audioClips["footstep"] = footstepSound;
+        if (headPickupSound != null) audioClips["headPickup"] = headPickupSound;
+        if (headDropSound != null) audioClips["headDrop"] = headDropSound;
+        if (doorOpenSound != null) audioClips["doorOpen"] = doorOpenSound;
+        if (doorCloseSound != null) audioClips["doorClose"] = doorCloseSound;
+        if (puzzleCompleteSound != null) audioClips["puzzleComplete"] = puzzleCompleteSound;
+        if (puzzleFailSound != null) audioClips["puzzleFail"] = puzzleFailSound;
     }
     
-    private void FindMissingReferences()
+    public void PlayAmbientMusic()
     {
-        // Find existing audio sources in scene if not assigned
-        if (dullahanAudioSource == null)
-            dullahanAudioSource = FindObjectOfType<AudioSource>();
-        
-        if (playerAudioSource == null)
+        if (ambientMusic != null)
         {
-            AudioSource[] sources = FindObjectsOfType<AudioSource>();
-            foreach (AudioSource source in sources)
+            PlayMusic(ambientMusic);
+        }
+    }
+    
+    public void PlayChaseMusic()
+    {
+        if (chaseMusic != null)
+        {
+            PlayMusic(chaseMusic);
+        }
+    }
+    
+    public void PlayPuzzleMusic()
+    {
+        if (puzzleMusic != null)
+        {
+            PlayMusic(puzzleMusic);
+        }
+    }
+    
+    public void PlayVictoryMusic()
+    {
+        if (victoryMusic != null)
+        {
+            PlayMusic(victoryMusic);
+        }
+    }
+    
+    public void PlayMusic(AudioClip clip)
+    {
+        if (clip == null || clip == currentMusic) return;
+        
+        if (musicFadeCoroutine != null)
+        {
+            StopCoroutine(musicFadeCoroutine);
+        }
+        
+        musicFadeCoroutine = StartCoroutine(FadeMusic(clip));
+    }
+    
+    IEnumerator FadeMusic(AudioClip newClip)
+    {
+        // Fade out current music
+        if (currentMusic != null)
+        {
+            float startVolume = musicSource.volume;
+            while (musicSource.volume > 0)
             {
-                if (source != dullahanAudioSource)
-                {
-                    playerAudioSource = source;
-                    break;
-                }
+                musicSource.volume -= startVolume * Time.deltaTime / fadeTime;
+                yield return null;
             }
         }
+        
+        // Change clip
+        musicSource.clip = newClip;
+        currentMusic = newClip;
+        
+        // Fade in new music
+        if (newClip != null)
+        {
+            musicSource.Play();
+            while (musicSource.volume < musicVolume)
+            {
+                musicSource.volume += musicVolume * Time.deltaTime / fadeTime;
+                yield return null;
+            }
+        }
+        
+        musicSource.volume = musicVolume;
     }
     
-    // Chase Audio Methods
-    public void PlayChaseStart()
+    public void PlaySFX(string clipName)
     {
-        if (!isInitialized || chaseStartClips.Length == 0) return;
-        
-        AudioClip clip = GetRandomClip(chaseStartClips);
-        if (clip != null)
+        if (audioClips.ContainsKey(clipName))
         {
-            PlayAudioClip(dullahanAudioSource, clip, maxChaseVolume);
+            PlaySFX(audioClips[clipName]);
+        }
+        else
+        {
+            Debug.LogWarning($"[DullahanAudioManager] SFX clip '{clipName}' not found");
         }
     }
     
-    public void PlayChaseEnd()
+    public void PlaySFX(AudioClip clip)
     {
-        if (!isInitialized || chaseEndClips.Length == 0) return;
-        
-        AudioClip clip = GetRandomClip(chaseEndClips);
-        if (clip != null)
+        if (clip != null && sfxSource != null)
         {
-            PlayAudioClip(dullahanAudioSource, clip, maxChaseVolume);
-        }
-        
-        // Stop heartbeat
-        StopHeartbeat();
-    }
-    
-    public void UpdateChaseIntensity(float intensity)
-    {
-        if (!isInitialized) return;
-        
-        // Update chase audio volume and pitch
-        if (dullahanAudioSource != null && dullahanAudioSource.isPlaying)
-        {
-            float targetVolume = Mathf.Lerp(minChaseVolume, maxChaseVolume, intensity);
-            float targetPitch = Mathf.Lerp(minChasePitch, maxChasePitch, intensity);
-            
-            dullahanAudioSource.volume = Mathf.Lerp(dullahanAudioSource.volume, targetVolume, Time.deltaTime * 2f);
-            dullahanAudioSource.pitch = Mathf.Lerp(dullahanAudioSource.pitch, targetPitch, Time.deltaTime * 2f);
-        }
-        
-        // Update heartbeat
-        UpdateHeartbeat(intensity);
-    }
-    
-    // Method for DullahanChaseSystem to set chase intensity
-    public void SetChaseIntensity(float intensity)
-    {
-        UpdateChaseIntensity(intensity);
-    }
-    
-    // Method for DullahanChaseSystem to start chase
-    public void StartChase()
-    {
-        PlayChaseStart();
-        StartHeartbeat();
-    }
-    
-    // Method for DullahanChaseSystem to end chase
-    public void EndChase()
-    {
-        PlayChaseEnd();
-        StopHeartbeat();
-    }
-    
-    public void StartHeartbeat()
-    {
-        if (!isInitialized || heartbeatClips.Length == 0) return;
-        
-        if (currentHeartbeatSource == null)
-        {
-            GameObject heartbeatObj = new GameObject("HeartbeatAudio");
-            heartbeatObj.transform.SetParent(transform);
-            currentHeartbeatSource = heartbeatObj.AddComponent<AudioSource>();
-            ConfigureAudioSource(currentHeartbeatSource, false);
-        }
-        
-        AudioClip clip = GetRandomClip(heartbeatClips);
-        if (clip != null)
-        {
-            currentHeartbeatSource.clip = clip;
-            currentHeartbeatSource.loop = true;
-            currentHeartbeatSource.volume = 0f;
-            currentHeartbeatSource.Play();
+            sfxSource.PlayOneShot(clip);
         }
     }
     
-    public void StopHeartbeat()
+    public void PlayVoiceLine(string clipName)
     {
-        if (currentHeartbeatSource != null)
+        if (audioClips.ContainsKey(clipName))
         {
-            StartCoroutine(FadeOutAudio(currentHeartbeatSource, 1f));
+            PlayVoiceLine(audioClips[clipName]);
+        }
+        else
+        {
+            Debug.LogWarning($"[DullahanAudioManager] Voice clip '{clipName}' not found");
         }
     }
     
-    private void UpdateHeartbeat(float intensity)
+    public void PlayVoiceLine(AudioClip clip)
     {
-        if (currentHeartbeatSource != null && currentHeartbeatSource.isPlaying)
+        if (clip != null && voiceSource != null)
         {
-            float targetVolume = intensity * 0.8f;
-            float targetPitch = Mathf.Lerp(0.8f, 1.2f, intensity);
-            
-            currentHeartbeatSource.volume = Mathf.Lerp(currentHeartbeatSource.volume, targetVolume, Time.deltaTime * 2f);
-            currentHeartbeatSource.pitch = Mathf.Lerp(currentHeartbeatSource.pitch, targetPitch, Time.deltaTime * 2f);
+            voiceSource.PlayOneShot(clip);
         }
     }
     
-    // Head Audio Methods
     public void PlayHeadPickupSound(HeadType headType)
     {
-        if (!isInitialized || headPickupClips.Length == 0) return;
-        
-        AudioClip clip = GetRandomClip(headPickupClips);
-        if (clip != null)
+        switch (headType)
         {
-            PlayAudioClip(effectAudioSource, clip, maxVolume);
+            case HeadType.Real:
+                PlaySFX("headPickup");
+                break;
+            case HeadType.Fake1:
+                PlaySFX("headPickup");
+                break;
+            case HeadType.Fake2:
+                PlaySFX("headPickup");
+                break;
         }
     }
     
     public void PlayHeadDropSound(HeadType headType)
     {
-        if (!isInitialized || headDropClips.Length == 0) return;
-        
-        AudioClip clip = GetRandomClip(headDropClips);
-        if (clip != null)
+        switch (headType)
         {
-            PlayAudioClip(effectAudioSource, clip, maxVolume);
+            case HeadType.Real:
+                PlaySFX("headDrop");
+                break;
+            case HeadType.Fake1:
+                PlaySFX("headDrop");
+                break;
+            case HeadType.Fake2:
+                PlaySFX("headDrop");
+                break;
         }
     }
     
-    public void PlayHeadEffectSound(HeadType headType)
+    public void PlayFootstepSound()
     {
-        if (!isInitialized || headEffectClips.Length == 0) return;
-        
-        AudioClip clip = GetRandomClip(headEffectClips);
-        if (clip != null)
-        {
-            PlayAudioClip(effectAudioSource, clip, maxVolume);
-        }
-    }
-    
-    public void PlayWrongHeadSound()
-    {
-        if (!isInitialized || wrongHeadSound == null) return;
-        
-        PlayAudioClip(effectAudioSource, wrongHeadSound, maxVolume);
-    }
-    
-    public void PlayPuzzleCompleteSound()
-    {
-        if (!isInitialized || puzzleCompleteSound == null) return;
-        
-        PlayAudioClip(effectAudioSource, puzzleCompleteSound, maxVolume);
-    }
-    
-    // Utility Methods
-    private AudioClip GetRandomClip(AudioClip[] clips)
-    {
-        if (clips == null || clips.Length == 0) return null;
-        
-        return clips[Random.Range(0, clips.Length)];
-    }
-    
-    private void PlayAudioClip(AudioSource source, AudioClip clip, float volume)
-    {
-        if (source == null || clip == null) return;
-        
-        source.clip = clip;
-        source.volume = volume;
-        source.Play();
-    }
-    
-    private IEnumerator FadeOutAudio(AudioSource source, float duration)
-    {
-        if (source == null) yield break;
-        
-        float startVolume = source.volume;
-        float elapsed = 0f;
-        
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            source.volume = Mathf.Lerp(startVolume, 0f, elapsed / duration);
-            yield return null;
-        }
-        
-        source.Stop();
-        source.volume = startVolume;
-    }
-    
-    private IEnumerator CrossfadeAudio(AudioSource fromSource, AudioSource toSource, AudioClip newClip, float duration)
-    {
-        if (fromSource == null || toSource == null || newClip == null) yield break;
-        
-        // Start new audio
-        toSource.clip = newClip;
-        toSource.volume = 0f;
-        toSource.Play();
-        
-        float elapsed = 0f;
-        float fromStartVolume = fromSource.volume;
-        
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = elapsed / duration;
-            
-            fromSource.volume = Mathf.Lerp(fromStartVolume, 0f, t);
-            toSource.volume = Mathf.Lerp(0f, maxVolume, t);
-            
-            yield return null;
-        }
-        
-        fromSource.Stop();
-        fromSource.volume = fromStartVolume;
-    }
-    
-    // Public methods for other scripts
-    public void SetMasterVolume(float volume)
-    {
-        maxVolume = Mathf.Clamp01(volume);
-        
-        if (dullahanAudioSource != null) dullahanAudioSource.volume = maxVolume;
-        if (playerAudioSource != null) playerAudioSource.volume = maxVolume;
-        if (ambientAudioSource != null) ambientAudioSource.volume = maxVolume;
-        if (effectAudioSource != null) effectAudioSource.volume = maxVolume;
-    }
-    
-    public void StopAllAudio()
-    {
-        if (dullahanAudioSource != null) dullahanAudioSource.Stop();
-        if (playerAudioSource != null) playerAudioSource.Stop();
-        if (ambientAudioSource != null) ambientAudioSource.Stop();
-        if (effectAudioSource != null) effectAudioSource.Stop();
-        if (currentHeartbeatSource != null) currentHeartbeatSource.Stop();
-    }
-    
-    public bool IsPlayingChaseAudio()
-    {
-        return dullahanAudioSource != null && dullahanAudioSource.isPlaying;
-    }
-    
-    public bool IsPlayingHeartbeat()
-    {
-        return currentHeartbeatSource != null && currentHeartbeatSource.isPlaying;
-    }
-    
-    // Flashlight Audio Methods
-    public void PlayFlashlightOnSound()
-    {
-        if (!isInitialized || flashlightOnSound == null) return;
-        
-        PlayAudioClip(effectAudioSource, flashlightOnSound, maxVolume);
-    }
-    
-    public void PlayFlashlightOffSound()
-    {
-        if (!isInitialized || flashlightOffSound == null) return;
-        
-        PlayAudioClip(effectAudioSource, flashlightOffSound, maxVolume);
-    }
-    
-    public void PlayBatteryLowSound()
-    {
-        if (!isInitialized || batteryLowSound == null) return;
-        
-        PlayAudioClip(effectAudioSource, batteryLowSound, maxVolume);
-    }
-    
-    public void PlayBatteryDeadSound()
-    {
-        if (!isInitialized || batteryDeadSound == null) return;
-        
-        PlayAudioClip(effectAudioSource, batteryDeadSound, maxVolume);
-    }
-    
-    // Timer Audio Methods
-    public void PlayTimerWarningSound()
-    {
-        if (!isInitialized || timerWarningSound == null) return;
-        
-        PlayAudioClip(effectAudioSource, timerWarningSound, maxVolume);
+        PlaySFX("footstep");
     }
     
     public void PlayDoorOpenSound()
     {
-        if (!isInitialized || doorOpenSound == null) return;
-        
-        PlayAudioClip(effectAudioSource, doorOpenSound, maxVolume);
+        PlaySFX("doorOpen");
     }
     
-    // Lantern Audio Methods
-    public void PlayLanternPickupSound()
+    public void PlayDoorCloseSound()
     {
-        if (!isInitialized || lanternPickupSound == null) return;
-        
-        PlayAudioClip(effectAudioSource, lanternPickupSound, maxVolume);
+        PlaySFX("doorClose");
     }
     
-    public void PlayLanternOnSound()
+    public void PlayPuzzleCompleteSound()
     {
-        if (!isInitialized || lanternOnSound == null) return;
-        
-        PlayAudioClip(effectAudioSource, lanternOnSound, maxVolume);
+        PlaySFX("puzzleComplete");
     }
     
-    public void PlayLanternOffSound()
+    public void PlayPuzzleFailSound()
     {
-        if (!isInitialized || lanternOffSound == null) return;
-        
-        PlayAudioClip(effectAudioSource, lanternOffSound, maxVolume);
+        PlaySFX("puzzleFail");
     }
     
-    public void PlayLanternFlickerSound()
+    public void SetChaseIntensity(float intensity)
     {
-        if (!isInitialized || lanternFlickerSound == null) return;
+        currentChaseIntensity = intensity;
         
-        PlayAudioClip(effectAudioSource, lanternFlickerSound, maxVolume * 0.5f);
+        if (enableDynamicAudio)
+        {
+            if (intensity > chaseIntensityThreshold && !isChasing)
+            {
+                StartChase();
+            }
+            else if (intensity <= chaseIntensityThreshold && isChasing)
+            {
+                StopChase();
+            }
+        }
     }
     
-    public void PlayCompletionSound()
+    public void StartChase()
     {
-        if (!isInitialized || puzzleCompleteSound == null) return;
+        if (isChasing) return;
         
-        PlayAudioClip(effectAudioSource, puzzleCompleteSound, maxVolume);
+        Debug.Log("[DullahanAudioManager] Starting chase audio");
+        isChasing = true;
+        PlayChaseMusic();
+    }
+    
+    public void StopChase()
+    {
+        if (!isChasing) return;
+        
+        Debug.Log("[DullahanAudioManager] Stopping chase audio");
+        isChasing = false;
+        PlayAmbientMusic();
+    }
+    
+    public void SetMusicVolume(float volume)
+    {
+        musicVolume = Mathf.Clamp01(volume);
+        if (musicSource != null)
+            musicSource.volume = musicVolume;
+    }
+    
+    public void SetSFXVolume(float volume)
+    {
+        sfxVolume = Mathf.Clamp01(volume);
+        if (sfxSource != null)
+            sfxSource.volume = sfxVolume;
+    }
+    
+    public void SetVoiceVolume(float volume)
+    {
+        voiceVolume = Mathf.Clamp01(volume);
+        if (voiceSource != null)
+            voiceSource.volume = voiceVolume;
+    }
+    
+    public void MuteAll()
+    {
+        if (musicSource != null) musicSource.volume = 0f;
+        if (sfxSource != null) sfxSource.volume = 0f;
+        if (voiceSource != null) voiceSource.volume = 0f;
+    }
+    
+    public void UnmuteAll()
+    {
+        if (musicSource != null) musicSource.volume = musicVolume;
+        if (sfxSource != null) sfxSource.volume = sfxVolume;
+        if (voiceSource != null) voiceSource.volume = voiceVolume;
+    }
+    
+    public void StopAllAudio()
+    {
+        if (musicSource != null) musicSource.Stop();
+        if (sfxSource != null) sfxSource.Stop();
+        if (voiceSource != null) voiceSource.Stop();
+    }
+    
+    public void PauseAllAudio()
+    {
+        if (musicSource != null) musicSource.Pause();
+        if (sfxSource != null) sfxSource.Pause();
+        if (voiceSource != null) voiceSource.Pause();
+    }
+    
+    public void ResumeAllAudio()
+    {
+        if (musicSource != null) musicSource.UnPause();
+        if (sfxSource != null) sfxSource.UnPause();
+        if (voiceSource != null) voiceSource.UnPause();
+    }
+    
+    public bool IsPlayingMusic()
+    {
+        return musicSource != null && musicSource.isPlaying;
+    }
+    
+    public bool IsPlayingSFX()
+    {
+        return sfxSource != null && sfxSource.isPlaying;
+    }
+    
+    public bool IsPlayingVoice()
+    {
+        return voiceSource != null && voiceSource.isPlaying;
+    }
+    
+    public AudioClip GetCurrentMusic()
+    {
+        return currentMusic;
+    }
+    
+    public float GetMusicVolume()
+    {
+        return musicVolume;
+    }
+    
+    public float GetSFXVolume()
+    {
+        return sfxVolume;
+    }
+    
+    public float GetVoiceVolume()
+    {
+        return voiceVolume;
+    }
+    
+    public bool IsChasing()
+    {
+        return isChasing;
+    }
+    
+    public float GetChaseIntensity()
+    {
+        return currentChaseIntensity;
+    }
+    
+    // Debug methods
+    public void TestAudio()
+    {
+        Debug.Log("[DullahanAudioManager] Testing audio system");
+        
+        if (ambientMusic != null)
+        {
+            PlayAmbientMusic();
+            Debug.Log("Playing ambient music");
+        }
+        
+        if (headPickupSound != null)
+        {
+            PlaySFX(headPickupSound);
+            Debug.Log("Playing head pickup sound");
+        }
+    }
+    
+    void OnValidate()
+    {
+        // Clamp volume values in inspector
+        musicVolume = Mathf.Clamp01(musicVolume);
+        sfxVolume = Mathf.Clamp01(sfxVolume);
+        voiceVolume = Mathf.Clamp01(voiceVolume);
+        fadeTime = Mathf.Max(0.1f, fadeTime);
+        musicTransitionSpeed = Mathf.Max(0.1f, musicTransitionSpeed);
     }
 }

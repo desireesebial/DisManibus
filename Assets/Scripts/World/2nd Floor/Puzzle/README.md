@@ -237,4 +237,3 @@ DullahanHeadPlacementPuzzle Component:
 **Created**: December 10, 2025  
 **Project**: DisManibus  
 **Location**: `Assets/Scripts/World/2nd Floor/Puzzle/`
-

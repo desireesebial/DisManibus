@@ -28,86 +28,87 @@ public class DullahanChaseEventManager : MonoBehaviour
     [Header("Player Choice")]
     public bool playerChoseToHelp = false;
     public bool choiceMade = false;
-    public float choiceTimeLimit = 30f; // Time to make choice
+    public float choiceTimeLimit = 30f; // Time limit for player choice
     private float choiceTimer = 0f;
     
-    [Header("Game States")]
-    public GameState currentState = GameState.Waiting;
-    public bool isChaseActive = false;
-    public bool isEventComplete = false;
-    public bool badEndingTriggered = false;
-    
-    [Header("Timer UI")]
-    public GameObject timerUI;
-    public TextMeshProUGUI timerText;
-    public Image timerFillImage;
-    public Color timerNormalColor = Color.white;
-    public Color timerWarningColor = Color.red;
-    public float warningThreshold = 10f;
-    
-    [Header("Choice UI")]
-    public GameObject choiceUI;
+    [Header("UI Elements")]
+    public GameObject proximityUI; // UI shown when player enters proximity
+    public GameObject choiceUI; // UI for player choice
+    public GameObject chaseUI; // UI shown during chase
+    public GameObject headCollectionUI; // UI shown during head collection
+    public TextMeshProUGUI proximityText;
     public TextMeshProUGUI choiceText;
+    public TextMeshProUGUI chaseText;
+    public TextMeshProUGUI headCollectionText;
     public Button helpButton;
     public Button leaveButton;
-    public string helpText = "Help Dullahan find its head?";
-    public string leaveText = "Leave through exit door";
     
-    [Header("Proximity UI")]
-    public GameObject proximityUI;
-    public TextMeshProUGUI proximityText;
-    public string proximityWarningText = "Dullahan's territory...";
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip proximitySound;
+    public AudioClip choiceSound;
+    public AudioClip chaseStartSound;
+    public AudioClip chaseEndSound;
+    public AudioClip headSpawnSound;
+    public AudioClip doorOpenSound;
+    
+    [Header("Visual Effects")]
+    public Light proximityLight;
+    public ParticleSystem proximityParticles;
+    public ParticleSystem chaseParticles;
+    public ParticleSystem headSpawnParticles;
+    
+    [Header("Head Spawning")]
+    public Transform[] headSpawnPoints; // Points where heads will spawn
+    public GameObject realHeadPrefab;
+    public GameObject fakeHead1Prefab;
+    public GameObject fakeHead2Prefab;
+    public float headSpawnRadius = 2f;
     
     [Header("Integration")]
     public DullahanChaseSystem dullahanChaseSystem;
     public DullahanAudioManager audioManager;
     public DullahanHeadInventory headInventory;
-    public SimpleHeadPlacement headPlacement; // Updated to use new simple system
+    public Floor2EndingEventManager floor2EventManager;
     
-    [Header("Scene Management")]
-    public string nextSceneName = "NextLevel";
-    public string badEndingSceneName = "BadEnding";
+    [Header("State Management")]
+    public EventState currentState = EventState.Waiting;
+    public bool eventActive = true;
+    public bool chaseActive = false;
+    public bool headsSpawned = false;
+    public bool headsCollected = false;
     
-    [Header("Debug")]
-    public bool debugMode = false;
-    public KeyCode triggerProximityKey = KeyCode.P;
-    public KeyCode skipChaseKey = KeyCode.C;
-    public KeyCode forceChoiceKey = KeyCode.Space;
+    // Private variables
+    private Transform player;
+    private float chaseTimer = 0f;
+    private float headCollectionTimer = 0f;
+    private List<GameObject> spawnedHeads = new List<GameObject>();
     
-    private float currentTimer;
-    private float maxTimer;
-    private bool timerWarningPlayed = false;
-    private Transform playerTransform;
-    
-    public enum GameState
+    public enum EventState
     {
-        Waiting,        // Waiting for player to enter proximity
-        Chase,          // Dullahan chasing player
-        Choice,         // Player making choice
-        HeadCollection, // Player collecting heads
-        Completion,     // Real head attached, game complete
-        BadEnding       // Player chose to leave
+        Waiting,
+        Proximity,
+        Choice,
+        Chase,
+        HeadCollection,
+        Completed
     }
     
     void Start()
     {
-        InitializeEventManager();
+        InitializeComponents();
+        SetupUI();
+        StartCoroutine(EventLoop());
     }
     
-    void Update()
+    void InitializeComponents()
     {
-        if (!isEventComplete && !badEndingTriggered)
-        {
-            HandleProximityDetection();
-            HandleCurrentState();
-            HandleDebugInput();
-            UpdateUI();
-        }
-    }
-    
-    private void InitializeEventManager()
-    {
-        // Find references if not assigned
+        // Find player
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+            player = playerObj.transform;
+        
+        // Find components
         if (dullahanChaseSystem == null)
             dullahanChaseSystem = FindObjectOfType<DullahanChaseSystem>();
             
@@ -117,760 +118,452 @@ public class DullahanChaseEventManager : MonoBehaviour
         if (headInventory == null)
             headInventory = FindObjectOfType<DullahanHeadInventory>();
             
-        if (headPlacement == null)
-            headPlacement = FindObjectOfType<SimpleHeadPlacement>();
+        if (floor2EventManager == null)
+            floor2EventManager = FindObjectOfType<Floor2EndingEventManager>();
         
-        // Find player
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-            playerTransform = player.transform;
+        // Setup audio
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
         
-        // Setup proximity center if not assigned
-        if (proximityCenter == null)
-        {
-            proximityCenter = transform;
-        }
-        
-        // Find doors if not assigned
-        FindMissingDoors();
-        
-        // Initialize timers
-        maxTimer = chaseDuration;
-        currentTimer = maxTimer;
-        
-        // Setup UI
-        if (timerUI != null)
-            timerUI.SetActive(false);
-        if (choiceUI != null)
-            choiceUI.SetActive(false);
-        if (proximityUI != null)
-            proximityUI.SetActive(false);
-            
-        // Lock doors initially
-        LockAllDoors();
-        
-        // Ensure Dullahan starts in patrol mode
-        StartCoroutine(InitializePatrolMode());
-        
-        // Setup choice buttons
-        SetupChoiceButtons();
-        
-        Debug.Log("Dullahan Chase Event Manager initialized - Waiting for proximity trigger");
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
     }
     
-    private void SetupChoiceButtons()
+    void SetupUI()
     {
+        // Hide all UI initially
+        if (proximityUI != null) proximityUI.SetActive(false);
+        if (choiceUI != null) choiceUI.SetActive(false);
+        if (chaseUI != null) chaseUI.SetActive(false);
+        if (headCollectionUI != null) headCollectionUI.SetActive(false);
+        
+        // Setup button events
         if (helpButton != null)
-        {
-            helpButton.onClick.AddListener(OnHelpChosen);
-        }
+            helpButton.onClick.AddListener(OnHelpButtonClicked);
         
         if (leaveButton != null)
+            leaveButton.onClick.AddListener(OnLeaveButtonClicked);
+    }
+    
+    IEnumerator EventLoop()
+    {
+        while (eventActive)
         {
-            leaveButton.onClick.AddListener(OnLeaveChosen);
+            switch (currentState)
+            {
+                case EventState.Waiting:
+                    yield return StartCoroutine(HandleWaitingState());
+                    break;
+                case EventState.Proximity:
+                    yield return StartCoroutine(HandleProximityState());
+                    break;
+                case EventState.Choice:
+                    yield return StartCoroutine(HandleChoiceState());
+                    break;
+                case EventState.Chase:
+                    yield return StartCoroutine(HandleChaseState());
+                    break;
+                case EventState.HeadCollection:
+                    yield return StartCoroutine(HandleHeadCollectionState());
+                    break;
+                case EventState.Completed:
+                    yield return StartCoroutine(HandleCompletedState());
+                    break;
+            }
+            
+            yield return null;
         }
     }
     
-    private IEnumerator InitializePatrolMode()
+    IEnumerator HandleWaitingState()
     {
-        yield return new WaitForSeconds(1f);
-        
-        if (dullahanChaseSystem != null)
+        // Wait for player to enter proximity
+        while (currentState == EventState.Waiting)
         {
-            dullahanChaseSystem.StartPatrol();
-        }
-        
-        Debug.Log("Dullahan initialized in patrol mode");
-    }
-    
-    private void HandleProximityDetection()
-    {
-        if (proximityTriggered || playerTransform == null) return;
-        
-        float distanceToPlayer = Vector3.Distance(proximityCenter.position, playerTransform.position);
-        bool wasInProximity = playerInProximity;
-        playerInProximity = distanceToPlayer <= proximityRadius;
-        
-        // Player just entered proximity
-        if (playerInProximity && !wasInProximity)
-        {
-            OnPlayerEnteredProximity();
-        }
-        // Player left proximity
-        else if (!playerInProximity && wasInProximity)
-        {
-            OnPlayerLeftProximity();
+            if (player != null)
+            {
+                float distance = Vector3.Distance(transform.position, player.position);
+                if (distance <= proximityRadius)
+                {
+                    currentState = EventState.Proximity;
+                    break;
+                }
+            }
+            yield return null;
         }
     }
     
-    private void OnPlayerEnteredProximity()
+    IEnumerator HandleProximityState()
     {
-        if (proximityTriggered) return;
+        Debug.Log("[DullahanChaseEventManager] Player entered proximity");
         
-        Debug.Log("Player entered Dullahan's proximity - Chase sequence starting!");
-        proximityTriggered = true;
-        
-        // Show proximity warning
+        // Show proximity UI
         if (proximityUI != null)
         {
             proximityUI.SetActive(true);
             if (proximityText != null)
-                proximityText.text = proximityWarningText;
+                proximityText.text = "You sense a powerful presence nearby...";
         }
         
-        // Start chase after brief delay
-        StartCoroutine(StartChaseSequence());
-    }
-    
-    private void OnPlayerLeftProximity()
-    {
-        // Only relevant if player hasn't triggered the sequence yet
-        if (!proximityTriggered)
-        {
-            if (proximityUI != null)
-                proximityUI.SetActive(false);
-        }
-    }
-    
-    private IEnumerator StartChaseSequence()
-    {
-        yield return new WaitForSeconds(2f); // Brief warning delay
+        // Play proximity sound
+        if (audioSource != null && proximitySound != null)
+            audioSource.PlayOneShot(proximitySound);
         
-        // Hide proximity UI
-        if (proximityUI != null)
-            proximityUI.SetActive(false);
+        // Start proximity effects
+        StartProximityEffects();
         
-        // Start chase
-        StartChase();
-    }
-    
-    private void HandleCurrentState()
-    {
-        switch (currentState)
-        {
-            case GameState.Waiting:
-                // Waiting for proximity trigger
-                break;
-                
-            case GameState.Chase:
-                HandleChaseTimer();
-                break;
-                
-            case GameState.Choice:
-                HandleChoiceTimer();
-                break;
-                
-            case GameState.HeadCollection:
-                HandleHeadCollectionTimer();
-                break;
-                
-            case GameState.Completion:
-                // Waiting for real head attachment
-                break;
-                
-            case GameState.BadEnding:
-                // Bad ending triggered
-                break;
-        }
-    }
-    
-    private void HandleChaseTimer()
-    {
-        if (!isChaseActive) return;
-        
-        currentTimer -= Time.deltaTime;
-        
-        // Check for warning
-        if (currentTimer <= warningThreshold && !timerWarningPlayed)
-        {
-            timerWarningPlayed = true;
-            if (audioManager != null)
-            {
-                audioManager.PlayTimerWarningSound();
-            }
-        }
-        
-        // Check if chase time is up
-        if (currentTimer <= 0f)
-        {
-            currentTimer = 0f;
-            EndChase();
-        }
-    }
-    
-    private void HandleChoiceTimer()
-    {
-        if (choiceMade) return;
-        
-        choiceTimer += Time.deltaTime;
-        
-        if (choiceTimer >= choiceTimeLimit)
-        {
-            // Auto-choose to leave if no choice made
-            OnLeaveChosen();
-        }
-    }
-    
-    private void HandleHeadCollectionTimer()
-    {
-        currentTimer -= Time.deltaTime;
-        
-        // Check for warning
-        if (currentTimer <= warningThreshold && !timerWarningPlayed)
-        {
-            timerWarningPlayed = true;
-            if (audioManager != null)
-            {
-                audioManager.PlayTimerWarningSound();
-            }
-        }
-        
-        // Check if time is up
-        if (currentTimer <= 0f)
-        {
-            currentTimer = 0f;
-            OnHeadCollectionTimeUp();
-        }
-    }
-    
-    private void StartChase()
-    {
-        if (isChaseActive) return;
-        
-        currentState = GameState.Chase;
-        isChaseActive = true;
-        currentTimer = maxTimer;
-        timerWarningPlayed = false;
-        
-        // Start chase system
-        if (dullahanChaseSystem != null)
-        {
-            dullahanChaseSystem.StartChase();
-        }
-        
-        // Start audio
-        if (audioManager != null)
-        {
-            audioManager.StartChase();
-        }
-        
-        // Show timer UI
-        if (timerUI != null)
-            timerUI.SetActive(true);
-        
-        Debug.Log("Dullahan chase started - 60 seconds remaining");
-    }
-    
-    private void EndChase()
-    {
-        if (!isChaseActive) return;
-        
-        isChaseActive = false;
-        
-        // Stop chase system and return to patrol
-        if (dullahanChaseSystem != null)
-        {
-            dullahanChaseSystem.EndChase();
-        }
-        
-        // Stop audio
-        if (audioManager != null)
-        {
-            audioManager.EndChase();
-        }
-        
-        // Hide timer UI
-        if (timerUI != null)
-            timerUI.SetActive(false);
-        
-        // Start patrol mode
-        StartCoroutine(StartPatrolAfterDelay());
-        
-        // Open exit doors (bait)
-        StartCoroutine(OpenExitDoors());
-        
-        // Show choice UI
-        StartCoroutine(ShowChoiceUI());
-        
-        Debug.Log("Chase ended - Exit door opened, waiting for player choice");
-    }
-    
-    private IEnumerator StartPatrolAfterDelay()
-    {
-        yield return new WaitForSeconds(1f);
-        
-        if (dullahanChaseSystem != null)
-        {
-            dullahanChaseSystem.StartPatrol();
-        }
-        
-        Debug.Log("Dullahan patrol mode activated");
-    }
-    
-    private IEnumerator OpenExitDoors()
-    {
+        // Wait for player to make choice
         yield return new WaitForSeconds(2f);
         
-        // Open all exit doors simultaneously
-        if (exitDoors != null && exitDoors.Length > 0)
-        {
-            if (exitDoorsLinked && exitDoors.Length > 1)
-            {
-                // Link the doors so they open together
-                for (int i = 0; i < exitDoors.Length; i++)
-                {
-                    if (exitDoors[i] != null)
-                    {
-                        // Create linked doors array excluding current door
-                        doorscript[] linkedDoors = new doorscript[exitDoors.Length - 1];
-                        int linkedIndex = 0;
-                        for (int j = 0; j < exitDoors.Length; j++)
-                        {
-                            if (j != i)
-                            {
-                                linkedDoors[linkedIndex] = exitDoors[j];
-                                linkedIndex++;
-                            }
-                        }
-                        exitDoors[i].linkedDoors = linkedDoors;
-                    }
-                }
-            }
-            
-            // Open the first door (others will open automatically if linked)
-            if (exitDoors[0] != null)
-            {
-                exitDoors[0].ForceUnlock();
-                exitDoors[0].OpenDoor();
-                Debug.Log($"Exit doors opened simultaneously (bait)");
-            }
-        }
-        
-        // Play door open sound
-        if (audioManager != null)
-        {
-            audioManager.PlayDoorOpenSound();
-        }
+        currentState = EventState.Choice;
     }
     
-    private IEnumerator ShowChoiceUI()
+    IEnumerator HandleChoiceState()
     {
-        yield return new WaitForSeconds(3f); // Delay before showing choice
+        Debug.Log("[DullahanChaseEventManager] Player choice phase");
         
-        currentState = GameState.Choice;
-        choiceTimer = 0f;
-        
+        // Show choice UI
         if (choiceUI != null)
         {
             choiceUI.SetActive(true);
             if (choiceText != null)
-                choiceText.text = helpText;
+                choiceText.text = "Will you help Dullahan find his real head?";
         }
         
-        Debug.Log("Player choice UI shown - 30 seconds to decide");
-    }
-    
-    private void OnHelpChosen()
-    {
-        if (choiceMade) return;
+        // Play choice sound
+        if (audioSource != null && choiceSound != null)
+            audioSource.PlayOneShot(choiceSound);
         
-        choiceMade = true;
-        playerChoseToHelp = true;
+        // Wait for player choice or timeout
+        choiceTimer = 0f;
+        while (currentState == EventState.Choice && !choiceMade && choiceTimer < choiceTimeLimit)
+        {
+            choiceTimer += Time.deltaTime;
+            yield return null;
+        }
         
-        Debug.Log("Player chose to help Dullahan");
+        // Handle timeout
+        if (!choiceMade)
+        {
+            Debug.Log("[DullahanChaseEventManager] Player choice timeout - defaulting to help");
+            playerChoseToHelp = true;
+            choiceMade = true;
+        }
         
         // Hide choice UI
-        if (choiceUI != null)
-            choiceUI.SetActive(false);
+        if (choiceUI != null) choiceUI.SetActive(false);
         
-        // Start head collection phase
-        StartCoroutine(StartHeadCollectionPhase());
-    }
-    
-    private void OnLeaveChosen()
-    {
-        if (choiceMade) return;
-        
-        choiceMade = true;
-        playerChoseToHelp = false;
-        
-        Debug.Log("Player chose to leave - Bad ending triggered");
-        
-        // Hide choice UI
-        if (choiceUI != null)
-            choiceUI.SetActive(false);
-        
-        // Trigger bad ending
-        TriggerBadEnding();
-    }
-    
-    private IEnumerator StartHeadCollectionPhase()
-    {
-        yield return new WaitForSeconds(headSpawnDelay);
-        
-        currentState = GameState.HeadCollection;
-        currentTimer = headCollectionTime;
-        maxTimer = headCollectionTime;
-        timerWarningPlayed = false;
-        
-        // Spawn all three heads (handled by existing head pickables in scene)
-        if (headPlacement != null)
+        if (playerChoseToHelp)
         {
-            // SimpleHeadPlacement works with existing head pickables
-            Debug.Log("[DullahanChaseEventManager] Head placement system is ready");
+            currentState = EventState.Chase;
+        }
+        else
+        {
+            // Player chose to leave - open exit doors
+            OpenExitDoors();
+            currentState = EventState.Completed;
+        }
+    }
+    
+    IEnumerator HandleChaseState()
+    {
+        Debug.Log("[DullahanChaseEventManager] Chase phase started");
+        
+        // Show chase UI
+        if (chaseUI != null)
+        {
+            chaseUI.SetActive(true);
+            if (chaseText != null)
+                chaseText.text = "Dullahan is chasing you! Survive for " + chaseDuration + " seconds!";
         }
         
-        // Open door to real head
-        if (realHeadDoor != null)
-        {
-            realHeadDoor.ForceUnlock();
-            realHeadDoor.OpenDoor();
-            Debug.Log("Real head door opened");
-        }
-        
-        // Show timer UI
-        if (timerUI != null)
-            timerUI.SetActive(true);
-        
-        Debug.Log("Head collection phase started - 90 seconds to find real head");
-    }
-    
-    private void OnHeadCollectionTimeUp()
-    {
-        Debug.Log("Head collection time expired - Bad ending");
-        
-        // Hide timer UI
-        if (timerUI != null)
-            timerUI.SetActive(false);
-        
-        // Trigger bad ending
-        TriggerBadEnding();
-    }
-    
-    public void OnRealHeadAttached()
-    {
-        if (currentState != GameState.HeadCollection) return;
-        
-        Debug.Log("Real head attached - Good ending!");
-        
-        currentState = GameState.Completion;
-        
-        // Stop Dullahan
+        // Start chase
         if (dullahanChaseSystem != null)
+            dullahanChaseSystem.StartChase();
+        
+        // Play chase start sound
+        if (audioSource != null && chaseStartSound != null)
+            audioSource.PlayOneShot(chaseStartSound);
+        
+        // Start chase effects
+        StartChaseEffects();
+        
+        // Run chase timer
+        chaseTimer = 0f;
+        while (currentState == EventState.Chase && chaseTimer < chaseDuration)
         {
-            dullahanChaseSystem.EndChase();
-        }
-        
-        // Hide timer UI
-        if (timerUI != null)
-            timerUI.SetActive(false);
-        
-        // Play completion sound
-        if (audioManager != null)
-        {
-            audioManager.PlayPuzzleCompleteSound();
-        }
-        
-        // Open exit doors for good ending
-        StartCoroutine(OpenGoodEndingDoors());
-        
-        isEventComplete = true;
-    }
-    
-    private IEnumerator OpenGoodEndingDoors()
-    {
-        yield return new WaitForSeconds(2f);
-        
-        // Open all exit doors for good ending
-        if (exitDoors != null && exitDoors.Length > 0)
-        {
-            if (exitDoorsLinked && exitDoors.Length > 1)
+            chaseTimer += Time.deltaTime;
+            
+            // Update chase UI
+            if (chaseText != null)
             {
-                // Link the doors so they open together
-                for (int i = 0; i < exitDoors.Length; i++)
-                {
-                    if (exitDoors[i] != null)
-                    {
-                        // Create linked doors array excluding current door
-                        doorscript[] linkedDoors = new doorscript[exitDoors.Length - 1];
-                        int linkedIndex = 0;
-                        for (int j = 0; j < exitDoors.Length; j++)
-                        {
-                            if (j != i)
-                            {
-                                linkedDoors[linkedIndex] = exitDoors[j];
-                                linkedIndex++;
-                            }
-                        }
-                        exitDoors[i].linkedDoors = linkedDoors;
-                    }
-                }
+                float remainingTime = chaseDuration - chaseTimer;
+                chaseText.text = "Dullahan is chasing you! " + Mathf.Ceil(remainingTime) + " seconds remaining!";
             }
             
-            // Open the first door (others will open automatically if linked)
-            if (exitDoors[0] != null)
+            yield return null;
+        }
+        
+        // End chase
+        if (dullahanChaseSystem != null)
+            dullahanChaseSystem.EndChase();
+        
+        // Hide chase UI
+        if (chaseUI != null) chaseUI.SetActive(false);
+        
+        // Play chase end sound
+        if (audioSource != null && chaseEndSound != null)
+            audioSource.PlayOneShot(chaseEndSound);
+        
+        // Stop chase effects
+        StopChaseEffects();
+        
+        // Wait for head spawn delay
+        yield return new WaitForSeconds(headSpawnDelay);
+        
+        // Spawn heads
+        SpawnHeads();
+        
+        currentState = EventState.HeadCollection;
+    }
+    
+    IEnumerator HandleHeadCollectionState()
+    {
+        Debug.Log("[DullahanChaseEventManager] Head collection phase started");
+        
+        // Show head collection UI
+        if (headCollectionUI != null)
+        {
+            headCollectionUI.SetActive(true);
+            if (headCollectionText != null)
+                headCollectionText.text = "Collect the heads! You have " + headCollectionTime + " seconds!";
+        }
+        
+        // Start head collection timer
+        headCollectionTimer = 0f;
+        while (currentState == EventState.HeadCollection && headCollectionTimer < headCollectionTime)
+        {
+            headCollectionTimer += Time.deltaTime;
+            
+            // Update head collection UI
+            if (headCollectionText != null)
             {
-                exitDoors[0].ForceUnlock();
-                exitDoors[0].OpenDoor();
-                Debug.Log($"Exit doors opened simultaneously for good ending");
+                float remainingTime = headCollectionTime - headCollectionTimer;
+                headCollectionText.text = "Collect the heads! " + Mathf.Ceil(remainingTime) + " seconds remaining!";
+            }
+            
+            // Check if all heads collected
+            if (CheckAllHeadsCollected())
+            {
+                headsCollected = true;
+                break;
+            }
+            
+            yield return null;
+        }
+        
+        // Hide head collection UI
+        if (headCollectionUI != null) headCollectionUI.SetActive(false);
+        
+        if (headsCollected)
+        {
+            Debug.Log("[DullahanChaseEventManager] All heads collected!");
+            // Open real head door
+            if (realHeadDoor != null)
+                realHeadDoor.UnlockDoor();
+        }
+        else
+        {
+            Debug.Log("[DullahanChaseEventManager] Time's up! Opening exit doors.");
+            // Open exit doors
+            OpenExitDoors();
+        }
+        
+        currentState = EventState.Completed;
+    }
+    
+    IEnumerator HandleCompletedState()
+    {
+        Debug.Log("[DullahanChaseEventManager] Event completed");
+        
+        // Clean up spawned heads
+        CleanupSpawnedHeads();
+        
+        // Notify floor 2 event manager
+        if (floor2EventManager != null)
+        {
+            if (headsCollected)
+                floor2EventManager.OnRealHeadAttached();
+            else
+            {
+                // Player chose to leave - this would need to be implemented in Floor2EndingEventManager
+                Debug.Log("[DullahanChaseEventManager] Player chose to leave - notification not implemented");
+            }
+        }
+        
+        // Deactivate event
+        eventActive = false;
+        
+        yield return null;
+    }
+    
+    void SpawnHeads()
+    {
+        Debug.Log("[DullahanChaseEventManager] Spawning heads");
+        
+        // Spawn real head
+        if (realHeadPrefab != null && headSpawnPoints.Length > 0)
+        {
+            Transform spawnPoint = headSpawnPoints[0];
+            Vector3 spawnPosition = spawnPoint.position + Random.insideUnitSphere * headSpawnRadius;
+            spawnPosition.y = spawnPoint.position.y;
+            
+            GameObject realHead = Instantiate(realHeadPrefab, spawnPosition, Quaternion.identity);
+            spawnedHeads.Add(realHead);
+        }
+        
+        // Spawn fake heads
+        if (fakeHead1Prefab != null && headSpawnPoints.Length > 1)
+        {
+            Transform spawnPoint = headSpawnPoints[1];
+            Vector3 spawnPosition = spawnPoint.position + Random.insideUnitSphere * headSpawnRadius;
+            spawnPosition.y = spawnPoint.position.y;
+            
+            GameObject fakeHead1 = Instantiate(fakeHead1Prefab, spawnPosition, Quaternion.identity);
+            spawnedHeads.Add(fakeHead1);
+        }
+        
+        if (fakeHead2Prefab != null && headSpawnPoints.Length > 2)
+        {
+            Transform spawnPoint = headSpawnPoints[2];
+            Vector3 spawnPosition = spawnPoint.position + Random.insideUnitSphere * headSpawnRadius;
+            spawnPosition.y = spawnPoint.position.y;
+            
+            GameObject fakeHead2 = Instantiate(fakeHead2Prefab, spawnPosition, Quaternion.identity);
+            spawnedHeads.Add(fakeHead2);
+        }
+        
+        // Play head spawn sound
+        if (audioSource != null && headSpawnSound != null)
+            audioSource.PlayOneShot(headSpawnSound);
+        
+        // Start head spawn particles
+        if (headSpawnParticles != null)
+            headSpawnParticles.Play();
+        
+        headsSpawned = true;
+    }
+    
+    bool CheckAllHeadsCollected()
+    {
+        // Check if all spawned heads have been collected
+        foreach (GameObject head in spawnedHeads)
+        {
+            if (head != null && head.activeInHierarchy)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    void CleanupSpawnedHeads()
+    {
+        foreach (GameObject head in spawnedHeads)
+        {
+            if (head != null)
+                Destroy(head);
+        }
+        spawnedHeads.Clear();
+    }
+    
+    void OpenExitDoors()
+    {
+        Debug.Log("[DullahanChaseEventManager] Opening exit doors");
+        
+        if (exitDoors != null)
+        {
+            foreach (doorscript door in exitDoors)
+            {
+                if (door != null)
+                    door.UnlockDoor();
             }
         }
         
         // Play door open sound
-        if (audioManager != null)
-        {
-            audioManager.PlayDoorOpenSound();
-        }
+        if (audioSource != null && doorOpenSound != null)
+            audioSource.PlayOneShot(doorOpenSound);
     }
     
-    private void TriggerBadEnding()
+    void StartProximityEffects()
     {
-        currentState = GameState.BadEnding;
-        badEndingTriggered = true;
+        if (proximityLight != null)
+            proximityLight.enabled = true;
         
-        Debug.Log("Bad ending triggered - Dullahan will kill the player");
-        
-        // Start aggressive chase
-        if (dullahanChaseSystem != null)
-        {
-            dullahanChaseSystem.StartChase();
-            // Make chase more intense for bad ending
-            dullahanChaseSystem.SetChaseSpeed(8f, 12f);
-        }
-        
-        // Play bad ending audio
-        if (audioManager != null)
-        {
-            audioManager.StartChase();
-        }
-        
-        // Load bad ending scene after delay
-        StartCoroutine(LoadBadEndingScene());
+        if (proximityParticles != null)
+            proximityParticles.Play();
     }
     
-    private IEnumerator LoadBadEndingScene()
+    void StartChaseEffects()
     {
-        yield return new WaitForSeconds(5f); // Give player time to experience the bad ending
-        
-        if (!string.IsNullOrEmpty(badEndingSceneName))
-        {
-            SceneManager.LoadScene(badEndingSceneName);
-        }
+        if (chaseParticles != null)
+            chaseParticles.Play();
     }
     
-    private void UpdateUI()
+    void StopChaseEffects()
     {
-        // Update timer text
-        if (timerText != null && (isChaseActive || currentState == GameState.HeadCollection))
-        {
-            int minutes = Mathf.FloorToInt(currentTimer / 60f);
-            int seconds = Mathf.FloorToInt(currentTimer % 60f);
-            timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
-            
-            // Change color for warning
-            if (currentTimer <= warningThreshold)
-            {
-                timerText.color = timerWarningColor;
-            }
-            else
-            {
-                timerText.color = timerNormalColor;
-            }
-        }
-        
-        // Update timer fill
-        if (timerFillImage != null && (isChaseActive || currentState == GameState.HeadCollection))
-        {
-            timerFillImage.fillAmount = currentTimer / maxTimer;
-        }
-        
-        // Update choice timer
-        if (currentState == GameState.Choice && choiceText != null)
-        {
-            float remainingChoiceTime = choiceTimeLimit - choiceTimer;
-            choiceText.text = $"{helpText}\nTime remaining: {remainingChoiceTime:F1}s";
-        }
+        if (chaseParticles != null)
+            chaseParticles.Stop();
     }
     
-    private void LockAllDoors()
+    public void OnHelpButtonClicked()
     {
-        // Lock all exit doors
-        if (exitDoors != null && exitDoors.Length > 0)
-        {
-            foreach (var exitDoor in exitDoors)
-            {
-                if (exitDoor != null)
-                {
-                    exitDoor.LockDoor();
-                    exitDoor.SetRequiredKeyID(exitDoorKeyID);
-                }
-            }
-        }
-        
-        // Lock real head door
-        if (realHeadDoor != null)
-        {
-            realHeadDoor.LockDoor();
-            realHeadDoor.SetRequiredKeyID(realHeadDoorKeyID);
-        }
+        Debug.Log("[DullahanChaseEventManager] Player chose to help");
+        playerChoseToHelp = true;
+        choiceMade = true;
     }
     
-    private void HandleDebugInput()
+    public void OnLeaveButtonClicked()
     {
-        if (!debugMode) return;
-        
-        if (Input.GetKeyDown(triggerProximityKey))
-        {
-            Debug.Log("Debug: Triggering proximity");
-            OnPlayerEnteredProximity();
-        }
-        
-        if (Input.GetKeyDown(skipChaseKey))
-        {
-            Debug.Log("Debug: Skipping chase");
-            EndChase();
-        }
-        
-        if (Input.GetKeyDown(forceChoiceKey))
-        {
-            Debug.Log("Debug: Forcing choice");
-            if (currentState == GameState.Choice)
-            {
-                OnHelpChosen();
-            }
-        }
+        Debug.Log("[DullahanChaseEventManager] Player chose to leave");
+        playerChoseToHelp = false;
+        choiceMade = true;
     }
     
-    // Public methods for external control
-    public void SetProximityRadius(float radius)
+    public void OnChaseStarted()
     {
-        proximityRadius = radius;
-        Debug.Log($"Proximity radius set to {radius}");
+        Debug.Log("[DullahanChaseEventManager] Chase started by external system");
     }
     
-    public void SetChaseDuration(float duration)
+    public void OnChaseEnded()
     {
-        chaseDuration = duration;
-        maxTimer = duration;
-        Debug.Log($"Chase duration set to {duration} seconds");
+        Debug.Log("[DullahanChaseEventManager] Chase ended by external system");
     }
     
-    public void SetHeadCollectionTime(float time)
-    {
-        headCollectionTime = time;
-        Debug.Log($"Head collection time set to {time} seconds");
-    }
-    
-    public GameState GetCurrentState()
-    {
-        return currentState;
-    }
-    
-    public bool IsChaseActive()
-    {
-        return isChaseActive;
-    }
-    
-    public bool IsEventComplete()
-    {
-        return isEventComplete;
-    }
-    
-    public bool IsBadEndingTriggered()
-    {
-        return badEndingTriggered;
-    }
-    
-    public bool HasPlayerChosenToHelp()
-    {
-        return playerChoseToHelp;
-    }
-    
-    // Method to be called by DullahanBody when real head is attached
     public void OnRealHeadAttachedToBody()
     {
-        OnRealHeadAttached();
+        Debug.Log("[DullahanChaseEventManager] Real head attached to body");
+        headsCollected = true;
     }
     
-    public void OnHeadAttached(HeadType headType)
+    // Debug visualization
+    void OnDrawGizmosSelected()
     {
-        // Handle head attachment events
-        if (headType == HeadType.Real)
-        {
-            OnRealHeadAttachedToBody();
-        }
-        else
-        {
-            // Handle fake head attachments if needed
-            Debug.Log($"Fake head attached: {headType}");
-        }
-    }
-    
-    public void ResetEvent()
-    {
-        // Reset the entire event system
-        currentState = GameState.Waiting;
-        isChaseActive = false;
-        isEventComplete = false;
-        badEndingTriggered = false;
-        playerInProximity = false;
-        proximityTriggered = false;
-        playerChoseToHelp = false;
-        choiceMade = false;
-        choiceTimer = 0f;
-        currentTimer = 0f;
-        maxTimer = 0f;
-        timerWarningPlayed = false;
+        // Draw proximity radius
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, proximityRadius);
         
-        // Reset UI
-        if (timerUI != null) timerUI.SetActive(false);
-        if (choiceUI != null) choiceUI.SetActive(false);
-        if (proximityUI != null) proximityUI.SetActive(false);
-        
-        // Reset doors
-        LockAllDoors();
-        
-        Debug.Log("Event system reset");
-    }
-    
-    // Door management methods
-    private void FindMissingDoors()
-    {
-        // Find exit doors if not assigned
-        if (exitDoors == null || exitDoors.Length == 0)
+        // Draw head spawn points
+        if (headSpawnPoints != null)
         {
-            doorscript[] allDoors = FindObjectsOfType<doorscript>();
-            List<doorscript> exitDoorList = new List<doorscript>();
-            
-            foreach (var door in allDoors)
+            Gizmos.color = Color.green;
+            foreach (Transform spawnPoint in headSpawnPoints)
             {
-                if (door.name.ToLower().Contains("exit") || door.name.ToLower().Contains("bait"))
+                if (spawnPoint != null)
                 {
-                    exitDoorList.Add(door);
-                }
-            }
-            
-            if (exitDoorList.Count > 0)
-            {
-                exitDoors = exitDoorList.ToArray();
-                Debug.Log($"Found {exitDoors.Length} exit doors automatically");
-            }
-        }
-        
-        // Find real head door if not assigned
-        if (realHeadDoor == null)
-        {
-            doorscript[] allDoors = FindObjectsOfType<doorscript>();
-            foreach (var door in allDoors)
-            {
-                if (door.name.ToLower().Contains("real") || door.name.ToLower().Contains("head"))
-                {
-                    realHeadDoor = door;
-                    Debug.Log("Found real head door automatically");
-                    break;
+                    Gizmos.DrawWireSphere(spawnPoint.position, headSpawnRadius);
                 }
             }
         }
     }
-    
 }

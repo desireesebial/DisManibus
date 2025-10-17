@@ -28,371 +28,411 @@ public class DullahanChaseSystem : MonoBehaviour
     public FirstPersonController playerController;
     
     [Header("Chase Intensity")]
-    public float currentIntensity = 0f;
-    public float maxIntensity = 1f;
+    public float currentChaseIntensity = 0f;
+    public float maxChaseIntensity = 1f;
     public float intensityDecayRate = 0.5f;
+    public float intensityIncreaseRate = 1f;
     
-    [Header("Integration")]
-    public DullahanAudioManager audioManager;
-    public DullahanChaseEventManager eventManager;
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip chaseSound;
+    public AudioClip patrolSound;
+    public AudioClip detectionSound;
     
     [Header("Visual Effects")]
-    public Light dullahanLight;
+    public Light chaseLight;
     public ParticleSystem chaseParticles;
-    public Material dullahanMaterial;
-    public Color normalColor = Color.white;
-    public Color chaseColor = Color.red;
+    public Material normalMaterial;
+    public Material chaseMaterial;
     
-    private bool isChasing = false;
-    private bool isInitialized = false;
-    private Vector3 lastPlayerPosition;
-    private float distanceToPlayer;
+    [Header("State Management")]
+    public ChaseState currentState = ChaseState.Patrol;
+    public bool isChasing = false;
+    public bool isPatrolling = false;
+    public bool playerDetected = false;
+    
+    // Private variables
+    private Vector3 lastKnownPlayerPosition;
+    private float lastDetectionTime;
+    private float patrolTimer = 0f;
+    private int currentWaypointIndex = 0;
+    private Vector3 patrolCenter;
+    private DullahanAudioManager audioManager;
+    private DullahanChaseEventManager eventManager;
+    
+    public enum ChaseState
+    {
+        Patrol,
+        Chase,
+        Search,
+        Return
+    }
     
     void Start()
     {
-        InitializeChaseSystem();
+        InitializeComponents();
+        SetupPatrol();
+        StartPatrol();
     }
     
     void Update()
     {
-        if (!isInitialized) return;
-        
-        if (isChasing)
-        {
-            UpdateChase();
-        }
-        else
-        {
-            UpdatePatrol();
-        }
-        
+        UpdateChaseIntensity();
+        HandleStateMachine();
         UpdateVisualEffects();
     }
     
-    private void InitializeChaseSystem()
+    void InitializeComponents()
     {
-        // Find references if not assigned
+        // Get or create components
         if (dullahanTransform == null)
-        {
-            GameObject dullahan = GameObject.FindGameObjectWithTag("Dullahan");
-            if (dullahan != null)
-                dullahanTransform = dullahan.transform;
-        }
-        
-        if (dullahanAgent == null && dullahanTransform != null)
-        {
-            dullahanAgent = dullahanTransform.GetComponent<NavMeshAgent>();
-        }
-        
-        if (dullahanAnimator == null && dullahanTransform != null)
-        {
-            dullahanAnimator = dullahanTransform.GetComponent<Animator>();
-        }
-        
-        if (playerTransform == null)
-        {
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
-            if (player != null)
-                playerTransform = player.transform;
-        }
-        
-        if (playerController == null && playerTransform != null)
-        {
-            playerController = playerTransform.GetComponent<FirstPersonController>();
-        }
-        
-        if (audioManager == null)
-            audioManager = FindObjectOfType<DullahanAudioManager>();
+            dullahanTransform = transform;
             
-        if (eventManager == null)
-            eventManager = FindObjectOfType<DullahanChaseEventManager>();
-        
-        // Initialize chase settings
-        if (dullahanAgent != null)
+        if (dullahanAgent == null)
+            dullahanAgent = GetComponent<NavMeshAgent>();
+            
+        if (dullahanAnimator == null)
+            dullahanAnimator = GetComponent<Animator>();
+            
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
+            
+        // Find player
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
         {
-            dullahanAgent.speed = minChaseSpeed;
-            dullahanAgent.stoppingDistance = 2f;
+            playerTransform = playerObj.transform;
+            playerController = playerObj.GetComponent<FirstPersonController>();
         }
         
-        isInitialized = true;
-        Debug.Log("Dullahan Chase System initialized");
+        // Find managers
+        audioManager = FindObjectOfType<DullahanAudioManager>();
+        eventManager = FindObjectOfType<DullahanChaseEventManager>();
+        
+        // Setup audio
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
     }
     
-    public void StartChase()
+    void SetupPatrol()
     {
-        if (!isInitialized) return;
+        patrolCenter = transform.position;
         
-        isChasing = true;
-        currentIntensity = 0f;
-        
-        // Set chase animation
-        if (dullahanAnimator != null)
+        if (useWaypointPatrol && patrolWaypoints.Length > 0)
         {
-            // Check if the parameter exists before setting it
-            if (HasAnimatorParameter("IsChasing"))
+            // Use waypoints for patrol
+            currentWaypointIndex = 0;
+        }
+        else
+        {
+            // Use radius-based patrol
+            GenerateRandomPatrolPoint();
+        }
+    }
+    
+    void HandleStateMachine()
+    {
+        switch (currentState)
+        {
+            case ChaseState.Patrol:
+                HandlePatrol();
+                break;
+            case ChaseState.Chase:
+                HandleChase();
+                break;
+            case ChaseState.Search:
+                HandleSearch();
+                break;
+            case ChaseState.Return:
+                HandleReturn();
+                break;
+        }
+    }
+    
+    void HandlePatrol()
+    {
+        if (!isPatrolling) return;
+        
+        if (useWaypointPatrol && patrolWaypoints.Length > 0)
+        {
+            // Waypoint patrol
+            if (dullahanAgent.remainingDistance < 0.5f)
             {
-                dullahanAnimator.SetBool("IsChasing", true);
+                patrolTimer += Time.deltaTime;
+                if (patrolTimer >= patrolWaitTime)
+                {
+                    MoveToNextWaypoint();
+                    patrolTimer = 0f;
+                }
+            }
+        }
+        else
+        {
+            // Radius patrol
+            if (dullahanAgent.remainingDistance < 0.5f)
+            {
+                patrolTimer += Time.deltaTime;
+                if (patrolTimer >= patrolWaitTime)
+                {
+                    GenerateRandomPatrolPoint();
+                    patrolTimer = 0f;
+                }
             }
         }
         
-        // Start chase audio
-        if (audioManager != null)
+        // Check for player detection
+        if (playerTransform != null)
         {
-            audioManager.StartChase();
-        }
-        
-        Debug.Log("Dullahan chase started");
-    }
-    
-    public void EndChase()
-    {
-        if (!isInitialized) return;
-        
-        isChasing = false;
-        currentIntensity = 0f;
-        
-        // Set patrol animation
-        if (dullahanAnimator != null)
-        {
-            dullahanAnimator.SetBool("IsChasing", false);
-        }
-        
-        // Stop chase audio
-        if (audioManager != null)
-        {
-            audioManager.EndChase();
-        }
-        
-        // Return to patrol behavior
-        if (dullahanAgent != null)
-        {
-            dullahanAgent.speed = patrolSpeed;
-            // Set initial patrol destination
-            Vector3 patrolPoint = GetRandomPatrolPoint();
-            dullahanAgent.SetDestination(patrolPoint);
-        }
-        
-        Debug.Log("Dullahan chase ended - returning to patrol");
-    }
-    
-    public void StartPatrol()
-    {
-        if (!isInitialized) return;
-        
-        isChasing = false;
-        currentIntensity = 0f;
-        
-        // Set patrol animation
-        if (dullahanAnimator != null)
-        {
-            // Check if the parameter exists before setting it
-            if (HasAnimatorParameter("IsChasing"))
+            float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+            if (distanceToPlayer <= maxDetectionRange)
             {
-                dullahanAnimator.SetBool("IsChasing", false);
+                StartChase();
             }
         }
-        
-        // Set patrol speed and destination
-        if (dullahanAgent != null)
-        {
-            dullahanAgent.speed = patrolSpeed;
-            Vector3 patrolPoint = GetRandomPatrolPoint();
-            dullahanAgent.SetDestination(patrolPoint);
-        }
-        
-        Debug.Log("Dullahan patrol started");
     }
     
-    private void UpdateChase()
+    void HandleChase()
     {
-        if (playerTransform == null || dullahanTransform == null) return;
-        
-        // Calculate distance to player
-        distanceToPlayer = Vector3.Distance(dullahanTransform.position, playerTransform.position);
+        if (!isChasing || playerTransform == null) return;
         
         // Update chase intensity based on distance
-        UpdateChaseIntensity();
+        float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+        float normalizedDistance = Mathf.Clamp01(1f - (distanceToPlayer / maxDetectionRange));
+        
+        currentChaseIntensity = Mathf.Lerp(currentChaseIntensity, normalizedDistance, intensityIncreaseRate * Time.deltaTime);
+        
+        // Set chase speed based on intensity
+        float currentSpeed = Mathf.Lerp(minChaseSpeed, maxChaseSpeed, currentChaseIntensity);
+        dullahanAgent.speed = currentSpeed;
         
         // Move towards player
-        if (dullahanAgent != null)
-        {
-            dullahanAgent.SetDestination(playerTransform.position);
-            
-            // Update speed based on intensity
-            float targetSpeed = Mathf.Lerp(minChaseSpeed, maxChaseSpeed, currentIntensity);
-            dullahanAgent.speed = Mathf.Lerp(dullahanAgent.speed, targetSpeed, Time.deltaTime * 2f);
-        }
+        dullahanAgent.SetDestination(playerTransform.position);
+        lastKnownPlayerPosition = playerTransform.position;
+        lastDetectionTime = Time.time;
         
-        // Update audio intensity
-        if (audioManager != null)
-        {
-            audioManager.SetChaseIntensity(currentIntensity);
-        }
-        
-        // Check if player is caught
-        if (distanceToPlayer <= 2f)
-        {
-            OnPlayerCaught();
-        }
-    }
-    
-    private void UpdatePatrol()
-    {
-        // Implement patrol behavior here
-        if (dullahanAgent != null && !dullahanAgent.hasPath)
-        {
-            if (useWaypointPatrol && patrolWaypoints.Length > 0)
-            {
-                // Use waypoint-based patrol
-                SetNextWaypointDestination();
-            }
-            else
-            {
-                // Use random patrol within radius
-                Vector3 randomPoint = GetRandomPatrolPoint();
-                dullahanAgent.SetDestination(randomPoint);
-            }
-        }
-    }
-    
-    private void SetNextWaypointDestination()
-    {
-        if (patrolWaypoints.Length == 0) return;
-        
-        // Simple waypoint cycling
-        int currentWaypointIndex = Random.Range(0, patrolWaypoints.Length);
-        Transform waypoint = patrolWaypoints[currentWaypointIndex];
-        
-        if (waypoint != null)
-        {
-            dullahanAgent.SetDestination(waypoint.position);
-        }
-    }
-    
-    private void UpdateChaseIntensity()
-    {
-        // Calculate intensity based on distance
-        float normalizedDistance = Mathf.Clamp01((distanceToPlayer - minDetectionRange) / (maxDetectionRange - minDetectionRange));
-        float targetIntensity = 1f - normalizedDistance;
-        
-        // Smoothly update intensity
-        currentIntensity = Mathf.Lerp(currentIntensity, targetIntensity, Time.deltaTime * intensityUpdateRate);
-        currentIntensity = Mathf.Clamp(currentIntensity, 0f, maxIntensity);
-        
-        // Decay intensity when far from player
+        // Check if player is out of range
         if (distanceToPlayer > maxDetectionRange)
         {
-            currentIntensity -= intensityDecayRate * Time.deltaTime;
-            currentIntensity = Mathf.Max(0f, currentIntensity);
+            StartSearch();
         }
     }
     
-    private void UpdateVisualEffects()
+    void HandleSearch()
     {
-        // Update Dullahan light
-        if (dullahanLight != null)
+        // Move to last known player position
+        if (Vector3.Distance(transform.position, lastKnownPlayerPosition) > 1f)
         {
-            float intensity = Mathf.Lerp(0f, 2f, currentIntensity);
-            dullahanLight.intensity = intensity;
-            dullahanLight.color = Color.Lerp(normalColor, chaseColor, currentIntensity);
+            dullahanAgent.SetDestination(lastKnownPlayerPosition);
+        }
+        else
+        {
+            // Search around last known position
+            Vector3 searchPoint = lastKnownPlayerPosition + Random.insideUnitSphere * 5f;
+            searchPoint.y = lastKnownPlayerPosition.y;
+            dullahanAgent.SetDestination(searchPoint);
+        }
+        
+        // Check if player is detected again
+        if (playerTransform != null)
+        {
+            float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+            if (distanceToPlayer <= maxDetectionRange)
+            {
+                StartChase();
+                return;
+            }
+        }
+        
+        // Return to patrol after search time
+        if (Time.time - lastDetectionTime > 10f)
+        {
+            StartPatrol();
+        }
+    }
+    
+    void HandleReturn()
+    {
+        // Return to patrol center
+        if (Vector3.Distance(transform.position, patrolCenter) > 1f)
+        {
+            dullahanAgent.SetDestination(patrolCenter);
+        }
+        else
+        {
+            StartPatrol();
+        }
+    }
+    
+    void UpdateChaseIntensity()
+    {
+        if (currentState == ChaseState.Chase)
+        {
+            // Intensity increases during chase
+            currentChaseIntensity = Mathf.Lerp(currentChaseIntensity, maxChaseIntensity, intensityIncreaseRate * Time.deltaTime);
+        }
+        else
+        {
+            // Intensity decays when not chasing
+            currentChaseIntensity = Mathf.Lerp(currentChaseIntensity, 0f, intensityDecayRate * Time.deltaTime);
+        }
+        
+        currentChaseIntensity = Mathf.Clamp01(currentChaseIntensity);
+    }
+    
+    void UpdateVisualEffects()
+    {
+        // Update light intensity
+        if (chaseLight != null)
+        {
+            chaseLight.intensity = Mathf.Lerp(0.5f, 2f, currentChaseIntensity);
+            chaseLight.color = Color.Lerp(Color.white, Color.red, currentChaseIntensity);
         }
         
         // Update particle effects
         if (chaseParticles != null)
         {
             var emission = chaseParticles.emission;
-            emission.rateOverTime = currentIntensity * 50f;
+            emission.rateOverTime = currentChaseIntensity * 50f;
         }
         
-        // Update material color
-        if (dullahanMaterial != null)
+        // Update material
+        if (chaseMaterial != null && normalMaterial != null)
         {
-            dullahanMaterial.color = Color.Lerp(normalColor, chaseColor, currentIntensity);
+            Renderer renderer = GetComponent<Renderer>();
+            if (renderer != null)
+            {
+                // Switch between materials based on chase intensity
+                if (currentChaseIntensity > 0.5f)
+                {
+                    renderer.material = chaseMaterial;
+                }
+                else
+                {
+                    renderer.material = normalMaterial;
+                }
+            }
         }
     }
     
-    private Vector3 GetRandomPatrolPoint()
+    public void StartChase()
     {
-        // Generate a random point within patrol area
-        Vector3 randomPoint = dullahanTransform.position + Random.insideUnitSphere * patrolRadius;
+        if (currentState == ChaseState.Chase) return;
         
-        // Ensure point is on NavMesh
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(randomPoint, out hit, patrolRadius, NavMesh.AllAreas))
+        Debug.Log("[DullahanChaseSystem] Starting chase");
+        
+        currentState = ChaseState.Chase;
+        isChasing = true;
+        isPatrolling = false;
+        
+        // Set chase speed
+        dullahanAgent.speed = maxChaseSpeed;
+        
+        // Play chase sound
+        if (audioSource != null && chaseSound != null)
         {
-            return hit.position;
+            audioSource.clip = chaseSound;
+            audioSource.Play();
         }
         
-        return dullahanTransform.position;
-    }
-    
-    private void OnPlayerCaught()
-    {
-        Debug.Log("Player caught by Dullahan!");
-        
-        // Play catch sound
-        if (audioManager != null)
-        {
-            // You can add a player caught sound method
-            // audioManager.PlayPlayerCaughtSound();
-        }
-        
-        // Handle player death/respawn
-        // This could trigger game over, respawn player, etc.
-        HandlePlayerDeath();
-    }
-    
-    private void HandlePlayerDeath()
-    {
-        // You can implement player death logic here
-        // For example: respawn player, reduce health, restart phase, etc.
-        
-        Debug.Log("Player death handled");
-        
-        // Example: Restart current phase
+        // Notify event manager
         if (eventManager != null)
         {
-            eventManager.ResetEvent();
+            eventManager.OnChaseStarted();
         }
     }
     
-    // Public methods for external control
-    public void SetChaseSpeed(float minSpeed, float maxSpeed)
+    public void EndChase()
     {
-        minChaseSpeed = minSpeed;
-        maxChaseSpeed = maxSpeed;
+        if (currentState != ChaseState.Chase) return;
+        
+        Debug.Log("[DullahanChaseSystem] Ending chase");
+        
+        isChasing = false;
+        
+        // Stop audio
+        if (audioSource != null)
+        {
+            audioSource.Stop();
+        }
+        
+        // Notify event manager
+        if (eventManager != null)
+        {
+            eventManager.OnChaseEnded();
+        }
     }
     
-    public float GetCurrentChaseSpeed()
+    public void StartPatrol()
     {
-        // Return the current calculated chase speed based on intensity
-        return Mathf.Lerp(minChaseSpeed, maxChaseSpeed, currentIntensity);
+        Debug.Log("[DullahanChaseSystem] Starting patrol");
+        
+        currentState = ChaseState.Patrol;
+        isPatrolling = true;
+        isChasing = false;
+        
+        // Set patrol speed
+        dullahanAgent.speed = patrolSpeed;
+        
+        // Play patrol sound
+        if (audioSource != null && patrolSound != null)
+        {
+            audioSource.clip = patrolSound;
+            audioSource.Play();
+        }
+        
+        // Generate first patrol point
+        if (useWaypointPatrol && patrolWaypoints.Length > 0)
+        {
+            MoveToNextWaypoint();
+        }
+        else
+        {
+            GenerateRandomPatrolPoint();
+        }
     }
     
-    public void SetDetectionRange(float minRange, float maxRange)
+    public void StartSearch()
     {
-        minDetectionRange = minRange;
-        maxDetectionRange = maxRange;
+        Debug.Log("[DullahanChaseSystem] Starting search");
+        
+        currentState = ChaseState.Search;
+        isChasing = false;
+        isPatrolling = false;
+        
+        // Set search speed
+        dullahanAgent.speed = minChaseSpeed;
     }
     
-    public float GetChaseIntensity()
+    void MoveToNextWaypoint()
     {
-        return currentIntensity;
+        if (patrolWaypoints.Length == 0) return;
+        
+        Transform waypoint = patrolWaypoints[currentWaypointIndex];
+        dullahanAgent.SetDestination(waypoint.position);
+        
+        currentWaypointIndex = (currentWaypointIndex + 1) % patrolWaypoints.Length;
     }
     
-    public float GetCurrentIntensity()
+    void GenerateRandomPatrolPoint()
     {
-        return currentIntensity;
+        Vector3 randomPoint = patrolCenter + Random.insideUnitSphere * patrolRadius;
+        randomPoint.y = patrolCenter.y;
+        
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(randomPoint, out hit, patrolRadius, 1))
+        {
+            dullahanAgent.SetDestination(hit.position);
+        }
     }
     
     public void SetChaseIntensity(float intensity)
     {
-        currentIntensity = Mathf.Clamp(intensity, 0f, maxIntensity);
+        currentChaseIntensity = Mathf.Clamp01(intensity);
     }
     
-    public float GetDistanceToPlayer()
+    public float GetChaseIntensity()
     {
-        return distanceToPlayer;
+        return currentChaseIntensity;
     }
     
     public bool IsChasing()
@@ -400,33 +440,33 @@ public class DullahanChaseSystem : MonoBehaviour
         return isChasing;
     }
     
-    public void SetChaseTarget(Transform target)
+    public bool IsPatrolling()
     {
-        playerTransform = target;
+        return isPatrolling;
     }
     
-    public void SetDullahanTransform(Transform dullahan)
+    // Debug visualization
+    void OnDrawGizmosSelected()
     {
-        dullahanTransform = dullahan;
-        if (dullahan != null)
-        {
-            dullahanAgent = dullahan.GetComponent<NavMeshAgent>();
-            dullahanAnimator = dullahan.GetComponent<Animator>();
-        }
-    }
-    
-    // Helper method to check if an animator parameter exists
-    private bool HasAnimatorParameter(string parameterName)
-    {
-        if (dullahanAnimator == null) return false;
+        // Draw detection range
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, maxDetectionRange);
         
-        foreach (AnimatorControllerParameter param in dullahanAnimator.parameters)
+        // Draw patrol radius
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(patrolCenter, patrolRadius);
+        
+        // Draw waypoints
+        if (useWaypointPatrol && patrolWaypoints != null)
         {
-            if (param.name == parameterName)
+            Gizmos.color = Color.green;
+            foreach (Transform waypoint in patrolWaypoints)
             {
-                return true;
+                if (waypoint != null)
+                {
+                    Gizmos.DrawWireSphere(waypoint.position, 1f);
+                }
             }
         }
-        return false;
     }
 }
