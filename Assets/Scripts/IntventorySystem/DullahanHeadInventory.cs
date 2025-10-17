@@ -1396,18 +1396,18 @@ public class DullahanHeadInventory : MonoBehaviour
         return true;
     }
 
-    // Preferred placement path: delegates to SimpleHeadPlacement so it can apply effects for fake heads
-    public bool TryPlaceSelectedHeadOnBody(SimpleHeadPlacement headPlacement)
+    // Preferred placement path: delegates to SimpleHeadCollectionPuzzle so it can apply effects for fake heads
+    public bool TryPlaceSelectedHeadOnBody(SimpleHeadCollectionPuzzle headCollectionPuzzle)
     {
-        if (headPlacement == null) return false;
+        if (headCollectionPuzzle == null) return false;
         if (selectedItem < 0 || selectedItem >= inventorySlots.Count) return false;
 
         var slot = inventorySlots[selectedItem];
         if (!slot.isOccupied || slot.itemType != InventorySlot.ItemType.Head || slot.headItem == null) return false;
 
         // Use simple placement logic (applies effects for fake heads, completes puzzle for real head)
-        // Note: SimpleHeadPlacement handles placement directly, so this method is mainly for compatibility
-        // The actual placement is handled by the SimpleHeadPlacement script when F is pressed
+        // Note: SimpleHeadCollectionPuzzle handles placement directly, so this method is mainly for compatibility
+        // The actual placement is handled by the SimpleHeadCollectionPuzzle script when F is pressed
         return true; // Return true to indicate head can be placed
     }
 }

@@ -8,24 +8,24 @@ public class DullahanMeleeAttack : MonoBehaviour
     public float attackDamage = 25f;
     public float attackCooldown = 2f;
     public float attackDuration = 0.5f;
-    
+
     [Header("Attack Detection")]
     public LayerMask playerLayer = 1;
     public Transform attackPoint;
     public float attackRadius = 1f;
-    
+
     [Header("Visual Effects")]
     public GameObject attackEffect;
     public ParticleSystem attackParticles;
     public Light attackLight;
     public Material attackMaterial;
-    
+
     [Header("Audio")]
     public AudioSource audioSource;
     public AudioClip attackSound;
     public AudioClip hitSound;
     public AudioClip missSound;
-    
+
     [Header("Animation")]
     public Animator animator;
     public string attackAnimationTrigger = "Attack";
@@ -39,20 +39,20 @@ public class DullahanMeleeAttack : MonoBehaviour
     [Header("Debug References")]
     public PlayerHealthSystem playerHealthSystem;
     public string[] attackPatterns = { "Basic Attack", "Heavy Attack", "Combo Attack" };
-    
+
     // Private variables
     private Transform player;
     private float lastAttackTime = 0f;
     private Renderer dullahanRenderer;
     private Material originalMaterial;
     private Coroutine attackCoroutine;
-    
+
     void Start()
     {
         InitializeComponents();
         SetupAudio();
     }
-    
+
     void Update()
     {
         CheckPlayerDistance();
@@ -85,7 +85,7 @@ public class DullahanMeleeAttack : MonoBehaviour
     {
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
-        
+
         if (audioSource == null)
             audioSource = gameObject.AddComponent<AudioSource>();
     }
@@ -107,17 +107,17 @@ public class DullahanMeleeAttack : MonoBehaviour
             StartAttack();
         }
     }
-    
+
     public void StartAttack()
     {
         if (isAttacking) return;
         
         Debug.Log("[DullahanMeleeAttack] Starting attack");
-        
+
         isAttacking = true;
         canAttack = false;
         lastAttackTime = Time.time;
-        
+
         // Start attack coroutine
         if (attackCoroutine != null)
             StopCoroutine(attackCoroutine);
@@ -133,7 +133,7 @@ public class DullahanMeleeAttack : MonoBehaviour
         
         // Start visual effects
         StartAttackEffects();
-        
+
         // Play attack sound
         if (audioSource != null && attackSound != null)
             audioSource.PlayOneShot(attackSound);
@@ -300,23 +300,23 @@ public class DullahanMeleeAttack : MonoBehaviour
             Debug.Log($"[DullahanMeleeAttack] Cannot attack. Time until next attack: {GetTimeUntilNextAttack():F1}s");
         }
     }
-    
+
     public void ForceAttack()
     {
         Debug.Log("[DullahanMeleeAttack] Force attacking");
         canAttack = true;
         isAttacking = false;
         lastAttackTime = 0f;
-        StartAttack();
+            StartAttack();
     }
-    
+
     // Debug visualization
     void OnDrawGizmosSelected()
     {
         // Draw attack range
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
-        
+
         // Draw attack point
         if (attackPoint != null)
         {
@@ -324,7 +324,7 @@ public class DullahanMeleeAttack : MonoBehaviour
             Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
         }
     }
-    
+
     void OnDestroy()
     {
         // Stop any running coroutines

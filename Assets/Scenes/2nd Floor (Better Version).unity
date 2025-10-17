@@ -93519,8 +93519,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1498404468}
   m_HandleRect: {fileID: 1498404467}
   m_Direction: 2
-  m_Value: 0.99999976
-  m_Size: 0.61
+  m_Value: 0.99999845
+  m_Size: 0.60999995
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -166501,6 +166501,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 790061963}
+  - {fileID: 1334006693}
   - {fileID: 873430231}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -192927,6 +192928,94 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1318174006}
   m_Mesh: {fileID: 4300000, guid: b0c4b0ab6532cd2419f037089c7e2cf2, type: 3}
+--- !u!1 &1334006692
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1334006693}
+  - component: {fileID: 1334006695}
+  - component: {fileID: 1334006694}
+  m_Layer: 0
+  m_Name: BadPortal (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1334006693
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1334006692}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 78.97, y: 3.61, z: 80.51}
+  m_LocalScale: {x: 7.176585, y: 7.176585, z: 7.176585}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1047622878}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1334006694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1334006692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccfc2e8b4da39694da177d39850f93db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetSceneName: 1st Floor
+  targetSceneBuildIndex: -1
+  useTrigger: 1
+  interactKey: 101
+  playerTag: Player
+  saveOnTransition: 1
+  requireHoldToActivate: 1
+  holdDuration: 1.5
+  interactionUIPanel: {fileID: 1062459556}
+  interactionLabel: {fileID: 1084645641}
+  holdProgressImage: {fileID: 682901323}
+  holdProgressSlider: {fileID: 897301926}
+  tapPromptFormat: Press {0} to enter
+  holdPromptFormat: Hold {0} to enter
+  showHoldDurationInPrompt: 1
+  onPortalActivated:
+    m_PersistentCalls:
+      m_Calls: []
+  onPortalFailed:
+    m_PersistentCalls:
+      m_Calls: []
+  loadingMessage: Loading...
+--- !u!65 &1334006695
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1334006692}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!43 &1343362444
 Mesh:
   m_ObjectHideFlags: 0
@@ -392924,8 +393013,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1475373238}
   m_HandleRect: {fileID: 1475373237}
   m_Direction: 0
-  m_Value: 1
-  m_Size: 0.9999998
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
