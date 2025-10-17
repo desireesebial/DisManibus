@@ -28,6 +28,12 @@ public class SequentialTorchManager : MonoBehaviour
     [Tooltip("Where to spawn reward items")]
     public Transform rewardSpawnPoint;
     
+    [Tooltip("GameObjects to enable/activate when puzzle is completed")]
+    public GameObject[] rewardGameObjects;
+    
+    [Tooltip("GameObjects to make visible when puzzle is completed")]
+    public GameObject[] rewardVisibleObjects;
+    
     [Header("Audio")]
     public AudioClip puzzleCompleteSound;
     public AudioClip puzzleResetSound;
@@ -164,6 +170,47 @@ public class SequentialTorchManager : MonoBehaviour
                 if (item)
                 {
                     Instantiate(item, rewardSpawnPoint.position, rewardSpawnPoint.rotation);
+                }
+            }
+        }
+        
+        // Enable/activate reward GameObjects
+        if (rewardGameObjects != null)
+        {
+            foreach (var rewardObj in rewardGameObjects)
+            {
+                if (rewardObj)
+                {
+                    rewardObj.SetActive(true);
+                    Debug.Log($"[SequentialTorchManager] Enabled reward GameObject: {rewardObj.name}");
+                }
+            }
+        }
+        
+        // Make reward GameObjects visible
+        if (rewardVisibleObjects != null)
+        {
+            foreach (var visibleObj in rewardVisibleObjects)
+            {
+                if (visibleObj)
+                {
+                    // Enable the GameObject if it's disabled
+                    if (!visibleObj.activeInHierarchy)
+                    {
+                        visibleObj.SetActive(true);
+                    }
+                    
+                    // Make sure it's visible (in case it was hidden by other means)
+                    Renderer[] renderers = visibleObj.GetComponentsInChildren<Renderer>();
+                    foreach (var renderer in renderers)
+                    {
+                        if (renderer)
+                        {
+                            renderer.enabled = true;
+                        }
+                    }
+                    
+                    Debug.Log($"[SequentialTorchManager] Made visible reward GameObject: {visibleObj.name}");
                 }
             }
         }
