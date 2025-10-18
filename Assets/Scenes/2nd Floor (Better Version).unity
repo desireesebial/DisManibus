@@ -94208,8 +94208,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1498404468}
   m_HandleRect: {fileID: 1498404467}
   m_Direction: 2
-  m_Value: 0.99999845
-  m_Size: 0.60999995
+  m_Value: 1.0000002
+  m_Size: 0.6099999
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -141768,27 +141768,6 @@ MonoBehaviour:
   interactionUI: {fileID: 1685983401}
   interactionTextUI: {fileID: 1685983402}
   audioSource: {fileID: 0}
---- !u!65 &930246938
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 919132148308713320}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.01995867, y: 0.012520443, z: 0.0021547806}
-  m_Center: {x: 0.0000020647421, y: 0.00001857011, z: -0.00007679007}
 --- !u!43 &931531276
 Mesh:
   m_ObjectHideFlags: 0
@@ -207110,7 +207089,7 @@ Transform:
   m_GameObject: {fileID: 1394629964}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -10.59, y: -3.46, z: -4.11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -394494,8 +394473,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1475373238}
   m_HandleRect: {fileID: 1475373237}
   m_Direction: 0
-  m_Value: 0
-  m_Size: 1
+  m_Value: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -415994,7 +415973,6 @@ GameObject:
   - component: {fileID: 3469287838362258039}
   - component: {fileID: 1711813854368546493}
   - component: {fileID: 930246937}
-  - component: {fileID: 930246938}
   m_Layer: 0
   m_Name: riddle 3
   m_TagString: Untagged
@@ -418654,7 +418632,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
