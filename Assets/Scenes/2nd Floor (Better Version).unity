@@ -22759,7 +22759,7 @@ MonoBehaviour:
   requiredKeySOId: 20
   consumeKeyOnUnlock: 1
   useSelectedSOKeyOnly: 0
-  consumeWrongSelectedKey: 0
+  consumeWrongSelectedKey: 1
   requireSelectedNumericKey: 0
   linkedDoors:
   - {fileID: 593401328}
@@ -66170,7 +66170,7 @@ MonoBehaviour:
   requiredKeySOId: 20
   consumeKeyOnUnlock: 1
   useSelectedSOKeyOnly: 0
-  consumeWrongSelectedKey: 0
+  consumeWrongSelectedKey: 1
   requireSelectedNumericKey: 0
   linkedDoors:
   - {fileID: 225688411}
@@ -82876,7 +82876,7 @@ Transform:
   m_GameObject: {fileID: 726160864}
   serializedVersion: 2
   m_LocalRotation: {x: -0.02390692, y: 0.9994804, z: -0.013263207, w: -0.017075926}
-  m_LocalPosition: {x: -58.19996, y: -1.4630101, z: 31.910751}
+  m_LocalPosition: {x: -66.66, y: -0.946, z: 55.377}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -82915,7 +82915,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34f08cd3bb5622340a9cee1ed6ae9b01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  keyData: {fileID: 11400000, guid: ec35282042fc2ee449dc59cb7555734e, type: 2}
+  keyData: {fileID: 11400000, guid: 547d3c341f325e047a13b778df241591, type: 2}
   isPickedUp: 0
   enableDebugLogs: 1
 --- !u!23 &726160868
@@ -94208,8 +94208,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1498404468}
   m_HandleRect: {fileID: 1498404467}
   m_Direction: 2
-  m_Value: 1.0000002
-  m_Size: 0.6099999
+  m_Value: 0.99999845
+  m_Size: 0.60999995
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -166239,9 +166239,9 @@ MonoBehaviour:
   openSpeed: 2
   isOpen: 0
   isLocked: 1
-  requiredKeyID: 20
+  requiredKeyID: 50
   requiredKeyItem: {fileID: 0}
-  requiredKeySOId: 20
+  requiredKeySOId: 50
   consumeKeyOnUnlock: 0
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 1
@@ -173656,7 +173656,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34f08cd3bb5622340a9cee1ed6ae9b01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  keyData: {fileID: 11400000, guid: 931e33dea1e63184a989ebd45c610dd1, type: 2}
+  keyData: {fileID: 11400000, guid: 1df4a218f9719ac41947d653d5731ae5, type: 2}
   isPickedUp: 0
   enableDebugLogs: 1
 --- !u!23 &1081379079
@@ -207135,8 +207135,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 10, y: 20, z: 10}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 10, y: 15, z: 10}
+  m_Center: {x: 0, y: 7.6, z: 0}
 --- !u!64 &1394629967
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -207154,7 +207154,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -264498,7 +264498,7 @@ Transform:
   m_GameObject: {fileID: 1802076786}
   serializedVersion: 2
   m_LocalRotation: {x: -0.00000003774895, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -146.72496, y: -3.86101, z: 73.846756}
+  m_LocalPosition: {x: -146.72496, y: -3.534, z: 73.846756}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -264537,7 +264537,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34f08cd3bb5622340a9cee1ed6ae9b01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  keyData: {fileID: 11400000, guid: 5e1566aa05af7864ca6a66e956289aaa, type: 2}
+  keyData: {fileID: 11400000, guid: 547d3c341f325e047a13b778df241591, type: 2}
   isPickedUp: 0
   enableDebugLogs: 1
 --- !u!23 &1802076790
@@ -383008,7 +383008,7 @@ GameObject:
   - component: {fileID: 1968573703}
   - component: {fileID: 1968573702}
   m_Layer: 0
-  m_Name: Right Key (1)
+  m_Name: Right Key Hand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -383036,7 +383036,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1968573700}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 34f08cd3bb5622340a9cee1ed6ae9b01, type: 3}
   m_Name: 
@@ -394494,8 +394494,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1475373238}
   m_HandleRect: {fileID: 1475373237}
   m_Direction: 0
-  m_Value: 1
-  m_Size: 0.99999994
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -414134,9 +414134,9 @@ MonoBehaviour:
   openSpeed: 2
   isOpen: 0
   isLocked: 1
-  requiredKeyID: 20
+  requiredKeyID: 50
   requiredKeyItem: {fileID: 0}
-  requiredKeySOId: 20
+  requiredKeySOId: 50
   consumeKeyOnUnlock: 1
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
@@ -415346,7 +415346,7 @@ Transform:
   m_GameObject: {fileID: 919132148250537581}
   serializedVersion: 2
   m_LocalRotation: {x: -0.023906924, y: 0.9994804, z: -0.013263209, w: -0.017075926}
-  m_LocalPosition: {x: -80.482, y: 0.494, z: -24.007}
+  m_LocalPosition: {x: -81.51, y: 0.419, z: -24.007}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -415361,8 +415361,8 @@ Transform:
   m_GameObject: {fileID: 919132148273623964}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: -0.000000007450581, z: 0.000000007450581, w: 0.7071068}
-  m_LocalPosition: {x: -76.29027, y: 1.604, z: -31.687998}
-  m_LocalScale: {x: 100, y: 100, z: 100}
+  m_LocalPosition: {x: -76.43, y: 1.34, z: -31.43}
+  m_LocalScale: {x: 81.615, y: 81.615, z: 81.615}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 290263835}
@@ -415376,8 +415376,8 @@ Transform:
   m_GameObject: {fileID: 919132148141353094}
   serializedVersion: 2
   m_LocalRotation: {x: -0.46139944, y: -0.50248206, z: -0.5163668, w: 0.51767534}
-  m_LocalPosition: {x: -75.009, y: 1.71, z: -31.478}
-  m_LocalScale: {x: 100, y: 100, z: 100}
+  m_LocalPosition: {x: -74.75, y: 1.47, z: -31.478}
+  m_LocalScale: {x: 78.787, y: 78.787, z: 78.787}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 290263835}
@@ -415936,7 +415936,7 @@ GameObject:
   - component: {fileID: 3469287838596742557}
   - component: {fileID: 3469287838596742556}
   m_Layer: 0
-  m_Name: Right Key (room)
+  m_Name: Right Key (Exit Door room)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -415956,7 +415956,7 @@ GameObject:
   - component: {fileID: 3469287838454004595}
   - component: {fileID: 3469287838454004596}
   m_Layer: 0
-  m_Name: Wrong SwordKey 2 (room)
+  m_Name: treasurechest key 2 (room)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -418658,7 +418658,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.00773363, y: 0.019951327, z: 0.0009419902}
+  m_Size: {x: 1, y: 0.019951327, z: 0.0009419902}
   m_Center: {x: 0.0000019877916, y: -0.0000013350513, z: -0.000017044997}
 --- !u!33 &3469287837647486333
 MeshFilter:
@@ -418694,7 +418694,7 @@ MonoBehaviour:
   isLocked: 1
   requiredKeyID: 203
   requiredKeyItem: {fileID: 0}
-  requiredKeySOId: 
+  requiredKeySOId: 203
   consumeKeyOnUnlock: 0
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 1
@@ -418900,7 +418900,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.0074160295, y: 0.019915184, z: 0.0010318502}
+  m_Size: {x: 0.019, y: 0.019915184, z: 0.0010318502}
   m_Center: {x: 0.000019980245, y: 0.0000023525213, z: -0.00001371498}
 --- !u!54 &3469287838596742556
 Rigidbody:
@@ -419913,9 +419913,9 @@ MonoBehaviour:
   openSpeed: 2
   isOpen: 0
   isLocked: 1
-  requiredKeyID: 20
+  requiredKeyID: 100
   requiredKeyItem: {fileID: 0}
-  requiredKeySOId: 20
+  requiredKeySOId: 100
   consumeKeyOnUnlock: 1
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
@@ -420921,7 +420921,7 @@ MonoBehaviour:
   invertCamera: 0
   cameraCanMove: 1
   mouseSensitivity: 2
-  maxLookAngle: 40
+  maxLookAngle: 90
   lockCursor: 1
   crosshair: 1
   crosshairImage: {fileID: 21300000, guid: be4ce60e2c9768c44b9b10b9c5258045, type: 3}
@@ -421145,8 +421145,10 @@ MonoBehaviour:
     keyObject: {fileID: 938577611}
   - key: {fileID: 11400000, guid: 931e33dea1e63184a989ebd45c610dd1, type: 2}
     keyObject: {fileID: 1968573700}
-  - key: {fileID: 11400000, guid: 931e33dea1e63184a989ebd45c610dd1, type: 2}
-    keyObject: {fileID: 1081379073}
+  - key: {fileID: 11400000, guid: 1df4a218f9719ac41947d653d5731ae5, type: 2}
+    keyObject: {fileID: 1968573700}
+  - key: {fileID: 11400000, guid: 547d3c341f325e047a13b778df241591, type: 2}
+    keyObject: {fileID: 9162370}
 --- !u!114 &4459864850702346307
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -421761,14 +421763,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4096171660622670058}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.43248907, y: -0, z: -0.000000012889179, w: 0.9016392}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 7.105427e-17, y: 0.32657504, z: -0.2727436}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4249449410468389084}
   m_Father: {fileID: 4177863922001384744}
-  m_LocalEulerAnglesHint: {x: -51.251, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4853180886131622596
 Transform:
   m_ObjectHideFlags: 0
@@ -427787,7 +427789,7 @@ Transform:
   m_GameObject: {fileID: 9182821020807822862}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.000000014901161, z: -0, w: 1}
-  m_LocalPosition: {x: -75.57758, y: -0.00009952316, z: -31.74975}
+  m_LocalPosition: {x: -75.57758, y: -0.00009952316, z: -32}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -427889,9 +427891,9 @@ MonoBehaviour:
   openSpeed: 2
   isOpen: 0
   isLocked: 1
-  requiredKeyID: 999
+  requiredKeyID: 100
   requiredKeyItem: {fileID: 0}
-  requiredKeySOId: 
+  requiredKeySOId: 100
   consumeKeyOnUnlock: 0
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 1
@@ -428640,7 +428642,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8368884085582275764}
   - component: {fileID: 9182821020807822863}
-  - component: {fileID: 9182821020807822864}
   m_Layer: 0
   m_Name: TreasureChest
   m_TagString: Untagged
@@ -428662,11 +428663,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chestRoot: {fileID: 8368884085582275764}
   lidTransform: {fileID: 4853180885972951968}
-  lockVisual: {fileID: 282973534065111197}
-  startLocked: 1
+  lockVisual: {fileID: 0}
+  startLocked: 0
   requiredKey: {fileID: 11400000, guid: ec35282042fc2ee449dc59cb7555734e, type: 2}
   consumeKeyOnUnlock: 1
-  openLocalEulerOffset: {x: -70, y: 0, z: 0}
+  openLocalEulerOffset: {x: -45, y: 0, z: 0}
   animationDuration: 0.6
   animationCurve:
     serializedVersion: 2
@@ -428693,7 +428694,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   interactKey: 101
-  interactRange: 3
+  interactRange: 6
   interactMask:
     serializedVersion: 2
     m_Bits: 1
@@ -428712,27 +428713,6 @@ MonoBehaviour:
   debugDrawRay: 0
   sphereCastRadius: 0.15
   disableAnimatorOnLid: 1
---- !u!65 &9182821020807822864
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9182821020807822862}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &9182821020896599914
 GameObject:
   m_ObjectHideFlags: 0

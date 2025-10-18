@@ -141,3 +141,4 @@ The placement prompt system works seamlessly with:
 - **Highly customizable** - change text and styling
 
 The placement prompt system makes the Head Shrine Puzzle much more user-friendly and professional!
+
