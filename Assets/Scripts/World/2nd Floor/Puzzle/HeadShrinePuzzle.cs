@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Collections;
 
 /// <summary>
-/// 🏛️ HEAD SHRINE PUZZLE - Perfect for Indie Developers!
+/// 🏛️ HEAD SHRINE PUZZLE - Single Altar with Hidden Heads!
 /// 
-/// A mystical shrine with a single altar that has multiple placement points.
-/// Each placement point (empty GameObject) can hold a specific Dullahan head.
-/// The real head must be placed in the center position between the candles.
-/// When all required heads are placed, the shrine activates and grants rewards.
+/// A mystical shrine with a single altar built from different assets (table, candles, etc.).
+/// The map contains 3 hidden heads that players must find and place on the altar.
+/// - 2 Wrong Heads: One opens a door, one has no reward
+/// - 1 Real Head: Spawns a key or opens the main door
 /// 
 /// SETUP (3 steps):
 /// 1. Create empty GameObject with this script
 /// 2. Create child objects for placement points (name them "Placement1", "Placement2", etc.)
-/// 3. Assign head IDs and materials in inspector
+/// 3. Assign head IDs, rewards, and materials in inspector
 /// 
 /// THAT'S IT! No complex setup needed.
 /// </summary>
@@ -21,13 +21,42 @@ public class HeadShrinePuzzle : MonoBehaviour
 {
     [Header("🏛️ Shrine Settings")]
     [Tooltip("List of head IDs that need to be placed on placement points (in order)")]
-    public int[] requiredHeadIDs = { 1, 2, 3 }; // Example: Real head, Fake head 1, Fake head 2
+    public int[] requiredHeadIDs = { 1, 2, 3 }; // Example: Real head, Wrong head 1, Wrong head 2
     
     [Tooltip("Which placement point requires the REAL head (0 = first, 1 = second, etc.)")]
     public int realHeadPlacementIndex = 0; // Center placement point
     
     [Tooltip("How close player needs to be to interact with any placement point")]
     public float interactionDistance = 4f;
+    
+    [Header("🏗️ Altar Assets (Assign Existing Objects)")]
+    [Tooltip("The main altar/table GameObject (e.g., TableV2)")]
+    public GameObject altarBase;
+    
+    [Tooltip("Left candle holder GameObject (e.g., CandleV1)")]
+    public GameObject leftCandle;
+    
+    [Tooltip("Center candle holder GameObject (e.g., CandleV2)")]
+    public GameObject centerCandle;
+    
+    [Tooltip("Right candle holder GameObject (e.g., CandleV3)")]
+    public GameObject rightCandle;
+    
+    [Header("🎯 Head Rewards")]
+    [Tooltip("Door that opens when the first wrong head is placed")]
+    public doorscript wrongHead1Door;
+    
+    [Tooltip("Door that opens when the second wrong head is placed")]
+    public doorscript wrongHead2Door;
+    
+    [Tooltip("Main door that opens when the real head is placed")]
+    public doorscript realHeadDoor;
+    
+    [Tooltip("Key that spawns when the real head is placed")]
+    public GameObject keyReward;
+    
+    [Tooltip("Transform where the key spawns")]
+    public Transform keySpawnPoint;
     
     [Header("🎨 Visual Settings")]
     [Tooltip("Material for empty placement points")]
@@ -55,10 +84,28 @@ public class HeadShrinePuzzle : MonoBehaviour
     public AudioClip shrineCompleteSound;
     public AudioClip wrongHeadSound;
     public AudioClip realHeadPlacedSound;
+    public AudioClip doorOpenSound;
+    public AudioClip keySpawnSound;
     public AudioClip mysticalChantingSound;
     
-    [Header("🎁 Rewards")]
-    public Door rewardDoor;
+    [Header("💬 Placement Prompt")]
+    [Tooltip("UI GameObject that shows placement prompt")]
+    public GameObject placementPromptUI;
+    
+    [Tooltip("Text component for placement prompt")]
+    public TMPro.TextMeshProUGUI placementPromptText;
+    
+    [Tooltip("Text to show when player can place head")]
+    public string placeHeadText = "Press F to place head";
+    
+    [Tooltip("Text to show when no head in inventory")]
+    public string noHeadText = "No head in inventory";
+    
+    [Tooltip("Text to show when all placements are full")]
+    public string allFullText = "All placements are full";
+    
+    [Header("🎁 General Rewards")]
+    public doorscript rewardDoor;
     public GameObject[] rewardItems;
     public Transform rewardSpawnPoint;
     
@@ -76,6 +123,8 @@ public class HeadShrinePuzzle : MonoBehaviour
     private List<ShrinePlacement> placements = new List<ShrinePlacement>();
     private bool shrineComplete = false;
     private bool isPlayingChanting = false;
+    private bool playerInRange = false;
+    private ShrinePlacement currentPlacement = null;
     
     // Shrine placement class
     [System.Serializable]
@@ -129,56 +178,46 @@ public class HeadShrinePuzzle : MonoBehaviour
         // Clear existing placements
         placements.Clear();
         
-        // Find all child objects that could be placement points
+        // First, try to find child placement points
         for (int i = 0; i < transform.childCount; i++)
         {
             Transform child = transform.GetChild(i);
             
             // Check if this looks like a placement point
             if (child.name.ToLower().Contains("placement") || 
-                child.name.StartsWith("Placement") ||
-                (i < requiredHeadIDs.Length))
+                child.name.StartsWith("Placement"))
             {
-                int headID = (i < requiredHeadIDs.Length) ? requiredHeadIDs[i] : 0;
-                bool isRealHead = (i == realHeadPlacementIndex);
+                int headID = (placements.Count < requiredHeadIDs.Length) ? requiredHeadIDs[placements.Count] : 0;
+                bool isRealHead = (placements.Count == realHeadPlacementIndex);
                 ShrinePlacement placement = new ShrinePlacement(child, headID, isRealHead);
                 placements.Add(placement);
                 
                 // Setup placement appearance
                 SetupPlacementAppearance(placement);
                 
-                Debug.Log($"[HeadShrinePuzzle] Created placement: {child.name} for head ID {headID} (Real head: {isRealHead})");
+                Debug.Log($"[HeadShrinePuzzle] Found child placement: {child.name} for head ID {headID} (Real head: {isRealHead})");
             }
         }
         
-        // If no placements found, create them automatically
+        // If no child placements found, create them automatically based on altar assets
         if (placements.Count == 0)
         {
-            CreatePlacementsAutomatically();
+            CreatePlacementsFromAltarAssets();
         }
     }
     
-    void CreatePlacementsAutomatically()
+    void CreatePlacementsFromAltarAssets()
     {
-        Debug.Log("[HeadShrinePuzzle] No placements found, creating automatically...");
+        Debug.Log("[HeadShrinePuzzle] Creating placements based on existing altar assets...");
         
-        // Create altar base
-        GameObject altarBase = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        altarBase.name = "AltarBase";
-        altarBase.transform.SetParent(transform);
-        altarBase.transform.localPosition = Vector3.zero;
-        altarBase.transform.localScale = new Vector3(4f, 0.2f, 2f);
-        
-        // Apply altar base material
-        if (altarBaseMaterial && altarBase.GetComponent<Renderer>())
+        // Get the altar base position for reference
+        Vector3 altarPosition = Vector3.zero;
+        if (altarBase)
         {
-            altarBase.GetComponent<Renderer>().material = altarBaseMaterial;
+            altarPosition = altarBase.transform.position;
         }
         
-        // Remove collider
-        Destroy(altarBase.GetComponent<Collider>());
-        
-        // Create placement points
+        // Create placement points based on candle positions
         for (int i = 0; i < requiredHeadIDs.Length; i++)
         {
             // Create placement point
@@ -186,20 +225,49 @@ public class HeadShrinePuzzle : MonoBehaviour
             placementObj.name = $"Placement{i + 1}";
             placementObj.transform.SetParent(transform);
             
-            // Position placements on the altar (center, left, right)
-            if (i == 0) // Center (real head)
+            // Position placements based on candle positions
+            Vector3 placementPosition = altarPosition;
+            
+            if (i == 0) // Center (real head) - use center candle position
             {
-                placementObj.transform.localPosition = new Vector3(0, 0.2f, 0);
+                if (centerCandle)
+                {
+                    placementPosition = centerCandle.transform.position;
+                    placementPosition.y += 0.5f; // Slightly above candle
+                }
+                else
+                {
+                    placementPosition.y += 0.2f;
+                }
             }
-            else if (i == 1) // Left
+            else if (i == 1) // Left - use left candle position
             {
-                placementObj.transform.localPosition = new Vector3(-1.5f, 0.2f, 0);
+                if (leftCandle)
+                {
+                    placementPosition = leftCandle.transform.position;
+                    placementPosition.y += 0.5f; // Slightly above candle
+                }
+                else
+                {
+                    placementPosition.x -= 1.5f;
+                    placementPosition.y += 0.2f;
+                }
             }
-            else // Right
+            else // Right - use right candle position
             {
-                placementObj.transform.localPosition = new Vector3(1.5f, 0.2f, 0);
+                if (rightCandle)
+                {
+                    placementPosition = rightCandle.transform.position;
+                    placementPosition.y += 0.5f; // Slightly above candle
+                }
+                else
+                {
+                    placementPosition.x += 1.5f;
+                    placementPosition.y += 0.2f;
+                }
             }
             
+            placementObj.transform.position = placementPosition;
             placementObj.transform.localScale = new Vector3(0.8f, 0.1f, 0.8f);
             
             // Remove collider
@@ -211,6 +279,8 @@ public class HeadShrinePuzzle : MonoBehaviour
             
             // Setup appearance
             SetupPlacementAppearance(placement);
+            
+            Debug.Log($"[HeadShrinePuzzle] Created placement {i + 1} at position: {placementPosition} (Real head: {isRealHead})");
         }
     }
     
@@ -250,11 +320,18 @@ public class HeadShrinePuzzle : MonoBehaviour
         if (shrineComplete || !player || !inventory) return;
         
         // Check if player is close enough to any placement point
+        bool wasInRange = playerInRange;
+        playerInRange = false;
+        currentPlacement = null;
+        
         foreach (ShrinePlacement placement in placements)
         {
             float distance = Vector3.Distance(placement.placementTransform.position, player.position);
             if (distance <= interactionDistance)
             {
+                playerInRange = true;
+                currentPlacement = placement;
+                
                 // Check if player has a head and presses F
                 if (Input.GetKeyDown(KeyCode.F))
                 {
@@ -262,6 +339,41 @@ public class HeadShrinePuzzle : MonoBehaviour
                 }
                 break; // Only check one placement at a time
             }
+        }
+        
+        // Update prompt visibility
+        UpdatePlacementPrompt();
+    }
+    
+    void UpdatePlacementPrompt()
+    {
+        if (placementPromptUI == null) return;
+        
+        if (playerInRange && currentPlacement != null)
+        {
+            placementPromptUI.SetActive(true);
+            
+            if (placementPromptText != null)
+            {
+                // Check if player has a head
+                DullahanHeadSO currentHead = inventory.GetCurrentHead();
+                if (currentHead == null)
+                {
+                    placementPromptText.text = noHeadText;
+                }
+                else if (currentPlacement.hasHead)
+                {
+                    placementPromptText.text = allFullText;
+                }
+                else
+                {
+                    placementPromptText.text = placeHeadText;
+                }
+            }
+        }
+        else
+        {
+            placementPromptUI.SetActive(false);
         }
     }
     
@@ -320,6 +432,9 @@ public class HeadShrinePuzzle : MonoBehaviour
         // Activate the placement
         ActivatePlacement(placement);
         
+        // Handle rewards based on head type
+        HandleHeadRewards(head, placement);
+        
         // Play placement sound
         if (placement.isRealHeadPlacement && realHeadPlacedSound)
         {
@@ -354,6 +469,77 @@ public class HeadShrinePuzzle : MonoBehaviour
         
         // Play activation sound
         if (placementActivatedSound) audioSource.PlayOneShot(placementActivatedSound);
+    }
+    
+    void HandleHeadRewards(DullahanHeadSO head, ShrinePlacement placement)
+    {
+        Debug.Log($"[HeadShrinePuzzle] 🎁 Handling rewards for {head.headName}!");
+        
+        // Check if this is the real head
+        if (placement.isRealHeadPlacement)
+        {
+            HandleRealHeadRewards();
+        }
+        else
+        {
+            HandleWrongHeadRewards(head, placement);
+        }
+    }
+    
+    void HandleRealHeadRewards()
+    {
+        Debug.Log($"[HeadShrinePuzzle] 🗝️ REAL HEAD PLACED! Granting main rewards!");
+        
+        // Open main door
+        if (realHeadDoor)
+        {
+            realHeadDoor.UnlockDoor();
+            realHeadDoor.OpenDoor();
+            if (doorOpenSound) audioSource.PlayOneShot(doorOpenSound);
+            Debug.Log("[HeadShrinePuzzle] Main door unlocked and opened!");
+        }
+        
+        // Spawn key
+        if (keyReward && keySpawnPoint)
+        {
+            Instantiate(keyReward, keySpawnPoint.position, keySpawnPoint.rotation);
+            if (keySpawnSound) audioSource.PlayOneShot(keySpawnSound);
+            Debug.Log("[HeadShrinePuzzle] Key spawned!");
+        }
+        
+        // Notify event managers
+        Floor2EndingEventManager eventManager = FindObjectOfType<Floor2EndingEventManager>();
+        if (eventManager) eventManager.OnRealHeadAttached();
+    }
+    
+    void HandleWrongHeadRewards(DullahanHeadSO head, ShrinePlacement placement)
+    {
+        Debug.Log($"[HeadShrinePuzzle] 🚪 Wrong head placed: {head.headName}");
+        
+        // Determine which wrong head this is based on placement index
+        int placementIndex = placements.IndexOf(placement);
+        
+        if (placementIndex == 1) // First wrong head
+        {
+            if (wrongHead1Door)
+            {
+                wrongHead1Door.UnlockDoor();
+                wrongHead1Door.OpenDoor();
+                if (doorOpenSound) audioSource.PlayOneShot(doorOpenSound);
+                Debug.Log("[HeadShrinePuzzle] Wrong head 1 door unlocked and opened!");
+            }
+        }
+        else if (placementIndex == 2) // Second wrong head
+        {
+            if (wrongHead2Door)
+            {
+                wrongHead2Door.UnlockDoor();
+                wrongHead2Door.OpenDoor();
+                if (doorOpenSound) audioSource.PlayOneShot(doorOpenSound);
+                Debug.Log("[HeadShrinePuzzle] Wrong head 2 door unlocked and opened!");
+            }
+            // Second wrong head has no reward (just opens door)
+        }
     }
     
     void HandleWrongHead(DullahanHeadSO head)
@@ -406,8 +592,12 @@ public class HeadShrinePuzzle : MonoBehaviour
         // Play shrine animation
         if (shrineAnimator) shrineAnimator.SetTrigger("Complete");
         
-        // Grant rewards
-        if (rewardDoor) rewardDoor.UnlockDoor();
+        // Grant general rewards (if any)
+        if (rewardDoor) 
+        {
+            rewardDoor.UnlockDoor();
+            rewardDoor.OpenDoor();
+        }
         
         if (rewardItems != null && rewardSpawnPoint != null)
         {
@@ -417,11 +607,7 @@ public class HeadShrinePuzzle : MonoBehaviour
             }
         }
         
-        // Notify event managers
-        Floor2EndingEventManager eventManager = FindObjectOfType<Floor2EndingEventManager>();
-        if (eventManager) eventManager.OnRealHeadAttached();
-        
-        Debug.Log("[HeadShrinePuzzle] All rewards granted!");
+        Debug.Log("[HeadShrinePuzzle] Shrine completion effects activated!");
     }
     
     IEnumerator PlayMysticalChanting()
@@ -479,8 +665,32 @@ public class HeadShrinePuzzle : MonoBehaviour
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, interactionDistance);
         
+        // Draw altar assets
+        if (altarBase)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireCube(altarBase.transform.position, Vector3.one * 0.5f);
+        }
+        
+        if (leftCandle)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireCube(leftCandle.transform.position, Vector3.one * 0.3f);
+        }
+        
+        if (centerCandle)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireCube(centerCandle.transform.position, Vector3.one * 0.3f);
+        }
+        
+        if (rightCandle)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireCube(rightCandle.transform.position, Vector3.one * 0.3f);
+        }
+        
         // Draw placement positions
-        Gizmos.color = Color.yellow;
         for (int i = 0; i < placements.Count; i++)
         {
             if (placements[i].placementTransform)

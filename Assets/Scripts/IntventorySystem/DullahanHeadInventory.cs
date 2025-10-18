@@ -279,7 +279,11 @@ public class DullahanHeadInventory : MonoBehaviour
 
     private void HandleItemPickup()
     {
-        if (cam == null) return;
+        if (cam == null) 
+        {
+            Debug.LogWarning("DullahanHeadInventory: Camera reference is null! Cannot perform raycast pickup.");
+            return;
+        }
 
         // Raycast from the screen center (crosshair), not the mouse position
         Vector3 screenCenter = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f);
@@ -320,6 +324,10 @@ public class DullahanHeadInventory : MonoBehaviour
                     else if (keyComponent != null && !keyComponent.isPickedUp)
                     {
                         TryPickupKey(keyComponent, pickableItem);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"DullahanHeadInventory: Hit object '{hitInfo.collider.name}' with IPickable but no recognized pickup component found!");
                     }
                 }
             }
@@ -406,10 +414,12 @@ public class DullahanHeadInventory : MonoBehaviour
 
     private void TryPickupKey(KeyPickable keyComponent, IPickable pickableItem)
     {
+        Debug.Log($"DullahanHeadInventory: Attempting to pickup key from {keyComponent.gameObject.name}");
+        
         // Check if key has valid ScriptableObject
         if (keyComponent.keyData == null)
         {
-            Debug.LogError("Key has no ScriptableObject assigned!");
+            Debug.LogError($"DullahanHeadInventory: Key '{keyComponent.gameObject.name}' has no ScriptableObject assigned!");
             return;
         }
 
@@ -417,9 +427,11 @@ public class DullahanHeadInventory : MonoBehaviour
         int emptySlot = FindFirstEmptySlot();
         if (emptySlot == -1)
         {
-            Debug.Log("Inventory is full! Cannot pick up key.");
+            Debug.LogWarning("DullahanHeadInventory: Inventory is full! Cannot pick up key.");
             return;
         }
+
+        Debug.Log($"DullahanHeadInventory: Adding key '{keyComponent.keyData.keyName}' (ID: {keyComponent.keyData.keyId}) to slot {emptySlot + 1}");
 
         // Add key to inventory slot
         inventorySlots[emptySlot].SetKey(keyComponent.keyData);
@@ -434,7 +446,7 @@ public class DullahanHeadInventory : MonoBehaviour
             NewItemSelected();
         }
 
-        Debug.Log($"Picked up key: {keyComponent.keyData.keyName} in slot {emptySlot + 1}");
+        Debug.Log($"DullahanHeadInventory: Successfully picked up key: {keyComponent.keyData.keyName} in slot {emptySlot + 1}");
     }
 
     private void HandleItemSelection()
