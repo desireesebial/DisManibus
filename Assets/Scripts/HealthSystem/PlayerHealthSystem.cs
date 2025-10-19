@@ -3,13 +3,14 @@ using UnityEngine.UI;
 using System.Collections;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 
 public class PlayerHealthSystem : MonoBehaviour
 {
     [Header("Health Settings")]
-    public int maxHealth = 3;
-    public float invulnerabilityTime = 1f;
-    public int currentHealth;
+    [SerializeField] private int maxHealth = 3;
+    [SerializeField] private float invulnerabilityTime = 1f;
+    [SerializeField] private int currentHealth;
 
     [Header("Health UI")]
     public GameObject healthUI;
@@ -59,10 +60,15 @@ public class PlayerHealthSystem : MonoBehaviour
     public string dullahanTag = "Dullahan";
     public int dullahanDamage = 1;
 
-    // Events
-    public System.Action<int> OnHealthChanged;
-    public System.Action OnCriticalHealth;
-    public System.Action OnPlayerDeath;
+    // Events (Unity Events for better integration)
+    public UnityEvent<int> OnHealthChanged;
+    public UnityEvent OnCriticalHealth;
+    public UnityEvent OnPlayerDeath;
+
+    // Properties (inspired by Ilumisoft pattern)
+    public int MaxHealth { get => maxHealth; set => maxHealth = value; }
+    public int CurrentHealth { get => currentHealth; set => currentHealth = value; }
+    public bool IsAlive => currentHealth > 0;
 
     // Private variables
     private bool isInvulnerable = false;
@@ -142,83 +148,141 @@ public class PlayerHealthSystem : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int damage)
+    public void ApplyDamage(int damage)
     {
-        if (isInvulnerable || currentHealth <= 0) return;
+        if (isInvulnerable || !IsAlive) return;
 
-        // Reduce health
+        int previousHealth = currentHealth;
         currentHealth = Mathf.Max(0, currentHealth - damage);
-
-        // Trigger events
-        OnHealthChanged?.Invoke(currentHealth);
-
-        // Visual and audio feedback
-        StartCoroutine(CameraShake());
-        StartDamageFlash();
-        PlayDamageSound();
-
-        // Apply debuffs based on health state
-        ApplyHealthDebuffs();
-
-        // Check for critical health
-        if (currentHealth == 1)
+        
+        int healthChange = currentHealth - previousHealth;
+        
+        if (Mathf.Abs(healthChange) > 0)
         {
-            OnCriticalHealth?.Invoke();
-            StartCriticalHealthBlur();
+            OnHealthChanged?.Invoke(currentHealth);
+            
+            // Visual and audio feedback
+            StartCoroutine(CameraShake());
+            StartDamageFlash();
+            PlayDamageSound();
+
+            // Apply debuffs based on health state
+            ApplyHealthDebuffs();
+
+            // Check for critical health
+            if (currentHealth == 1)
+            {
+                OnCriticalHealth?.Invoke();
+                StartCriticalHealthBlur();
+            }
+
+            // Check for death
+            if (currentHealth <= 0)
+            {
+                OnPlayerDeath?.Invoke();
+                HandlePlayerDeath();
+            }
+
+            // Start invulnerability
+            StartCoroutine(InvulnerabilityFrames());
+
+            // Update UI
+            UpdateHealthUI();
+            UpdateStatusUI();
+
+            Debug.Log($"Player took {damage} damage. Health: {currentHealth}/{maxHealth}");
         }
-
-        // Check for death
-        if (currentHealth <= 0)
-        {
-            OnPlayerDeath?.Invoke();
-            HandlePlayerDeath();
-        }
-
-        // Start invulnerability
-        StartCoroutine(InvulnerabilityFrames());
-
-        // Update UI
-        UpdateHealthUI();
-        UpdateStatusUI();
-
-        Debug.Log($"Player took {damage} damage. Health: {currentHealth}/{maxHealth}");
     }
 
+    // Keep the old method for backward compatibility
+    public void TakeDamage(int damage)
+    {
+        ApplyDamage(damage);
+    }
+
+    public void AddHealth(int healAmount)
+    {
+        if (!IsAlive || currentHealth >= maxHealth) return;
+
+        int previousHealth = currentHealth;
+        currentHealth = Mathf.Min(maxHealth, currentHealth + healAmount);
+        
+        int healthChange = currentHealth - previousHealth;
+        
+        if (healthChange > 0)
+        {
+            OnHealthChanged?.Invoke(currentHealth);
+
+            // Audio feedback
+            if (audioSource != null && healSound != null)
+            {
+                audioSource.PlayOneShot(healSound);
+            }
+
+            // Remove debuffs if healed
+            RemoveHealthDebuffs();
+
+            // Stop critical health effects if healed above 1
+            if (currentHealth > 1 && isBlurActive)
+            {
+                StopCriticalHealthBlur();
+            }
+
+            // Update UI
+            UpdateHealthUI();
+
+            Debug.Log($"Player healed {healAmount}. Health: {currentHealth}/{maxHealth}");
+        }
+    }
+
+    // Keep the old method for backward compatibility
     public void Heal(int healAmount)
     {
-        if (currentHealth >= maxHealth) return;
+        AddHealth(healAmount);
+    }
 
-        // Increase health
-        currentHealth = Mathf.Min(maxHealth, currentHealth + healAmount);
-
-        // Trigger events
-        OnHealthChanged?.Invoke(currentHealth);
-
-        // Audio feedback
-        if (audioSource != null && healSound != null)
+    public void SetHealth(int health)
+    {
+        int previousHealth = currentHealth;
+        currentHealth = Mathf.Clamp(health, 0, maxHealth);
+        
+        int healthChange = currentHealth - previousHealth;
+        
+        if (Mathf.Abs(healthChange) > 0)
         {
-            audioSource.PlayOneShot(healSound);
+            OnHealthChanged?.Invoke(currentHealth);
+            
+            // Apply or remove debuffs based on new health
+            RemoveHealthDebuffs();
+            ApplyHealthDebuffs();
+            
+            // Handle critical health effects
+            if (currentHealth == 1 && !isBlurActive)
+            {
+                OnCriticalHealth?.Invoke();
+                StartCriticalHealthBlur();
+            }
+            else if (currentHealth > 1 && isBlurActive)
+            {
+                StopCriticalHealthBlur();
+            }
+            
+            // Handle death
+            if (currentHealth <= 0 && IsAlive == false)
+            {
+                OnPlayerDeath?.Invoke();
+                HandlePlayerDeath();
+            }
+            
+            // Update UI
+            UpdateHealthUI();
+            UpdateStatusUI();
         }
-
-        // Remove debuffs if healed
-        RemoveHealthDebuffs();
-
-        // Stop critical health effects if healed above 1
-        if (currentHealth > 1 && isBlurActive)
-        {
-            StopCriticalHealthBlur();
-        }
-
-        // Update UI
-        UpdateHealthUI();
-
-        Debug.Log($"Player healed {healAmount}. Health: {currentHealth}/{maxHealth}");
     }
 
     public void RestoreFullHealth()
     {
-        int healAmount = maxHealth - currentHealth;
-        Heal(healAmount);
+        SetHealth(maxHealth);
     }
 
     private void ApplyHealthDebuffs()
