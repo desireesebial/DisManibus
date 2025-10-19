@@ -29,6 +29,9 @@ public class HeadShrinePuzzle : MonoBehaviour
     [Tooltip("How close player needs to be to interact with any placement point")]
     public float interactionDistance = 4f;
     
+    [Tooltip("Key to press for interacting with the shrine (default: F)")]
+    public KeyCode interactionKey = KeyCode.F;
+    
     [Header("🏗️ Altar Assets (Assign Existing Objects)")]
     [Tooltip("The main altar/table GameObject (e.g., TableV2)")]
     public GameObject altarBase;
@@ -95,8 +98,8 @@ public class HeadShrinePuzzle : MonoBehaviour
     [Tooltip("Text component for placement prompt")]
     public TMPro.TextMeshProUGUI placementPromptText;
     
-    [Tooltip("Text to show when player can place head")]
-    public string placeHeadText = "Press F to place head";
+    [Tooltip("Text to show when player can place head (use {0} for key placeholder)")]
+    public string placeHeadText = "Press {0} to place head";
     
     [Tooltip("Text to show when no head in inventory")]
     public string noHeadText = "No head in inventory";
@@ -332,8 +335,8 @@ public class HeadShrinePuzzle : MonoBehaviour
                 playerInRange = true;
                 currentPlacement = placement;
                 
-                // Check if player has a head and presses F
-                if (Input.GetKeyDown(KeyCode.F))
+                // Check if player has a head and presses the interaction key
+                if (Input.GetKeyDown(interactionKey))
                 {
                     TryPlaceHeadOnPlacement(placement);
                 }
@@ -367,7 +370,7 @@ public class HeadShrinePuzzle : MonoBehaviour
                 }
                 else
                 {
-                    placementPromptText.text = placeHeadText;
+                    placementPromptText.text = string.Format(placeHeadText, interactionKey.ToString());
                 }
             }
         }
@@ -383,8 +386,8 @@ public class HeadShrinePuzzle : MonoBehaviour
         DullahanHeadSO currentHead = inventory.GetCurrentHead();
         if (currentHead == null)
         {
-            Debug.Log("[HeadShrinePuzzle] No head in inventory");
-            return;
+            Debug.Log("[HeadShrinePuzzle] No head in inventory - no interaction");
+            return; // Do nothing if no head
         }
         
         Debug.Log($"[HeadShrinePuzzle] Trying to place head: {currentHead.headName} (ID: {currentHead.headID}) on placement");
