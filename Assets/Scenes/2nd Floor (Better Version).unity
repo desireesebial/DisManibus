@@ -11354,6 +11354,7 @@ GameObject:
   - component: {fileID: 30648705}
   - component: {fileID: 30648707}
   - component: {fileID: 30648706}
+  - component: {fileID: 30648708}
   m_Layer: 0
   m_Name: DeathRespawnButton
   m_TagString: Untagged
@@ -11418,6 +11419,62 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 30648704}
   m_CullTransparentMesh: 1
+--- !u!114 &30648708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 30648704}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 30648706}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4459864850702346307}
+        m_TargetAssemblyTypeName: PlayerHealthSystem, Assembly-CSharp
+        m_MethodName: RestartLevel
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &35360409
 GameObject:
   m_ObjectHideFlags: 0
@@ -229355,7 +229412,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1615336726}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4459864850702346307}
+        m_TargetAssemblyTypeName: PlayerHealthSystem, Assembly-CSharp
+        m_MethodName: ReturnToMainMenu
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1615336726
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -420628,7 +420697,6 @@ GameObject:
   - component: {fileID: 4459864850702346298}
   - component: {fileID: 4459864850702346306}
   - component: {fileID: 4459864850702346307}
-  - component: {fileID: 4459864850702346308}
   m_Layer: 0
   m_Name: FirstPersonController
   m_TagString: Player
@@ -420903,10 +420971,12 @@ MonoBehaviour:
   - {fileID: 385985795}
   healthText: {fileID: 931980580}
   statusText: {fileID: 157450731}
-  deathMessageUI: {fileID: 0}
+  deathMessageUI: {fileID: 1753031415}
+  deathBackground: {fileID: 1954421331}
+  deathMessageImage: {fileID: 1724050752}
   deathMessageText: {fileID: 0}
-  retryButton: {fileID: 0}
-  mainMenuButton: {fileID: 0}
+  retryButton: {fileID: 30648708}
+  mainMenuButton: {fileID: 1615336725}
   mainMenuSceneName: MainMenu
   pauseOnDeath: 1
   healthyBarColor: {r: 0.1, g: 0.8, b: 0.1, a: 1}
@@ -420940,31 +421010,6 @@ MonoBehaviour:
   OnPlayerDeath:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &4459864850702346308
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4459864850702346288}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 01981e74a7bcc3d4ebbabd013c466c9e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerHealthSystem: {fileID: 4459864850702346307}
-  dullahanAttack: {fileID: 0}
-  enableDebugLogging: 1
-  showDebugGUI: 1
-  enableDebugControls: 1
-  damageKey: 104
-  healKey: 106
-  fullHealKey: 107
-  forceAttackKey: 120
-  toggleInvulnerabilityKey: 105
-  showHealthBars: 1
-  showReferences: 1
-  showTimers: 1
 --- !u!4 &4491049413964756868
 Transform:
   m_ObjectHideFlags: 0

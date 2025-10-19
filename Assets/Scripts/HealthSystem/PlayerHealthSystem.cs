@@ -17,10 +17,12 @@ public class PlayerHealthSystem : MonoBehaviour
     public Image[] healthBars = new Image[3];
     public TextMeshProUGUI healthText;
     public TextMeshProUGUI statusText;
-    public GameObject deathMessageUI;
-    public TextMeshProUGUI deathMessageText;
 
     [Header("Death Screen UI")]
+    public GameObject deathMessageUI;
+    public RawImage deathBackground; // Death screen background as RawImage
+    public Image deathMessageImage; // Death message as image (instead of text)
+    public TextMeshProUGUI deathMessageText; // Alternative text-based death message
     public Button retryButton; // Reload current scene
     public Button mainMenuButton; // Go to main menu
     public string mainMenuSceneName = "MainMenu";
@@ -129,6 +131,17 @@ public class PlayerHealthSystem : MonoBehaviour
         // Ensure death UI is hidden and time/cursor are normal at start
         if (deathMessageUI != null)
             deathMessageUI.SetActive(false);
+        if (deathBackground != null)
+            deathBackground.gameObject.SetActive(false);
+        if (deathMessageImage != null)
+            deathMessageImage.gameObject.SetActive(false);
+        if (deathMessageText != null)
+            deathMessageText.gameObject.SetActive(false);
+        if (retryButton != null)
+            retryButton.gameObject.SetActive(false);
+        if (mainMenuButton != null)
+            mainMenuButton.gameObject.SetActive(false);
+        
         hasDied = false;
         if (pauseOnDeath)
             Time.timeScale = 1f;
@@ -591,10 +604,31 @@ public class PlayerHealthSystem : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
+        // Show death screen UI
         if (deathMessageUI != null)
             deathMessageUI.SetActive(true);
-        if (deathMessageText != null)
+
+        // Show death background RawImage
+        if (deathBackground != null)
+            deathBackground.gameObject.SetActive(true);
+
+        // Show death message (either image or text)
+        if (deathMessageImage != null)
+        {
+            deathMessageImage.gameObject.SetActive(true);
+            // Death message image is already set in inspector
+        }
+        else if (deathMessageText != null)
+        {
+            deathMessageText.gameObject.SetActive(true);
             deathMessageText.text = "You are dead";
+        }
+
+        // Show buttons
+        if (retryButton != null)
+            retryButton.gameObject.SetActive(true);
+        if (mainMenuButton != null)
+            mainMenuButton.gameObject.SetActive(true);
     }
 
     public void RestartLevel()
@@ -647,6 +681,16 @@ public class PlayerHealthSystem : MonoBehaviour
             Cursor.visible = false;
             if (deathMessageUI != null)
                 deathMessageUI.SetActive(false);
+            if (deathBackground != null)
+                deathBackground.gameObject.SetActive(false);
+            if (deathMessageImage != null)
+                deathMessageImage.gameObject.SetActive(false);
+            if (deathMessageText != null)
+                deathMessageText.gameObject.SetActive(false);
+            if (retryButton != null)
+                retryButton.gameObject.SetActive(false);
+            if (mainMenuButton != null)
+                mainMenuButton.gameObject.SetActive(false);
             if (playerController != null && !playerController.enabled)
                 playerController.enabled = true;
         }
