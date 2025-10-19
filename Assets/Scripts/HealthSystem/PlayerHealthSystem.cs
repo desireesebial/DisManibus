@@ -10,7 +10,7 @@ public class PlayerHealthSystem : MonoBehaviour
     [Header("Health Settings")]
     [SerializeField] private int maxHealth = 3;
     [SerializeField] private float invulnerabilityTime = 1f;
-    [SerializeField] private int currentHealth;
+    [SerializeField] private int currentHealth = 3;
 
     [Header("Health UI")]
     public GameObject healthUI;
