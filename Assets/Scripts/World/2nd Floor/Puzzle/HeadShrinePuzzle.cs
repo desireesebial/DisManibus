@@ -517,12 +517,11 @@ public class HeadShrinePuzzle : MonoBehaviour
     
     void HandleWrongHeadRewards(DullahanHeadSO head, ShrinePlacement placement)
     {
-        Debug.Log($"[HeadShrinePuzzle] 🚪 Wrong head placed: {head.headName}");
+        Debug.Log($"[HeadShrinePuzzle] 🚪 Wrong head placed: {head.headName} (ID: {head.headID})");
         
-        // Determine which wrong head this is based on placement index
-        int placementIndex = placements.IndexOf(placement);
-        
-        if (placementIndex == 1) // First wrong head
+        // Determine which wrong head this is based on head ID
+        // Assuming wrong heads have IDs 2 and 3 (adjust based on your setup)
+        if (head.headID == 2) // First wrong head
         {
             if (wrongHead1Door)
             {
@@ -531,8 +530,12 @@ public class HeadShrinePuzzle : MonoBehaviour
                 if (doorOpenSound) audioSource.PlayOneShot(doorOpenSound);
                 Debug.Log("[HeadShrinePuzzle] Wrong head 1 door unlocked and opened!");
             }
+            else
+            {
+                Debug.LogWarning("[HeadShrinePuzzle] Wrong head 1 door not assigned!");
+            }
         }
-        else if (placementIndex == 2) // Second wrong head
+        else if (head.headID == 3) // Second wrong head
         {
             if (wrongHead2Door)
             {
@@ -541,7 +544,14 @@ public class HeadShrinePuzzle : MonoBehaviour
                 if (doorOpenSound) audioSource.PlayOneShot(doorOpenSound);
                 Debug.Log("[HeadShrinePuzzle] Wrong head 2 door unlocked and opened!");
             }
-            // Second wrong head has no reward (just opens door)
+            else
+            {
+                Debug.LogWarning("[HeadShrinePuzzle] Wrong head 2 door not assigned!");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[HeadShrinePuzzle] Unknown wrong head ID: {head.headID}. Expected 2 or 3.");
         }
     }
     

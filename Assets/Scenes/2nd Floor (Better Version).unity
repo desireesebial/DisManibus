@@ -52619,7 +52619,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -180603,8 +180603,7 @@ MonoBehaviour:
   chaseDuration: 60
   headSpawnDelay: 2
   headCollectionTime: 120
-  exitDoors:
-  - {fileID: 3469287837868409382}
+  exitDoors: []
   realHeadDoor: {fileID: 3469287837868409382}
   exitDoorKeyID: 999
   realHeadDoorKeyID: 203
@@ -388954,7 +388953,7 @@ MonoBehaviour:
   leftCandle: {fileID: 2043092993}
   centerCandle: {fileID: 0}
   rightCandle: {fileID: 505707091}
-  wrongHead1Door: {fileID: 0}
+  wrongHead1Door: {fileID: 1031175967}
   wrongHead2Door: {fileID: 3469287837868409382}
   realHeadDoor: {fileID: 8635660095280295203}
   keyReward: {fileID: 1081379073}
@@ -418499,7 +418498,7 @@ MonoBehaviour:
   requiredKeySOId: 203
   consumeKeyOnUnlock: 0
   useSelectedSOKeyOnly: 0
-  consumeWrongSelectedKey: 1
+  consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors: []
   autoLinkDoors: 0
