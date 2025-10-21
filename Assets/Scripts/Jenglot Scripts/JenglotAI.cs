@@ -70,6 +70,10 @@ public class JenglotAI : MonoBehaviour
     [Header("Animation Parameters")]
     [Tooltip("Animator parameter for idle/sitting animation (bool) - matches your SittingIdle state")]
     [SerializeField] string animParamIsIdle = "Idle";
+    [Tooltip("Animator parameter for walking animation (bool) - matches your Walking state")]
+    [SerializeField] string animParamIsWalking = "Walking";
+    [Tooltip("Animator parameter for attack animation (bool) - matches your AttackAnimation state")]
+    [SerializeField] string animParamIsAttacking = "Attacking";
     [Tooltip("Animator trigger for spell casting animation - matches your AttackAnimation state")]
     [SerializeField] string animTriggerSpellCast = "Attack";
 
@@ -129,13 +133,15 @@ public class JenglotAI : MonoBehaviour
         
         // Check if our parameters exist
         bool hasIdle = HasParameter(animParamIsIdle);
-        bool hasAttack = HasParameter(animTriggerSpellCast);
+        bool hasWalking = HasParameter(animParamIsWalking);
+        bool hasAttacking = HasParameter(animParamIsAttacking);
+        bool hasAttackTrigger = HasParameter(animTriggerSpellCast);
 
-        Debug.Log($"[{name}] Animation Parameters: Idle={hasIdle}, Attack={hasAttack}");
+        Debug.Log($"[{name}] Animation Parameters: Idle={hasIdle}, Walking={hasWalking}, Attacking={hasAttacking}, AttackTrigger={hasAttackTrigger}");
         
-        if (!hasIdle || !hasAttack)
+        if (!hasIdle || !hasWalking || !hasAttacking)
         {
-            Debug.LogWarning($"[{name}] Missing animation parameters! Add 'Idle' (Bool) and 'Attack' (Trigger) to your Animator Controller.");
+            Debug.LogWarning($"[{name}] Missing animation parameters! Add 'Idle' (Bool), 'Walking' (Bool), and 'Attacking' (Bool) to your Animator Controller.");
         }
 
         // Debug current animator state
@@ -322,14 +328,11 @@ public class JenglotAI : MonoBehaviour
 
         lastAttackTime = Time.time;
 
-        // Trigger attack animation
+        // Trigger attack animation (optional - for one-shot effects)
         if (animator != null && !string.IsNullOrEmpty(animTriggerSpellCast))
         {
             animator.SetTrigger(animTriggerSpellCast);
             Debug.Log($"[{name}] TRIGGERED ATTACK ANIMATION!");
-            
-            // Force return to idle after attack animation duration
-            StartCoroutine(ReturnToIdleAfterAttack());
         }
 
         if (chantAudio != null)
@@ -394,25 +397,59 @@ public class JenglotAI : MonoBehaviour
         
         if (animator == null) return;
         
-        // Always reset to idle first, then handle specific states
+        // Reset all animation parameters first
         if (!string.IsNullOrEmpty(animParamIsIdle))
-        {
-            animator.SetBool(animParamIsIdle, true);
-        }
+            animator.SetBool(animParamIsIdle, false);
+        if (!string.IsNullOrEmpty(animParamIsWalking))
+            animator.SetBool(animParamIsWalking, false);
+        if (!string.IsNullOrEmpty(animParamIsAttacking))
+            animator.SetBool(animParamIsAttacking, false);
         
-        // Handle different states
+        // Set the appropriate animation state
         switch (newState)
         {
             case JenglotAnimationState.Idle:
-            case JenglotAnimationState.Frozen:
+                if (!string.IsNullOrEmpty(animParamIsIdle))
+                {
+                    animator.SetBool(animParamIsIdle, true);
+                    Debug.Log($"[{name}] Playing IDLE animation");
+                }
+                break;
+                
             case JenglotAnimationState.Walking:
-                // All use idle animation - already set above
-                Debug.Log($"[{name}] Playing IDLE animation (State: {newState})");
+                if (!string.IsNullOrEmpty(animParamIsWalking))
+                {
+                    animator.SetBool(animParamIsWalking, true);
+                    Debug.Log($"[{name}] Playing WALKING animation");
+                }
+                else
+                {
+                    // Fallback to idle if walking parameter doesn't exist
+                    if (!string.IsNullOrEmpty(animParamIsIdle))
+                        animator.SetBool(animParamIsIdle, true);
+                }
                 break;
                 
             case JenglotAnimationState.SpellCasting:
-                // Keep idle as base, attack trigger will be fired in TryAttack()
-                Debug.Log($"[{name}] Ready for ATTACK animation trigger (idle base maintained)");
+                if (!string.IsNullOrEmpty(animParamIsAttacking))
+                {
+                    animator.SetBool(animParamIsAttacking, true);
+                    Debug.Log($"[{name}] Playing ATTACKING animation (continuous)");
+                }
+                else
+                {
+                    // Fallback to idle if attacking parameter doesn't exist
+                    if (!string.IsNullOrEmpty(animParamIsIdle))
+                        animator.SetBool(animParamIsIdle, true);
+                }
+                break;
+                
+            case JenglotAnimationState.Frozen:
+                if (!string.IsNullOrEmpty(animParamIsIdle))
+                {
+                    animator.SetBool(animParamIsIdle, true);
+                    Debug.Log($"[{name}] Playing FROZEN animation (idle pose)");
+                }
                 break;
         }
         
@@ -421,18 +458,6 @@ public class JenglotAI : MonoBehaviour
         Debug.Log($"[{name}] After parameter change - IsName('SittingIdle'): {stateInfo.IsName("SittingIdle")}, IsName('AttackAnimation'): {stateInfo.IsName("AttackAnimation")}");
     }
 
-    System.Collections.IEnumerator ReturnToIdleAfterAttack()
-    {
-        // Wait for attack animation to complete (estimate 2-3 seconds)
-        yield return new WaitForSeconds(3f);
-        
-        // Force return to idle
-        if (animator != null && !string.IsNullOrEmpty(animParamIsIdle))
-        {
-            animator.SetBool(animParamIsIdle, true);
-            Debug.Log($"[{name}] FORCED return to idle after attack");
-        }
-    }
 
     void ForceIdleAnimation()
     {
