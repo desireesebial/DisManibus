@@ -84,7 +84,17 @@ public class doorscript : MonoBehaviour
             playerInventory = FindObjectOfType<PlayerInventory>();
             
         if (doorAudioSource == null)
+        {
             doorAudioSource = GetComponent<AudioSource>();
+            if (doorAudioSource == null)
+            {
+                Debug.LogWarning($"[Door] No AudioSource found on {gameObject.name}. Door sounds will not work.");
+            }
+            else
+            {
+                Debug.Log($"[Door] AudioSource found on {gameObject.name}");
+            }
+        }
             
         // Auto-link doors if enabled
         if (autoLinkDoors)
@@ -255,6 +265,8 @@ public class doorscript : MonoBehaviour
     {
         if (_isAnimating) return;
         
+        Debug.Log($"[Door] ToggleDoor called for {gameObject.name}. Current state: isOpen={isOpen}, isLocked={isLocked}");
+        
         // Ensure the GameObject is active before starting a coroutine
         if (!gameObject.activeInHierarchy)
         {
@@ -328,6 +340,8 @@ public class doorscript : MonoBehaviour
     {
         _isAnimating = true;
         
+        Debug.Log($"[Door] AnimateDoor called for {gameObject.name}. Opening: {open}, isLocked: {isLocked}");
+        
         Quaternion targetRotation = open ? _openRotation : _closedRotation;
         Quaternion startRotation = transform.rotation;
         float timeElapsed = 0f;
@@ -342,6 +356,7 @@ public class doorscript : MonoBehaviour
         }
         
         // Play sound
+        Debug.Log($"[Door] About to play sound for {gameObject.name}. Sound type: {(open ? "OPEN" : "CLOSE")}");
         PlayDoorSound(open);
         
         // Trigger animation if available
@@ -404,20 +419,40 @@ public class doorscript : MonoBehaviour
 
     private void PlayDoorSound(bool opening)
     {
-        if (doorAudioSource == null) return;
+        if (doorAudioSource == null) 
+        {
+            Debug.LogWarning($"[Door] AudioSource is null for {gameObject.name}. Cannot play sound.");
+            return;
+        }
         
         AudioClip clipToPlay = opening ? doorOpenSound : doorCloseSound;
         if (clipToPlay != null)
         {
+            Debug.Log($"[Door] Playing {(opening ? "open" : "close")} sound for {gameObject.name}");
             doorAudioSource.PlayOneShot(clipToPlay);
+        }
+        else
+        {
+            Debug.LogWarning($"[Door] {(opening ? "doorOpenSound" : "doorCloseSound")} is null for {gameObject.name}. Cannot play sound.");
         }
     }
 
     private void PlayLockedSound()
     {
-        if (doorAudioSource != null && doorLockedSound != null)
+        if (doorAudioSource == null)
         {
+            Debug.LogWarning($"[Door] AudioSource is null for {gameObject.name}. Cannot play locked sound.");
+            return;
+        }
+        
+        if (doorLockedSound != null)
+        {
+            Debug.Log($"[Door] Playing locked sound for {gameObject.name}");
             doorAudioSource.PlayOneShot(doorLockedSound);
+        }
+        else
+        {
+            Debug.LogWarning($"[Door] doorLockedSound is null for {gameObject.name}. Cannot play locked sound.");
         }
     }
 
@@ -565,6 +600,23 @@ public class doorscript : MonoBehaviour
     public void SetLinkedDoors(doorscript[] doors)
     {
         linkedDoors = doors;
+    }
+    
+    // Public method to test door sounds
+    public void TestDoorSounds()
+    {
+        Debug.Log($"[Door] Testing sounds for {gameObject.name}");
+        Debug.Log($"[Door] AudioSource: {(doorAudioSource != null ? "Found" : "NULL")}");
+        Debug.Log($"[Door] Open Sound: {(doorOpenSound != null ? doorOpenSound.name : "NULL")}");
+        Debug.Log($"[Door] Close Sound: {(doorCloseSound != null ? doorCloseSound.name : "NULL")}");
+        Debug.Log($"[Door] Locked Sound: {(doorLockedSound != null ? doorLockedSound.name : "NULL")}");
+        
+        if (doorAudioSource != null)
+        {
+            Debug.Log($"[Door] AudioSource Volume: {doorAudioSource.volume}");
+            Debug.Log($"[Door] AudioSource Mute: {doorAudioSource.mute}");
+            Debug.Log($"[Door] AudioSource Enabled: {doorAudioSource.enabled}");
+        }
     }
 
     public void SetDoorVisibility(bool visible)

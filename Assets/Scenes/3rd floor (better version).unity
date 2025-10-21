@@ -4383,7 +4383,6 @@ GameObject:
   - component: {fileID: 179887152}
   - component: {fileID: 179887151}
   - component: {fileID: 179887154}
-  - component: {fileID: 179887156}
   - component: {fileID: 179887155}
   m_Layer: 0
   m_Name: Exit Key
@@ -4401,7 +4400,7 @@ Transform:
   m_GameObject: {fileID: 179887149}
   serializedVersion: 2
   m_LocalRotation: {x: -0.43038356, y: 0.5608882, z: 0.5610839, w: -0.43053383}
-  m_LocalPosition: {x: -55.541496, y: -3.685, z: -14.503971}
+  m_LocalPosition: {x: -55.541496, y: -3.651, z: -14.503971}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4510,27 +4509,6 @@ MonoBehaviour:
   action: 1
   questId: find_key
   questTextIfAdding: 
---- !u!65 &179887156
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 179887149}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.011956646, y: 0.11683194, z: 0.038119446}
-  m_Center: {x: 0.00002278342, y: -0.058416266, z: -0.00085154356}
 --- !u!1 &180038581
 GameObject:
   m_ObjectHideFlags: 0
@@ -7476,9 +7454,9 @@ MonoBehaviour:
   headInventory: {fileID: 0}
   playerInventory: {fileID: 369474181}
   changeVisibilityOnInteract: 0
-  interactVisibilityState: 1
+  interactVisibilityState: 0
   changeVisibilityOnCorrectCode: 0
-  correctCodeVisibilityState: 1
+  correctCodeVisibilityState: 0
   affectColliders: 0
   visibilityTargets: []
 --- !u!65 &307795430
@@ -14546,7 +14524,7 @@ Transform:
   m_GameObject: {fileID: 536816725}
   serializedVersion: 2
   m_LocalRotation: {x: -0.353446, y: 0.35344762, z: 0.6124346, w: -0.6124334}
-  m_LocalPosition: {x: -52.06178, y: -2.951, z: 78.79249}
+  m_LocalPosition: {x: -52.06178, y: -2.941, z: 78.79249}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -156658,7 +156636,7 @@ MonoBehaviour:
   closeText: Press E to close
   lockedText: Door is locked
   headInventory: {fileID: 0}
-  playerInventory: {fileID: 0}
+  playerInventory: {fileID: 369474181}
   changeVisibilityOnInteract: 0
   interactVisibilityState: 1
   changeVisibilityOnCorrectCode: 0
@@ -161454,7 +161432,7 @@ Transform:
   m_GameObject: {fileID: 868978309}
   serializedVersion: 2
   m_LocalRotation: {x: -0.36452284, y: 0.605763, z: 0.60597414, w: -0.3646502}
-  m_LocalPosition: {x: -48.567883, y: -2.2982, z: -64.50407}
+  m_LocalPosition: {x: -48.403, y: -2.379, z: -64.50407}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -180909,8 +180887,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.2162799, y: 2.272725, z: 1.06213}
-  m_Center: {x: -0.0223521, y: -0.0045530167, z: -0.0993682}
+  m_Size: {x: 1.2162799, y: 2.272725, z: 0.46}
+  m_Center: {x: -0.0223521, y: -0.0045530167, z: -0.39}
 --- !u!23 &1602483277
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -356544,11 +356522,11 @@ MonoBehaviour:
   closeText: Press E to close
   lockedText: Door is locked
   headInventory: {fileID: 0}
-  playerInventory: {fileID: 0}
+  playerInventory: {fileID: 369474181}
   changeVisibilityOnInteract: 0
-  interactVisibilityState: 1
+  interactVisibilityState: 0
   changeVisibilityOnCorrectCode: 0
-  correctCodeVisibilityState: 1
+  correctCodeVisibilityState: 0
   affectColliders: 0
   visibilityTargets: []
 --- !u!65 &8577619685409900201
