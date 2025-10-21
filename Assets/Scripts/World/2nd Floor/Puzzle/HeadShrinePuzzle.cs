@@ -409,33 +409,15 @@ public class HeadShrinePuzzle : MonoBehaviour
     {
         Debug.Log($"[HeadShrinePuzzle] ✓ Placing {head.headName} on placement!");
         
-        // Remove from inventory
+        // Remove from inventory (like pickup but in reverse)
         inventory.RemoveSelectedHeadIfHead();
         
         // Mark placement as having a head
         placement.hasHead = true;
         placement.placedHead = head; // Store the head reference
         
-        // Create visual head on placement
-        if (head.headPrefab)
-        {
-            GameObject headModel = Instantiate(head.headPrefab, placement.placementTransform);
-            headModel.transform.localPosition = new Vector3(0, 0.3f, 0);
-            headModel.transform.localRotation = Quaternion.identity;
-            headModel.transform.localScale = Vector3.one * 0.8f;
-            
-            // Store the spawned head model
-            placement.spawnedHeadModel = headModel;
-            
-            // Remove interactive components
-            CleanupHeadComponents(headModel);
-            
-            Debug.Log($"[HeadShrinePuzzle] 🎭 Spawned head model: {head.headName} on placement");
-        }
-        else
-        {
-            Debug.LogWarning($"[HeadShrinePuzzle] ⚠️ No head prefab assigned for {head.headName}");
-        }
+        // Create head object on shrine (like pickup but in reverse)
+        CreateHeadObjectOnShrine(head, placement);
         
         // Update placement material
         if (placement.placementRenderer && filledPlacementMaterial)
@@ -675,6 +657,91 @@ public class HeadShrinePuzzle : MonoBehaviour
         
         DullahanHeadPickable[] pickables = headObj.GetComponentsInChildren<DullahanHeadPickable>(true);
         foreach (var pickable in pickables) if (pickable) Destroy(pickable);
+    }
+    
+    void CreateHeadObjectOnShrine(DullahanHeadSO head, ShrinePlacement placement)
+    {
+        Debug.Log($"[HeadShrinePuzzle] 🎭 Creating head object on shrine: {head.headName}");
+        
+        // Create head object from prefab (like pickup but in reverse)
+        if (head.headPrefab)
+        {
+            GameObject headObject = Instantiate(head.headPrefab, placement.placementTransform);
+            headObject.transform.localPosition = new Vector3(0, 0.3f, 0);
+            headObject.transform.localRotation = Quaternion.identity;
+            headObject.transform.localScale = Vector3.one * 0.8f;
+            
+            // Store the created head object
+            placement.spawnedHeadModel = headObject;
+            
+            // Setup head object like pickup system but in reverse
+            SetupHeadObjectOnShrine(headObject, head);
+            
+            Debug.Log($"[HeadShrinePuzzle] ✅ Head object created successfully on shrine!");
+        }
+        else
+        {
+            Debug.LogWarning($"[HeadShrinePuzzle] ⚠️ No head prefab assigned for {head.headName}");
+        }
+    }
+    
+    void SetupHeadObjectOnShrine(GameObject headObject, DullahanHeadSO headData)
+    {
+        // Add DullahanHeadPickable component (like pickup system)
+        DullahanHeadPickable headPickable = headObject.GetComponent<DullahanHeadPickable>();
+        if (headPickable == null)
+        {
+            headPickable = headObject.AddComponent<DullahanHeadPickable>();
+        }
+        
+        // Setup head data
+        headPickable.headData = headData;
+        headPickable.isPickedUp = true; // Mark as already "picked up" (placed)
+        
+        // Setup visual effects (like pickup system)
+        SetupHeadVisualEffects(headObject, headData);
+        
+        // Remove interactive components so it can't be picked up again
+        CleanupHeadComponents(headObject);
+        
+        Debug.Log($"[HeadShrinePuzzle] 🎨 Head object setup complete!");
+    }
+    
+    void SetupHeadVisualEffects(GameObject headObject, DullahanHeadSO headData)
+    {
+        // Setup glow effect (like pickup system)
+        if (headData.hasGlowEffect)
+        {
+            Light headLight = headObject.GetComponent<Light>();
+            if (headLight == null)
+            {
+                headLight = headObject.AddComponent<Light>();
+            }
+            
+            headLight.color = headData.headGlowColor;
+            headLight.intensity = 1f;
+            headLight.range = 3f;
+        }
+        
+        // Setup material (like pickup system)
+        Renderer headRenderer = headObject.GetComponent<Renderer>();
+        if (headRenderer != null && headData.headMaterial != null)
+        {
+            headRenderer.material = headData.headMaterial;
+        }
+        
+        // Setup audio (like pickup system)
+        AudioSource headAudio = headObject.GetComponent<AudioSource>();
+        if (headAudio == null)
+        {
+            headAudio = headObject.AddComponent<AudioSource>();
+        }
+        
+        // Play placement sound if available
+        if (headData.pickupSound != null)
+        {
+            headAudio.PlayOneShot(headData.pickupSound);
+        }
     }
     
     // Public methods for other scripts
