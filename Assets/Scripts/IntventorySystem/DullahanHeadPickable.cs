@@ -38,16 +38,70 @@ public class DullahanHeadPickable : MonoBehaviour, IPickable
     {
         // Find player and components
         FindPlayerAndComponents();
-        
+
+        // Auto-spawn head visual if not assigned but headPrefab exists
+        AutoSpawnHeadVisual();
+
         // Setup visual effects
         SetupVisualEffects();
-        
+
         // Setup audio
         SetupAudio();
-        
+
         // Setup UI
         if (interactionUI != null)
             interactionUI.SetActive(false);
+    }
+
+    private void AutoSpawnHeadVisual()
+    {
+        // If headVisual is already assigned, no need to spawn
+        if (headVisual != null)
+        {
+            Debug.Log($"[DullahanHeadPickable] Head visual already assigned for {gameObject.name}");
+            return;
+        }
+
+        // If we have headData with a prefab, spawn it
+        if (headData != null && headData.headPrefab != null)
+        {
+            Debug.Log($"[DullahanHeadPickable] Auto-spawning head visual for {headData.headName}");
+
+            // Instantiate the head visual as a child
+            headVisual = Instantiate(headData.headPrefab, transform);
+            headVisual.name = $"{headData.headName}_Visual";
+            headVisual.transform.localPosition = Vector3.zero;
+            headVisual.transform.localRotation = Quaternion.identity;
+            headVisual.transform.localScale = Vector3.one;
+
+            // Remove any DullahanHeadPickable components from the spawned visual
+            // to avoid conflicts (only the parent should be pickable)
+            DullahanHeadPickable[] childPickables = headVisual.GetComponentsInChildren<DullahanHeadPickable>();
+            foreach (var pickable in childPickables)
+            {
+                if (pickable != this) // Don't destroy self
+                {
+                    Destroy(pickable);
+                }
+            }
+
+            // Get renderer from spawned visual
+            if (headRenderer == null)
+            {
+                headRenderer = headVisual.GetComponent<Renderer>();
+                if (headRenderer == null)
+                {
+                    headRenderer = headVisual.GetComponentInChildren<Renderer>();
+                }
+            }
+
+            Debug.Log($"[DullahanHeadPickable] ✅ Head visual spawned successfully for {headData.headName}");
+        }
+        else
+        {
+            Debug.LogWarning($"[DullahanHeadPickable] ⚠️ Cannot auto-spawn visual for {gameObject.name}: " +
+                           $"headData={headData != null}, headPrefab={headData?.headPrefab != null}");
+        }
     }
     
     void Update()
@@ -110,42 +164,48 @@ public class DullahanHeadPickable : MonoBehaviour, IPickable
     public void PickupHead()
     {
         if (isPickedUp || headInventory == null) return;
-        
+
         // Check if head inventory is full
         if (headInventory.inventoryList.Count >= headInventory.maxInventorySize)
         {
             Debug.Log("Head inventory is full!");
             return;
         }
-        
+
         // Check if head data is valid
         if (headData == null)
         {
             Debug.LogError("Head has no ScriptableObject assigned!");
             return;
         }
-        
+
         // Add to head inventory using compatibility method
         headInventory.AddToInventoryList(headData);
-        
+
         // Apply effects if any
         if (headData.hasEffect && effectManager != null)
         {
             effectManager.ApplyHeadEffect(headData);
         }
-        
+
         // Play pickup sound
         PlayPickupSound();
-        
+
         // Hide interaction UI
         HideInteractionUI();
-        
+
         // Mark as picked up
         isPickedUp = true;
-        
+
+        // Hide the spawned head visual if it exists
+        if (headVisual != null)
+        {
+            headVisual.SetActive(false);
+        }
+
         // Hide the head object
         gameObject.SetActive(false);
-        
+
         Debug.Log($"Picked up {headData.headName}!");
     }
     

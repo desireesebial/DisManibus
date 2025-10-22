@@ -45039,7 +45039,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -45063,7 +45063,7 @@ MonoBehaviour:
   headRenderer: {fileID: -7511558181221131132, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
   originalMaterial: {fileID: 2100000, guid: a398b1cedcdf229499a90b20b680d3a2, type: 2}
   glowMaterial: {fileID: 0}
-  headVisual: {fileID: 405935602}
+  headVisual: {fileID: 919132149155446097, guid: c8aaf083cb5dc1943a2b4c71e1df5f90, type: 3}
   audioSource: {fileID: 0}
   pickupSound: {fileID: 0}
   dropSound: {fileID: 0}
@@ -53792,7 +53792,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -182684,7 +182684,7 @@ MonoBehaviour:
   audioManager: {fileID: 0}
   headInventory: {fileID: 4459864850702346306}
   floor2EventManager: {fileID: 0}
-  currentState: 0
+  currentState: 4
   eventActive: 1
   chaseActive: 0
   headsSpawned: 0
@@ -428257,7 +428257,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06ffde271c7ac364fae8ad662d476cf5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxChaseSpeed: 25
+  maxChaseSpeed: 10
   minChaseSpeed: 3
   maxDetectionRange: 20
   minDetectionRange: 5
