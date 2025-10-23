@@ -62,6 +62,16 @@ public class DullahanHeadPickable : MonoBehaviour, IPickable
             return;
         }
 
+        // Check if a visual already exists in children (prevent re-spawning)
+        Transform existingVisual = transform.Find($"{headData?.headName}_Visual");
+        if (existingVisual != null)
+        {
+            Debug.Log($"[DullahanHeadPickable] Found existing visual {existingVisual.name}, using it instead of spawning new one");
+            headVisual = existingVisual.gameObject;
+            CleanupHeadVisualComponents(headVisual);
+            return;
+        }
+
         // If we have headData with a prefab, spawn it
         if (headData != null && headData.headPrefab != null)
         {
@@ -74,16 +84,8 @@ public class DullahanHeadPickable : MonoBehaviour, IPickable
             headVisual.transform.localRotation = Quaternion.identity;
             headVisual.transform.localScale = Vector3.one;
 
-            // Remove any DullahanHeadPickable components from the spawned visual
-            // to avoid conflicts (only the parent should be pickable)
-            DullahanHeadPickable[] childPickables = headVisual.GetComponentsInChildren<DullahanHeadPickable>();
-            foreach (var pickable in childPickables)
-            {
-                if (pickable != this) // Don't destroy self
-                {
-                    Destroy(pickable);
-                }
-            }
+            // Clean up interactive components from the spawned visual
+            CleanupHeadVisualComponents(headVisual);
 
             // Get renderer from spawned visual
             if (headRenderer == null)
@@ -102,6 +104,43 @@ public class DullahanHeadPickable : MonoBehaviour, IPickable
             Debug.LogWarning($"[DullahanHeadPickable] ⚠️ Cannot auto-spawn visual for {gameObject.name}: " +
                            $"headData={headData != null}, headPrefab={headData?.headPrefab != null}");
         }
+    }
+
+    private void CleanupHeadVisualComponents(GameObject visual)
+    {
+        if (visual == null) return;
+
+        Debug.Log($"[DullahanHeadPickable] Cleaning up interactive components from spawned visual: {visual.name}");
+
+        // Remove ALL DullahanHeadPickable components from the spawned visual and its children
+        // This prevents duplicates and ensures only the parent is pickable
+        DullahanHeadPickable[] childPickables = visual.GetComponentsInChildren<DullahanHeadPickable>(true);
+        foreach (var pickable in childPickables)
+        {
+            if (pickable != this) // Don't destroy self
+            {
+                Debug.Log($"[DullahanHeadPickable] Removing DullahanHeadPickable from {pickable.gameObject.name}");
+                Destroy(pickable);
+            }
+        }
+
+        // Remove colliders that might cause interaction issues
+        Collider[] colliders = visual.GetComponentsInChildren<Collider>(true);
+        foreach (var col in colliders)
+        {
+            Debug.Log($"[DullahanHeadPickable] Removing Collider from {col.gameObject.name}");
+            Destroy(col);
+        }
+
+        // Remove rigidbodies that might cause physics issues
+        Rigidbody[] rigidbodies = visual.GetComponentsInChildren<Rigidbody>(true);
+        foreach (var rb in rigidbodies)
+        {
+            Debug.Log($"[DullahanHeadPickable] Removing Rigidbody from {rb.gameObject.name}");
+            Destroy(rb);
+        }
+
+        Debug.Log($"[DullahanHeadPickable] ✅ Visual cleanup complete for {visual.name}");
     }
     
     void Update()
@@ -165,6 +204,41 @@ public class DullahanHeadPickable : MonoBehaviour, IPickable
     {
         if (isPickedUp || headInventory == null) return;
 
+        // Check if head data is valid
+        if (headData == null)
+        {
+            Debug.LogError("Head has no ScriptableObject assigned!");
+            return;
+        }
+
+        // SAFEGUARD: Check if this exact head is already in inventory (prevent duplicates)
+        bool alreadyInInventory = false;
+        foreach (var slot in headInventory.inventorySlots)
+        {
+            if (slot.isOccupied &&
+                slot.itemType == DullahanHeadInventory.InventorySlot.ItemType.Head &&
+                slot.headItem != null &&
+                slot.headItem.headID == headData.headID)
+            {
+                // Check if it's the same instance or duplicate
+                if (slot.headItem == headData)
+                {
+                    Debug.LogWarning($"[DullahanHeadPickable] ⚠️ Head {headData.headName} (ID: {headData.headID}) is already in inventory! Preventing duplicate pickup.");
+                    alreadyInInventory = true;
+                    break;
+                }
+            }
+        }
+
+        if (alreadyInInventory)
+        {
+            // Mark as picked up and hide to prevent re-pickup
+            isPickedUp = true;
+            if (headVisual != null) headVisual.SetActive(false);
+            gameObject.SetActive(false);
+            return;
+        }
+
         // Check if head inventory is full
         if (headInventory.inventoryList.Count >= headInventory.maxInventorySize)
         {
@@ -172,12 +246,7 @@ public class DullahanHeadPickable : MonoBehaviour, IPickable
             return;
         }
 
-        // Check if head data is valid
-        if (headData == null)
-        {
-            Debug.LogError("Head has no ScriptableObject assigned!");
-            return;
-        }
+        Debug.Log($"[DullahanHeadPickable] Picking up {headData.headName} (ID: {headData.headID})");
 
         // Add to head inventory using compatibility method
         headInventory.AddToInventoryList(headData);

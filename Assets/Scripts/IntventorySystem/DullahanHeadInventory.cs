@@ -11,6 +11,8 @@ public class DullahanHeadInventory : MonoBehaviour
     public int maxInventorySize = 3;
     public int playerReach = 3;
     public int selectedItem = 0;
+    [Tooltip("Auto-select newly picked up items immediately (makes inventory feel more responsive)")]
+    public bool autoSelectNewItems = true;
 
     [Header("Camera and UI")]
     [SerializeField] Camera cam;
@@ -367,14 +369,17 @@ public class DullahanHeadInventory : MonoBehaviour
         // Pick up the item (destroys GameObject)
         pickableItem.PickItem();
 
-        // If this is the first item, select it
-        if (GetItemCount() == 1)
+        // Auto-select newly picked up item for smooth, responsive feel
+        if (autoSelectNewItems || GetItemCount() == 1)
         {
             selectedItem = emptySlot;
             NewItemSelected();
+            Debug.Log($"Picked up and selected: {pickableComponent.headData.headName} in slot {emptySlot + 1}");
         }
-
-        Debug.Log($"Picked up: {pickableComponent.headData.headName} in slot {emptySlot + 1}");
+        else
+        {
+            Debug.Log($"Picked up: {pickableComponent.headData.headName} in slot {emptySlot + 1}");
+        }
     }
 
     private void TryPickupLantern(LanternPickable lanternComponent, IPickable pickableItem)
@@ -401,12 +406,19 @@ public class DullahanHeadInventory : MonoBehaviour
         hasLantern = true;
         isLanternOn = false;
         currentLantern = lanternComponent.lanternData;
-        
-        // Show lantern in hand immediately (but turned off)
-        SetLanternVisual(false);
 
         // Pick up the item (destroys GameObject)
         pickableItem.PickItem();
+
+        // Auto-select newly picked up item for smooth, responsive feel
+        if (autoSelectNewItems || GetItemCount() == 1)
+        {
+            selectedItem = emptySlot;
+            NewItemSelected();
+        }
+
+        // Show lantern in hand immediately (but turned off)
+        SetLanternVisual(false);
 
         string toggleMessage = currentLantern.toggleMessage;
         Debug.Log($"Picked up {currentLantern.lanternName} in slot {emptySlot + 1}! {toggleMessage}");
@@ -439,14 +451,17 @@ public class DullahanHeadInventory : MonoBehaviour
         // Pick up the item (destroys GameObject)
         pickableItem.PickItem();
 
-        // If this is the first item, select it
-        if (GetItemCount() == 1)
+        // Auto-select newly picked up item for smooth, responsive feel
+        if (autoSelectNewItems || GetItemCount() == 1)
         {
             selectedItem = emptySlot;
             NewItemSelected();
+            Debug.Log($"DullahanHeadInventory: Successfully picked up and selected key: {keyComponent.keyData.keyName} in slot {emptySlot + 1}");
         }
-
-        Debug.Log($"DullahanHeadInventory: Successfully picked up key: {keyComponent.keyData.keyName} in slot {emptySlot + 1}");
+        else
+        {
+            Debug.Log($"DullahanHeadInventory: Successfully picked up key: {keyComponent.keyData.keyName} in slot {emptySlot + 1}");
+        }
     }
 
     private void HandleItemSelection()
