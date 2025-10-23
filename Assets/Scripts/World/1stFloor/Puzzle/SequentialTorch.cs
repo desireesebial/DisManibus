@@ -122,20 +122,32 @@ public class SequentialTorch : MonoBehaviour
     public void LightTorch()
     {
         Debug.Log($"[SequentialTorch] ✓ Torch {sequenceNumber} LIT!");
-        
+
         isLit = true;
         SetTorchState(true, false);
-        
+
         // Play sound
         if (lightSound) audioSource.PlayOneShot(lightSound);
-        
+
         // Notify puzzle manager
         if (puzzleManager) puzzleManager.OnTorchLit(sequenceNumber);
-        
+
         // Hide interaction text
         if (interactionText) interactionText.gameObject.SetActive(false);
     }
-    
+
+    public void ExtinguishTorch()
+    {
+        Debug.Log($"[SequentialTorch] Torch {sequenceNumber} extinguished");
+
+        isLit = false;
+        isReadyToLight = false;
+        SetTorchState(false, false);
+
+        // Hide interaction text
+        if (interactionText) interactionText.gameObject.SetActive(false);
+    }
+
     void ShowWrongSequenceFeedback()
     {
         Debug.Log($"[SequentialTorch] ✗ Torch {sequenceNumber} - Wrong sequence!");
@@ -220,8 +232,10 @@ public class SequentialTorch : MonoBehaviour
     {
         Gizmos.color = isReadyToLight ? Color.green : (isLit ? Color.orange : Color.gray);
         Gizmos.DrawWireSphere(transform.position, interactionDistance);
-        
+
+        #if UNITY_EDITOR
         // Draw sequence number
         UnityEditor.Handles.Label(transform.position + Vector3.up * 2f, $"Torch {sequenceNumber}");
+        #endif
     }
 }

@@ -7478,8 +7478,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.0569309, y: 2, z: 1}
-  m_Center: {x: -0.52694744, y: -0.909494, z: 0.028384998}
+  m_Size: {x: 1.0569313, y: 2, z: 1.2077341}
+  m_Center: {x: -0.5269478, y: -0.90949416, z: 0.13225126}
 --- !u!1 &313402300
 GameObject:
   m_ObjectHideFlags: 0
@@ -156543,12 +156543,12 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.09979384, y: 0.99412316, z: 2.0956142}
-  m_Center: {x: -0.020966163, y: -0.4970616, z: 0.4490602}
+  m_Size: {x: 1.405563, y: 0.9941232, z: 2.095614}
+  m_Center: {x: -0.13889304, y: -0.49706155, z: 0.44906023}
 --- !u!23 &704869729
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -156646,8 +156646,8 @@ MonoBehaviour:
   correctCodeVisibilityState: 1
   affectColliders: 0
   visibilityTargets: []
---- !u!65 &704869732
-BoxCollider:
+--- !u!64 &704869732
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -156661,12 +156661,13 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 2.5}
-  m_Center: {x: 0, y: -0.5, z: 0}
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 2619086233303812490, guid: 7707b2b7239b05f43862d77e9d31565e, type: 3}
 --- !u!1 &705143298
 GameObject:
   m_ObjectHideFlags: 0
@@ -164229,7 +164230,7 @@ MonoBehaviour:
   isLocked: 1
   requiredKeyID: 203
   requiredKeyItem: {fileID: 11400000, guid: 8f90cc9f89bcba6408046360383fd887, type: 2}
-  requiredKeySOId: 
+  requiredKeySOId: 203
   consumeKeyOnUnlock: 1
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
@@ -164274,8 +164275,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 2, z: 1}
-  m_Center: {x: 0.5, y: 1, z: 0}
+  m_Size: {x: 1, y: 2.1128967, z: 1}
+  m_Center: {x: 0.5, y: 1.0564483, z: 0}
 --- !u!1 &963006476
 GameObject:
   m_ObjectHideFlags: 0
@@ -330955,8 +330956,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 2, z: 1}
-  m_Center: {x: -0.5, y: 1, z: 0}
+  m_Size: {x: 1, y: 2.1452894, z: 1}
+  m_Center: {x: -0.5, y: 1.0726447, z: 0}
 --- !u!114 &2068316877
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -330975,7 +330976,7 @@ MonoBehaviour:
   isLocked: 1
   requiredKeyID: 203
   requiredKeyItem: {fileID: 11400000, guid: 8f90cc9f89bcba6408046360383fd887, type: 2}
-  requiredKeySOId: 
+  requiredKeySOId: 203
   consumeKeyOnUnlock: 1
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
@@ -338326,6 +338327,7 @@ GameObject:
   - component: {fileID: 23332643485194335}
   - component: {fileID: 64619257851843659}
   - component: {fileID: 64619257851843660}
+  - component: {fileID: 64619257851843661}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -348396,8 +348398,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.0569309, y: 2, z: 1}
-  m_Center: {x: -0.52694744, y: -0.909494, z: 0.028384998}
+  m_Size: {x: 1.0569309, y: 2, z: 1.1852003}
+  m_Center: {x: -0.52694744, y: -0.90949416, z: 0.1209848}
 --- !u!64 &64053412424064625
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -348572,8 +348574,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.1135173, y: 2.9102466, z: 2}
-  m_Center: {x: -0.006083907, y: 1.4362184, z: 0.021369956}
+  m_Size: {x: 2.1135173, y: 2.9102468, z: 2.132924}
+  m_Center: {x: -0.006083897, y: 1.4362184, z: -0.045091182}
 --- !u!114 &64062937282031137
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -348592,7 +348594,7 @@ MonoBehaviour:
   isLocked: 1
   requiredKeyID: 201
   requiredKeyItem: {fileID: 11400000, guid: 71240ced46456724db9c6d22d05d79e0, type: 2}
-  requiredKeySOId: 
+  requiredKeySOId: 201
   consumeKeyOnUnlock: 1
   useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
@@ -348612,10 +348614,10 @@ MonoBehaviour:
   headInventory: {fileID: 0}
   playerInventory: {fileID: 369474181}
   changeVisibilityOnInteract: 1
-  interactVisibilityState: 1
+  interactVisibilityState: 0
   changeVisibilityOnCorrectCode: 0
   correctCodeVisibilityState: 0
-  affectColliders: 0
+  affectColliders: 1
   visibilityTargets:
   - {fileID: 1573903938371829}
 --- !u!64 &64080777905451528
@@ -348669,7 +348671,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1684501590492843}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 67ed09e9b3cd061469ff7d1ed4eb18b7, type: 3}
   m_Name: 
@@ -349835,8 +349837,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.0569309, y: 2, z: 1}
-  m_Center: {x: -0.52694744, y: -0.909494, z: 0.028384998}
+  m_Size: {x: 1.0569313, y: 2, z: 1.2124676}
+  m_Center: {x: -0.5269478, y: -0.90949416, z: 0.13461737}
 --- !u!64 &64619257851843659
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -349902,6 +349904,27 @@ MonoBehaviour:
   correctCodeVisibilityState: 1
   affectColliders: 0
   visibilityTargets: []
+--- !u!65 &64619257851843661
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1744751407251615}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.0569309, y: 2.0984182, z: 0.8475969}
+  m_Center: {x: -0.5269465, y: -0.90949416, z: 0.085348114}
 --- !u!64 &64656822063924842
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -351958,12 +351981,12 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.09979384, y: 0.99412316, z: 2.0956142}
-  m_Center: {x: -0.020966163, y: -0.4970616, z: 0.4490602}
+  m_Size: {x: 1.4099672, y: 0.9941232, z: 2.095614}
+  m_Center: {x: 0.10514259, y: -0.49706155, z: 0.44906023}
 --- !u!4 &1321552737522769343
 Transform:
   m_ObjectHideFlags: 0
@@ -356693,8 +356716,8 @@ MonoBehaviour:
   correctCodeVisibilityState: 0
   affectColliders: 0
   visibilityTargets: []
---- !u!65 &8577619685409900201
-BoxCollider:
+--- !u!64 &8577619685409900201
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -356708,12 +356731,13 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 2.5}
-  m_Center: {x: 0, y: -0.5, z: 0}
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 2619086233303812490, guid: 7707b2b7239b05f43862d77e9d31565e, type: 3}
 --- !u!1 &8591914855863597845
 GameObject:
   m_ObjectHideFlags: 0
