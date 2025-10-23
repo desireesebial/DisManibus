@@ -17,6 +17,8 @@ public class DullahanHeadInventory : MonoBehaviour
     [Header("Camera and UI")]
     [SerializeField] Camera cam;
     [SerializeField] GameObject pressToPickup_gameobject;
+    [SerializeField] TextMeshProUGUI pickupPromptText;
+    [SerializeField] string pickupPromptMessage = "Press {0} to pick up";
 
     [Header("Inventory UI")]
     [SerializeField] Image[] inventorySlotImage = new Image[3];
@@ -303,7 +305,15 @@ public class DullahanHeadInventory : MonoBehaviour
             {
                 // Show pickup prompt
                 if (pressToPickup_gameobject != null)
+                {
                     pressToPickup_gameobject.SetActive(true);
+
+                    // Set the pickup prompt text
+                    if (pickupPromptText != null)
+                    {
+                        pickupPromptText.text = string.Format(pickupPromptMessage, pickUpItemKey.ToString());
+                    }
+                }
 
                 // Handle pickup input - only if not toggling lantern
                 if (Input.GetKeyDown(pickUpItemKey))

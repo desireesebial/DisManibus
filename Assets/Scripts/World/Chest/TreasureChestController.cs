@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 /// <summary>
 /// Unified controller for your chest hierarchy:
@@ -54,8 +55,8 @@ public class TreasureChestController : MonoBehaviour
     public AudioClip deniedClip;
 
     [Header("UI Prompt (Optional)")]
-    [Tooltip("Optional UI.Text for showing interact prompts.")]
-    public Text promptText;
+    [Tooltip("Optional TextMeshProUGUI for showing interact prompts.")]
+    public TextMeshProUGUI promptText;
     [Tooltip("Text shown when player is near chest.")]
     public string promptInteractText = "Press E to interact";
     [Tooltip("Text shown when chest is locked and interaction fails.")]

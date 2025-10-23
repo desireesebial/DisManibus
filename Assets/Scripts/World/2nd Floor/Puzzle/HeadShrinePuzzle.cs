@@ -20,8 +20,8 @@ using System.Collections;
 public class HeadShrinePuzzle : MonoBehaviour
 {
     [Header("🏛️ Shrine Settings")]
-    [Tooltip("List of head IDs that need to be placed on placement points (in order)")]
-    public int[] requiredHeadIDs = { 1, 2, 3 }; // Example: Real head, Wrong head 1, Wrong head 2
+    [Tooltip("Head IDs required for each placement in order: [Left, Right, Center]. Default: {2, 1, 3} means Left needs ID 2, Right needs ID 1, Center needs ID 3")]
+    public int[] requiredHeadIDs = { 2, 1, 3 }; // Left=ID2 (wrongHead1Door), Right=ID1 (wrongHead2Door), Center=ID3 (key)
 
     [Tooltip("Which placement point requires the REAL head (0 = Left, 1 = Right, 2 = Center)")]
     public int realHeadPlacementIndex = 2; // Center placement (last in sequence)
@@ -98,8 +98,8 @@ public class HeadShrinePuzzle : MonoBehaviour
     [Tooltip("Text component for placement prompt")]
     public TMPro.TextMeshProUGUI placementPromptText;
     
-    [Tooltip("Text to show when player can place head (use {0} for key placeholder)")]
-    public string placeHeadText = "Press {0} to place head";
+    [Tooltip("Text to show when player can place head")]
+    public string placeHeadText = "Press F to place head";
     
     [Tooltip("Text to show when no head in inventory")]
     public string noHeadText = "No head in inventory";
@@ -277,7 +277,9 @@ public class HeadShrinePuzzle : MonoBehaviour
         {
             // Create placement point
             GameObject placementObj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            placementObj.name = $"Placement{i + 1}";
+            // Use descriptive names: Left, Right, Center
+            string placementName = i == 0 ? "Left placement" : i == 1 ? "Right placement" : "Center placement";
+            placementObj.name = placementName;
             placementObj.transform.SetParent(transform);
             
             // Position placements based on candle positions
@@ -375,46 +377,19 @@ public class HeadShrinePuzzle : MonoBehaviour
     {
         if (shrineComplete || !player || !inventory) return;
 
-        // Sequential placement logic: Only allow interaction with the NEXT empty placement
-        bool wasInRange = playerInRange;
-        playerInRange = false;
-        currentPlacement = null;
+        // Simple proximity-based placement: Check if player is near shrine center
+        float distanceToShrine = Vector3.Distance(transform.position, player.position);
+        playerInRange = distanceToShrine <= interactionDistance;
 
         // Get the next empty placement in sequence (Left → Right → Center)
-        ShrinePlacement nextEmptyPlacement = GetNextEmptyPlacement();
+        currentPlacement = GetNextEmptyPlacement();
 
-        if (nextEmptyPlacement != null)
+        // If player is in range and presses interact key, try to place head automatically
+        if (playerInRange && Input.GetKeyDown(interactionKey))
         {
-            // Check if player is near the NEXT empty placement
-            float distanceToNext = Vector3.Distance(nextEmptyPlacement.placementTransform.position, player.position);
-
-            if (distanceToNext <= interactionDistance)
+            if (currentPlacement != null)
             {
-                playerInRange = true;
-                currentPlacement = nextEmptyPlacement;
-
-                // Check if player has a head and presses the interaction key
-                if (Input.GetKeyDown(interactionKey))
-                {
-                    TryPlaceHeadOnPlacement(nextEmptyPlacement);
-                }
-            }
-            else
-            {
-                // Check if player is near any OTHER placement (to show guidance UI)
-                foreach (ShrinePlacement placement in placements)
-                {
-                    if (placement != nextEmptyPlacement)
-                    {
-                        float distance = Vector3.Distance(placement.placementTransform.position, player.position);
-                        if (distance <= interactionDistance)
-                        {
-                            playerInRange = true;
-                            currentPlacement = placement; // This is NOT the correct placement
-                            break;
-                        }
-                    }
-                }
+                TryPlaceHeadOnPlacement(currentPlacement);
             }
         }
 
@@ -426,44 +401,31 @@ public class HeadShrinePuzzle : MonoBehaviour
     {
         if (placementPromptUI == null) return;
 
-        if (playerInRange && currentPlacement != null)
-        {
-            placementPromptUI.SetActive(true);
-
-            if (placementPromptText != null)
-            {
-                // Check if player has a head
-                DullahanHeadSO currentHead = inventory.GetCurrentHead();
-                if (currentHead == null)
-                {
-                    placementPromptText.text = noHeadText;
-                }
-                else if (AreAllPlacementsFull())
-                {
-                    placementPromptText.text = allFullText;
-                }
-                else
-                {
-                    // Check if player is at the CORRECT (next empty) placement
-                    ShrinePlacement nextEmpty = GetNextEmptyPlacement();
-
-                    if (currentPlacement == nextEmpty)
-                    {
-                        // Player is at the correct placement - allow interaction
-                        placementPromptText.text = string.Format(placeHeadText, interactionKey.ToString());
-                    }
-                    else
-                    {
-                        // Player is at the wrong placement - guide them to the correct one
-                        string directionName = GetPlacementDirectionName(nextEmpty.placementIndex);
-                        placementPromptText.text = $"Place at {directionName} first";
-                    }
-                }
-            }
-        }
-        else
+        // Hide prompt when shrine is complete OR player is out of range OR all placements are full
+        if (shrineComplete || !playerInRange || AreAllPlacementsFull())
         {
             placementPromptUI.SetActive(false);
+            return;
+        }
+
+        // Show prompt only when player is in range and shrine is not complete
+        placementPromptUI.SetActive(true);
+
+        if (placementPromptText != null)
+        {
+            // Check if player has a head
+            DullahanHeadSO currentHead = inventory.GetCurrentHead();
+
+            if (currentHead == null)
+            {
+                placementPromptText.text = noHeadText;
+            }
+            else if (currentPlacement != null)
+            {
+                // Show which placement the head will go to
+                string placementName = GetPlacementDirectionName(currentPlacement.placementIndex);
+                placementPromptText.text = $"Press F to place {currentHead.headName} on {placementName}";
+            }
         }
     }
     
@@ -490,9 +452,26 @@ public class HeadShrinePuzzle : MonoBehaviour
             return; // Don't remove head, let player try another spot
         }
 
-        // Allow any head to be placed on any empty placement
-        // Rewards are determined by the placement type (real head placement vs wrong head placement)
-        Debug.Log($"[HeadShrinePuzzle] ✓ Placement is empty! Placing head...");
+        // Validate that the head ID matches the required head ID for this placement
+        string placementName = GetPlacementDirectionName(placement.placementIndex);
+        Debug.Log($"[HeadShrinePuzzle] 🔍 Validation Check:");
+        Debug.Log($"[HeadShrinePuzzle]   → Placement: {placementName} (index {placement.placementIndex})");
+        Debug.Log($"[HeadShrinePuzzle]   → Required head ID: {placement.requiredHeadID}");
+        Debug.Log($"[HeadShrinePuzzle]   → Player has head ID: {currentHead.headID}");
+
+        if (currentHead.headID != placement.requiredHeadID)
+        {
+            Debug.LogWarning($"[HeadShrinePuzzle] ✗ VALIDATION FAILED! {placementName} requires head ID {placement.requiredHeadID}, but you have head ID {currentHead.headID}");
+
+            // Play wrong sound
+            if (wrongHeadSound) audioSource.PlayOneShot(wrongHeadSound);
+
+            return; // Reject the placement
+        }
+
+        Debug.Log($"[HeadShrinePuzzle] ✓ VALIDATION PASSED! Head ID {currentHead.headID} matches required ID for {placementName}");
+
+        Debug.Log($"[HeadShrinePuzzle] ✓ Placement is empty and head ID matches! Placing head...");
         PlaceHeadOnPlacement(currentHead, placement);
 
         Debug.Log($"[HeadShrinePuzzle] ═══════════════════════════════════");
@@ -588,25 +567,82 @@ public class HeadShrinePuzzle : MonoBehaviour
     
     void HandleHeadRewards(DullahanHeadSO head, ShrinePlacement placement)
     {
-        Debug.Log($"[HeadShrinePuzzle] 🎁 Handling rewards for {head.headName} (ID: {head.headID})!");
-        Debug.Log($"[HeadShrinePuzzle] Is real head placement: {placement.isRealHeadPlacement}");
-        
-        // Check if this is the real head
-        if (placement.isRealHeadPlacement)
+        string placementName = GetPlacementDirectionName(placement.placementIndex);
+        Debug.Log($"[HeadShrinePuzzle] 🎁 Handling rewards for {head.headName} (ID: {head.headID}) on {placementName}!");
+
+        // Give rewards based on head ID (placement index already validated in TryPlaceHeadOnPlacement)
+        if (head.headID == 2)
         {
-            Debug.Log($"[HeadShrinePuzzle] 🗝️ This is a REAL HEAD placement!");
-            HandleRealHeadRewards();
+            Debug.Log($"[HeadShrinePuzzle] 🚪 Head ID 2 placed! Opening first door...");
+            HandleHead2Reward();
+        }
+        else if (head.headID == 1)
+        {
+            Debug.Log($"[HeadShrinePuzzle] 🚪 Head ID 1 placed! Opening second door...");
+            HandleHead1Reward();
+        }
+        else if (head.headID == 3)
+        {
+            Debug.Log($"[HeadShrinePuzzle] 🗝️ Head ID 3 (Real Head) placed! Spawning key...");
+            HandleHead3Reward();
         }
         else
         {
-            Debug.Log($"[HeadShrinePuzzle] 🚪 This is a WRONG HEAD placement!");
-            HandleWrongHeadRewards(head, placement);
+            Debug.LogError($"[HeadShrinePuzzle] ❌ Unknown head ID: {head.headID}!");
         }
     }
     
-    void HandleRealHeadRewards()
+    void HandleHead1Reward()
     {
-        Debug.Log($"[HeadShrinePuzzle] 🗝️ REAL HEAD PLACED! Granting main rewards!");
+        Debug.Log($"[HeadShrinePuzzle] 🚪 Head ID 1 placed! Opening second door...");
+
+        // Open wrongHead2Door - using Force methods for immediate, guaranteed opening
+        if (wrongHead2Door && wrongHead2Door.gameObject != null)
+        {
+            Debug.Log($"[HeadShrinePuzzle] Force unlocking and opening wrong head 2 door: {wrongHead2Door.gameObject.name}");
+            Debug.Log($"[HeadShrinePuzzle] Door state before: isLocked={wrongHead2Door.IsLocked()}, isOpen={wrongHead2Door.IsOpen()}");
+
+            wrongHead2Door.ForceUnlock();  // Immediate unlock without coroutines
+            wrongHead2Door.ForceOpen();    // Immediate open without animation
+
+            if (doorOpenSound) audioSource.PlayOneShot(doorOpenSound);
+
+            Debug.Log($"[HeadShrinePuzzle] Door state after: isLocked={wrongHead2Door.IsLocked()}, isOpen={wrongHead2Door.IsOpen()}");
+            Debug.Log("[HeadShrinePuzzle] ✅ Wrong head 2 door force unlocked and opened!");
+        }
+        else
+        {
+            Debug.LogWarning("[HeadShrinePuzzle] ⚠️ Wrong head 2 door not assigned or GameObject is null! No door will open.");
+        }
+    }
+
+    void HandleHead2Reward()
+    {
+        Debug.Log($"[HeadShrinePuzzle] 🚪 Head ID 2 placed! Opening first door...");
+
+        // Open wrongHead1Door - using Force methods for immediate, guaranteed opening
+        if (wrongHead1Door && wrongHead1Door.gameObject != null)
+        {
+            Debug.Log($"[HeadShrinePuzzle] Force unlocking and opening wrong head 1 door: {wrongHead1Door.gameObject.name}");
+            Debug.Log($"[HeadShrinePuzzle] Door state before: isLocked={wrongHead1Door.IsLocked()}, isOpen={wrongHead1Door.IsOpen()}");
+
+            wrongHead1Door.ForceUnlock();  // Immediate unlock without coroutines
+            wrongHead1Door.ForceOpen();    // Immediate open without animation
+
+            if (doorOpenSound) audioSource.PlayOneShot(doorOpenSound);
+
+            Debug.Log($"[HeadShrinePuzzle] Door state after: isLocked={wrongHead1Door.IsLocked()}, isOpen={wrongHead1Door.IsOpen()}");
+            Debug.Log("[HeadShrinePuzzle] ✅ Wrong head 1 door force unlocked and opened!");
+        }
+        else
+        {
+            Debug.LogWarning("[HeadShrinePuzzle] ⚠️ Wrong head 1 door not assigned or GameObject is null! No door will open.");
+        }
+    }
+
+    void HandleHead3Reward()
+    {
+        Debug.Log($"[HeadShrinePuzzle] 🗝️ Head ID 3 (Real Head) placed! Spawning key...");
 
         // Open main door - using Force methods for immediate, guaranteed opening
         if (realHeadDoor && realHeadDoor.gameObject != null)
@@ -675,80 +711,7 @@ public class HeadShrinePuzzle : MonoBehaviour
         // Event manager notification removed as it's no longer required for the simplified chase system
         // The chase cycle now operates independently based on proximity detection
     }
-    
-    void HandleWrongHeadRewards(DullahanHeadSO head, ShrinePlacement placement)
-    {
-        Debug.Log($"[HeadShrinePuzzle] 🚪 Wrong head placed: {head.headName} (ID: {head.headID})");
-        Debug.Log($"[HeadShrinePuzzle] Placement index: {placement.placementIndex}");
-        Debug.Log($"[HeadShrinePuzzle] Wrong head 1 door assigned: {wrongHead1Door != null}");
-        Debug.Log($"[HeadShrinePuzzle] Wrong head 2 door assigned: {wrongHead2Door != null}");
 
-        // Find all wrong head placements (non-real-head placements) and sort by index
-        List<int> wrongHeadIndices = new List<int>();
-        for (int i = 0; i < placements.Count; i++)
-        {
-            if (!placements[i].isRealHeadPlacement)
-            {
-                wrongHeadIndices.Add(placements[i].placementIndex);
-            }
-        }
-        wrongHeadIndices.Sort();
-
-        // Determine which wrong head this is (1st or 2nd) based on placement index order
-        int wrongHeadNumber = wrongHeadIndices.IndexOf(placement.placementIndex) + 1;
-
-        Debug.Log($"[HeadShrinePuzzle] This is wrong head #{wrongHeadNumber} (out of {wrongHeadIndices.Count} total wrong heads)");
-        Debug.Log($"[HeadShrinePuzzle] Wrong head placement indices: [{string.Join(", ", wrongHeadIndices)}]");
-
-        // Open the appropriate door based on which wrong head this is - using Force methods for guaranteed opening
-        if (wrongHeadNumber == 1) // First wrong head
-        {
-            Debug.Log($"[HeadShrinePuzzle] 🚪 Processing FIRST wrong head");
-            if (wrongHead1Door && wrongHead1Door.gameObject != null)
-            {
-                Debug.Log($"[HeadShrinePuzzle] Force unlocking and opening wrong head 1 door: {wrongHead1Door.gameObject.name}");
-                Debug.Log($"[HeadShrinePuzzle] Door state before: isLocked={wrongHead1Door.IsLocked()}, isOpen={wrongHead1Door.IsOpen()}");
-
-                wrongHead1Door.ForceUnlock();  // Immediate unlock without coroutines
-                wrongHead1Door.ForceOpen();    // Immediate open without animation
-
-                if (doorOpenSound) audioSource.PlayOneShot(doorOpenSound);
-
-                Debug.Log($"[HeadShrinePuzzle] Door state after: isLocked={wrongHead1Door.IsLocked()}, isOpen={wrongHead1Door.IsOpen()}");
-                Debug.Log("[HeadShrinePuzzle] ✅ Wrong head 1 door force unlocked and opened!");
-            }
-            else
-            {
-                Debug.LogWarning("[HeadShrinePuzzle] ❌ Wrong head 1 door not assigned or GameObject is null!");
-            }
-        }
-        else if (wrongHeadNumber == 2) // Second wrong head
-        {
-            Debug.Log($"[HeadShrinePuzzle] 🚪 Processing SECOND wrong head");
-            if (wrongHead2Door && wrongHead2Door.gameObject != null)
-            {
-                Debug.Log($"[HeadShrinePuzzle] Force unlocking and opening wrong head 2 door: {wrongHead2Door.gameObject.name}");
-                Debug.Log($"[HeadShrinePuzzle] Door state before: isLocked={wrongHead2Door.IsLocked()}, isOpen={wrongHead2Door.IsOpen()}");
-
-                wrongHead2Door.ForceUnlock();  // Immediate unlock without coroutines
-                wrongHead2Door.ForceOpen();    // Immediate open without animation
-
-                if (doorOpenSound) audioSource.PlayOneShot(doorOpenSound);
-
-                Debug.Log($"[HeadShrinePuzzle] Door state after: isLocked={wrongHead2Door.IsLocked()}, isOpen={wrongHead2Door.IsOpen()}");
-                Debug.Log("[HeadShrinePuzzle] ✅ Wrong head 2 door force unlocked and opened!");
-            }
-            else
-            {
-                Debug.LogWarning("[HeadShrinePuzzle] ❌ Wrong head 2 door not assigned or GameObject is null!");
-            }
-        }
-        else
-        {
-            Debug.LogWarning($"[HeadShrinePuzzle] ❌ Unexpected wrong head number: {wrongHeadNumber}. Only 2 wrong heads are supported (wrongHead1Door and wrongHead2Door).");
-        }
-    }
-    
     void HandleWrongHead(DullahanHeadSO head)
     {
         Debug.Log($"[HeadShrinePuzzle] ✗ Wrong head: {head.headName}");

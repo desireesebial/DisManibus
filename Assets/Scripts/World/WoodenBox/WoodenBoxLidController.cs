@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 /// <summary>
 /// Sliding wooden box lid controller (matches pencil/slider box style).
@@ -27,7 +28,7 @@ public class WoodenBoxLidController : MonoBehaviour
     public bool showProximityPrompt = true;
 
     [Header("UI Prompt (Optional)")]
-    public Text promptText;
+    public TextMeshProUGUI promptText;
     public string promptInteractText = "Press E to open";
 
     [Header("Sliding Motion")]
