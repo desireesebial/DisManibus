@@ -88,11 +88,29 @@ public class doorscript : MonoBehaviour
             doorAudioSource = GetComponent<AudioSource>();
             if (doorAudioSource == null)
             {
-                Debug.LogWarning($"[Door] No AudioSource found on {gameObject.name}. Door sounds will not work.");
+                // Check if we have any audio clips assigned
+                bool hasAudioClips = doorOpenSound != null || doorCloseSound != null || doorLockedSound != null;
+
+                if (hasAudioClips)
+                {
+                    // Auto-create AudioSource since clips are assigned
+                    Debug.Log($"[Door] {gameObject.name}: Audio clips assigned but no AudioSource. Creating one automatically.");
+                    doorAudioSource = gameObject.AddComponent<AudioSource>();
+                    doorAudioSource.playOnAwake = false;
+                    doorAudioSource.spatialBlend = 1f; // 3D sound for doors
+                    doorAudioSource.minDistance = 1f;
+                    doorAudioSource.maxDistance = 15f;
+                    Debug.Log($"[Door] {gameObject.name}: AudioSource created and configured.");
+                }
+                else
+                {
+                    // No audio clips assigned, silently skip (audio is optional)
+                    Debug.Log($"[Door] {gameObject.name}: No AudioSource and no audio clips assigned. Audio disabled (this is fine).");
+                }
             }
             else
             {
-                Debug.Log($"[Door] AudioSource found on {gameObject.name}");
+                Debug.Log($"[Door] {gameObject.name}: AudioSource found.");
             }
         }
             

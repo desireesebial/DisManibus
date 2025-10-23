@@ -38,6 +38,14 @@ public class TreasureChestController : MonoBehaviour
     public bool useTrigger = false;
     public string playerTag = "Player";
 
+    [Header("Advanced Interaction (Item Conflict Prevention)")]
+    [Tooltip("When enabled, prevents chest from closing when looking at items inside it (notes, keys, etc.)")]
+    public bool preventCloseWhenOpen = true;
+    [Tooltip("Require looking directly at the lid/frame to close when chest is open")]
+    public bool requireLidFocusToClose = true;
+    [Tooltip("Prevent ANY interaction with chest when it's open (forces player to close it manually from outside)")]
+    public bool lockInteractionWhenOpen = false;
+
     [Header("Audio (Optional)")]
     public AudioSource audioSource;
     public AudioClip openClip;
@@ -260,7 +268,8 @@ public class TreasureChestController : MonoBehaviour
         {
             if (_lockedMessageRoutine == null)
             {
-                promptText.text = promptInteractText;
+                // Enhanced prompt text based on chest state
+                promptText.text = GetDynamicPromptText();
             }
             if (!promptText.enabled) promptText.enabled = true;
         }
@@ -268,6 +277,58 @@ public class TreasureChestController : MonoBehaviour
         {
             if (promptText.enabled) promptText.enabled = false;
         }
+    }
+
+    /// <summary>
+    /// Returns context-aware prompt text based on chest state
+    /// </summary>
+    private string GetDynamicPromptText()
+    {
+        // Locked chest
+        if (_isLocked)
+        {
+            return "Locked - Need key";
+        }
+
+        // Open chest with lockInteractionWhenOpen enabled
+        if (_isOpen && lockInteractionWhenOpen)
+        {
+            return ""; // No prompt when locked from interaction
+        }
+
+        // Open chest with requireLidFocusToClose
+        if (_isOpen && requireLidFocusToClose)
+        {
+            // Check if we're looking at the lid/frame
+            if (_playerCamera != null)
+            {
+                Ray ray = _playerCamera.ScreenPointToRay(new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f));
+                RaycastHit hit;
+                bool didHit = Physics.Raycast(ray, out hit, interactRange, _effectiveLayerMask, QueryTriggerInteraction.Collide);
+                if (!didHit && sphereCastRadius > 0f)
+                {
+                    didHit = Physics.SphereCast(ray, sphereCastRadius, out hit, interactRange, _effectiveLayerMask, QueryTriggerInteraction.Collide);
+                }
+
+                if (didHit)
+                {
+                    bool hitIsLid = (lidTransform != null && (hit.transform == lidTransform || hit.transform.IsChildOf(lidTransform)));
+                    bool hitIsChestFrame = (hit.transform == chestRoot || hit.transform == transform);
+
+                    if (hitIsLid || hitIsChestFrame)
+                    {
+                        return $"Press {interactKey} to close";
+                    }
+                    else
+                    {
+                        return "Look at lid to close";
+                    }
+                }
+            }
+        }
+
+        // Default prompt
+        return promptInteractText;
     }
 
     private bool IsLookingAtChest()
@@ -314,8 +375,15 @@ public class TreasureChestController : MonoBehaviour
 
     private void Interact()
     {
-        Debug.Log($"Interact called! IsLocked: {_isLocked}, IsOpen: {_isOpen}");
-        
+        Debug.Log($"[TreasureChest] Interact called! IsLocked: {_isLocked}, IsOpen: {_isOpen}");
+
+        // NEW: Prevent interaction when chest is open if lockInteractionWhenOpen is enabled
+        if (_isOpen && lockInteractionWhenOpen)
+        {
+            Debug.Log("[TreasureChest] Interaction blocked: Chest is open and lockInteractionWhenOpen is enabled");
+            return;
+        }
+
         if (_isLocked)
         {
             Debug.Log("Chest is locked, checking for key...");
@@ -396,36 +464,69 @@ public class TreasureChestController : MonoBehaviour
 
     /// <summary>
     /// Returns false when the hit should be handled by a different interactable embedded in the chest.
+    /// Enhanced to detect ALL pickable items and prevent conflicts.
     /// </summary>
     internal bool ShouldProcessHit(Transform hitTransform)
     {
         if (hitTransform == null) return false;
 
-        // Ignore hits that belong to an active NotePile session.
+        // PRIORITY 1: Active note pile sessions (existing logic)
         NotePilePickable pilePickable = hitTransform.GetComponentInParent<NotePilePickable>();
         if (pilePickable != null)
         {
-            // When the pile is active, let it consume the interaction and skip toggling the chest.
             if (pilePickable.isActiveAndEnabled)
             {
-                // Extra safety: if the pile requires crosshair focus, only block when it considers itself in range.
                 if (pilePickable.HasActiveSessionOrFocus())
                 {
+                    Debug.Log("[TreasureChest] Hit blocked: Active NotePile session");
                     return false;
                 }
             }
         }
 
-        // Ignore direct note pickables so reading notes is not overridden by chest toggle.
+        // PRIORITY 2: Active note letter interactions (existing logic)
         NoteLetterPickable notePickable = hitTransform.GetComponentInParent<NoteLetterPickable>();
         if (notePickable != null)
         {
             if (notePickable.IsInteractionActive())
             {
+                Debug.Log("[TreasureChest] Hit blocked: Active NoteLetterPickable");
                 return false;
             }
         }
 
+        // PRIORITY 3: ANY IPickable items (heads, keys, lanterns, etc.) - NEW!
+        IPickable pickable = hitTransform.GetComponentInParent<IPickable>();
+        if (pickable != null)
+        {
+            // Check if it's not the chest itself
+            MonoBehaviour pickableComponent = pickable as MonoBehaviour;
+            if (pickableComponent != null && pickableComponent.transform != chestRoot)
+            {
+                Debug.Log($"[TreasureChest] Hit blocked: IPickable item detected ({pickableComponent.GetType().Name})");
+                return false;
+            }
+        }
+
+        // PRIORITY 4: Check if we're preventing close when open
+        if (_isOpen && preventCloseWhenOpen)
+        {
+            // Only allow interaction if hit is the lid or chest frame itself
+            if (requireLidFocusToClose)
+            {
+                // Check if hit is specifically the lid transform
+                bool hitIsLid = (lidTransform != null && (hitTransform == lidTransform || hitTransform.IsChildOf(lidTransform)));
+                bool hitIsChestFrame = (hitTransform == chestRoot || hitTransform == transform);
+
+                if (!hitIsLid && !hitIsChestFrame)
+                {
+                    Debug.Log($"[TreasureChest] Hit blocked: Chest is open, must look at lid/frame to close (hit: {hitTransform.name})");
+                    return false;
+                }
+            }
+        }
+
+        Debug.Log($"[TreasureChest] Hit allowed: {hitTransform.name}");
         return true;
     }
 

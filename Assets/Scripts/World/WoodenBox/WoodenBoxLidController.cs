@@ -45,6 +45,20 @@ public class WoodenBoxLidController : MonoBehaviour
     public AudioClip openClip;
     public AudioClip closeClip;
 
+    [Header("Lock System (Optional)")]
+    [Tooltip("Is the box locked? Requires a key to open.")]
+    public bool isLocked = false;
+    [Tooltip("The specific key required to unlock this box (by keyId from KeySO).")]
+    public string requiredKeyId = "";
+    [Tooltip("Should the key be consumed (removed from inventory) when unlocking?")]
+    public bool consumeKeyOnUnlock = false;
+    [Tooltip("Reference to the player's head inventory for key checking.")]
+    public DullahanHeadInventory headInventory;
+
+    [Header("Lock Audio")]
+    public AudioClip unlockClip;
+    public AudioClip lockedClip; // plays when trying to open while locked
+
     // Runtime
     private Camera _playerCamera;
     private bool _isOpen;
@@ -96,6 +110,10 @@ public class WoodenBoxLidController : MonoBehaviour
 
         if (audioSource == null) audioSource = GetComponent<AudioSource>();
         _effectiveLayerMask = interactMask.value != 0 ? interactMask.value : Physics.DefaultRaycastLayers;
+
+        // Find head inventory if not assigned (for lock system)
+        if (headInventory == null)
+            headInventory = FindObjectOfType<DullahanHeadInventory>();
     }
 
     void Update()
@@ -104,13 +122,55 @@ public class WoodenBoxLidController : MonoBehaviour
 
         if (showProximityPrompt && promptText != null)
         {
-            promptText.enabled = IsLookingAtBox();
-            if (promptText.enabled) promptText.text = promptInteractText;
+            bool lookingAtBox = IsLookingAtBox();
+            promptText.enabled = lookingAtBox;
+
+            if (lookingAtBox)
+            {
+                // Update prompt text based on lock state
+                promptText.text = GetInteractionPromptText();
+            }
         }
 
         if (Input.GetKeyDown(interactKey))
         {
             TryRaycastInteract();
+        }
+    }
+
+    private string GetInteractionPromptText()
+    {
+        // If box is locked
+        if (isLocked)
+        {
+            if (headInventory != null)
+            {
+                KeySO selectedKey = headInventory.GetSelectedKey();
+                if (selectedKey != null && selectedKey.keyId == requiredKeyId)
+                {
+                    // Correct key selected
+                    return $"Press {interactKey} to unlock";
+                }
+                else if (selectedKey != null)
+                {
+                    // Wrong key selected
+                    return "Wrong key";
+                }
+                else
+                {
+                    // No key selected
+                    return "Locked - Need key";
+                }
+            }
+            else
+            {
+                return "Locked";
+            }
+        }
+        else
+        {
+            // Box is unlocked, show normal prompt
+            return promptInteractText;
         }
     }
 
@@ -127,7 +187,65 @@ public class WoodenBoxLidController : MonoBehaviour
     private void TryRaycastInteract()
     {
         if (!IsLookingAtBox()) return;
-        Toggle();
+
+        // If box is locked, try to unlock it first
+        if (isLocked)
+        {
+            TryUnlockBox();
+        }
+        else
+        {
+            // Box is unlocked, normal toggle behavior
+            Toggle();
+        }
+    }
+
+    private void TryUnlockBox()
+    {
+        // Check if we need a key
+        if (string.IsNullOrEmpty(requiredKeyId))
+        {
+            Debug.LogWarning($"[WoodenBox] Box is locked but no requiredKeyId specified! Unlocking anyway.");
+            UnlockBox();
+            return;
+        }
+
+        // Check if player has the inventory
+        if (headInventory == null)
+        {
+            Debug.LogWarning($"[WoodenBox] Box is locked but no headInventory found! Cannot check for keys.");
+            PlayClip(lockedClip);
+            return;
+        }
+
+        // Check if player has the correct key selected
+        KeySO selectedKey = headInventory.GetSelectedKey();
+        if (selectedKey != null && selectedKey.keyId == requiredKeyId)
+        {
+            // Correct key is selected!
+            Debug.Log($"[WoodenBox] Correct key selected: {selectedKey.keyName}. Unlocking box!");
+            UnlockBox();
+
+            // Consume key if enabled
+            if (consumeKeyOnUnlock)
+            {
+                headInventory.RemoveSelectedKeyIfKey();
+                Debug.Log($"[WoodenBox] Key consumed: {selectedKey.keyName}");
+            }
+        }
+        else
+        {
+            // No key or wrong key selected
+            if (selectedKey != null)
+            {
+                Debug.Log($"[WoodenBox] Wrong key selected: {selectedKey.keyName} (need {requiredKeyId})");
+            }
+            else
+            {
+                Debug.Log($"[WoodenBox] No key selected. Need key: {requiredKeyId}");
+            }
+            PlayClip(lockedClip);
+        }
     }
 
     public void Open()
@@ -149,6 +267,64 @@ public class WoodenBoxLidController : MonoBehaviour
     public void Toggle()
     {
         if (_isOpen) Close(); else Open();
+    }
+
+    /// <summary>
+    /// Unlocks the box (plays unlock sound and automatically opens it).
+    /// </summary>
+    public void UnlockBox()
+    {
+        if (!isLocked)
+        {
+            Debug.Log("[WoodenBox] Box is already unlocked!");
+            return;
+        }
+
+        Debug.Log("[WoodenBox] Box unlocked!");
+        isLocked = false;
+
+        // Play unlock sound
+        PlayClip(unlockClip);
+
+        // Automatically open the box after unlocking for smooth UX
+        if (!_isOpen)
+        {
+            Open();
+        }
+    }
+
+    /// <summary>
+    /// Locks the box (can be called from other scripts).
+    /// </summary>
+    public void LockBox()
+    {
+        isLocked = true;
+        Debug.Log("[WoodenBox] Box locked!");
+    }
+
+    /// <summary>
+    /// Returns whether the box is currently locked.
+    /// </summary>
+    public bool IsLocked()
+    {
+        return isLocked;
+    }
+
+    /// <summary>
+    /// Sets the required key ID at runtime.
+    /// </summary>
+    public void SetRequiredKey(string keyId)
+    {
+        requiredKeyId = keyId;
+        Debug.Log($"[WoodenBox] Required key set to: {keyId}");
+    }
+
+    /// <summary>
+    /// Returns whether the box is currently open.
+    /// </summary>
+    public bool IsOpen()
+    {
+        return _isOpen;
     }
 
     private void DriveLid(bool open)

@@ -53,7 +53,29 @@ public class NotePilePickable : MonoBehaviour
             }
         }
 
-        if (interactionUI != null) interactionUI.SetActive(false);
+        // UI Validation and Auto-Setup
+        if (interactionUI == null)
+        {
+            Debug.LogWarning($"[NotePilePickable] {gameObject.name}: interactionUI not assigned in Inspector! Text prompt won't show. Please assign a UI GameObject.");
+        }
+        else
+        {
+            // Try to auto-find TextMeshProUGUI if not assigned
+            if (interactionTextUI == null)
+            {
+                interactionTextUI = interactionUI.GetComponentInChildren<TextMeshProUGUI>();
+                if (interactionTextUI != null)
+                {
+                    Debug.Log($"[NotePilePickable] {gameObject.name}: Auto-found TextMeshProUGUI component: {interactionTextUI.name}");
+                }
+                else
+                {
+                    Debug.LogWarning($"[NotePilePickable] {gameObject.name}: interactionTextUI not assigned and couldn't auto-find TextMeshProUGUI! Text won't update. Please assign a TextMeshProUGUI component.");
+                }
+            }
+
+            interactionUI.SetActive(false);
+        }
 
         if (pileSwiper != null)
         {
@@ -61,6 +83,10 @@ public class NotePilePickable : MonoBehaviour
             pileSwiper.OnPileCleared += HandlePileCleared;
             pileSwiper.OnCancelled -= HandleCancelled;
             pileSwiper.OnCancelled += HandleCancelled;
+        }
+        else
+        {
+            Debug.LogError($"[NotePilePickable] {gameObject.name}: pileSwiper not assigned! Note pile won't work.");
         }
     }
 
@@ -199,7 +225,21 @@ public class NotePilePickable : MonoBehaviour
         if (interactionUI != null)
         {
             interactionUI.SetActive(true);
-            if (interactionTextUI != null) interactionTextUI.text = interactionText;
+            Debug.Log($"[NotePilePickable] Showing interaction UI for {gameObject.name}");
+
+            if (interactionTextUI != null)
+            {
+                interactionTextUI.text = interactionText;
+                Debug.Log($"[NotePilePickable] Set text to: \"{interactionText}\"");
+            }
+            else
+            {
+                Debug.LogWarning($"[NotePilePickable] {gameObject.name}: interactionTextUI is null, text won't display!");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[NotePilePickable] {gameObject.name}: Cannot show UI - interactionUI is null!");
         }
     }
 
