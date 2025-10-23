@@ -1,360 +1,1020 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 
+/// <summary>
+/// Manages the Dullahan chase event with a repeating cycle:
+/// - Chase phase: 3 minutes of active pursuit
+/// - Rest phase: 1 minute of inactivity
+/// - Repeats while player is in proximity
+/// </summary>
 public class DullahanChaseEventManager : MonoBehaviour
 {
-    [Header("Proximity Settings")]
+    #region Settings & Configuration
+
+    [Header("═══ CORE CHASE SETTINGS ═══")]
+    [Tooltip("Duration of chase phase in seconds (default: 180 = 3 minutes)")]
+    public float chaseDuration = 180f;
+
+    [Tooltip("Duration of rest phase in seconds (default: 60 = 1 minute)")]
+    public float restDuration = 60f;
+
+    [Tooltip("Maximum number of chase cycles (-1 = infinite)")]
+    public int maxChaseCycles = -1;
+
+    [Tooltip("Start the chase cycle automatically when player enters proximity")]
+    public bool autoStart = true;
+
+    [Header("═══ PROXIMITY DETECTION ═══")]
+    [Tooltip("Detection method: Distance uses radius check, Trigger uses OnTriggerEnter/Exit")]
+    public ProximityMode proximityMode = ProximityMode.Distance;
+
+    [Tooltip("Radius for distance-based proximity detection")]
     public float proximityRadius = 10f;
-    public Transform proximityCenter; // Center point for proximity detection
-    public bool playerInProximity = false;
-    public bool proximityTriggered = false;
-    
-    [Header("Chase Cycle Settings")]
-    public float chaseDuration = 180f; // 3 minutes per chase cycle
-    public float restDuration = 60f; // 1 minute rest between chases
-    public int maxChaseCycles = -1; // -1 = infinite cycles, or set a limit
-    private int currentCycleCount = 0;
-    
-    [Header("Doors")]
-    public doorscript[] exitDoors; // Multiple exit doors that open together after chase
-    public doorscript realHeadDoor; // Door to real head room
-    public int exitDoorKeyID = 999;
-    public int realHeadDoorKeyID = 100;
-    public bool exitDoorsLinked = true; // Whether exit doors should open simultaneously
-    
-    [Header("UI Elements")]
-    public GameObject chaseUI; // UI shown during chase/rest
-    public TextMeshProUGUI chaseText; // Text for chase/rest messages
-    
-    [Header("Audio")]
+
+    [Tooltip("Center point for proximity (if null, uses this GameObject's position)")]
+    public Transform proximityCenter;
+
+    [Tooltip("Layer mask for player detection")]
+    public LayerMask playerLayer = -1;
+
+    [Header("═══ REQUIRED INTEGRATION ═══")]
+    [Tooltip("The chase system that controls Dullahan AI behavior")]
+    public DullahanChaseSystem dullahanChaseSystem;
+
+    [Header("═══ OPTIONAL INTEGRATION ═══")]
+    [Tooltip("Indicates if player chose to help Dullahan (can be set by external systems)")]
+    public bool playerChoseToHelp = false;
+
+    [Tooltip("Indicates if player made a choice (can be set by external systems)")]
+    public bool choiceMade = false;
+
+    [Header("═══ OPTIONAL FEATURES ═══")]
+    [Tooltip("Enable UI display during chase and rest")]
+    public bool enableUI = true;
+
+    [Tooltip("Enable audio feedback")]
+    public bool enableAudio = true;
+
+    [Tooltip("Enable particle effects")]
+    public bool enableParticles = true;
+
+    [Tooltip("Enable door management")]
+    public bool enableDoors = false;
+
+    #endregion
+
+    #region Optional Components
+
+    [Header("═══ UI (Optional) ═══")]
+    public GameObject chaseUI;
+    public TMPro.TextMeshProUGUI chaseText;
+
+    [Header("Timer UI (Optional)")]
+    [Tooltip("Fill image for visual countdown timer")]
+    public UnityEngine.UI.Image timerFillImage;
+
+    [Tooltip("Background image for the timer bar")]
+    public UnityEngine.UI.Image timerBackgroundImage;
+
+    [Tooltip("Show progress bar (requires timerFillImage)")]
+    public bool showProgressBar = true;
+
+    [Tooltip("Show percentage remaining in text")]
+    public bool showPercentage = false;
+
+    [Header("Timer Colors")]
+    [Tooltip("Color during chase phase")]
+    public Color chaseColor = new Color(1f, 0.2f, 0.2f); // Red
+
+    [Tooltip("Color during rest phase")]
+    public Color restColor = new Color(0.2f, 1f, 0.2f); // Green
+
+    [Tooltip("Color when time is running out")]
+    public Color warningColor = new Color(1f, 0.6f, 0f); // Orange
+
+    [Tooltip("Seconds remaining to trigger warning color")]
+    public float warningThreshold = 30f;
+
+    [Header("═══ AUDIO (Optional) ═══")]
     public AudioSource audioSource;
     public AudioClip chaseStartSound;
     public AudioClip chaseEndSound;
     public AudioClip restStartSound;
 
-    [Header("Visual Effects")]
+    [Header("═══ VISUAL EFFECTS (Optional) ═══")]
     public ParticleSystem chaseParticles;
     public ParticleSystem restParticles;
-    
-    [Header("Integration")]
-    public DullahanChaseSystem dullahanChaseSystem;
-    public DullahanAudioManager audioManager;
-    public DullahanHeadInventory headInventory;
-    public Floor2EndingEventManager floor2EventManager;
-    
-    [Header("State Management")]
-    public EventState currentState = EventState.Waiting;
-    public bool eventActive = true;
-    public bool chaseActive = false;
 
-    // Private variables
-    private Transform player;
-    private float stateTimer = 0f;
-    
+    [Header("═══ DOORS (Optional) ═══")]
+    public doorscript[] exitDoors;
+    public doorscript realHeadDoor;
+    public int exitDoorKeyID = 999;
+    public int realHeadDoorKeyID = 100;
+
+    #endregion
+
+    #region Unity Events
+
+    [Header("═══ EVENTS ═══")]
+    [Tooltip("Called when player enters proximity")]
+    public UnityEvent OnPlayerEnterProximity;
+
+    [Tooltip("Called when player leaves proximity")]
+    public UnityEvent OnPlayerExitProximity;
+
+    [Tooltip("Called when chase phase starts")]
+    public UnityEvent OnChaseStart;
+
+    [Tooltip("Called when chase phase ends")]
+    public UnityEvent OnChaseEnd;
+
+    [Tooltip("Called when rest phase starts")]
+    public UnityEvent OnRestStart;
+
+    [Tooltip("Called when rest phase ends")]
+    public UnityEvent OnRestEnd;
+
+    #endregion
+
+    #region State Management
+
     public enum EventState
     {
         Waiting,     // Waiting for player to enter proximity
-        Chasing,     // Active chase period (3 minutes)
-        Resting,     // Dullahan resting period (1 minute)
-        Exited       // Player left proximity/scene
+        Chasing,     // Active chase period
+        Resting,     // Rest period
+        Paused,      // Manually paused
+        Stopped      // Event stopped/ended
     }
-    
+
+    public enum ProximityMode
+    {
+        Distance,    // Check distance from proximity center
+        Trigger,     // Use OnTriggerEnter/Exit (requires Collider with IsTrigger=true)
+        Both         // Use both methods
+    }
+
+    [Header("═══ DEBUG INFO (Read Only) ═══")]
+    [SerializeField] private EventState currentState = EventState.Waiting;
+    [SerializeField] private bool playerInProximity = false;
+    [SerializeField] private int currentCycleCount = 0;
+    [SerializeField] private float stateTimer = 0f;
+    [SerializeField] private bool isPaused = false;
+
+    // Private references
+    private Transform player;
+    private Coroutine eventLoopCoroutine;
+    private bool isInitialized = false;
+
+    // Public read-only properties
+    public EventState CurrentState => currentState;
+    public bool PlayerInProximity => playerInProximity;
+    public int CurrentCycleCount => currentCycleCount;
+    public float StateTimer => stateTimer;
+    public bool IsPaused => isPaused;
+
+    #endregion
+
+    #region Initialization
+
     void Start()
     {
-        InitializeComponents();
-        SetupUI();
-        StartCoroutine(EventLoop());
+        Initialize();
     }
+
+    void Initialize()
+    {
+        if (isInitialized) return;
+
+        // Find player
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+        {
+            player = playerObj.transform;
+            Debug.Log("[DullahanChase] Player found: " + player.name);
+        }
+        else
+        {
+            Debug.LogWarning("[DullahanChase] Player not found! Make sure player has 'Player' tag.");
+        }
+
+        // Auto-find chase system if not assigned
+        if (dullahanChaseSystem == null)
+        {
+            dullahanChaseSystem = FindObjectOfType<DullahanChaseSystem>();
+            if (dullahanChaseSystem == null)
+                Debug.LogWarning("[DullahanChase] DullahanChaseSystem not found! Chase behavior will not work.");
+        }
+
+        // Setup audio source
+        if (enableAudio && audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null)
+                audioSource = gameObject.AddComponent<AudioSource>();
+        }
+
+        // Set proximity center to self if not specified
+        if (proximityCenter == null)
+            proximityCenter = transform;
+
+        // Validate trigger-based proximity
+        if (proximityMode == ProximityMode.Trigger || proximityMode == ProximityMode.Both)
+        {
+            Collider col = GetComponent<Collider>();
+            if (col == null || !col.isTrigger)
+            {
+                Debug.LogWarning("[DullahanChase] Trigger mode requires a Collider component with IsTrigger=true!");
+            }
+        }
+
+        // Hide timer UI initially
+        HideTimerUI();
+
+        isInitialized = true;
+
+        // Start the event loop
+        if (autoStart)
+        {
+            StartEventLoop();
+        }
+
+        Debug.Log($"[DullahanChase] Initialized. Mode: {proximityMode}, Chase: {chaseDuration}s, Rest: {restDuration}s");
+    }
+
+    #endregion
+
+    #region Proximity Detection
 
     void Update()
     {
-        // Check if player left proximity during active chase/rest cycle
-        if ((currentState == EventState.Chasing || currentState == EventState.Resting) && player != null)
+        if (!isInitialized || isPaused || player == null) return;
+
+        // Distance-based proximity check
+        if (proximityMode == ProximityMode.Distance || proximityMode == ProximityMode.Both)
         {
-            float distance = Vector3.Distance(transform.position, player.position);
-            if (distance > proximityRadius)
+            CheckDistanceProximity();
+        }
+
+        // Handle player leaving during active states
+        if (!playerInProximity && (currentState == EventState.Chasing || currentState == EventState.Resting))
+        {
+            OnPlayerLeftProximity();
+        }
+    }
+
+    void CheckDistanceProximity()
+    {
+        Vector3 centerPos = proximityCenter != null ? proximityCenter.position : transform.position;
+        float distance = Vector3.Distance(centerPos, player.position);
+
+        bool wasInProximity = playerInProximity;
+
+        // Check if within radius
+        if (distance <= proximityRadius)
+        {
+            if (!wasInProximity)
             {
+                playerInProximity = true;
+                OnPlayerEnteredProximity();
+            }
+        }
+        else
+        {
+            if (wasInProximity)
+            {
+                playerInProximity = false;
+                // OnPlayerLeftProximity() is called separately to handle state changes
+            }
+        }
+    }
+
+    // Trigger-based proximity detection (requires Collider with IsTrigger=true)
+    void OnTriggerEnter(Collider other)
+    {
+        if (proximityMode == ProximityMode.Trigger || proximityMode == ProximityMode.Both)
+        {
+            if (IsPlayer(other.gameObject))
+            {
+                playerInProximity = true;
+                OnPlayerEnteredProximity();
+            }
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (proximityMode == ProximityMode.Trigger || proximityMode == ProximityMode.Both)
+        {
+            if (IsPlayer(other.gameObject))
+            {
+                playerInProximity = false;
                 OnPlayerLeftProximity();
             }
         }
     }
-    
-    void InitializeComponents()
+
+    bool IsPlayer(GameObject obj)
     {
-        // Find player
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null)
-            player = playerObj.transform;
-        
-        // Find components
-        if (dullahanChaseSystem == null)
-            dullahanChaseSystem = FindObjectOfType<DullahanChaseSystem>();
-            
-        if (audioManager == null)
-            audioManager = FindObjectOfType<DullahanAudioManager>();
-            
-        if (headInventory == null)
-            headInventory = FindObjectOfType<DullahanHeadInventory>();
-            
-        if (floor2EventManager == null)
-            floor2EventManager = FindObjectOfType<Floor2EndingEventManager>();
-        
-        // Setup audio
-        if (audioSource == null)
-            audioSource = GetComponent<AudioSource>();
-        
-        if (audioSource == null)
-            audioSource = gameObject.AddComponent<AudioSource>();
+        // Check by tag
+        if (obj.CompareTag("Player"))
+            return true;
+
+        // Check by layer if layer mask is set
+        if (playerLayer.value != -1)
+        {
+            return ((1 << obj.layer) & playerLayer.value) != 0;
+        }
+
+        return false;
     }
-    
-    void SetupUI()
+
+    void OnPlayerEnteredProximity()
     {
-        // Hide chase UI initially
-        if (chaseUI != null) chaseUI.SetActive(false);
+        Debug.Log("[DullahanChase] Player entered proximity!");
+
+        // Invoke event
+        OnPlayerEnterProximity?.Invoke();
+
+        // Start chase cycle if in waiting state
+        if (currentState == EventState.Waiting)
+        {
+            currentCycleCount = 0;
+            TransitionToState(EventState.Chasing);
+        }
     }
-    
+
+    void OnPlayerLeftProximity()
+    {
+        Debug.Log("[DullahanChase] Player left proximity!");
+
+        // Invoke event
+        OnPlayerExitProximity?.Invoke();
+
+        // Stop active chase/rest cycle
+        if (currentState == EventState.Chasing || currentState == EventState.Resting)
+        {
+            TransitionToState(EventState.Stopped);
+        }
+    }
+
+    #endregion
+
+    #region Event Loop & State Handlers
+
+    void StartEventLoop()
+    {
+        if (eventLoopCoroutine != null)
+        {
+            StopCoroutine(eventLoopCoroutine);
+        }
+
+        eventLoopCoroutine = StartCoroutine(EventLoop());
+    }
+
+    void StopEventLoop()
+    {
+        if (eventLoopCoroutine != null)
+        {
+            StopCoroutine(eventLoopCoroutine);
+            eventLoopCoroutine = null;
+        }
+    }
+
     IEnumerator EventLoop()
     {
-        while (eventActive)
+        while (true)
         {
             switch (currentState)
             {
                 case EventState.Waiting:
-                    yield return StartCoroutine(HandleWaitingState());
+                    yield return HandleWaitingState();
                     break;
 
                 case EventState.Chasing:
-                    yield return StartCoroutine(HandleChasingState());
-                    // After chase completes, automatically transition to rest
-                    if (currentState == EventState.Chasing)
-                    {
-                        currentCycleCount++;
-                        currentState = EventState.Resting;
-                    }
+                    yield return HandleChasingState();
                     break;
 
                 case EventState.Resting:
-                    yield return StartCoroutine(HandleRestingState());
-                    // After rest completes, automatically transition back to chase
-                    if (currentState == EventState.Resting)
-                    {
-                        // Check if we've reached max cycles
-                        if (maxChaseCycles > 0 && currentCycleCount >= maxChaseCycles)
-                        {
-                            currentState = EventState.Exited;
-                        }
-                        else
-                        {
-                            currentState = EventState.Chasing;
-                        }
-                    }
+                    yield return HandleRestingState();
                     break;
 
-                case EventState.Exited:
-                    yield return StartCoroutine(HandleExitedState());
+                case EventState.Paused:
+                    yield return HandlePausedState();
+                    break;
+
+                case EventState.Stopped:
+                    yield return HandleStoppedState();
                     break;
             }
 
             yield return null;
         }
     }
-    
+
     IEnumerator HandleWaitingState()
     {
         Debug.Log("[DullahanChase] Waiting for player to enter proximity...");
 
-        // Wait for player to enter proximity
+        // Just wait until proximity is triggered
         while (currentState == EventState.Waiting)
         {
-            if (player != null)
-            {
-                float distance = Vector3.Distance(transform.position, player.position);
-                if (distance <= proximityRadius)
-                {
-                    Debug.Log("[DullahanChase] Player entered proximity! Starting chase immediately!");
-                    currentCycleCount = 0; // Reset cycle count
-                    currentState = EventState.Chasing; // Start chasing immediately
-                    break;
-                }
-            }
             yield return null;
         }
     }
-    
+
     IEnumerator HandleChasingState()
     {
-        Debug.Log($"[DullahanChase] Starting chase cycle #{currentCycleCount + 1} - 3 minutes!");
+        Debug.Log($"[DullahanChase] === CHASE #{currentCycleCount + 1} STARTED === Duration: {chaseDuration}s");
 
-        // Start the chase system
-        if (dullahanChaseSystem != null)
-        {
-            dullahanChaseSystem.StartChase();
-            chaseActive = true;
-        }
+        // Start chase
+        StartChase();
 
-        // Play chase start sound
-        if (audioSource != null && chaseStartSound != null)
-            audioSource.PlayOneShot(chaseStartSound);
-
-        // Start chase particles
-        if (chaseParticles != null)
-            chaseParticles.Play();
-
-        // Show chase UI
-        if (chaseUI != null)
-        {
-            chaseUI.SetActive(true);
-        }
-
-        // Run chase timer (3 minutes = 180 seconds)
+        // Run chase timer
         stateTimer = 0f;
         while (stateTimer < chaseDuration && currentState == EventState.Chasing)
         {
             stateTimer += Time.deltaTime;
 
-            // Update chase UI with countdown
-            if (chaseText != null)
-            {
-                float remaining = chaseDuration - stateTimer;
-                int minutes = Mathf.FloorToInt(remaining / 60f);
-                int seconds = Mathf.FloorToInt(remaining % 60f);
-                chaseText.text = $"DULLAHAN IS CHASING! Survive: {minutes}:{seconds:00}";
-            }
+            // Update timer UI (text, progress bar, colors)
+            UpdateTimerUI(stateTimer, chaseDuration, true);
 
             yield return null;
         }
 
-        // End the chase
-        if (dullahanChaseSystem != null)
+        // End chase if we completed the duration
+        if (currentState == EventState.Chasing)
         {
-            dullahanChaseSystem.EndChase();
-            chaseActive = false;
+            EndChase();
+            currentCycleCount++;
+
+            // Check if we've reached max cycles
+            if (maxChaseCycles > 0 && currentCycleCount >= maxChaseCycles)
+            {
+                Debug.Log("[DullahanChase] Max cycles reached. Stopping event.");
+                TransitionToState(EventState.Stopped);
+            }
+            else
+            {
+                TransitionToState(EventState.Resting);
+            }
         }
-
-        // Play chase end sound
-        if (audioSource != null && chaseEndSound != null)
-            audioSource.PlayOneShot(chaseEndSound);
-
-        // Stop chase particles
-        if (chaseParticles != null)
-            chaseParticles.Stop();
-
-        // Hide chase UI (will be shown again in rest state)
-        if (chaseUI != null)
-            chaseUI.SetActive(false);
-
-        Debug.Log("[DullahanChase] Chase ended! Entering rest period...");
     }
-    
+
     IEnumerator HandleRestingState()
     {
-        Debug.Log("[DullahanChase] Dullahan is resting - 1 minute break!");
+        Debug.Log($"[DullahanChase] === REST PERIOD STARTED === Duration: {restDuration}s");
 
-        // Stop Dullahan movement/chase
-        if (dullahanChaseSystem != null)
-        {
-            dullahanChaseSystem.EndChase(); // Ensure chase is fully stopped
-            chaseActive = false;
-        }
+        // Start rest period
+        StartRest();
 
-        // Play rest start sound
-        if (audioSource != null && restStartSound != null)
-            audioSource.PlayOneShot(restStartSound);
-
-        // Start rest particles
-        if (restParticles != null)
-            restParticles.Play();
-
-        // Show rest UI
-        if (chaseUI != null)
-        {
-            chaseUI.SetActive(true);
-        }
-
-        // Run rest timer (1 minute = 60 seconds)
+        // Run rest timer
         stateTimer = 0f;
         while (stateTimer < restDuration && currentState == EventState.Resting)
         {
             stateTimer += Time.deltaTime;
 
-            // Update rest UI with countdown
-            if (chaseText != null)
-            {
-                float remaining = restDuration - stateTimer;
-                int seconds = Mathf.FloorToInt(remaining);
-                chaseText.text = $"REST PERIOD - Next chase in: {seconds}s";
-            }
+            // Update timer UI (text, progress bar, colors)
+            UpdateTimerUI(stateTimer, restDuration, false);
 
             yield return null;
         }
 
-        // Stop rest particles
-        if (restParticles != null)
-            restParticles.Stop();
+        // End rest if we completed the duration
+        if (currentState == EventState.Resting)
+        {
+            EndRest();
 
-        // Hide rest UI (will be shown again in chase state)
-        if (chaseUI != null)
-            chaseUI.SetActive(false);
-
-        Debug.Log("[DullahanChase] Rest period ended! Next chase starting...");
+            // Check if player is still in proximity
+            if (playerInProximity)
+            {
+                TransitionToState(EventState.Chasing);
+            }
+            else
+            {
+                Debug.Log("[DullahanChase] Player not in proximity. Returning to waiting state.");
+                TransitionToState(EventState.Waiting);
+            }
+        }
     }
-    
-    IEnumerator HandleExitedState()
-    {
-        Debug.Log("[DullahanChase] Player left proximity or reached max cycles. Stopping chase...");
 
-        // Stop all chase activity
+    IEnumerator HandlePausedState()
+    {
+        // Just wait until unpaused
+        while (currentState == EventState.Paused)
+        {
+            yield return null;
+        }
+    }
+
+    IEnumerator HandleStoppedState()
+    {
+        Debug.Log("[DullahanChase] Event stopped. Cleaning up...");
+
+        // Cleanup
+        CleanupChase();
+        CleanupRest();
+
+        // Hide timer UI
+        HideTimerUI();
+
+        // Wait a moment before resetting to waiting
+        yield return new WaitForSeconds(2f);
+
+        // Reset to waiting if still stopped
+        if (currentState == EventState.Stopped)
+        {
+            currentCycleCount = 0;
+            TransitionToState(EventState.Waiting);
+        }
+    }
+
+    void TransitionToState(EventState newState)
+    {
+        EventState oldState = currentState;
+        currentState = newState;
+        stateTimer = 0f;
+
+        Debug.Log($"[DullahanChase] State transition: {oldState} → {newState}");
+    }
+
+    #endregion
+
+    #region Timer UI Management
+
+    /// <summary>
+    /// Updates the timer UI with countdown, progress bar, and color changes
+    /// </summary>
+    /// <param name="currentTime">Time elapsed since state started</param>
+    /// <param name="maxTime">Total duration of the current state</param>
+    /// <param name="isChase">True if in chase phase, false if in rest phase</param>
+    void UpdateTimerUI(float currentTime, float maxTime, bool isChase)
+    {
+        if (!enableUI) return;
+
+        float remaining = maxTime - currentTime;
+        float progress = Mathf.Clamp01(remaining / maxTime);
+
+        // Update text countdown
+        if (chaseText != null)
+        {
+            // Format time display
+            string timeDisplay;
+            if (isChase)
+            {
+                // Chase: Show minutes and seconds
+                int minutes = Mathf.FloorToInt(remaining / 60f);
+                int seconds = Mathf.FloorToInt(remaining % 60f);
+                timeDisplay = $"{minutes}:{seconds:00}";
+            }
+            else
+            {
+                // Rest: Show seconds only
+                int seconds = Mathf.FloorToInt(remaining);
+                timeDisplay = $"{seconds}s";
+            }
+
+            // Build display text
+            string phaseText = isChase ? "DULLAHAN CHASING! Survive:" : "REST PERIOD - Next chase in:";
+            string displayText = $"{phaseText} {timeDisplay}";
+
+            // Add percentage if enabled
+            if (showPercentage)
+            {
+                int percentage = Mathf.FloorToInt(progress * 100f);
+                displayText += $" ({percentage}%)";
+            }
+
+            chaseText.text = displayText;
+
+            // Update text color based on time remaining
+            if (remaining <= warningThreshold && isChase)
+            {
+                chaseText.color = warningColor;
+            }
+            else
+            {
+                chaseText.color = isChase ? chaseColor : restColor;
+            }
+        }
+
+        // Update progress bar fill
+        if (showProgressBar && timerFillImage != null)
+        {
+            timerFillImage.fillAmount = progress;
+
+            // Update fill color based on time remaining
+            if (remaining <= warningThreshold && isChase)
+            {
+                timerFillImage.color = warningColor;
+            }
+            else
+            {
+                timerFillImage.color = isChase ? chaseColor : restColor;
+            }
+        }
+
+        // Update background color (optional, more subtle)
+        if (timerBackgroundImage != null)
+        {
+            Color bgColor = isChase ? chaseColor : restColor;
+            bgColor.a = 0.3f; // Semi-transparent background
+            timerBackgroundImage.color = bgColor;
+        }
+    }
+
+    /// <summary>
+    /// Hides the timer UI
+    /// </summary>
+    void HideTimerUI()
+    {
+        if (chaseUI != null)
+        {
+            chaseUI.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// Shows the timer UI
+    /// </summary>
+    void ShowTimerUI()
+    {
+        if (enableUI && chaseUI != null)
+        {
+            chaseUI.SetActive(true);
+        }
+    }
+
+    #endregion
+
+    #region Chase & Rest Handlers
+
+    void StartChase()
+    {
+        // Activate chase system
+        if (dullahanChaseSystem != null)
+        {
+            dullahanChaseSystem.StartChase();
+        }
+
+        // Play audio
+        if (enableAudio && audioSource != null && chaseStartSound != null)
+        {
+            audioSource.PlayOneShot(chaseStartSound);
+        }
+
+        // Start particles
+        if (enableParticles && chaseParticles != null)
+        {
+            chaseParticles.Play();
+        }
+
+        // Show timer UI
+        ShowTimerUI();
+
+        // Invoke event
+        OnChaseStart?.Invoke();
+    }
+
+    void EndChase()
+    {
+        // Deactivate chase system
         if (dullahanChaseSystem != null)
         {
             dullahanChaseSystem.EndChase();
-            chaseActive = false;
         }
 
-        // Hide all UI
-        if (chaseUI != null)
-            chaseUI.SetActive(false);
+        // Play audio
+        if (enableAudio && audioSource != null && chaseEndSound != null)
+        {
+            audioSource.PlayOneShot(chaseEndSound);
+        }
 
-        // Stop all particles
-        if (chaseParticles != null)
+        // Stop particles
+        if (enableParticles && chaseParticles != null)
+        {
             chaseParticles.Stop();
-        if (restParticles != null)
-            restParticles.Stop();
+        }
 
-        Debug.Log("[DullahanChase] Chase cycle ended. Waiting for player to re-enter...");
+        // Invoke event
+        OnChaseEnd?.Invoke();
 
-        // Wait a bit before resetting to Waiting state
-        yield return new WaitForSeconds(5f);
-
-        // Reset to waiting state
-        currentCycleCount = 0;
-        currentState = EventState.Waiting;
+        Debug.Log("[DullahanChase] === CHASE ENDED ===");
     }
 
-    void OnPlayerLeftProximity()
+    void StartRest()
     {
-        Debug.Log("[DullahanChase] Player left proximity - stopping chase cycle");
+        // Ensure chase is fully stopped
+        if (dullahanChaseSystem != null)
+        {
+            dullahanChaseSystem.EndChase();
+        }
 
-        // Immediately transition to Exited state
-        currentState = EventState.Exited;
+        // Play audio
+        if (enableAudio && audioSource != null && restStartSound != null)
+        {
+            audioSource.PlayOneShot(restStartSound);
+        }
+
+        // Start particles
+        if (enableParticles && restParticles != null)
+        {
+            restParticles.Play();
+        }
+
+        // Show timer UI
+        ShowTimerUI();
+
+        // Invoke event
+        OnRestStart?.Invoke();
     }
-    
-    
-    // Debug visualization
+
+    void EndRest()
+    {
+        // Stop particles
+        if (enableParticles && restParticles != null)
+        {
+            restParticles.Stop();
+        }
+
+        // Invoke event
+        OnRestEnd?.Invoke();
+
+        Debug.Log("[DullahanChase] === REST ENDED ===");
+    }
+
+    void CleanupChase()
+    {
+        if (dullahanChaseSystem != null)
+        {
+            dullahanChaseSystem.EndChase();
+        }
+
+        if (enableParticles && chaseParticles != null)
+        {
+            chaseParticles.Stop();
+        }
+    }
+
+    void CleanupRest()
+    {
+        if (enableParticles && restParticles != null)
+        {
+            restParticles.Stop();
+        }
+    }
+
+    #endregion
+
+    #region Public API
+
+    /// <summary>
+    /// Manually start the chase event (useful for testing or triggered events)
+    /// </summary>
+    public void ManualStart()
+    {
+        if (!isInitialized)
+        {
+            Initialize();
+        }
+
+        Debug.Log("[DullahanChase] Manual start triggered");
+        currentCycleCount = 0;
+        playerInProximity = true; // Assume player is in proximity
+        TransitionToState(EventState.Chasing);
+    }
+
+    /// <summary>
+    /// Manually stop the chase event
+    /// </summary>
+    public void ManualStop()
+    {
+        Debug.Log("[DullahanChase] Manual stop triggered");
+        TransitionToState(EventState.Stopped);
+    }
+
+    /// <summary>
+    /// Pause the chase event (can be resumed)
+    /// </summary>
+    public void Pause()
+    {
+        if (currentState != EventState.Paused && currentState != EventState.Stopped)
+        {
+            isPaused = true;
+
+            // Store previous state if we want to resume to it
+            TransitionToState(EventState.Paused);
+
+            // Pause chase system
+            if (dullahanChaseSystem != null)
+            {
+                dullahanChaseSystem.EndChase();
+            }
+
+            Debug.Log("[DullahanChase] Paused");
+        }
+    }
+
+    /// <summary>
+    /// Resume from paused state
+    /// </summary>
+    public void Resume()
+    {
+        if (currentState == EventState.Paused)
+        {
+            isPaused = false;
+
+            // Resume to appropriate state based on player proximity
+            if (playerInProximity)
+            {
+                TransitionToState(EventState.Chasing);
+            }
+            else
+            {
+                TransitionToState(EventState.Waiting);
+            }
+
+            Debug.Log("[DullahanChase] Resumed");
+        }
+    }
+
+    /// <summary>
+    /// Reset the event to initial state
+    /// </summary>
+    public void Reset()
+    {
+        Debug.Log("[DullahanChase] Reset triggered");
+
+        CleanupChase();
+        CleanupRest();
+
+        currentCycleCount = 0;
+        stateTimer = 0f;
+        playerInProximity = false;
+        isPaused = false;
+
+        TransitionToState(EventState.Waiting);
+    }
+
+    /// <summary>
+    /// Skip current phase (for testing)
+    /// </summary>
+    public void SkipCurrentPhase()
+    {
+        Debug.Log("[DullahanChase] Skipping current phase");
+
+        if (currentState == EventState.Chasing)
+        {
+            stateTimer = chaseDuration; // Force completion
+        }
+        else if (currentState == EventState.Resting)
+        {
+            stateTimer = restDuration; // Force completion
+        }
+    }
+
+    #endregion
+
+    #region Integration Callbacks
+
+    /// <summary>
+    /// Called by DullahanChaseSystem when chase starts
+    /// </summary>
+    public void OnChaseStarted()
+    {
+        Debug.Log("[DullahanChase] OnChaseStarted callback received from DullahanChaseSystem");
+        // This can be used for additional integration if needed
+        // The main chase logic is already handled by StartChase()
+    }
+
+    /// <summary>
+    /// Called by DullahanChaseSystem when chase ends
+    /// </summary>
+    public void OnChaseEnded()
+    {
+        Debug.Log("[DullahanChase] OnChaseEnded callback received from DullahanChaseSystem");
+        // This can be used for additional integration if needed
+        // The main chase logic is already handled by EndChase()
+    }
+
+    #endregion
+
+    #region Optional Door Management
+
+    void OpenExitDoors()
+    {
+        if (!enableDoors || exitDoors == null) return;
+
+        foreach (doorscript door in exitDoors)
+        {
+            if (door != null)
+            {
+                door.SetRequiredKeyID(exitDoorKeyID);
+                door.UnlockDoor();
+                door.OpenDoor();
+            }
+        }
+    }
+
+    void OpenRealHeadDoor()
+    {
+        if (!enableDoors || realHeadDoor == null) return;
+
+        realHeadDoor.SetRequiredKeyID(realHeadDoorKeyID);
+        realHeadDoor.UnlockDoor();
+        realHeadDoor.OpenDoor();
+    }
+
+    #endregion
+
+    #region Debug & Visualization
+
     void OnDrawGizmosSelected()
     {
-        // Draw proximity radius
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, proximityRadius);
+        // Draw proximity radius (only for distance-based mode)
+        if (proximityMode == ProximityMode.Distance || proximityMode == ProximityMode.Both)
+        {
+            Vector3 centerPos = proximityCenter != null ? proximityCenter.position : transform.position;
 
-        // Draw state info
+            Gizmos.color = playerInProximity ? Color.green : Color.yellow;
+            Gizmos.DrawWireSphere(centerPos, proximityRadius);
+
+            // Draw line to proximity center if it's different from this object
+            if (proximityCenter != null && proximityCenter != transform)
+            {
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawLine(transform.position, proximityCenter.position);
+            }
+        }
+
+        // Draw state info in editor
+        #if UNITY_EDITOR
         if (Application.isPlaying)
         {
-            UnityEditor.Handles.Label(transform.position + Vector3.up * 2f,
-                $"State: {currentState}\nCycle: {currentCycleCount + 1}");
+            Vector3 labelPos = transform.position + Vector3.up * 2f;
+            string label = $"State: {currentState}\n" +
+                          $"Cycle: {currentCycleCount + 1}\n" +
+                          $"Timer: {stateTimer:F1}s\n" +
+                          $"In Proximity: {playerInProximity}";
+
+            UnityEditor.Handles.Label(labelPos, label);
         }
+        #endif
     }
+
+    // Debug method to print current status
+    [ContextMenu("Print Status")]
+    void PrintStatus()
+    {
+        Debug.Log("=== DULLAHAN CHASE EVENT STATUS ===");
+        Debug.Log($"State: {currentState}");
+        Debug.Log($"Cycle: {currentCycleCount + 1}/{(maxChaseCycles < 0 ? "∞" : maxChaseCycles.ToString())}");
+        Debug.Log($"Timer: {stateTimer:F1}s");
+        Debug.Log($"Player In Proximity: {playerInProximity}");
+        Debug.Log($"Paused: {isPaused}");
+        Debug.Log($"Proximity Mode: {proximityMode}");
+        Debug.Log("===================================");
+    }
+
+    #endregion
+
+    #region Ending Choice Management (Static Methods)
+
+    /// <summary>
+    /// Static method to save the player's ending choice (persists across scenes)
+    /// </summary>
+    /// <param name="choseGoodEnding">True for good ending, false for bad ending</param>
+    public static void SaveEndingChoice(bool choseGoodEnding)
+    {
+        PlayerPrefs.SetInt("Floor2EndingChoice", choseGoodEnding ? 1 : 0);
+        PlayerPrefs.SetString("Floor2EndingChoiceTime", System.DateTime.Now.ToString());
+        PlayerPrefs.Save();
+
+        Debug.Log($"[DullahanChase] Ending choice saved: {(choseGoodEnding ? "Good Ending" : "Bad Ending")}");
+    }
+
+    /// <summary>
+    /// Static method to get the player's ending choice (persists across scenes)
+    /// </summary>
+    /// <returns>True if good ending was chosen, false otherwise</returns>
+    public static bool GetEndingChoice()
+    {
+        return PlayerPrefs.GetInt("Floor2EndingChoice", 0) == 1;
+    }
+
+    /// <summary>
+    /// Static method to clear the ending choice (useful for new game)
+    /// </summary>
+    public static void ClearEndingChoice()
+    {
+        PlayerPrefs.DeleteKey("Floor2EndingChoice");
+        PlayerPrefs.DeleteKey("Floor2EndingChoiceTime");
+        PlayerPrefs.Save();
+
+        Debug.Log("[DullahanChase] Ending choice cleared");
+    }
+
+    #endregion
 }

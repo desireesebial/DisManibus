@@ -22,9 +22,9 @@ public class HeadShrinePuzzle : MonoBehaviour
     [Header("🏛️ Shrine Settings")]
     [Tooltip("List of head IDs that need to be placed on placement points (in order)")]
     public int[] requiredHeadIDs = { 1, 2, 3 }; // Example: Real head, Wrong head 1, Wrong head 2
-    
-    [Tooltip("Which placement point requires the REAL head (0 = first, 1 = second, etc.)")]
-    public int realHeadPlacementIndex = 0; // Center placement point
+
+    [Tooltip("Which placement point requires the REAL head (0 = Left, 1 = Right, 2 = Center)")]
+    public int realHeadPlacementIndex = 2; // Center placement (last in sequence)
     
     [Tooltip("How close player needs to be to interact with any placement point")]
     public float interactionDistance = 4f;
@@ -179,13 +179,13 @@ public class HeadShrinePuzzle : MonoBehaviour
         // Validation: Show configuration summary
         Debug.Log($"[HeadShrinePuzzle] ═══════════════════════════════════");
         Debug.Log($"[HeadShrinePuzzle] Shrine setup complete! {placements.Count} placements created.");
-        Debug.Log($"[HeadShrinePuzzle] Required head IDs: {string.Join(", ", requiredHeadIDs)}");
+        Debug.Log($"[HeadShrinePuzzle] NOTE: Any head can be placed on any placement spot.");
         Debug.Log($"[HeadShrinePuzzle] Real head placement index: {realHeadPlacementIndex}");
 
         for (int i = 0; i < placements.Count; i++)
         {
             string placementType = placements[i].isRealHeadPlacement ? "REAL HEAD" : "Wrong Head";
-            Debug.Log($"[HeadShrinePuzzle] Placement {i}: Requires head ID {placements[i].requiredHeadID} ({placementType})");
+            Debug.Log($"[HeadShrinePuzzle] Placement {i}: Type = {placementType} (accepts any head)");
         }
 
         // Validation warnings
@@ -281,21 +281,10 @@ public class HeadShrinePuzzle : MonoBehaviour
             placementObj.transform.SetParent(transform);
             
             // Position placements based on candle positions
+            // Sequential order: Left (0) → Right (1) → Center (2)
             Vector3 placementPosition = altarPosition;
-            
-            if (i == 0) // Center (real head) - use center candle position
-            {
-                if (centerCandle)
-                {
-                    placementPosition = centerCandle.transform.position;
-                    placementPosition.y += 0.5f; // Slightly above candle
-                }
-                else
-                {
-                    placementPosition.y += 0.2f;
-                }
-            }
-            else if (i == 1) // Left - use left candle position
+
+            if (i == 0) // Left placement - use left candle position
             {
                 if (leftCandle)
                 {
@@ -308,7 +297,7 @@ public class HeadShrinePuzzle : MonoBehaviour
                     placementPosition.y += 0.2f;
                 }
             }
-            else // Right - use right candle position
+            else if (i == 1) // Right placement - use right candle position
             {
                 if (rightCandle)
                 {
@@ -318,6 +307,18 @@ public class HeadShrinePuzzle : MonoBehaviour
                 else
                 {
                     placementPosition.x += 1.5f;
+                    placementPosition.y += 0.2f;
+                }
+            }
+            else // Center placement (real head) - use center candle position
+            {
+                if (centerCandle)
+                {
+                    placementPosition = centerCandle.transform.position;
+                    placementPosition.y += 0.5f; // Slightly above candle
+                }
+                else
+                {
                     placementPosition.y += 0.2f;
                 }
             }
@@ -373,29 +374,50 @@ public class HeadShrinePuzzle : MonoBehaviour
     void Update()
     {
         if (shrineComplete || !player || !inventory) return;
-        
-        // Check if player is close enough to any placement point
+
+        // Sequential placement logic: Only allow interaction with the NEXT empty placement
         bool wasInRange = playerInRange;
         playerInRange = false;
         currentPlacement = null;
-        
-        foreach (ShrinePlacement placement in placements)
+
+        // Get the next empty placement in sequence (Left → Right → Center)
+        ShrinePlacement nextEmptyPlacement = GetNextEmptyPlacement();
+
+        if (nextEmptyPlacement != null)
         {
-            float distance = Vector3.Distance(placement.placementTransform.position, player.position);
-            if (distance <= interactionDistance)
+            // Check if player is near the NEXT empty placement
+            float distanceToNext = Vector3.Distance(nextEmptyPlacement.placementTransform.position, player.position);
+
+            if (distanceToNext <= interactionDistance)
             {
                 playerInRange = true;
-                currentPlacement = placement;
-                
+                currentPlacement = nextEmptyPlacement;
+
                 // Check if player has a head and presses the interaction key
                 if (Input.GetKeyDown(interactionKey))
                 {
-                    TryPlaceHeadOnPlacement(placement);
+                    TryPlaceHeadOnPlacement(nextEmptyPlacement);
                 }
-                break; // Only check one placement at a time
+            }
+            else
+            {
+                // Check if player is near any OTHER placement (to show guidance UI)
+                foreach (ShrinePlacement placement in placements)
+                {
+                    if (placement != nextEmptyPlacement)
+                    {
+                        float distance = Vector3.Distance(placement.placementTransform.position, player.position);
+                        if (distance <= interactionDistance)
+                        {
+                            playerInRange = true;
+                            currentPlacement = placement; // This is NOT the correct placement
+                            break;
+                        }
+                    }
+                }
             }
         }
-        
+
         // Update prompt visibility
         UpdatePlacementPrompt();
     }
@@ -403,11 +425,11 @@ public class HeadShrinePuzzle : MonoBehaviour
     void UpdatePlacementPrompt()
     {
         if (placementPromptUI == null) return;
-        
+
         if (playerInRange && currentPlacement != null)
         {
             placementPromptUI.SetActive(true);
-            
+
             if (placementPromptText != null)
             {
                 // Check if player has a head
@@ -416,13 +438,26 @@ public class HeadShrinePuzzle : MonoBehaviour
                 {
                     placementPromptText.text = noHeadText;
                 }
-                else if (currentPlacement.hasHead)
+                else if (AreAllPlacementsFull())
                 {
                     placementPromptText.text = allFullText;
                 }
                 else
                 {
-                    placementPromptText.text = string.Format(placeHeadText, interactionKey.ToString());
+                    // Check if player is at the CORRECT (next empty) placement
+                    ShrinePlacement nextEmpty = GetNextEmptyPlacement();
+
+                    if (currentPlacement == nextEmpty)
+                    {
+                        // Player is at the correct placement - allow interaction
+                        placementPromptText.text = string.Format(placeHeadText, interactionKey.ToString());
+                    }
+                    else
+                    {
+                        // Player is at the wrong placement - guide them to the correct one
+                        string directionName = GetPlacementDirectionName(nextEmpty.placementIndex);
+                        placementPromptText.text = $"Place at {directionName} first";
+                    }
                 }
             }
         }
@@ -445,7 +480,6 @@ public class HeadShrinePuzzle : MonoBehaviour
         Debug.Log($"[HeadShrinePuzzle] ═══════════════════════════════════");
         Debug.Log($"[HeadShrinePuzzle] Attempting to place head: {currentHead.headName}");
         Debug.Log($"[HeadShrinePuzzle] Current head ID: {currentHead.headID}");
-        Debug.Log($"[HeadShrinePuzzle] Required head ID for this placement: {placement.requiredHeadID}");
         Debug.Log($"[HeadShrinePuzzle] Placement already has head: {placement.hasHead}");
         Debug.Log($"[HeadShrinePuzzle] Is real head placement: {placement.isRealHeadPlacement}");
 
@@ -456,34 +490,11 @@ public class HeadShrinePuzzle : MonoBehaviour
             return; // Don't remove head, let player try another spot
         }
 
-        // Check if this is the correct head for this placement
-        if (currentHead.headID == placement.requiredHeadID)
-        {
-            Debug.Log($"[HeadShrinePuzzle] ✓ Head ID matches! Placing head...");
-            PlaceHeadOnPlacement(currentHead, placement);
-        }
-        else
-        {
-            // Head ID doesn't match - check if it matches ANY other placement
-            bool canPlaceElsewhere = false;
-            foreach (ShrinePlacement p in placements)
-            {
-                if (p.requiredHeadID == currentHead.headID && !p.hasHead)
-                {
-                    canPlaceElsewhere = true;
-                    Debug.LogWarning($"[HeadShrinePuzzle] ✗ Wrong placement! This head belongs to another spot. Try a different placement.");
-                    break;
-                }
-            }
+        // Allow any head to be placed on any empty placement
+        // Rewards are determined by the placement type (real head placement vs wrong head placement)
+        Debug.Log($"[HeadShrinePuzzle] ✓ Placement is empty! Placing head...");
+        PlaceHeadOnPlacement(currentHead, placement);
 
-            if (!canPlaceElsewhere)
-            {
-                Debug.LogError($"[HeadShrinePuzzle] ✗ This head ID ({currentHead.headID}) doesn't match any placement requirements!");
-                Debug.Log($"[HeadShrinePuzzle] Expected head IDs: {string.Join(", ", requiredHeadIDs)}");
-            }
-
-            // Don't remove the head - let the player try other placements
-        }
         Debug.Log($"[HeadShrinePuzzle] ═══════════════════════════════════");
     }
     
@@ -628,13 +639,9 @@ public class HeadShrinePuzzle : MonoBehaviour
             Debug.LogWarning("[HeadShrinePuzzle] ⚠️ Key reward assigned but no spawn point! Key will not spawn.");
         }
 
-        // Notify event managers
-        Floor2EndingEventManager eventManager = FindObjectOfType<Floor2EndingEventManager>();
-        if (eventManager)
-        {
-            eventManager.OnRealHeadAttached();
-            Debug.Log("[HeadShrinePuzzle] ✅ Event manager notified of real head placement.");
-        }
+        // NOTE: Floor2EndingEventManager is no longer needed - functionality moved to DullahanChaseEventManager
+        // Event manager notification removed as it's no longer required for the simplified chase system
+        // The chase cycle now operates independently based on proximity detection
     }
     
     void HandleWrongHeadRewards(DullahanHeadSO head, ShrinePlacement placement)
@@ -978,7 +985,46 @@ public class HeadShrinePuzzle : MonoBehaviour
     }
     
     public int GetTotalPlacementsCount() => placements.Count;
-    
+
+    // Helper methods for sequential placement logic
+
+    /// <summary>
+    /// Check if all placements have heads
+    /// </summary>
+    bool AreAllPlacementsFull()
+    {
+        foreach (ShrinePlacement placement in placements)
+        {
+            if (!placement.hasHead)
+                return false;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Get the next empty placement in sequence (Left → Right → Center)
+    /// </summary>
+    ShrinePlacement GetNextEmptyPlacement()
+    {
+        for (int i = 0; i < placements.Count; i++)
+        {
+            if (!placements[i].hasHead)
+                return placements[i];
+        }
+        return null; // All placements are full
+    }
+
+    /// <summary>
+    /// Get direction name for UI prompts (Left, Right, Center)
+    /// </summary>
+    string GetPlacementDirectionName(int placementIndex)
+    {
+        if (placementIndex == 0) return "Left";
+        if (placementIndex == 1) return "Right";
+        if (placementIndex == 2) return "Center";
+        return $"Placement {placementIndex + 1}";
+    }
+
     // Debug visualization
     void OnDrawGizmosSelected()
     {

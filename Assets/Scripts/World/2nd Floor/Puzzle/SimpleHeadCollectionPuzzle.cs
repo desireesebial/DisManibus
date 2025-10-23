@@ -287,10 +287,10 @@ public class SimpleHeadCollectionPuzzle : MonoBehaviour
             }
         }
         
-        // Notify event managers
-        Floor2EndingEventManager eventManager = FindObjectOfType<Floor2EndingEventManager>();
-        if (eventManager) eventManager.OnRealHeadAttached();
-        
+        // NOTE: Floor2EndingEventManager is no longer needed - functionality moved to DullahanChaseEventManager
+        // Event manager notification removed as it's no longer required for the simplified chase system
+        // The chase cycle now operates independently based on proximity detection
+
         Debug.Log("[SimpleHeadCollectionPuzzle] All rewards granted!");
     }
     
