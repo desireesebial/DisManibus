@@ -627,16 +627,48 @@ public class HeadShrinePuzzle : MonoBehaviour
             Debug.LogWarning("[HeadShrinePuzzle] ⚠️ Real head door not assigned or GameObject is null! No door will open.");
         }
 
-        // Spawn key
-        if (keyReward && keySpawnPoint)
+        // Spawn or activate key
+        if (keyReward)
         {
-            Instantiate(keyReward, keySpawnPoint.position, keySpawnPoint.rotation);
-            if (keySpawnSound) audioSource.PlayOneShot(keySpawnSound);
-            Debug.Log("[HeadShrinePuzzle] ✅ Key spawned!");
+            // Check if keyReward is a scene object or a prefab
+            // Scene objects have a valid scene, prefab assets do not
+            if (keyReward.scene.IsValid())
+            {
+                // It's a scene object - just activate it
+                Debug.Log($"[HeadShrinePuzzle] Activating existing key in scene: {keyReward.name}");
+                keyReward.SetActive(true);
+
+                // Move to spawn point if provided
+                if (keySpawnPoint)
+                {
+                    keyReward.transform.position = keySpawnPoint.position;
+                    keyReward.transform.rotation = keySpawnPoint.rotation;
+                    Debug.Log($"[HeadShrinePuzzle] Moved key to spawn point: {keySpawnPoint.position}");
+                }
+
+                if (keySpawnSound) audioSource.PlayOneShot(keySpawnSound);
+                Debug.Log("[HeadShrinePuzzle] ✅ Key activated and made visible!");
+            }
+            else
+            {
+                // It's a prefab - instantiate it
+                if (keySpawnPoint)
+                {
+                    Debug.Log($"[HeadShrinePuzzle] Instantiating key prefab at spawn point: {keySpawnPoint.position}");
+                    GameObject spawnedKey = Instantiate(keyReward, keySpawnPoint.position, keySpawnPoint.rotation);
+                    spawnedKey.SetActive(true);
+                    if (keySpawnSound) audioSource.PlayOneShot(keySpawnSound);
+                    Debug.Log($"[HeadShrinePuzzle] ✅ Key instantiated from prefab: {spawnedKey.name}");
+                }
+                else
+                {
+                    Debug.LogWarning("[HeadShrinePuzzle] ⚠️ Key reward is a prefab but no spawn point assigned! Key will not spawn.");
+                }
+            }
         }
-        else if (keyReward && !keySpawnPoint)
+        else
         {
-            Debug.LogWarning("[HeadShrinePuzzle] ⚠️ Key reward assigned but no spawn point! Key will not spawn.");
+            Debug.LogWarning("[HeadShrinePuzzle] ⚠️ Key reward not assigned!");
         }
 
         // NOTE: Floor2EndingEventManager is no longer needed - functionality moved to DullahanChaseEventManager
