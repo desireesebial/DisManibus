@@ -1268,6 +1268,8 @@ MonoBehaviour:
   interactionTextUI: {fileID: 1599740375}
   hideWorldPileOnCleared: 0
   worldPileObject: {fileID: 0}
+  enableDebugLogs: 1
+  showDebugRays: 1
   changeCrosshairColor: 0
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!65 &58260888
@@ -7045,6 +7047,9 @@ MonoBehaviour:
   cancelKey: 9
   persistProgress: 0
   pileId: GreenPile
+  controlGuideText: {fileID: 0}
+  showControlGuide: 1
+  customControlText: 
   isActive: 0
 --- !u!1 &296167814
 GameObject:
@@ -9013,6 +9018,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1903164018166950262, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -422.19693
+      objectReference: {fileID: 0}
     - target: {fileID: 2453725463930292059, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -9288,6 +9297,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4459864851310106424, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       insertIndex: -1
       addedObject: {fileID: 912683052}
+    - targetCorrespondingSourceObject: {fileID: 5500968352166690707, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 710622104}
   m_SourcePrefab: {fileID: 100100000, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
 --- !u!4 &369474178 stripped
 Transform:
@@ -9739,6 +9751,9 @@ MonoBehaviour:
   cancelKey: 9
   persistProgress: 0
   pileId: GreyPile
+  controlGuideText: {fileID: 0}
+  showControlGuide: 1
+  customControlText: 
   isActive: 0
 --- !u!1 &382483198
 GameObject:
@@ -13012,6 +13027,8 @@ MonoBehaviour:
   interactionTextUI: {fileID: 1599740375}
   hideWorldPileOnCleared: 0
   worldPileObject: {fileID: 0}
+  enableDebugLogs: 1
+  showDebugRays: 1
   changeCrosshairColor: 0
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!65 &464779190
@@ -15538,6 +15555,8 @@ MonoBehaviour:
   interactionTextUI: {fileID: 1599740375}
   hideWorldPileOnCleared: 0
   worldPileObject: {fileID: 0}
+  enableDebugLogs: 1
+  showDebugRays: 1
   changeCrosshairColor: 0
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!65 &551111443
@@ -156498,6 +156517,8 @@ MonoBehaviour:
   interactionTextUI: {fileID: 1599740375}
   hideWorldPileOnCleared: 0
   worldPileObject: {fileID: 0}
+  enableDebugLogs: 1
+  showDebugRays: 1
   changeCrosshairColor: 0
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!65 &702609892
@@ -157085,6 +157106,26 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!1 &710622100 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5500968352166690707, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+  m_PrefabInstance: {fileID: 369474177}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &710622104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 710622100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01321931a860cac4ab400585ec701981, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bottomOffset: 30
+  horizontalPadding: 20
+  autoConfigureOnAwake: 1
 --- !u!1 &712941568
 GameObject:
   m_ObjectHideFlags: 0
@@ -162518,6 +162559,9 @@ MonoBehaviour:
   cancelKey: 9
   persistProgress: 0
   pileId: Orangepile
+  controlGuideText: {fileID: 0}
+  showControlGuide: 1
+  customControlText: 
   isActive: 0
 --- !u!114 &891710948
 MonoBehaviour:
@@ -167777,6 +167821,9 @@ MonoBehaviour:
   cancelKey: 9
   persistProgress: 0
   pileId: Redkeypile
+  controlGuideText: {fileID: 0}
+  showControlGuide: 1
+  customControlText: 
   isActive: 0
 --- !u!1 &1137771852
 GameObject:
@@ -172745,6 +172792,8 @@ MonoBehaviour:
   interactionTextUI: {fileID: 1599740375}
   hideWorldPileOnCleared: 0
   worldPileObject: {fileID: 0}
+  enableDebugLogs: 1
+  showDebugRays: 1
   changeCrosshairColor: 0
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!65 &1284598267
@@ -176736,6 +176785,8 @@ MonoBehaviour:
   interactionTextUI: {fileID: 1599740375}
   hideWorldPileOnCleared: 0
   worldPileObject: {fileID: 0}
+  enableDebugLogs: 1
+  showDebugRays: 1
   changeCrosshairColor: 0
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!65 &1417390417
@@ -181876,6 +181927,8 @@ MonoBehaviour:
   interactionTextUI: {fileID: 1599740375}
   hideWorldPileOnCleared: 0
   worldPileObject: {fileID: 0}
+  enableDebugLogs: 1
+  showDebugRays: 1
   changeCrosshairColor: 0
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!65 &1618559219
@@ -182392,6 +182445,9 @@ MonoBehaviour:
   cancelKey: 9
   persistProgress: 0
   pileId: YellowPile
+  controlGuideText: {fileID: 0}
+  showControlGuide: 1
+  customControlText: 
   isActive: 0
 --- !u!1 &1639465343
 GameObject:
@@ -184354,6 +184410,9 @@ MonoBehaviour:
   cancelKey: 9
   persistProgress: 0
   pileId: GoldenPile
+  controlGuideText: {fileID: 0}
+  showControlGuide: 1
+  customControlText: 
   isActive: 0
 --- !u!1 &1709968737
 GameObject:
@@ -187930,6 +187989,9 @@ MonoBehaviour:
   cancelKey: 9
   persistProgress: 0
   pileId: Bluekeypile
+  controlGuideText: {fileID: 0}
+  showControlGuide: 1
+  customControlText: 
   isActive: 0
 --- !u!1 &1817575305
 GameObject:
