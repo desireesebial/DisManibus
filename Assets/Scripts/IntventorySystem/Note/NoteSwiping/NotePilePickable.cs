@@ -26,6 +26,10 @@ public class NotePilePickable : MonoBehaviour
 	public bool hideWorldPileOnCleared = true;
 	public GameObject worldPileObject; // Defaults to this GameObject if null
 
+    [Header("Debug")]
+    public bool enableDebugLogs = true;
+    public bool showDebugRays = true;
+
     private bool playerInRange = false;
     private bool isActiveSession = false;
 
@@ -37,6 +41,9 @@ public class NotePilePickable : MonoBehaviour
     private Color originalCrosshairColor;
     public bool changeCrosshairColor = true;
     public Color crosshairHoverColor = Color.yellow;
+
+    // Cached collider reference
+    private Collider pileCollider;
 
     void Start()
     {
@@ -53,10 +60,43 @@ public class NotePilePickable : MonoBehaviour
             }
         }
 
+        // Collider Validation
+        pileCollider = GetComponent<Collider>();
+        if (pileCollider == null)
+        {
+            // Check children
+            pileCollider = GetComponentInChildren<Collider>();
+        }
+
+        if (useCrosshairDetection && pileCollider == null)
+        {
+            Debug.LogError($"[NotePilePickable] {gameObject.name}: Crosshair detection is enabled but NO COLLIDER found! Please add a collider to this GameObject or its children.");
+            Debug.LogError($"[NotePilePickable] {gameObject.name}: Add a Box Collider, Sphere Collider, or Mesh Collider to enable raycast detection.");
+        }
+        else if (pileCollider != null)
+        {
+            if (enableDebugLogs)
+            {
+                Debug.Log($"[NotePilePickable] {gameObject.name}: Found collider: {pileCollider.GetType().Name} on '{pileCollider.gameObject.name}'");
+                Debug.Log($"[NotePilePickable] {gameObject.name}: Collider layer: {LayerMask.LayerToName(pileCollider.gameObject.layer)} (Layer {pileCollider.gameObject.layer})");
+            }
+
+            // Check if collider's layer matches the layer mask
+            int colliderLayer = pileCollider.gameObject.layer;
+            bool layerMatches = (pileLayerMask == -1) || ((pileLayerMask.value & (1 << colliderLayer)) != 0);
+
+            if (!layerMatches)
+            {
+                Debug.LogWarning($"[NotePilePickable] {gameObject.name}: Collider is on layer '{LayerMask.LayerToName(colliderLayer)}' which doesn't match pileLayerMask! Raycast detection may fail.");
+                Debug.LogWarning($"[NotePilePickable] {gameObject.name}: Either change the GameObject's layer or adjust pileLayerMask in Inspector.");
+            }
+        }
+
         // UI Validation and Auto-Setup
         if (interactionUI == null)
         {
-            Debug.LogWarning($"[NotePilePickable] {gameObject.name}: interactionUI not assigned in Inspector! Text prompt won't show. Please assign a UI GameObject.");
+            Debug.LogError($"[NotePilePickable] {gameObject.name}: interactionUI not assigned in Inspector! Text prompt won't show. Please assign a UI GameObject.");
+            Debug.LogError($"[NotePilePickable] {gameObject.name}: Create a UI Canvas with TextMeshProUGUI and assign it to the interactionUI field.");
         }
         else
         {
@@ -66,11 +106,11 @@ public class NotePilePickable : MonoBehaviour
                 interactionTextUI = interactionUI.GetComponentInChildren<TextMeshProUGUI>();
                 if (interactionTextUI != null)
                 {
-                    Debug.Log($"[NotePilePickable] {gameObject.name}: Auto-found TextMeshProUGUI component: {interactionTextUI.name}");
+                    if (enableDebugLogs) Debug.Log($"[NotePilePickable] {gameObject.name}: Auto-found TextMeshProUGUI component: {interactionTextUI.name}");
                 }
                 else
                 {
-                    Debug.LogWarning($"[NotePilePickable] {gameObject.name}: interactionTextUI not assigned and couldn't auto-find TextMeshProUGUI! Text won't update. Please assign a TextMeshProUGUI component.");
+                    Debug.LogError($"[NotePilePickable] {gameObject.name}: interactionTextUI not assigned and couldn't auto-find TextMeshProUGUI! Text won't update. Please assign a TextMeshProUGUI component.");
                 }
             }
 
@@ -106,20 +146,48 @@ public class NotePilePickable : MonoBehaviour
 
         if (useCrosshairDetection)
         {
-            playerInRange = IsPileUnderCrosshair() && distance <= crosshairDetectionRange;
+            bool underCrosshair = IsPileUnderCrosshair();
+            bool withinRange = distance <= crosshairDetectionRange;
+            playerInRange = underCrosshair && withinRange;
+
+            if (enableDebugLogs && (playerInRange != wasInRange))
+            {
+                if (playerInRange)
+                {
+                    Debug.Log($"[NotePilePickable] {gameObject.name}: Player NOW IN RANGE (Crosshair detection)");
+                }
+                else
+                {
+                    Debug.Log($"[NotePilePickable] {gameObject.name}: Player out of range. UnderCrosshair: {underCrosshair}, WithinDistance: {withinRange} ({distance:F2}m / {crosshairDetectionRange}m)");
+                }
+            }
         }
         else
         {
             playerInRange = distance <= interactionRange;
+
+            if (enableDebugLogs && (playerInRange != wasInRange))
+            {
+                if (playerInRange)
+                {
+                    Debug.Log($"[NotePilePickable] {gameObject.name}: Player NOW IN RANGE (Distance: {distance:F2}m / {interactionRange}m)");
+                }
+                else
+                {
+                    Debug.Log($"[NotePilePickable] {gameObject.name}: Player out of range (Distance: {distance:F2}m / {interactionRange}m)");
+                }
+            }
         }
 
         if (playerInRange && !wasInRange && !isActiveSession)
         {
+            if (enableDebugLogs) Debug.Log($"[NotePilePickable] {gameObject.name}: Attempting to show interaction UI...");
             ShowInteractionUI();
             ChangeCrosshairColor(true);
         }
         else if ((!playerInRange || isActiveSession) && wasInRange)
         {
+            if (enableDebugLogs) Debug.Log($"[NotePilePickable] {gameObject.name}: Hiding interaction UI. PlayerInRange: {playerInRange}, ActiveSession: {isActiveSession}");
             HideInteractionUI();
             ChangeCrosshairColor(false);
         }
@@ -210,13 +278,48 @@ public class NotePilePickable : MonoBehaviour
 
     bool IsPileUnderCrosshair()
     {
-        if (playerCamera == null) return false;
+        if (playerCamera == null)
+        {
+            if (enableDebugLogs) Debug.LogWarning($"[NotePilePickable] {gameObject.name}: playerCamera is null! Cannot perform raycast.");
+            return false;
+        }
+
+        // Cast ray from center of screen (crosshair position)
         Ray ray = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
         RaycastHit hit;
+
+        // Draw debug ray if enabled
+        if (showDebugRays)
+        {
+            Debug.DrawRay(ray.origin, ray.direction * crosshairDetectionRange, Color.cyan, 0.1f);
+        }
+
         if (Physics.Raycast(ray, out hit, crosshairDetectionRange, pileLayerMask))
         {
-            return hit.collider.transform == transform || hit.collider.transform.IsChildOf(transform);
+            // Draw hit point
+            if (showDebugRays)
+            {
+                Debug.DrawLine(ray.origin, hit.point, Color.green, 0.1f);
+            }
+
+            bool isThisPile = hit.collider.transform == transform || hit.collider.transform.IsChildOf(transform);
+
+            if (enableDebugLogs && isThisPile)
+            {
+                Debug.Log($"[NotePilePickable] {gameObject.name}: Raycast HIT this pile! Collider: '{hit.collider.name}' at distance {hit.distance:F2}m");
+            }
+
+            return isThisPile;
         }
+        else
+        {
+            // No hit - draw red ray
+            if (showDebugRays)
+            {
+                Debug.DrawRay(ray.origin, ray.direction * crosshairDetectionRange, Color.red, 0.1f);
+            }
+        }
+
         return false;
     }
 
@@ -225,21 +328,33 @@ public class NotePilePickable : MonoBehaviour
         if (interactionUI != null)
         {
             interactionUI.SetActive(true);
-            Debug.Log($"[NotePilePickable] Showing interaction UI for {gameObject.name}");
+
+            if (enableDebugLogs)
+            {
+                Debug.Log($"[NotePilePickable] {gameObject.name}: ✓ Showing interaction UI");
+                Debug.Log($"[NotePilePickable] {gameObject.name}: UI GameObject: '{interactionUI.name}', Active: {interactionUI.activeSelf}, ActiveInHierarchy: {interactionUI.activeInHierarchy}");
+            }
 
             if (interactionTextUI != null)
             {
                 interactionTextUI.text = interactionText;
-                Debug.Log($"[NotePilePickable] Set text to: \"{interactionText}\"");
+
+                if (enableDebugLogs)
+                {
+                    Debug.Log($"[NotePilePickable] {gameObject.name}: ✓ Set prompt text to: \"{interactionText}\"");
+                    Debug.Log($"[NotePilePickable] {gameObject.name}: TextMeshProUGUI enabled: {interactionTextUI.enabled}, GameObject active: {interactionTextUI.gameObject.activeInHierarchy}");
+                }
             }
             else
             {
-                Debug.LogWarning($"[NotePilePickable] {gameObject.name}: interactionTextUI is null, text won't display!");
+                Debug.LogError($"[NotePilePickable] {gameObject.name}: ✗ interactionTextUI is NULL! Text won't display!");
+                Debug.LogError($"[NotePilePickable] {gameObject.name}: Please assign a TextMeshProUGUI component in Inspector.");
             }
         }
         else
         {
-            Debug.LogWarning($"[NotePilePickable] {gameObject.name}: Cannot show UI - interactionUI is null!");
+            Debug.LogError($"[NotePilePickable] {gameObject.name}: ✗ Cannot show UI - interactionUI is NULL!");
+            Debug.LogError($"[NotePilePickable] {gameObject.name}: Please assign the interaction UI GameObject in Inspector.");
         }
     }
 
@@ -300,6 +415,37 @@ public class NotePilePickable : MonoBehaviour
     {
         if (!isActiveAndEnabled) return false;
         return isActiveSession || playerInRange;
+    }
+
+    // Visual debugging in Scene view
+    void OnDrawGizmosSelected()
+    {
+        // Draw interaction range sphere (simple distance detection)
+        if (!useCrosshairDetection)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(transform.position, interactionRange);
+        }
+
+        // Draw crosshair detection range sphere
+        if (useCrosshairDetection)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireSphere(transform.position, crosshairDetectionRange);
+        }
+
+        // Draw collider bounds if available
+        if (pileCollider != null)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireCube(pileCollider.bounds.center, pileCollider.bounds.size);
+        }
+        else
+        {
+            // Warning: No collider found
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(transform.position, Vector3.one * 0.5f);
+        }
     }
 }
 
