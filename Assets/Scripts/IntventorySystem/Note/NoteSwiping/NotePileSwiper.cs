@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class NotePileSwiper : MonoBehaviour
 {
@@ -26,12 +27,21 @@ public class NotePileSwiper : MonoBehaviour
     [Tooltip("If true, the last remaining page cannot be swiped away. Use interaction to show the final note instead.")]
     public bool keepLastPage = true;
 
-    [Header("Cancel / Resume")] 
+    [Header("Cancel / Resume")]
     public KeyCode cancelKey = KeyCode.Escape;
     [Tooltip("Persist remaining pages across sessions using PlayerPrefs")] public bool persistProgress = true;
     [Tooltip("Unique identifier for this pile to persist progress")] public string pileId = "DefaultPile";
 
-    [Header("State")] 
+    [Header("UI Control Guide")]
+    [Tooltip("Optional: TextMeshProUGUI to display control instructions on screen")]
+    public TextMeshProUGUI controlGuideText;
+    [Tooltip("Show control guide when swiping is active")]
+    public bool showControlGuide = true;
+    [Tooltip("Custom control guide text. Leave empty for auto-generated text based on key bindings")]
+    [TextArea(2, 4)]
+    public string customControlText = "";
+
+    [Header("State")]
     public bool isActive = false;
 
     private bool isAnimating = false;
@@ -74,6 +84,9 @@ public class NotePileSwiper : MonoBehaviour
             LoadAndApplyProgress();
             progressApplied = true;
         }
+
+        // Initialize control guide (hide it initially, will show when ActivatePile(true) is called)
+        HideControlGuide();
     }
 
     void Update()
@@ -122,6 +135,16 @@ public class NotePileSwiper : MonoBehaviour
     public void ActivatePile(bool active)
     {
         isActive = active;
+
+        // Show or hide control guide based on activation state
+        if (active)
+        {
+            ShowControlGuide();
+        }
+        else
+        {
+            HideControlGuide();
+        }
     }
 
     public void ResetPile(List<RectTransform> newPages)
@@ -321,6 +344,62 @@ public class NotePileSwiper : MonoBehaviour
         isAnimating = false;
 
         Debug.Log($"Pile reset! {pilePages.Count} pages restored.");
+    }
+
+    private void UpdateControlGuideText()
+    {
+        if (controlGuideText == null || !showControlGuide)
+        {
+            return;
+        }
+
+        // Use custom text if provided, otherwise auto-generate
+        if (!string.IsNullOrEmpty(customControlText))
+        {
+            controlGuideText.text = customControlText;
+        }
+        else
+        {
+            // Auto-generate control guide text based on key bindings
+            string swipeKeys = $"{swipeLeftKey}/{swipeRightKey}";
+            string altKeys = $"{swipeLeftAlt}/{swipeRightAlt}";
+            string cancelKeyText = cancelKey.ToString();
+
+            // Format the keys nicely
+            swipeKeys = FormatKeyName(swipeKeys);
+            altKeys = FormatKeyName(altKeys);
+            cancelKeyText = FormatKeyName(cancelKeyText);
+
+            controlGuideText.text = $"Press {swipeKeys} or {altKeys} to swipe papers | {cancelKeyText} to cancel";
+        }
+    }
+
+    private string FormatKeyName(string keyName)
+    {
+        // Replace "LeftArrow" with "←", "RightArrow" with "→", etc.
+        keyName = keyName.Replace("LeftArrow", "←");
+        keyName = keyName.Replace("RightArrow", "→");
+        keyName = keyName.Replace("UpArrow", "↑");
+        keyName = keyName.Replace("DownArrow", "↓");
+        keyName = keyName.Replace("Escape", "ESC");
+        return keyName;
+    }
+
+    private void ShowControlGuide()
+    {
+        if (controlGuideText != null && showControlGuide)
+        {
+            UpdateControlGuideText();
+            controlGuideText.gameObject.SetActive(true);
+        }
+    }
+
+    private void HideControlGuide()
+    {
+        if (controlGuideText != null)
+        {
+            controlGuideText.gameObject.SetActive(false);
+        }
     }
 }
 
