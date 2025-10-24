@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
 {
@@ -14,6 +15,12 @@ public class PauseMenu : MonoBehaviour
     // Controls root + its CanvasGroup
     [SerializeField] private GameObject controlsPanel;
     [SerializeField] private CanvasGroup controlsGroup;
+
+    [Header("Border Overlay")]
+    [SerializeField] private Image borderOverlay;
+
+    [Header("Player Camera Control")]
+    [SerializeField] private FirstPersonController playerController;
 
     [Header("Scene")]
     [SerializeField] private string mainMenuSceneName = "MainMenu";
@@ -32,6 +39,18 @@ public class PauseMenu : MonoBehaviour
         SetCanvasVisible(pauseGroup, false);
         SetCanvasVisible(settingsGroup, false);
         SetCanvasVisible(controlsGroup, false);
+
+        // Hide border overlay initially
+        if (borderOverlay != null)
+        {
+            borderOverlay.gameObject.SetActive(false);
+        }
+
+        // Auto-find player controller if not assigned
+        if (playerController == null)
+        {
+            playerController = FindObjectOfType<FirstPersonController>();
+        }
 
         Time.timeScale = 1f;
         isPaused = false;
@@ -63,6 +82,18 @@ public class PauseMenu : MonoBehaviour
         SafeSetActive(pauseRoot, true);
         SetCanvasVisible(pauseGroup, true);
 
+        // Show border overlay
+        if (borderOverlay != null)
+        {
+            borderOverlay.gameObject.SetActive(true);
+        }
+
+        // Disable camera look
+        if (playerController != null)
+        {
+            playerController.DisableCameraLook();
+        }
+
         Time.timeScale = 0f;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
@@ -72,11 +103,31 @@ public class PauseMenu : MonoBehaviour
 
     public void Resume()
     {
+        Debug.Log("[PauseMenu] Resume() called");
         isPaused = false;
 
         SetCanvasVisible(pauseGroup, false);
         SetCanvasVisible(settingsGroup, false);
         SetCanvasVisible(controlsGroup, false);
+
+        // Hide border overlay
+        Debug.Log($"[PauseMenu] borderOverlay is null? {borderOverlay == null}");
+        if (borderOverlay != null)
+        {
+            Debug.Log($"[PauseMenu] Hiding border: {borderOverlay.gameObject.name}, currently active: {borderOverlay.gameObject.activeSelf}");
+            borderOverlay.gameObject.SetActive(false);
+            Debug.Log($"[PauseMenu] Border hidden. Now active: {borderOverlay.gameObject.activeSelf}");
+        }
+        else
+        {
+            Debug.LogWarning("[PauseMenu] borderOverlay is NULL! Cannot hide border.");
+        }
+
+        // Enable camera look
+        if (playerController != null)
+        {
+            playerController.EnableCameraLook();
+        }
 
         Time.timeScale = 1f;
         Cursor.visible = false;
@@ -157,6 +208,18 @@ public class PauseMenu : MonoBehaviour
 
     public void GoToMainMenu()
     {
+        // Hide border overlay
+        if (borderOverlay != null)
+        {
+            borderOverlay.gameObject.SetActive(false);
+        }
+
+        // Enable camera look
+        if (playerController != null)
+        {
+            playerController.EnableCameraLook();
+        }
+
         Time.timeScale = 1f;
         SceneManager.LoadScene(mainMenuSceneName);
     }

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace World.UI
 {
@@ -14,6 +15,7 @@ namespace World.UI
         [Header("UI")]
         [SerializeField] private GameObject pauseMenuRoot;
         [SerializeField] private GameObject firstSelected;
+        [SerializeField] private Image borderOverlay;
 
         [Header("Behaviour")]
         [SerializeField] private bool startPaused;
@@ -36,6 +38,11 @@ namespace World.UI
             if (pauseMenuRoot != null)
             {
                 pauseMenuRoot.SetActive(false);
+            }
+
+            if (borderOverlay != null)
+            {
+                borderOverlay.gameObject.SetActive(false);
             }
         }
 
@@ -105,6 +112,11 @@ namespace World.UI
                 pauseMenuRoot.SetActive(true);
             }
 
+            if (borderOverlay != null)
+            {
+                borderOverlay.gameObject.SetActive(true);
+            }
+
             if (firstSelected != null && UnityEngine.EventSystems.EventSystem.current != null)
             {
                 UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(firstSelected);
@@ -129,6 +141,11 @@ namespace World.UI
             if (pauseMenuRoot != null)
             {
                 pauseMenuRoot.SetActive(false);
+            }
+
+            if (borderOverlay != null)
+            {
+                borderOverlay.gameObject.SetActive(false);
             }
 
             if (lockCursorWhenResumed)
@@ -159,6 +176,11 @@ namespace World.UI
             if (pauseMenuRoot != null)
             {
                 pauseMenuRoot.SetActive(false);
+            }
+
+            if (borderOverlay != null)
+            {
+                borderOverlay.gameObject.SetActive(false);
             }
 
             Cursor.lockState = CursorLockMode.None;

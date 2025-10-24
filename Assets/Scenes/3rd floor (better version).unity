@@ -8553,10 +8553,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 927138156}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -258}
-  m_SizeDelta: {x: -360, y: 500}
+  m_AnchoredPosition: {x: 0, y: 217}
+  m_SizeDelta: {x: -360, y: -450}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &345718315
 MonoBehaviour:
@@ -9290,6 +9290,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2749210433660060874, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       insertIndex: -1
       addedObject: {fileID: 902496150}
+    - targetCorrespondingSourceObject: {fileID: 2749210433660060874, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2019431164}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 4459864850019384750, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       insertIndex: -1
@@ -163711,6 +163714,8 @@ MonoBehaviour:
   settingsGroup: {fileID: 1895420319}
   controlsPanel: {fileID: 1181616201}
   controlsGroup: {fileID: 41381131}
+  borderOverlay: {fileID: 0}
+  playerController: {fileID: 0}
   mainMenuSceneName: MainMenu
 --- !u!1 &927628494
 GameObject:
@@ -186622,6 +186627,8 @@ MonoBehaviour:
   settingsGroup: {fileID: 0}
   controlsPanel: {fileID: 0}
   controlsGroup: {fileID: 0}
+  borderOverlay: {fileID: 2019431165}
+  playerController: {fileID: 1790364529}
   mainMenuSceneName: MainMenu
 --- !u!4 &1773455332
 Transform:
@@ -330479,6 +330486,81 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2018197073}
   m_Mesh: {fileID: 7265974592398154989, guid: 2c5e779568bc06c4d947ac355f408a35, type: 3}
+--- !u!1 &2019431163
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2019431164}
+  - component: {fileID: 2019431166}
+  - component: {fileID: 2019431165}
+  m_Layer: 5
+  m_Name: BorderOverlay
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &2019431164
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2019431163}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1194947263}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 4.999999, y: 0}
+  m_SizeDelta: {x: 40, y: 40}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2019431165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2019431163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 1581b777b95b6584689d5d0ad70533dc, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &2019431166
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2019431163}
+  m_CullTransparentMesh: 1
 --- !u!1 &2021100610
 GameObject:
   m_ObjectHideFlags: 0

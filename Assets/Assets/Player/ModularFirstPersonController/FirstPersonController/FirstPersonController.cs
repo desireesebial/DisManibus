@@ -172,6 +172,22 @@ public class FirstPersonController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Disables camera look/rotation. Useful for pause menus or cutscenes.
+    /// </summary>
+    public void DisableCameraLook()
+    {
+        cameraCanMove = false;
+    }
+
+    /// <summary>
+    /// Enables camera look/rotation.
+    /// </summary>
+    public void EnableCameraLook()
+    {
+        cameraCanMove = true;
+    }
+
     private void ToggleCrouch(bool targetState)
     {
         if (targetState)
