@@ -21,6 +21,8 @@ namespace World.UI
         [SerializeField] private GameObject inventoryPanel;
         [SerializeField] private GameObject healthUI;
         [SerializeField] private GameObject dialogueUI;
+        [SerializeField] private GameObject questUI;
+        [SerializeField] private GameObject cluesUI;
 
         [Header("Behaviour")]
         [SerializeField] private bool startPaused;
@@ -138,6 +140,16 @@ namespace World.UI
                 dialogueUI.SetActive(false);
             }
 
+            if (questUI != null)
+            {
+                questUI.SetActive(false);
+            }
+
+            if (cluesUI != null)
+            {
+                cluesUI.SetActive(false);
+            }
+
             if (firstSelected != null && UnityEngine.EventSystems.EventSystem.current != null)
             {
                 UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(firstSelected);
@@ -183,6 +195,16 @@ namespace World.UI
             if (dialogueUI != null)
             {
                 dialogueUI.SetActive(true);
+            }
+
+            if (questUI != null)
+            {
+                questUI.SetActive(true);
+            }
+
+            if (cluesUI != null)
+            {
+                cluesUI.SetActive(true);
             }
 
             if (lockCursorWhenResumed)
@@ -234,6 +256,16 @@ namespace World.UI
             if (dialogueUI != null)
             {
                 dialogueUI.SetActive(true);
+            }
+
+            if (questUI != null)
+            {
+                questUI.SetActive(true);
+            }
+
+            if (cluesUI != null)
+            {
+                cluesUI.SetActive(true);
             }
 
             Cursor.lockState = CursorLockMode.None;

@@ -23,6 +23,8 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] private GameObject inventoryPanel;
     [SerializeField] private GameObject healthUI;
     [SerializeField] private GameObject dialogueUI;
+    [SerializeField] private GameObject questUI;
+    [SerializeField] private GameObject cluesUI;
 
     [Header("Player Camera Control")]
     [SerializeField] private FirstPersonController playerController;
@@ -109,6 +111,16 @@ public class PauseMenu : MonoBehaviour
             dialogueUI.SetActive(false);
         }
 
+        if (questUI != null)
+        {
+            questUI.SetActive(false);
+        }
+
+        if (cluesUI != null)
+        {
+            cluesUI.SetActive(false);
+        }
+
         // Disable camera look
         if (playerController != null)
         {
@@ -158,6 +170,16 @@ public class PauseMenu : MonoBehaviour
         if (dialogueUI != null)
         {
             dialogueUI.SetActive(true);
+        }
+
+        if (questUI != null)
+        {
+            questUI.SetActive(true);
+        }
+
+        if (cluesUI != null)
+        {
+            cluesUI.SetActive(true);
         }
 
         // Enable camera look
@@ -265,6 +287,16 @@ public class PauseMenu : MonoBehaviour
         if (dialogueUI != null)
         {
             dialogueUI.SetActive(true);
+        }
+
+        if (questUI != null)
+        {
+            questUI.SetActive(true);
+        }
+
+        if (cluesUI != null)
+        {
+            cluesUI.SetActive(true);
         }
 
         // Enable camera look
