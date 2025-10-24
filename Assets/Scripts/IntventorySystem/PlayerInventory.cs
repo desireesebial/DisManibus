@@ -77,6 +77,7 @@ public class PlayerInventory : MonoBehaviour
         else
         {
             DeactivateAllItems();
+            UpdateSelectedItemNameUI();
         }
     }
 

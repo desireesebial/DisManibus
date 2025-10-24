@@ -17,6 +17,11 @@ namespace World.UI
         [SerializeField] private GameObject firstSelected;
         [SerializeField] private Image borderOverlay;
 
+        [Header("Gameplay UI to Hide")]
+        [SerializeField] private GameObject inventoryPanel;
+        [SerializeField] private GameObject healthUI;
+        [SerializeField] private GameObject dialogueUI;
+
         [Header("Behaviour")]
         [SerializeField] private bool startPaused;
         [SerializeField] private bool allowResume = true;
@@ -117,6 +122,22 @@ namespace World.UI
                 borderOverlay.gameObject.SetActive(true);
             }
 
+            // Hide gameplay UI
+            if (inventoryPanel != null)
+            {
+                inventoryPanel.SetActive(false);
+            }
+
+            if (healthUI != null)
+            {
+                healthUI.SetActive(false);
+            }
+
+            if (dialogueUI != null)
+            {
+                dialogueUI.SetActive(false);
+            }
+
             if (firstSelected != null && UnityEngine.EventSystems.EventSystem.current != null)
             {
                 UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(firstSelected);
@@ -146,6 +167,22 @@ namespace World.UI
             if (borderOverlay != null)
             {
                 borderOverlay.gameObject.SetActive(false);
+            }
+
+            // Show gameplay UI
+            if (inventoryPanel != null)
+            {
+                inventoryPanel.SetActive(true);
+            }
+
+            if (healthUI != null)
+            {
+                healthUI.SetActive(true);
+            }
+
+            if (dialogueUI != null)
+            {
+                dialogueUI.SetActive(true);
             }
 
             if (lockCursorWhenResumed)
@@ -181,6 +218,22 @@ namespace World.UI
             if (borderOverlay != null)
             {
                 borderOverlay.gameObject.SetActive(false);
+            }
+
+            // Show gameplay UI
+            if (inventoryPanel != null)
+            {
+                inventoryPanel.SetActive(true);
+            }
+
+            if (healthUI != null)
+            {
+                healthUI.SetActive(true);
+            }
+
+            if (dialogueUI != null)
+            {
+                dialogueUI.SetActive(true);
             }
 
             Cursor.lockState = CursorLockMode.None;

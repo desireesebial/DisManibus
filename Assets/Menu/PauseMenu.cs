@@ -19,6 +19,11 @@ public class PauseMenu : MonoBehaviour
     [Header("Border Overlay")]
     [SerializeField] private Image borderOverlay;
 
+    [Header("Gameplay UI to Hide")]
+    [SerializeField] private GameObject inventoryPanel;
+    [SerializeField] private GameObject healthUI;
+    [SerializeField] private GameObject dialogueUI;
+
     [Header("Player Camera Control")]
     [SerializeField] private FirstPersonController playerController;
 
@@ -88,6 +93,22 @@ public class PauseMenu : MonoBehaviour
             borderOverlay.gameObject.SetActive(true);
         }
 
+        // Hide gameplay UI
+        if (inventoryPanel != null)
+        {
+            inventoryPanel.SetActive(false);
+        }
+
+        if (healthUI != null)
+        {
+            healthUI.SetActive(false);
+        }
+
+        if (dialogueUI != null)
+        {
+            dialogueUI.SetActive(false);
+        }
+
         // Disable camera look
         if (playerController != null)
         {
@@ -121,6 +142,22 @@ public class PauseMenu : MonoBehaviour
         else
         {
             Debug.LogWarning("[PauseMenu] borderOverlay is NULL! Cannot hide border.");
+        }
+
+        // Show gameplay UI
+        if (inventoryPanel != null)
+        {
+            inventoryPanel.SetActive(true);
+        }
+
+        if (healthUI != null)
+        {
+            healthUI.SetActive(true);
+        }
+
+        if (dialogueUI != null)
+        {
+            dialogueUI.SetActive(true);
         }
 
         // Enable camera look
@@ -212,6 +249,22 @@ public class PauseMenu : MonoBehaviour
         if (borderOverlay != null)
         {
             borderOverlay.gameObject.SetActive(false);
+        }
+
+        // Show gameplay UI
+        if (inventoryPanel != null)
+        {
+            inventoryPanel.SetActive(true);
+        }
+
+        if (healthUI != null)
+        {
+            healthUI.SetActive(true);
+        }
+
+        if (dialogueUI != null)
+        {
+            dialogueUI.SetActive(true);
         }
 
         // Enable camera look
