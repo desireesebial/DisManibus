@@ -25,6 +25,7 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] private GameObject dialogueUI;
     [SerializeField] private GameObject questUI;
     [SerializeField] private GameObject cluesUI;
+    [SerializeField] private GameObject staminaUI;
 
     [Header("Player Camera Control")]
     [SerializeField] private FirstPersonController playerController;
@@ -69,6 +70,12 @@ public class PauseMenu : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            // Don't allow pausing during cutscenes
+            if (CutsceneControl.IsPlayingCutscene)
+            {
+                return;
+            }
+
             if (!isPaused) { Pause(); return; }
 
             bool settingsOpen = settingsGroup && settingsGroup.alpha > 0f;
@@ -119,6 +126,11 @@ public class PauseMenu : MonoBehaviour
         if (cluesUI != null)
         {
             cluesUI.SetActive(false);
+        }
+
+        if (staminaUI != null)
+        {
+            staminaUI.SetActive(false);
         }
 
         // Disable camera look
@@ -180,6 +192,11 @@ public class PauseMenu : MonoBehaviour
         if (cluesUI != null)
         {
             cluesUI.SetActive(true);
+        }
+
+        if (staminaUI != null)
+        {
+            staminaUI.SetActive(true);
         }
 
         // Enable camera look
@@ -297,6 +314,11 @@ public class PauseMenu : MonoBehaviour
         if (cluesUI != null)
         {
             cluesUI.SetActive(true);
+        }
+
+        if (staminaUI != null)
+        {
+            staminaUI.SetActive(true);
         }
 
         // Enable camera look
