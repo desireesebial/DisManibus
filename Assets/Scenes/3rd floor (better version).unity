@@ -4495,8 +4495,8 @@ GameObject:
   - component: {fileID: 179887153}
   - component: {fileID: 179887152}
   - component: {fileID: 179887151}
-  - component: {fileID: 179887154}
   - component: {fileID: 179887155}
+  - component: {fileID: 179887154}
   m_Layer: 0
   m_Name: Exit Key
   m_TagString: Untagged
@@ -4616,12 +4616,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 179887149}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8977c3dcec846034e9d9da314a88a319, type: 3}
+  m_Script: {fileID: 11500000, guid: eaeab2741d7d77143acdae0601826cab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  action: 1
-  questId: find_key
-  questTextIfAdding: 
+  questToComplete: find_key
+  questToStartID: 
+  questToStartText: 
+  interactionRange: 3
+  interactionKey: 101
+  interactionText: Press E to interact
+  useCrosshairDetection: 0
+  crosshairDetectionRange: 10
+  objectLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  changeCrosshairColor: 1
+  crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  interactionUI: {fileID: 369474182}
+  interactionTextUI: {fileID: 369474183}
+  interactOnce: 1
+  disableAfterInteraction: 0
+  playerController: {fileID: 1790364529}
 --- !u!1 &180038581
 GameObject:
   m_ObjectHideFlags: 0
@@ -9018,6 +9033,12 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1120796868907619814, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+      propertyPath: m_text
+      value: 'Press E to Interact
+
+'
+      objectReference: {fileID: 0}
     - target: {fileID: 1903164018166950262, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -422.19693
@@ -9337,6 +9358,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 35e39e3dbc390b04e8a3d3a0161ba377, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &369474182 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2104336446924237203, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+  m_PrefabInstance: {fileID: 369474177}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &369474183 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1120796868907619814, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+  m_PrefabInstance: {fileID: 369474177}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 369474182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &371958863
@@ -16868,6 +16905,11 @@ MonoBehaviour:
   behavioursToDisable:
   - {fileID: 1790364529}
   extraTypeNames: []
+  inventoryPanel: {fileID: 0}
+  healthUI: {fileID: 0}
+  questUI: {fileID: 0}
+  itemTrackerUI: {fileID: 0}
+  staminaUI: {fileID: 0}
 --- !u!320 &610464182
 PlayableDirector:
   m_ObjectHideFlags: 0
@@ -163882,6 +163924,7 @@ MonoBehaviour:
   dialogueUI: {fileID: 0}
   questUI: {fileID: 0}
   cluesUI: {fileID: 0}
+  staminaUI: {fileID: 0}
   playerController: {fileID: 0}
   mainMenuSceneName: MainMenu
 --- !u!1 &927628494
@@ -175101,7 +175144,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2012634102}
   - {fileID: 1997559483}
   - {fileID: 634917434}
   m_Father: {fileID: 1709968738}
@@ -186901,6 +186943,7 @@ MonoBehaviour:
   dialogueUI: {fileID: 1744515691}
   questUI: {fileID: 0}
   cluesUI: {fileID: 0}
+  staminaUI: {fileID: 0}
   playerController: {fileID: 1790364529}
   mainMenuSceneName: MainMenu
 --- !u!4 &1773455332
@@ -330502,189 +330545,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2006094082}
   m_Mesh: {fileID: 5461320835613783329, guid: 2ec8da8e3124a68429b7d476fc764f89, type: 3}
---- !u!1 &2012634101
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2012634102}
-  - component: {fileID: 2012634106}
-  - component: {fileID: 2012634105}
-  - component: {fileID: 2012634104}
-  - component: {fileID: 2012634103}
-  - component: {fileID: 2012634108}
-  - component: {fileID: 2012634107}
-  - component: {fileID: 2012634109}
-  m_Layer: 0
-  m_Name: Exit Dialogue
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2012634102
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2012634101}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.67, y: -8.37, z: -131.43}
-  m_LocalScale: {x: 0.2, y: 0.5, z: 0.8}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1349212855}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &2012634103
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2012634101}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 10, y: 30, z: 20}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!64 &2012634104
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2012634101}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &2012634105
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2012634101}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &2012634106
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2012634101}
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &2012634107
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2012634101}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8977c3dcec846034e9d9da314a88a319, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  action: 1
-  questId: find_exit
-  questTextIfAdding: 
---- !u!114 &2012634108
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2012634101}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af7eba7627e35b64fbade455c7e55da9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dialogueManager: {fileID: 1726014300}
-  lines:
-  - '3rd .. 3rd floor ? '
-  - Is this where our infirmary was?
-  - If I'm not mistaken .. there was an emergency exit at the end of this hallway
-    ..
-  - It's so dark .. I can barely see
---- !u!114 &2012634109
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2012634101}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8977c3dcec846034e9d9da314a88a319, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  action: 0
-  questId: find the key for exit
-  questTextIfAdding: Find the exit key
 --- !u!1 &2018197073
 GameObject:
   m_ObjectHideFlags: 0
@@ -338730,6 +338590,7 @@ GameObject:
   - component: {fileID: 23412616766684165}
   - component: {fileID: 64062937282031131}
   - component: {fileID: 64062937282031133}
+  - component: {fileID: 64062937282031138}
   - component: {fileID: 64062937282031135}
   - component: {fileID: 64062937282031134}
   - component: {fileID: 64062937282031132}
@@ -349484,6 +349345,36 @@ MonoBehaviour:
   affectColliders: 1
   visibilityTargets:
   - {fileID: 1573903938371829}
+--- !u!114 &64062937282031138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1573903938371829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaeab2741d7d77143acdae0601826cab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  questToComplete: 
+  questToStartID: find_key
+  questToStartText: Find the key for the exit door
+  interactionRange: 3
+  interactionKey: 101
+  interactionText: Press E to interact
+  useCrosshairDetection: 1
+  crosshairDetectionRange: 10
+  objectLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  changeCrosshairColor: 1
+  crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  interactionUI: {fileID: 369474182}
+  interactionTextUI: {fileID: 369474183}
+  interactOnce: 1
+  disableAfterInteraction: 0
+  playerController: {fileID: 1790364529}
 --- !u!64 &64080777905451528
 MeshCollider:
   m_ObjectHideFlags: 0
