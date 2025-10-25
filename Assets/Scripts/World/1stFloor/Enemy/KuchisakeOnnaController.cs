@@ -1,9 +1,35 @@
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
+using System.Collections.Generic;
 
+/// <summary>
+/// Controls the Kuchisake-onna enemy AI behavior including patrol, detection, questioning, and chase mechanics.
+/// </summary>
 public class KuchisakeOnnaController : MonoBehaviour
 {
+    #region Constants
+    private const float PATROL_POINT_REACHED_DISTANCE = 0.5f;
+    private const float CATCH_PLAYER_DISTANCE = 2f;
+    private const float AGENT_MOVING_THRESHOLD = 0.1f;
+    private const float RAYCAST_EYE_HEIGHT = 1.5f;
+    private const float CHASE_UPDATE_DISTANCE_THRESHOLD = 1f;
+    private const float FIRST_QUESTION_DELAY = 1f;
+    private const float SMOOTH_LOOK_DURATION = 1.5f;
+    private const float YES_SEQUENCE_MASK_DELAY = 1f;
+    private const float YES_SEQUENCE_PAUSE = 2f;
+    private const float NO_SEQUENCE_DELAY = 1f;
+    private const float NO_SEQUENCE_STANDUP_MULTIPLIER = 0.7f;
+    private const float MAYBE_SEQUENCE_DELAY = 1.5f;
+    private const float MAYBE_SEQUENCE_PAUSE = 1.5f;
+
+    // Animation distance states (for distanceFromPlayer parameter)
+    private const int ANIM_DISTANCE_IDLE = 0;      // Sitting/Idle state
+    private const int ANIM_DISTANCE_WALKING = 1;   // Walking/Patrol state
+    private const int ANIM_DISTANCE_RUNNING = 2;   // Running/Chase state
+    #endregion
+
+    #region Serialized Fields
     [Header("AI Settings")]
     [SerializeField] private Transform[] patrolPoints;
     [SerializeField] private float patrolSpeed = 2f;
@@ -36,19 +62,20 @@ public class KuchisakeOnnaController : MonoBehaviour
     [SerializeField] private Transform firstEncounterPosition; // Where she sits initially
     [SerializeField] private float firstEncounterTriggerDistance = 5f; // Distance to trigger first encounter
     [SerializeField] private Animator animator; // For sitting/standing animations
-    [SerializeField] private string sittingAnimationTrigger = "Sitting"; // Animation state name
-    [SerializeField] private string standUpAnimationTrigger = "StandUp"; // Stand up animation
+    [SerializeField] private string nearPlayerTrigger = "nearPlayer"; // Trigger when player is near (for standing up)
     [SerializeField] private float standUpDuration = 2f; // Time for stand up animation
-    
+
     [Header("Movement Animations")]
-    [SerializeField] private string walkAnimationParameter = "IsWalking"; // Walk animation parameter
-    [SerializeField] private string runAnimationParameter = "IsRunning"; // Run animation parameter
-    [SerializeField] private string idleAnimationParameter = "IsIdle"; // Idle animation parameter
+    [SerializeField] private string distanceParameter = "distanceFromPlayer"; // Int parameter for distance-based animations
+    [Tooltip("Optional: Float parameter for walking speed control (0=idle, 1=walk)")]
+    [SerializeField] private string speedParameter = "Speed"; // Optional speed parameter
     
     [Header("References")]
     [SerializeField] private KuchisakeQuestionUI questionUI;
     [SerializeField] private Transform player;
-    
+    #endregion
+
+    #region Private Fields
     private NavMeshAgent agent;
     private int currentPatrolIndex = 0;
     private float chaseTimer;
@@ -56,6 +83,15 @@ public class KuchisakeOnnaController : MonoBehaviour
     private bool isActive = true;
     private bool hasHadFirstEncounter = false;
     private bool isStandingUp = false;
+
+    // Chase optimization
+    private Vector3 lastChaseTargetPosition;
+
+    // Coroutine tracking
+    private List<Coroutine> runningCoroutines = new List<Coroutine>();
+    #endregion
+
+    #region Enums
 
     public enum EnemyState
     {
@@ -75,25 +111,49 @@ public class KuchisakeOnnaController : MonoBehaviour
         Walking,
         Running
     }
+    #endregion
 
+    #region Private State
     private EnemyState currentState = EnemyState.WaitingFirstEncounter;
     private AnimationState currentAnimationState = AnimationState.Idle;
-    
+    #endregion
+
+    #region Unity Lifecycle
+    /// <summary>
+    /// Initializes the enemy controller and sets up initial state.
+    /// </summary>
     void Start()
     {
+        // Validate and initialize NavMeshAgent
         agent = GetComponent<NavMeshAgent>();
-        
-        if (agent != null)
+        if (agent == null)
         {
-            agent.speed = patrolSpeed;
+            Debug.LogError($"[KuchisakeOnna] {gameObject.name}: NavMeshAgent component not found! Enemy will not function.");
+            enabled = false;
+            return;
         }
+        agent.speed = patrolSpeed;
 
+        // Find player if not assigned
         if (player == null)
         {
-            player = GameObject.FindGameObjectWithTag("Player")?.transform;
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null)
+            {
+                player = playerObj.transform;
+            }
+            else
+            {
+                Debug.LogWarning($"[KuchisakeOnna] {gameObject.name}: Player not found! Enemy will not detect player.");
+            }
         }
 
+        // Validate required references
+        ValidateSetup();
+
+        // Initialize timers
         ambientScissorTimer = ambientScissorInterval;
+        lastChaseTargetPosition = Vector3.zero;
 
         // Setup first encounter behavior
         if (requireFirstEncounter)
@@ -105,39 +165,17 @@ public class KuchisakeOnnaController : MonoBehaviour
             // Skip first encounter, start patrolling immediately
             hasHadFirstEncounter = true;
             currentState = EnemyState.Patrol;
-            
-            if (patrolPoints.Length > 0)
+
+            if (HasValidPatrolPoints())
             {
                 GoToNextPatrolPoint();
             }
         }
     }
 
-    void SetupFirstEncounter()
-    {
-        hasHadFirstEncounter = false;
-        currentState = EnemyState.WaitingFirstEncounter;
-        
-        // Position at first encounter location if set
-        if (firstEncounterPosition != null)
-        {
-            transform.position = firstEncounterPosition.position;
-            transform.rotation = firstEncounterPosition.rotation;
-        }
-        
-        // Disable NavMesh agent during first encounter
-        if (agent != null)
-        {
-            agent.enabled = false;
-        }
-        
-        // Play sitting animation if available
-        if (animator != null && !string.IsNullOrEmpty(sittingAnimationTrigger))
-        {
-            animator.SetTrigger(sittingAnimationTrigger);
-        }
-    }
-
+    /// <summary>
+    /// Update is called once per frame. Handles state machine and ambient effects.
+    /// </summary>
     void Update()
     {
         if (!isActive || player == null) return;
@@ -153,6 +191,7 @@ public class KuchisakeOnnaController : MonoBehaviour
             }
         }
 
+        // State machine
         switch (currentState)
         {
             case EnemyState.WaitingFirstEncounter:
@@ -179,6 +218,123 @@ public class KuchisakeOnnaController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Cleanup running coroutines when disabled.
+    /// </summary>
+    void OnDisable()
+    {
+        StopAllTrackedCoroutines();
+    }
+
+    /// <summary>
+    /// Cleanup running coroutines when destroyed.
+    /// </summary>
+    void OnDestroy()
+    {
+        StopAllTrackedCoroutines();
+    }
+    #endregion
+
+    #region Initialization & Validation
+    /// <summary>
+    /// Validates that all required components and references are properly set up.
+    /// </summary>
+    private void ValidateSetup()
+    {
+        if (audioSource == null)
+        {
+            Debug.LogWarning($"[KuchisakeOnna] {gameObject.name}: AudioSource not assigned. Enemy will have no sound.");
+        }
+
+        if (questionUI == null)
+        {
+            Debug.LogWarning($"[KuchisakeOnna] {gameObject.name}: KuchisakeQuestionUI not assigned. Question mechanic will not work.");
+        }
+
+        if (animator != null)
+        {
+            // Validate distance parameter exists
+            if (!string.IsNullOrEmpty(distanceParameter))
+            {
+                if (!HasAnimationParameter(distanceParameter))
+                {
+                    Debug.LogWarning($"[KuchisakeOnna] {gameObject.name}: Animation parameter '{distanceParameter}' not found in Animator.");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"[KuchisakeOnna] {gameObject.name}: Distance parameter is empty! Animation system will not work.");
+            }
+
+            // Validate nearPlayer trigger exists
+            if (!string.IsNullOrEmpty(nearPlayerTrigger) && !HasAnimationParameter(nearPlayerTrigger))
+            {
+                Debug.LogWarning($"[KuchisakeOnna] {gameObject.name}: Animation parameter '{nearPlayerTrigger}' not found in Animator.");
+            }
+
+            // Check optional speed parameter
+            if (!string.IsNullOrEmpty(speedParameter) && !HasAnimationParameter(speedParameter))
+            {
+                Debug.Log($"[KuchisakeOnna] {gameObject.name}: Optional speed parameter '{speedParameter}' not found. This is OK if not using speed control.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[KuchisakeOnna] {gameObject.name}: Animator component not assigned! Animations will not play.");
+        }
+
+        if (!HasValidPatrolPoints())
+        {
+            Debug.LogWarning($"[KuchisakeOnna] {gameObject.name}: No valid patrol points assigned. Enemy cannot patrol.");
+        }
+    }
+
+    /// <summary>
+    /// Checks if patrol points array contains at least one valid patrol point.
+    /// </summary>
+    private bool HasValidPatrolPoints()
+    {
+        if (patrolPoints == null || patrolPoints.Length == 0)
+            return false;
+
+        foreach (var point in patrolPoints)
+        {
+            if (point != null)
+                return true;
+        }
+        return false;
+    }
+
+    void SetupFirstEncounter()
+    {
+        hasHadFirstEncounter = false;
+        currentState = EnemyState.WaitingFirstEncounter;
+        
+        // Position at first encounter location if set
+        if (firstEncounterPosition != null)
+        {
+            transform.position = firstEncounterPosition.position;
+            transform.rotation = firstEncounterPosition.rotation;
+        }
+        
+        // Disable NavMesh agent during first encounter
+        if (agent != null)
+        {
+            agent.enabled = false;
+        }
+
+        // Set animation to sitting/idle state
+        if (animator != null && !string.IsNullOrEmpty(distanceParameter))
+        {
+            animator.SetInteger(distanceParameter, ANIM_DISTANCE_IDLE);
+        }
+    }
+    #endregion
+
+    #region State Handlers
+    /// <summary>
+    /// Handles the waiting state for the first encounter with the player.
+    /// </summary>
     void HandleWaitingForFirstEncounter()
     {
         // Check if player is close enough to trigger first encounter
@@ -190,10 +346,17 @@ public class KuchisakeOnnaController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Handles the patrol state behavior including movement and player detection.
+    /// </summary>
     void HandlePatrol()
     {
+        // Validate agent is enabled and functional
+        if (agent == null || !agent.enabled || !agent.isOnNavMesh)
+            return;
+
         // Set walking animation if moving
-        if (agent != null && agent.velocity.magnitude > 0.1f)
+        if (agent.velocity.magnitude > AGENT_MOVING_THRESHOLD)
         {
             ChangeAnimationState(AnimationState.Walking);
         }
@@ -203,20 +366,24 @@ public class KuchisakeOnnaController : MonoBehaviour
         }
 
         // Check if reached patrol point
-        if (agent != null && !agent.pathPending && agent.remainingDistance < 0.5f)
+        if (!agent.pathPending && agent.remainingDistance < PATROL_POINT_REACHED_DISTANCE)
         {
             GoToNextPatrolPoint();
         }
 
         // Check for player detection
+        if (player == null)
+            return;
+
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
         if (distanceToPlayer <= detectionRange)
         {
             // Check line of sight
             RaycastHit hit;
             Vector3 directionToPlayer = (player.position - transform.position).normalized;
-            
-            if (Physics.Raycast(transform.position + Vector3.up, directionToPlayer, out hit, detectionRange))
+            Vector3 rayStart = transform.position + Vector3.up * RAYCAST_EYE_HEIGHT;
+
+            if (Physics.Raycast(rayStart, directionToPlayer, out hit, detectionRange))
             {
                 if (hit.transform == player)
                 {
@@ -226,30 +393,42 @@ public class KuchisakeOnnaController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Handles the question state. Question timing is managed by KuchisakeQuestionUI.
+    /// </summary>
     void HandleQuestion()
     {
         // Set idle animation while asking question
         ChangeAnimationState(AnimationState.Idle);
-        
+
         // Question UI handles the timer and player input
         // This is managed by the UI script
     }
 
+    /// <summary>
+    /// Handles the chase state, pursuing the player until caught or escaped.
+    /// </summary>
     void HandleChase()
     {
-        if (agent != null)
-        {
-            agent.SetDestination(player.position);
-        }
+        if (agent == null || !agent.enabled || player == null)
+            return;
 
         // Set running animation during chase
         ChangeAnimationState(AnimationState.Running);
 
+        // Optimize: Only update destination if player moved significantly
+        float distanceFromLastUpdate = Vector3.Distance(player.position, lastChaseTargetPosition);
+        if (distanceFromLastUpdate > CHASE_UPDATE_DISTANCE_THRESHOLD)
+        {
+            agent.SetDestination(player.position);
+            lastChaseTargetPosition = player.position;
+        }
+
         chaseTimer -= Time.deltaTime;
-        
+
         // Check if caught player
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-        if (distanceToPlayer < 2f)
+        if (distanceToPlayer < CATCH_PLAYER_DISTANCE)
         {
             CatchPlayer();
             return;
@@ -262,23 +441,33 @@ public class KuchisakeOnnaController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Handles the retreat state, teleporting to a random patrol point and resuming patrol.
+    /// </summary>
     void HandleRetreat()
     {
         // Set idle animation during retreat teleport
         ChangeAnimationState(AnimationState.Idle);
-        
-        // Teleport to random patrol point
-        if (patrolPoints.Length > 0)
+
+        // Restore mask when retreating
+        RestoreMask();
+
+        // Teleport to random valid patrol point
+        if (HasValidPatrolPoints() && agent != null)
         {
-            int randomIndex = Random.Range(0, patrolPoints.Length);
-            transform.position = patrolPoints[randomIndex].position;
-            
-            if (retreatLaughSound != null)
+            // Find a valid patrol point
+            Transform targetPoint = GetRandomValidPatrolPoint();
+            if (targetPoint != null)
             {
-                audioSource.PlayOneShot(retreatLaughSound);
+                // Use Warp instead of direct position assignment for NavMeshAgent safety
+                agent.Warp(targetPoint.position);
+
+                // Play retreat sound
+                PlaySound(retreatLaughSound);
             }
         }
-        
+
+        // Resume patrol
         currentState = EnemyState.Patrol;
         if (agent != null)
         {
@@ -287,26 +476,61 @@ public class KuchisakeOnnaController : MonoBehaviour
         GoToNextPatrolPoint();
     }
 
+    /// <summary>
+    /// Moves to the next patrol point in the patrol route.
+    /// </summary>
     void GoToNextPatrolPoint()
     {
-        if (patrolPoints.Length == 0 || agent == null) return;
+        if (!HasValidPatrolPoints() || agent == null || !agent.enabled)
+            return;
 
-        agent.destination = patrolPoints[currentPatrolIndex].position;
-        currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
+        // Find next valid patrol point
+        int attempts = 0;
+        int maxAttempts = patrolPoints.Length;
+
+        while (attempts < maxAttempts)
+        {
+            if (patrolPoints[currentPatrolIndex] != null)
+            {
+                agent.SetDestination(patrolPoints[currentPatrolIndex].position);
+                currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
+                return;
+            }
+
+            currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
+            attempts++;
+        }
+
+        Debug.LogWarning($"[KuchisakeOnna] {gameObject.name}: No valid patrol points found!");
     }
 
+    /// <summary>
+    /// Starts the first encounter sequence with the player.
+    /// </summary>
     void StartFirstEncounter()
     {
         currentState = EnemyState.FirstEncounter;
-        
+
+        // Trigger nearPlayer to start stand-up animation
+        if (animator != null && !string.IsNullOrEmpty(nearPlayerTrigger))
+        {
+            animator.SetTrigger(nearPlayerTrigger);
+        }
+
         // Slowly face the player (no sudden movements)
-        Vector3 direction = (player.position - transform.position).normalized;
-        StartCoroutine(SmoothLookAt(direction, 1.5f)); // Slow, eerie turn
+        if (player != null)
+        {
+            Vector3 direction = (player.position - transform.position).normalized;
+            StartTrackedCoroutine(SmoothLookAt(direction, SMOOTH_LOOK_DURATION));
+        }
 
         // Play question voice after a delay (more atmospheric)
-        StartCoroutine(DelayedFirstQuestion());
+        StartTrackedCoroutine(DelayedFirstQuestion());
     }
 
+    /// <summary>
+    /// Smoothly rotates to look at a direction over time.
+    /// </summary>
     IEnumerator SmoothLookAt(Vector3 direction, float duration)
     {
         Quaternion startRotation = transform.rotation;
@@ -323,16 +547,16 @@ public class KuchisakeOnnaController : MonoBehaviour
         transform.rotation = targetRotation;
     }
 
+    /// <summary>
+    /// Plays the first question with a delay for tension.
+    /// </summary>
     IEnumerator DelayedFirstQuestion()
     {
         // Wait a moment for tension
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(FIRST_QUESTION_DELAY);
 
         // Play question voice
-        if (questionVoiceClip != null)
-        {
-            audioSource.PlayOneShot(questionVoiceClip);
-        }
+        PlaySound(questionVoiceClip);
 
         // Show question UI
         if (questionUI != null)
@@ -384,7 +608,7 @@ public class KuchisakeOnnaController : MonoBehaviour
                 if (Random.value < chaseChanceOnYes)
                 {
                     RemoveMask();
-                    StartCoroutine(DelayedChase(1.5f));
+                    StartTrackedCoroutine(DelayedChase(1.5f));
                 }
                 else
                 {
@@ -395,10 +619,7 @@ public class KuchisakeOnnaController : MonoBehaviour
 
             case KuchisakeQuestionUI.Answer.No:
                 // Immediate anger and chase
-                if (angerSound != null)
-                {
-                    audioSource.PlayOneShot(angerSound);
-                }
+                PlaySound(angerSound);
                 RemoveMask();
                 StartChase();
                 break;
@@ -406,7 +627,7 @@ public class KuchisakeOnnaController : MonoBehaviour
             case KuchisakeQuestionUI.Answer.Maybe:
                 // Confusion - delayed chase
                 RemoveMask();
-                StartCoroutine(DelayedChase(2f));
+                StartTrackedCoroutine(DelayedChase(2f));
                 break;
         }
     }
@@ -414,22 +635,22 @@ public class KuchisakeOnnaController : MonoBehaviour
     void HandleFirstEncounterAnswer(KuchisakeQuestionUI.Answer answer)
     {
         hasHadFirstEncounter = true;
-        
+
         switch (answer)
         {
             case KuchisakeQuestionUI.Answer.Yes:
                 // She seems pleased but reveals her true face
-                StartCoroutine(FirstEncounterYesSequence());
+                StartTrackedCoroutine(FirstEncounterYesSequence());
                 break;
 
             case KuchisakeQuestionUI.Answer.No:
                 // She's offended - removes mask and stands
-                StartCoroutine(FirstEncounterNoSequence());
+                StartTrackedCoroutine(FirstEncounterNoSequence());
                 break;
 
             case KuchisakeQuestionUI.Answer.Maybe:
                 // Confused but intrigued - stands up slowly
-                StartCoroutine(FirstEncounterMaybeSequence());
+                StartTrackedCoroutine(FirstEncounterMaybeSequence());
                 break;
         }
     }
@@ -437,11 +658,11 @@ public class KuchisakeOnnaController : MonoBehaviour
     IEnumerator FirstEncounterYesSequence()
     {
         // She removes mask slowly to show slit mouth
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(YES_SEQUENCE_MASK_DELAY);
         RemoveMask();
-        
+
         // Brief pause for player to see
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(YES_SEQUENCE_PAUSE);
         
         // Stand up animation
         BeginStandUp();
@@ -455,18 +676,15 @@ public class KuchisakeOnnaController : MonoBehaviour
     {
         // Quick mask removal
         RemoveMask();
-        
-        if (angerSound != null)
-        {
-            audioSource.PlayOneShot(angerSound);
-        }
-        
-        yield return new WaitForSeconds(1f);
-        
+
+        PlaySound(angerSound);
+
+        yield return new WaitForSeconds(NO_SEQUENCE_DELAY);
+
         // Stand up faster
         BeginStandUp();
-        yield return new WaitForSeconds(standUpDuration * 0.7f);
-        
+        yield return new WaitForSeconds(standUpDuration * NO_SEQUENCE_STANDUP_MULTIPLIER);
+
         // Immediately start chasing
         ActivatePatrolMode();
         StartChase();
@@ -475,15 +693,15 @@ public class KuchisakeOnnaController : MonoBehaviour
     IEnumerator FirstEncounterMaybeSequence()
     {
         // Tilts head (if animation available), then removes mask
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(MAYBE_SEQUENCE_DELAY);
         RemoveMask();
-        
-        yield return new WaitForSeconds(1.5f);
-        
+
+        yield return new WaitForSeconds(MAYBE_SEQUENCE_PAUSE);
+
         // Stand up slowly
         BeginStandUp();
         yield return new WaitForSeconds(standUpDuration);
-        
+
         // Activate patrol
         ActivatePatrolMode();
     }
@@ -492,11 +710,9 @@ public class KuchisakeOnnaController : MonoBehaviour
     {
         currentState = EnemyState.StandingUp;
         isStandingUp = true;
-        
-        if (animator != null && !string.IsNullOrEmpty(standUpAnimationTrigger))
-        {
-            animator.SetTrigger(standUpAnimationTrigger);
-        }
+
+        // Note: Stand-up animation was already triggered by nearPlayer in StartFirstEncounter()
+        // This method just sets the state. Animation system handles the rest via distanceFromPlayer parameter.
     }
 
     void ActivatePatrolMode()
@@ -526,13 +742,10 @@ public class KuchisakeOnnaController : MonoBehaviour
             // First encounter timeout - she stands and becomes active threat
             hasHadFirstEncounter = true;
             RemoveMask();
-            
-            if (angerSound != null)
-            {
-                audioSource.PlayOneShot(angerSound);
-            }
-            
-            StartCoroutine(TimeoutStandAndActivate());
+
+            PlaySound(angerSound);
+
+            StartTrackedCoroutine(TimeoutStandAndActivate());
         }
         else
         {
@@ -589,28 +802,27 @@ public class KuchisakeOnnaController : MonoBehaviour
         KillPlayer();
     }
 
+    /// <summary>
+    /// Kills the player when caught.
+    /// </summary>
     void KillPlayer()
     {
         // Play death sounds and effects
-        if (deathScreamClip != null)
-        {
-            audioSource.PlayOneShot(deathScreamClip);
-        }
-
-        if (scissorsSnipSound != null)
-        {
-            audioSource.PlayOneShot(scissorsSnipSound);
-        }
+        PlaySound(deathScreamClip);
+        PlaySound(scissorsSnipSound);
 
         // Trigger player death
-        PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
-        if (playerHealth != null)
+        if (player != null)
         {
-            playerHealth.Die();
-        }
-        else
-        {
-            Debug.LogWarning("PlayerHealth component not found! Make sure player has PlayerHealth script.");
+            PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
+            if (playerHealth != null)
+            {
+                playerHealth.Die();
+            }
+            else
+            {
+                Debug.LogWarning($"[KuchisakeOnna] {gameObject.name}: PlayerHealth component not found on player!");
+            }
         }
 
         // Disable enemy temporarily
@@ -621,32 +833,40 @@ public class KuchisakeOnnaController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Plays ambient scissor sounds when player is nearby.
+    /// </summary>
     void PlayAmbientScissors()
     {
         // Only play if player is somewhat close
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-        if (distanceToPlayer < detectionRange * 2 && scissorsSnipSound != null)
+        if (player != null)
         {
-            audioSource.PlayOneShot(scissorsSnipSound, 0.5f);
+            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+            if (distanceToPlayer < detectionRange * 2)
+            {
+                PlaySound(scissorsSnipSound, 0.5f);
+            }
         }
     }
 
+    /// <summary>
+    /// Resets the enemy to initial state for respawn or restart.
+    /// </summary>
     public void ResetEnemy()
     {
-        currentState = EnemyState.Patrol;
+        // Stop all running coroutines
+        StopAllTrackedCoroutines();
+
+        // Reset state
+        currentState = requireFirstEncounter ? EnemyState.WaitingFirstEncounter : EnemyState.Patrol;
         currentAnimationState = AnimationState.Idle;
         isActive = true;
-        
-        if (maskObject != null)
-        {
-            maskObject.SetActive(true);
-        }
+        hasHadFirstEncounter = false; // FIX: Reset first encounter flag
 
-        if (faceRenderer != null && normalFaceMaterial != null)
-        {
-            faceRenderer.material = normalFaceMaterial;
-        }
+        // Restore mask
+        RestoreMask();
 
+        // Reset NavMeshAgent
         if (agent != null)
         {
             agent.isStopped = false;
@@ -656,7 +876,15 @@ public class KuchisakeOnnaController : MonoBehaviour
         // Reset animation to idle
         ChangeAnimationState(AnimationState.Idle);
 
-        GoToNextPatrolPoint();
+        // Start appropriate behavior
+        if (requireFirstEncounter)
+        {
+            SetupFirstEncounter();
+        }
+        else if (HasValidPatrolPoints())
+        {
+            GoToNextPatrolPoint();
+        }
     }
 
     // Animation Methods
@@ -671,26 +899,57 @@ public class KuchisakeOnnaController : MonoBehaviour
 
     void UpdateAnimationParameters()
     {
-        if (animator == null)
+        if (animator == null || string.IsNullOrEmpty(distanceParameter))
             return;
 
-        // Reset all animation parameters
-        SetAnimBool(idleAnimationParameter, false);
-        SetAnimBool(walkAnimationParameter, false);
-        SetAnimBool(runAnimationParameter, false);
+        // Update distance parameter based on current animation state
+        int distanceValue = ANIM_DISTANCE_IDLE;
+        float speedValue = 0f;
 
-        // Set current animation state
         switch (currentAnimationState)
         {
             case AnimationState.Idle:
-                SetAnimBool(idleAnimationParameter, true);
+                // Sitting/standing still - distance = 0
+                distanceValue = ANIM_DISTANCE_IDLE;
+                speedValue = 0f; // Frozen animation (if speed parameter exists)
                 break;
+
             case AnimationState.Walking:
-                SetAnimBool(walkAnimationParameter, true);
+                // Walking/patrolling - distance = 1
+                distanceValue = ANIM_DISTANCE_WALKING;
+                speedValue = 1f; // Normal walking speed
                 break;
+
             case AnimationState.Running:
-                SetAnimBool(runAnimationParameter, true);
+                // Running/chasing - distance = 2
+                distanceValue = ANIM_DISTANCE_RUNNING;
+                speedValue = 0f; // Not used for running
                 break;
+        }
+
+        // Set distance parameter (primary control)
+        SetAnimInt(distanceParameter, distanceValue);
+
+        // Set optional speed parameter for smooth idle/walk transitions
+        if (!string.IsNullOrEmpty(speedParameter) && HasAnimationParameter(speedParameter))
+        {
+            SetAnimFloat(speedParameter, speedValue);
+        }
+    }
+
+    void SetAnimInt(string paramName, int value)
+    {
+        if (animator != null && !string.IsNullOrEmpty(paramName) && HasAnimationParameter(paramName))
+        {
+            animator.SetInteger(paramName, value);
+        }
+    }
+
+    void SetAnimFloat(string paramName, float value)
+    {
+        if (animator != null && !string.IsNullOrEmpty(paramName) && HasAnimationParameter(paramName))
+        {
+            animator.SetFloat(paramName, value);
         }
     }
 
@@ -714,8 +973,101 @@ public class KuchisakeOnnaController : MonoBehaviour
         }
         return false;
     }
+    #endregion
 
-    // Visualization in editor
+    #region Helper Methods
+    /// <summary>
+    /// Plays a sound clip safely with null checks.
+    /// </summary>
+    private void PlaySound(AudioClip clip, float volume = 1f)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip, volume);
+        }
+    }
+
+    /// <summary>
+    /// Restores the mask to the enemy's face.
+    /// </summary>
+    private void RestoreMask()
+    {
+        if (maskObject != null)
+        {
+            maskObject.SetActive(true);
+        }
+
+        if (faceRenderer != null && normalFaceMaterial != null)
+        {
+            faceRenderer.material = normalFaceMaterial;
+        }
+    }
+
+    /// <summary>
+    /// Gets a random valid patrol point from the patrol points array.
+    /// </summary>
+    private Transform GetRandomValidPatrolPoint()
+    {
+        if (!HasValidPatrolPoints())
+            return null;
+
+        // Create list of valid patrol points
+        List<Transform> validPoints = new List<Transform>();
+        foreach (var point in patrolPoints)
+        {
+            if (point != null)
+            {
+                validPoints.Add(point);
+            }
+        }
+
+        if (validPoints.Count == 0)
+            return null;
+
+        // Return random valid point
+        int randomIndex = Random.Range(0, validPoints.Count);
+        return validPoints[randomIndex];
+    }
+
+    /// <summary>
+    /// Starts a coroutine and tracks it for cleanup.
+    /// </summary>
+    private void StartTrackedCoroutine(IEnumerator coroutine)
+    {
+        Coroutine c = StartCoroutine(coroutine);
+        if (c != null)
+        {
+            runningCoroutines.Add(c);
+        }
+    }
+
+    /// <summary>
+    /// Stops all tracked coroutines and clears the list.
+    /// </summary>
+    private void StopAllTrackedCoroutines()
+    {
+        foreach (var coroutine in runningCoroutines)
+        {
+            if (coroutine != null)
+            {
+                try
+                {
+                    StopCoroutine(coroutine);
+                }
+                catch
+                {
+                    // Coroutine might already be stopped, ignore error
+                }
+            }
+        }
+        runningCoroutines.Clear();
+    }
+    #endregion
+
+    #region Gizmos
+    /// <summary>
+    /// Draws debug visualization in the editor for ranges and patrol paths.
+    /// </summary>
     void OnDrawGizmosSelected()
     {
         // Draw first encounter trigger range
@@ -760,5 +1112,5 @@ public class KuchisakeOnnaController : MonoBehaviour
             }
         }
     }
+    #endregion
 }
-
