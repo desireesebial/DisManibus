@@ -732,18 +732,32 @@ public class KuchisakeOnnaController : MonoBehaviour
     {
         isStandingUp = false;
         currentState = EnemyState.Patrol;
-        
-        // Enable NavMesh agent
-        if (agent != null)
+
+        // Enable NavMesh agent and warp to first patrol point
+        if (agent != null && HasValidPatrolPoints())
         {
+            // Warp to first patrol point before enabling agent
+            // This ensures we're on NavMesh when agent is enabled
+            Transform firstPoint = patrolPoints[0];
+            if (firstPoint != null)
+            {
+                agent.enabled = true; // Must enable before Warp
+
+                // Check if we're on NavMesh, if not, warp to first patrol point
+                if (!agent.isOnNavMesh)
+                {
+                    agent.Warp(firstPoint.position);
+                }
+
+                agent.speed = patrolSpeed;
+                GoToNextPatrolPoint();
+            }
+        }
+        else if (agent != null)
+        {
+            // No patrol points, just enable agent
             agent.enabled = true;
             agent.speed = patrolSpeed;
-        }
-        
-        // Start patrolling
-        if (patrolPoints.Length > 0)
-        {
-            GoToNextPatrolPoint();
         }
     }
 
