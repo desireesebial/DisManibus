@@ -7567,7 +7567,6 @@ MonoBehaviour:
   requiredKeyItem: {fileID: 11400000, guid: 2256b810e2bfa5d43bcbd288e1d0926a, type: 2}
   requiredKeySOId: 
   consumeKeyOnUnlock: 1
-  useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors: []
@@ -9804,6 +9803,39 @@ MonoBehaviour:
   showControlGuide: 1
   customControlText: 
   isActive: 0
+--- !u!1 &382315522
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 382315523}
+  m_Layer: 0
+  m_Name: PromptCanvases
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &382315523
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 382315522}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 960, y: 540, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2027195051}
+  - {fileID: 387793320}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &382483198
 GameObject:
   m_ObjectHideFlags: 0
@@ -10074,6 +10106,108 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 386372578}
   m_Mesh: {fileID: 5461320835613783329, guid: 2ec8da8e3124a68429b7d476fc764f89, type: 3}
+--- !u!1 &387793319
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 387793320}
+  - component: {fileID: 387793323}
+  - component: {fileID: 387793322}
+  - component: {fileID: 387793321}
+  m_Layer: 5
+  m_Name: Press F prompt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &387793320
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 387793319}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1965755911}
+  m_Father: {fileID: 382315523}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0, y: 0}
+--- !u!114 &387793321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 387793319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+--- !u!114 &387793322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 387793319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_UiScaleMode: 0
+  m_ReferencePixelsPerUnit: 100
+  m_ScaleFactor: 1
+  m_ReferenceResolution: {x: 800, y: 600}
+  m_ScreenMatchMode: 0
+  m_MatchWidthOrHeight: 0
+  m_PhysicalUnit: 3
+  m_FallbackScreenDPI: 96
+  m_DefaultSpriteDPI: 96
+  m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 0
+--- !u!223 &387793323
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 387793319}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 0
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_AdditionalShaderChannelsFlag: 25
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
 --- !u!1 &393000931
 GameObject:
   m_ObjectHideFlags: 0
@@ -16589,7 +16723,6 @@ MonoBehaviour:
   requiredKeyItem: {fileID: 0}
   requiredKeySOId: 
   consumeKeyOnUnlock: 0
-  useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors: []
@@ -156988,7 +157121,6 @@ MonoBehaviour:
   requiredKeyItem: {fileID: 11400000, guid: 11375ace26cb64e48a99149808d84811, type: 2}
   requiredKeySOId: 
   consumeKeyOnUnlock: 1
-  useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors:
@@ -157000,7 +157132,7 @@ MonoBehaviour:
   doorCloseSound: {fileID: 8300000, guid: 6ba7071f95cebe34ca620ef7e69c421a, type: 3}
   doorLockedSound: {fileID: 0}
   interactionUI: {fileID: 2027195047}
-  interactionText: {fileID: 0}
+  interactionText: {fileID: 717095346}
   openText: Press E to open
   closeText: Press E to close
   lockedText: Door is locked
@@ -164765,7 +164897,6 @@ MonoBehaviour:
   requiredKeyItem: {fileID: 11400000, guid: 8f90cc9f89bcba6408046360383fd887, type: 2}
   requiredKeySOId: 203
   consumeKeyOnUnlock: 1
-  useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors:
@@ -185238,7 +185369,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.00012207031, y: -209.20941}
+  m_AnchoredPosition: {x: 0, y: -209.20947}
   m_SizeDelta: {x: -655, y: -717}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1726014299
@@ -328741,12 +328872,12 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1965755910}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2027195051}
+  m_Father: {fileID: 387793320}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -330858,7 +330989,7 @@ GameObject:
   - component: {fileID: 2027195049}
   - component: {fileID: 2027195048}
   m_Layer: 5
-  m_Name: Prompts
+  m_Name: Press E Prompts
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -330940,8 +331071,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 717095345}
-  - {fileID: 1965755911}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 382315523}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -331716,7 +331846,6 @@ MonoBehaviour:
   requiredKeyItem: {fileID: 11400000, guid: 8f90cc9f89bcba6408046360383fd887, type: 2}
   requiredKeySOId: 203
   consumeKeyOnUnlock: 1
-  useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors:
@@ -349097,7 +349226,6 @@ MonoBehaviour:
   requiredKeyItem: {fileID: 11400000, guid: ddbe218296d17aa4b8ebf6b5dc969339, type: 2}
   requiredKeySOId: 
   consumeKeyOnUnlock: 1
-  useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors: []
@@ -349108,7 +349236,7 @@ MonoBehaviour:
   doorCloseSound: {fileID: 8300000, guid: 6ba7071f95cebe34ca620ef7e69c421a, type: 3}
   doorLockedSound: {fileID: 0}
   interactionUI: {fileID: 2027195047}
-  interactionText: {fileID: 0}
+  interactionText: {fileID: 717095346}
   openText: Press E to open
   closeText: Press E to close
   lockedText: Door is locked
@@ -349337,7 +349465,6 @@ MonoBehaviour:
   requiredKeyItem: {fileID: 11400000, guid: 71240ced46456724db9c6d22d05d79e0, type: 2}
   requiredKeySOId: 201
   consumeKeyOnUnlock: 1
-  useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors: []
@@ -349455,7 +349582,6 @@ MonoBehaviour:
   requiredKeyItem: {fileID: 11400000, guid: 8f90cc9f89bcba6408046360383fd887, type: 2}
   requiredKeySOId: 
   consumeKeyOnUnlock: 1
-  useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors: []
@@ -349466,7 +349592,7 @@ MonoBehaviour:
   doorCloseSound: {fileID: 8300000, guid: 6ba7071f95cebe34ca620ef7e69c421a, type: 3}
   doorLockedSound: {fileID: 0}
   interactionUI: {fileID: 2027195047}
-  interactionText: {fileID: 0}
+  interactionText: {fileID: 717095346}
   openText: Press E to open
   closeText: Press E to close
   lockedText: Door is locked
@@ -350566,7 +350692,6 @@ MonoBehaviour:
   requiredKeyItem: {fileID: 11400000, guid: a281c33297b37774aa624e402d4cb8aa, type: 2}
   requiredKeySOId: 
   consumeKeyOnUnlock: 1
-  useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors: []
@@ -350652,7 +350777,6 @@ MonoBehaviour:
   requiredKeyItem: {fileID: 11400000, guid: 7883820c3c029764f8c2bf2ac7e7ebe3, type: 2}
   requiredKeySOId: 
   consumeKeyOnUnlock: 1
-  useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors: []
@@ -357463,7 +357587,6 @@ MonoBehaviour:
   requiredKeyItem: {fileID: 11400000, guid: 11375ace26cb64e48a99149808d84811, type: 2}
   requiredKeySOId: 202
   consumeKeyOnUnlock: 1
-  useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors:
@@ -357475,7 +357598,7 @@ MonoBehaviour:
   doorCloseSound: {fileID: 8300000, guid: 6ba7071f95cebe34ca620ef7e69c421a, type: 3}
   doorLockedSound: {fileID: 0}
   interactionUI: {fileID: 2027195047}
-  interactionText: {fileID: 0}
+  interactionText: {fileID: 717095346}
   openText: Press E to open
   closeText: Press E to close
   lockedText: Door is locked
@@ -357904,7 +358027,7 @@ SceneRoots:
   - {fileID: 2146343538}
   - {fileID: 641687322}
   - {fileID: 32427546}
-  - {fileID: 2027195051}
+  - {fileID: 382315523}
   - {fileID: 1709968738}
   - {fileID: 2120827026}
   - {fileID: 7289319}

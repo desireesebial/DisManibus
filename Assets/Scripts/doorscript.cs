@@ -6,6 +6,14 @@ using TMPro;
 
 public class doorscript : MonoBehaviour
 {
+    // Constants
+    private const float MAX_ANIMATION_TIME = 10f; // Maximum time for door animation before timeout
+    private const float LOCKED_TEXT_RESET_DELAY = 2f; // Time before locked message resets
+    private const float DEFAULT_OPEN_SPEED = 2f; // Default animation speed if invalid value is set
+
+    // Debug settings - set to false to disable verbose logging
+    private const bool ENABLE_VERBOSE_LOGGING = false;
+
     private static int s_lastInteractFrame = -1; // prevents multiple doors handling the same E press
     [Header("Door Settings")]
     public float openAngle = 90f;
@@ -15,9 +23,8 @@ public class doorscript : MonoBehaviour
     public int requiredKeyID = -1; // -1 means no key required
     public KeyItemsSO requiredKeyItem; // optional direct reference to key asset
     public string requiredKeySOId = ""; // empty means no SO key required
-    public bool consumeKeyOnUnlock = false; // consume SO key when unlocking
-    public bool useSelectedSOKeyOnly = false; // when true, only selected KeySO can unlock
-    public bool consumeWrongSelectedKey = true; // consume wrong selected key
+    public bool consumeKeyOnUnlock = true; // consume key when unlocking (default: true)
+    public bool consumeWrongSelectedKey = true; // consume wrong selected key when using wrong SO key
     public bool requireSelectedNumericKey = false; // when true, require selected numeric key in hand
     
     [Header("Multiple Doors")]
@@ -49,10 +56,11 @@ public class doorscript : MonoBehaviour
     public bool correctCodeVisibilityState = true;
     public bool affectColliders = false;
     public GameObject[] visibilityTargets;
-    
-    private Quaternion _closedRotation;
-    private Quaternion _openRotation;
+
+    protected Quaternion _closedRotation;
+    protected Quaternion _openRotation;
     private Coroutine _currentCoroutine;
+    private Coroutine _resetTextCoroutine;
     private bool _playerInRange = false;
     private bool _isAnimating = false;
     private readonly List<Renderer> _visibilityRenderers = new List<Renderer>();
@@ -67,7 +75,6 @@ public class doorscript : MonoBehaviour
     void Update()
     {
         HandlePlayerInteraction();
-        UpdateUI();
     }
 
     private void InitializeDoor()
@@ -110,7 +117,8 @@ public class doorscript : MonoBehaviour
             }
             else
             {
-                Debug.Log($"[Door] {gameObject.name}: AudioSource found.");
+                if (ENABLE_VERBOSE_LOGGING)
+                    Debug.Log($"[Door] {gameObject.name}: AudioSource found.");
             }
         }
             
@@ -130,11 +138,66 @@ public class doorscript : MonoBehaviour
             transform.rotation = _closedRotation;
         }
         
-        // Hide UI initially
+        // Hide UI initially and setup text references
         if (interactionUI != null)
+        {
             interactionUI.SetActive(false);
+            SetupInteractionUI();
+        }
 
         CacheVisibilityTargets();
+    }
+
+    /// <summary>
+    /// Ensures only the assigned interactionText is active, deactivating any sibling TextMeshProUGUI components
+    /// </summary>
+    private void SetupInteractionUI()
+    {
+        if (interactionUI == null)
+        {
+            Debug.LogWarning($"[Door] {gameObject.name}: interactionUI is not assigned!");
+            return;
+        }
+
+        // Find all TextMeshProUGUI components in the interactionUI
+        TextMeshProUGUI[] allTexts = interactionUI.GetComponentsInChildren<TextMeshProUGUI>(true);
+
+        if (allTexts.Length == 0)
+        {
+            Debug.LogWarning($"[Door] {gameObject.name}: No TextMeshProUGUI found in interactionUI '{interactionUI.name}'!");
+            return;
+        }
+
+        // If interactionText is not assigned, use the first one found
+        if (interactionText == null)
+        {
+            interactionText = allTexts[0];
+            Debug.Log($"[Door] {gameObject.name}: interactionText auto-assigned to '{interactionText.name}'");
+        }
+
+        // Deactivate all TextMeshProUGUI GameObjects EXCEPT the assigned interactionText
+        int deactivatedCount = 0;
+        foreach (var text in allTexts)
+        {
+            if (text != null && text != interactionText && text.gameObject != interactionUI)
+            {
+                text.gameObject.SetActive(false);
+                deactivatedCount++;
+                if (ENABLE_VERBOSE_LOGGING)
+                    Debug.Log($"[Door] {gameObject.name}: Deactivated sibling text '{text.name}' to prevent conflicts");
+            }
+        }
+
+        if (deactivatedCount > 0)
+        {
+            Debug.Log($"[Door] {gameObject.name}: Deactivated {deactivatedCount} sibling text(s) to show only '{interactionText.name}'");
+        }
+
+        // Ensure the assigned text's GameObject is active (parent will control visibility)
+        if (interactionText.gameObject != interactionUI)
+        {
+            interactionText.gameObject.SetActive(true);
+        }
     }
 
     private void HandlePlayerInteraction()
@@ -177,7 +240,12 @@ public class doorscript : MonoBehaviour
             {
                 if (selectedKey.keyId == requiredKeySOId)
                 {
-                    if (consumeKeyOnUnlock) headInventory.RemoveSelectedKeyIfKey();
+                    // Consume the correct key when unlocking (if enabled)
+                    if (consumeKeyOnUnlock)
+                    {
+                        headInventory.RemoveSelectedKeyIfKey();
+                        Debug.Log($"Consumed SO key {selectedKey.keyId} from DullahanHeadInventory for door {gameObject.name}");
+                    }
                     UnlockDoor();
                     ToggleDoor();
                     return true;
@@ -199,13 +267,14 @@ public class doorscript : MonoBehaviour
         if (HasRequiredKey())
         {
             UnlockDoor();
-            // Consume numeric key from PlayerInventory if configured and available
+            // Consume numeric key from PlayerInventory when unlocking (if enabled)
             if (consumeKeyOnUnlock && playerInventory != null)
             {
                 int targetKeyId = requiredKeyItem != null ? requiredKeyItem.itemID : requiredKeyID;
                 if (targetKeyId != -1)
                 {
                     playerInventory.ConsumeKey(targetKeyId);
+                    Debug.Log($"Consumed numeric key ID {targetKeyId} from PlayerInventory for door {gameObject.name}");
                 }
             }
             ToggleDoor();
@@ -217,8 +286,6 @@ public class doorscript : MonoBehaviour
             ShowLockedMessage();
             return false;
         }
-
-        return false;
     }
 
     private bool HasRequiredKey()
@@ -256,35 +323,37 @@ public class doorscript : MonoBehaviour
                 }
             }
         }
-        
-        // Check DullahanHeadInventory for SO-based keys
-        if (headInventory != null && !string.IsNullOrEmpty(requiredKeySOId))
-        {
-            if (headInventory.HasKey(requiredKeySOId))
-                return true;
-        }
-        
+
         return false;
     }
 
+    /// <summary>
+    /// Unlocks the door, allowing it to be opened
+    /// </summary>
     public void UnlockDoor()
     {
         isLocked = false;
+        UpdateUI(); // Update UI to reflect unlocked state
         Debug.Log($"Door {gameObject.name} unlocked!");
     }
 
+    /// <summary>
+    /// Locks the door, preventing it from being opened
+    /// </summary>
     public void LockDoor()
     {
         isLocked = true;
+        UpdateUI(); // Update UI to reflect locked state
         Debug.Log($"Door {gameObject.name} locked!");
     }
 
     public void ToggleDoor()
     {
         if (_isAnimating) return;
-        
-        Debug.Log($"[Door] ToggleDoor called for {gameObject.name}. Current state: isOpen={isOpen}, isLocked={isLocked}");
-        
+
+        if (ENABLE_VERBOSE_LOGGING)
+            Debug.Log($"[Door] ToggleDoor called for {gameObject.name}. Current state: isOpen={isOpen}, isLocked={isLocked}");
+
         // Ensure the GameObject is active before starting a coroutine
         if (!gameObject.activeInHierarchy)
         {
@@ -357,24 +426,26 @@ public class doorscript : MonoBehaviour
     private IEnumerator AnimateDoor(bool open, bool propagate = true)
     {
         _isAnimating = true;
-        
-        Debug.Log($"[Door] AnimateDoor called for {gameObject.name}. Opening: {open}, isLocked: {isLocked}");
-        
+        UpdateUI(); // Update UI when animation starts
+
+        if (ENABLE_VERBOSE_LOGGING)
+            Debug.Log($"[Door] AnimateDoor called for {gameObject.name}. Opening: {open}, isLocked: {isLocked}");
+
         Quaternion targetRotation = open ? _openRotation : _closedRotation;
         Quaternion startRotation = transform.rotation;
         float timeElapsed = 0f;
-        float maxAnimationTime = 10f; // Safety timeout (10 seconds max)
         float animationStartTime = Time.time;
-        
+
         // Safety check for openSpeed
         if (openSpeed <= 0)
         {
-            Debug.LogWarning($"[Door] Invalid openSpeed: {openSpeed}. Setting to 2.");
-            openSpeed = 2f;
+            Debug.LogWarning($"[Door] Invalid openSpeed: {openSpeed}. Setting to {DEFAULT_OPEN_SPEED}.");
+            openSpeed = DEFAULT_OPEN_SPEED;
         }
-        
+
         // Play sound
-        Debug.Log($"[Door] About to play sound for {gameObject.name}. Sound type: {(open ? "OPEN" : "CLOSE")}");
+        if (ENABLE_VERBOSE_LOGGING)
+            Debug.Log($"[Door] About to play sound for {gameObject.name}. Sound type: {(open ? "OPEN" : "CLOSE")}");
         PlayDoorSound(open);
         
         // Trigger animation if available
@@ -396,9 +467,14 @@ public class doorscript : MonoBehaviour
                         Debug.LogWarning($"Linked door {linkedDoor.gameObject.name} is inactive. Activating it.");
                         linkedDoor.gameObject.SetActive(true);
                     }
-                    
-                    linkedDoor.StopAllCoroutines();
-                    linkedDoor.StartCoroutine(linkedDoor.AnimateDoor(open, false));
+
+                    // Stop only the current animation coroutine, not all coroutines
+                    if (linkedDoor._currentCoroutine != null)
+                    {
+                        linkedDoor.StopCoroutine(linkedDoor._currentCoroutine);
+                    }
+
+                    linkedDoor._currentCoroutine = linkedDoor.StartCoroutine(linkedDoor.AnimateDoor(open, false));
                 }
             }
         }
@@ -407,7 +483,7 @@ public class doorscript : MonoBehaviour
         while (Quaternion.Angle(transform.rotation, targetRotation) > 0.01f)
         {
             // Check for timeout to prevent infinite loops
-            if (Time.time - animationStartTime > maxAnimationTime)
+            if (Time.time - animationStartTime > MAX_ANIMATION_TIME)
             {
                 Debug.LogError($"[Door] Animation timeout for {gameObject.name}! Forcing completion.");
                 break;
@@ -428,11 +504,14 @@ public class doorscript : MonoBehaviour
         
         transform.rotation = targetRotation;
         isOpen = open;
-        
+
         // Update own state flag; linked doors manage their own state in their coroutine
-        
+
         _isAnimating = false;
-        Debug.Log($"Door {gameObject.name} {(open ? "opened" : "closed")}!");
+        UpdateUI(); // Update UI when animation completes
+
+        if (ENABLE_VERBOSE_LOGGING)
+            Debug.Log($"Door {gameObject.name} {(open ? "opened" : "closed")}!");
     }
 
     private void PlayDoorSound(bool opening)
@@ -446,7 +525,8 @@ public class doorscript : MonoBehaviour
         AudioClip clipToPlay = opening ? doorOpenSound : doorCloseSound;
         if (clipToPlay != null)
         {
-            Debug.Log($"[Door] Playing {(opening ? "open" : "close")} sound for {gameObject.name}");
+            if (ENABLE_VERBOSE_LOGGING)
+                Debug.Log($"[Door] Playing {(opening ? "open" : "close")} sound for {gameObject.name}");
             doorAudioSource.PlayOneShot(clipToPlay);
         }
         else
@@ -465,7 +545,8 @@ public class doorscript : MonoBehaviour
         
         if (doorLockedSound != null)
         {
-            Debug.Log($"[Door] Playing locked sound for {gameObject.name}");
+            if (ENABLE_VERBOSE_LOGGING)
+                Debug.Log($"[Door] Playing locked sound for {gameObject.name}");
             doorAudioSource.PlayOneShot(doorLockedSound);
         }
         else
@@ -479,26 +560,41 @@ public class doorscript : MonoBehaviour
         if (interactionText != null)
         {
             interactionText.text = lockedText;
-            StartCoroutine(ResetInteractionText());
+
+            // Stop any previous reset coroutine
+            if (_resetTextCoroutine != null)
+            {
+                StopCoroutine(_resetTextCoroutine);
+            }
+
+            _resetTextCoroutine = StartCoroutine(ResetInteractionText());
         }
     }
 
     private IEnumerator ResetInteractionText()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(LOCKED_TEXT_RESET_DELAY);
         UpdateUI();
+        _resetTextCoroutine = null;
     }
 
     private void UpdateUI()
     {
-        if (interactionUI == null) return;
-        
+        // Safety checks
+        if (interactionUI == null)
+        {
+            if (ENABLE_VERBOSE_LOGGING)
+                Debug.LogWarning($"[Door] {gameObject.name}: interactionUI is null, cannot update UI");
+            return;
+        }
+
         if (_playerInRange && !_isAnimating)
         {
             interactionUI.SetActive(true);
-            
+
             if (interactionText != null)
             {
+                // Update text based on door state
                 if (isLocked)
                 {
                     interactionText.text = lockedText;
@@ -507,6 +603,16 @@ public class doorscript : MonoBehaviour
                 {
                     interactionText.text = isOpen ? closeText : openText;
                 }
+
+                // Ensure the text GameObject is active
+                if (!interactionText.gameObject.activeInHierarchy && interactionText.gameObject != interactionUI)
+                {
+                    interactionText.gameObject.SetActive(true);
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"[Door] {gameObject.name}: interactionText is null! Cannot display interaction prompt.");
             }
         }
         else
@@ -520,6 +626,7 @@ public class doorscript : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             _playerInRange = true;
+            UpdateUI();
         }
     }
 
@@ -528,33 +635,60 @@ public class doorscript : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             _playerInRange = false;
+            UpdateUI();
         }
     }
 
     // Public methods for external control
+    /// <summary>
+    /// Returns whether the door is currently open
+    /// </summary>
     public bool IsOpen() => isOpen;
+
+    /// <summary>
+    /// Returns whether the door is currently locked
+    /// </summary>
     public bool IsLocked() => isLocked;
+
+    /// <summary>
+    /// Returns whether the door is currently animating
+    /// </summary>
     public bool IsAnimating() => _isAnimating;
-    
-    // Method to set required key ID
+
+    /// <summary>
+    /// Sets the required key ID for unlocking this door
+    /// </summary>
+    /// <param name="keyID">The ID of the key required to unlock this door</param>
     public void SetRequiredKeyID(int keyID)
     {
         requiredKeyID = keyID;
     }
-    
-    // Method to unlock without animation (for puzzle completion)
+
+    /// <summary>
+    /// Immediately unlocks the door without animation (used for puzzle completion or scripted events)
+    /// </summary>
     public void ForceUnlock()
     {
         isLocked = false;
         Debug.Log($"Door {gameObject.name} force unlocked!");
     }
-    
-    // Method to open without animation (for puzzle completion)
+
+    /// <summary>
+    /// Immediately opens the door without animation, stopping any running animations (used for puzzle completion or scripted events)
+    /// </summary>
     public void ForceOpen()
     {
+        // Stop any running animation
+        if (_currentCoroutine != null)
+        {
+            StopCoroutine(_currentCoroutine);
+            _currentCoroutine = null;
+        }
+
+        _isAnimating = false;
         isOpen = true;
         transform.rotation = _openRotation;
-        
+
         // Update linked doors
         if (linkedDoors != null)
         {
@@ -562,19 +696,37 @@ public class doorscript : MonoBehaviour
             {
                 if (linkedDoor != null)
                 {
+                    // Stop linked door animations too
+                    if (linkedDoor._currentCoroutine != null)
+                    {
+                        linkedDoor.StopCoroutine(linkedDoor._currentCoroutine);
+                        linkedDoor._currentCoroutine = null;
+                    }
+
+                    linkedDoor._isAnimating = false;
                     linkedDoor.isOpen = true;
                     linkedDoor.transform.rotation = linkedDoor._openRotation;
                 }
             }
         }
     }
-    
-    // Method to close without animation
+
+    /// <summary>
+    /// Immediately closes the door without animation, stopping any running animations (used for puzzle completion or scripted events)
+    /// </summary>
     public void ForceClose()
     {
+        // Stop any running animation
+        if (_currentCoroutine != null)
+        {
+            StopCoroutine(_currentCoroutine);
+            _currentCoroutine = null;
+        }
+
+        _isAnimating = false;
         isOpen = false;
         transform.rotation = _closedRotation;
-        
+
         // Update linked doors
         if (linkedDoors != null)
         {
@@ -582,6 +734,14 @@ public class doorscript : MonoBehaviour
             {
                 if (linkedDoor != null)
                 {
+                    // Stop linked door animations too
+                    if (linkedDoor._currentCoroutine != null)
+                    {
+                        linkedDoor.StopCoroutine(linkedDoor._currentCoroutine);
+                        linkedDoor._currentCoroutine = null;
+                    }
+
+                    linkedDoor._isAnimating = false;
                     linkedDoor.isOpen = false;
                     linkedDoor.transform.rotation = linkedDoor._closedRotation;
                 }
@@ -593,28 +753,39 @@ public class doorscript : MonoBehaviour
     private void AutoLinkDoors()
     {
         if (linkedDoors != null && linkedDoors.Length > 0) return; // Already linked
-        
+
         doorscript[] allDoors = FindObjectsOfType<doorscript>();
         List<doorscript> similarDoors = new List<doorscript>();
-        
-        string baseName = gameObject.name.ToLower();
-        
+
+        // Extract base name by removing trailing numbers/underscores
+        string baseName = System.Text.RegularExpressions.Regex.Replace(gameObject.name, @"[\d_\s]+$", "").Trim();
+
         foreach (var door in allDoors)
         {
-            if (door != this && door.gameObject.name.ToLower().Contains(baseName))
+            if (door != this)
             {
-                similarDoors.Add(door);
+                // Extract base name from the other door too
+                string otherBaseName = System.Text.RegularExpressions.Regex.Replace(door.gameObject.name, @"[\d_\s]+$", "").Trim();
+
+                // Only link if base names match exactly (case-insensitive)
+                if (baseName.Equals(otherBaseName, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    similarDoors.Add(door);
+                }
             }
         }
-        
+
         if (similarDoors.Count > 0)
         {
             linkedDoors = similarDoors.ToArray();
-            Debug.Log($"Auto-linked {linkedDoors.Length} doors for {gameObject.name}");
+            Debug.Log($"Auto-linked {linkedDoors.Length} doors for {gameObject.name} (base name: {baseName})");
         }
     }
-    
-    // Public method to set linked doors
+
+    /// <summary>
+    /// Sets the linked doors that should open/close together with this door
+    /// </summary>
+    /// <param name="doors">Array of door scripts to link with this door</param>
     public void SetLinkedDoors(doorscript[] doors)
     {
         linkedDoors = doors;
@@ -637,11 +808,18 @@ public class doorscript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Sets the visibility of the door and its target objects
+    /// </summary>
+    /// <param name="visible">True to make visible, false to hide</param>
     public void SetDoorVisibility(bool visible)
     {
         SetVisibilityState(visible);
     }
 
+    /// <summary>
+    /// Applies the visibility change configured for keypad success
+    /// </summary>
     public void ApplyKeypadVisibility()
     {
         if (changeVisibilityOnCorrectCode)
@@ -650,6 +828,9 @@ public class doorscript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Refreshes the cached visibility targets (useful if targets are added dynamically)
+    /// </summary>
     public void RefreshVisibilityTargets()
     {
         CacheVisibilityTargets();
