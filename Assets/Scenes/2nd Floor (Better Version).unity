@@ -11953,7 +11953,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   action: 0
   questId: survive_dullahan
-  questTextIfAdding: Survive 180 seconds for Dullahan to be tired.
+  questTextIfAdding: Run
 --- !u!114 &54312572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11968,8 +11968,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueManager: {fileID: 580426793}
   lines:
-  - Another one ?!
-  - How would I survive that !
+  - ?!
 --- !u!1 &60442488
 GameObject:
   m_ObjectHideFlags: 0
@@ -22066,6 +22065,14 @@ MonoBehaviour:
   settingsGroup: {fileID: 0}
   controlsPanel: {fileID: 0}
   controlsGroup: {fileID: 0}
+  borderOverlay: {fileID: 0}
+  inventoryPanel: {fileID: 0}
+  healthUI: {fileID: 0}
+  dialogueUI: {fileID: 0}
+  questUI: {fileID: 0}
+  cluesUI: {fileID: 0}
+  staminaUI: {fileID: 0}
+  playerController: {fileID: 0}
   mainMenuSceneName: MainMenu
 --- !u!4 &175717952
 Transform:
@@ -23397,7 +23404,6 @@ MonoBehaviour:
   requiredKeyItem: {fileID: 0}
   requiredKeySOId: 100
   consumeKeyOnUnlock: 1
-  useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors:
@@ -24064,7 +24070,6 @@ MonoBehaviour:
   requiredKeyItem: {fileID: 0}
   requiredKeySOId: 20
   consumeKeyOnUnlock: 1
-  useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors:
@@ -26450,7 +26455,6 @@ MonoBehaviour:
   requiredKeyItem: {fileID: 0}
   requiredKeySOId: 50
   consumeKeyOnUnlock: 1
-  useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors:
@@ -55698,6 +55702,39 @@ Transform:
   - {fileID: 19891486}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &520893707
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 520893708}
+  m_Layer: 0
+  m_Name: Head
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &520893708
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 520893707}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 988770779}
+  - {fileID: 1785826789}
+  m_Father: {fileID: 995798095}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &522115084
 GameObject:
   m_ObjectHideFlags: 0
@@ -63378,7 +63415,6 @@ MonoBehaviour:
   requiredKeyItem: {fileID: 0}
   requiredKeySOId: 20
   consumeKeyOnUnlock: 1
-  useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors:
@@ -63919,7 +63955,6 @@ MonoBehaviour:
   requiredKeyItem: {fileID: 0}
   requiredKeySOId: 203
   consumeKeyOnUnlock: 1
-  useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors: []
@@ -135140,7 +135175,7 @@ GameObject:
   - component: {fileID: 945313392}
   - component: {fileID: 945313394}
   m_Layer: 0
-  m_Name: escape room
+  m_Name: escaped
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -135155,7 +135190,7 @@ Transform:
   m_GameObject: {fileID: 945313387}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.2, y: -9.18, z: -35.35}
+  m_LocalPosition: {x: 7.72, y: -9.18, z: -35.35}
   m_LocalScale: {x: 1, y: 1, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -141810,6 +141845,193 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1315106482}
   m_LocalEulerAnglesHint: {x: 0, y: 181.332, z: 90}
+--- !u!1001 &988770775
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 520893708}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 5459c98189757414780e72e335525240, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 50.657
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5459c98189757414780e72e335525240, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -4.144
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5459c98189757414780e72e335525240, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -39.221
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5459c98189757414780e72e335525240, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5459c98189757414780e72e335525240, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5459c98189757414780e72e335525240, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5459c98189757414780e72e335525240, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5459c98189757414780e72e335525240, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5459c98189757414780e72e335525240, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5459c98189757414780e72e335525240, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 5459c98189757414780e72e335525240, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e7d5ee95a17252747899f9e1facb4094, type: 2}
+    - target: {fileID: 919132149155446097, guid: 5459c98189757414780e72e335525240, type: 3}
+      propertyPath: m_Name
+      value: torn_and_old_paper_0902041629_texture
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5459c98189757414780e72e335525240, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 988770778}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5459c98189757414780e72e335525240, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 988770777}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5459c98189757414780e72e335525240, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 988770781}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5459c98189757414780e72e335525240, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 988770780}
+  m_SourcePrefab: {fileID: 100100000, guid: 5459c98189757414780e72e335525240, type: 3}
+--- !u!1 &988770776 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 5459c98189757414780e72e335525240, type: 3}
+  m_PrefabInstance: {fileID: 988770775}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &988770777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 988770776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaeab2741d7d77143acdae0601826cab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  questToComplete: 
+  questToStartID: find_head
+  questToStartText: (Optional) - Find the real head for the headless knight
+  interactionRange: 3
+  interactionKey: 101
+  interactionText: Press E to interact
+  useCrosshairDetection: 1
+  crosshairDetectionRange: 10
+  objectLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  changeCrosshairColor: 1
+  crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  interactionUI: {fileID: 0}
+  interactionTextUI: {fileID: 0}
+  interactOnce: 1
+  disableAfterInteraction: 0
+  playerController: {fileID: 0}
+--- !u!114 &988770778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 988770776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 132cceb9fc4dbab4aa5245ec6669e8c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  noteData: {fileID: 11400000, guid: a52707fdcd9892b41aaa5752a0bd4c83, type: 2}
+  interactionRange: 3
+  interactionKey: 114
+  interactionText: Press R to read note
+  useCrosshairDetection: 1
+  crosshairDetectionRange: 10
+  noteLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  changeCrosshairColor: 1
+  crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  interactionUI: {fileID: 1685983401}
+  interactionTextUI: {fileID: 1685983402}
+  audioSource: {fileID: 0}
+--- !u!4 &988770779 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5459c98189757414780e72e335525240, type: 3}
+  m_PrefabInstance: {fileID: 988770775}
+  m_PrefabAsset: {fileID: 0}
+--- !u!54 &988770780
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 988770776}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!65 &988770781
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 988770776}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.01995867, y: 0.01252044, z: 0.00215478}
+  m_Center: {x: 0.0000020647421, y: 0.000018570106, z: -0.00007679005}
 --- !u!1 &992184939
 GameObject:
   m_ObjectHideFlags: 0
@@ -142252,7 +142474,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 2142840948}
   - {fileID: 945313388}
+  - {fileID: 520893708}
   m_Father: {fileID: 852339130}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &997555571
@@ -148571,7 +148795,6 @@ GameObject:
   - component: {fileID: 1016712581}
   - component: {fileID: 1016712580}
   - component: {fileID: 1016712579}
-  - component: {fileID: 1016712578}
   m_Layer: 0
   m_Name: hidden door
   m_TagString: Untagged
@@ -148588,28 +148811,12 @@ Transform:
   m_GameObject: {fileID: 1016712576}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 113.02, y: -1.18, z: 58.31}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 113.51, y: -1.46, z: 67.78}
+  m_LocalScale: {x: 0.5, y: 1, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1282689086}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1016712578
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1016712576}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8977c3dcec846034e9d9da314a88a319, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  action: 0
-  questId: find_head
-  questTextIfAdding: Help the Dullahan find his missing head (survive 300 seconds
-    for the door to open)
 --- !u!114 &1016712579
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -163186,25 +163393,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb958dfd47098314290cf3284cb46bf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeQuests: []
-  completedQuests: []
-  questPopup: {fileID: 0}
-  questPopupTitle: {fileID: 0}
-  questPopupDescription: {fileID: 0}
-  questPopupIcon: {fileID: 0}
-  popupDuration: 3
-  questLogUI: {fileID: 0}
-  questLogContent: {fileID: 0}
-  questLogEntryPrefab: {fileID: 0}
-  questLogToggleButton: {fileID: 0}
-  questLogKey: 106
-  audioSource: {fileID: 0}
-  questStartSound: {fileID: 0}
-  questUpdateSound: {fileID: 0}
-  questCompleteSound: {fileID: 0}
-  autoSaveQuests: 1
-  showQuestNotifications: 1
-  persistBetweenScenes: 1
 --- !u!114 &1112342881
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172240,7 +172428,7 @@ MonoBehaviour:
   lines:
   - No way ..
   - Is this supposed to be our dining area?
-  - haha .. what on earth is even happening
+  - 'Did I really get spirited away .. '
 --- !u!65 &1215532924
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -198569,7 +198757,6 @@ MonoBehaviour:
   requiredKeyItem: {fileID: 0}
   requiredKeySOId: 100
   consumeKeyOnUnlock: 1
-  useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors:
@@ -219778,6 +219965,14 @@ MonoBehaviour:
   settingsGroup: {fileID: 1461310802}
   controlsPanel: {fileID: 916552157}
   controlsGroup: {fileID: 1569703278}
+  borderOverlay: {fileID: 0}
+  inventoryPanel: {fileID: 0}
+  healthUI: {fileID: 0}
+  dialogueUI: {fileID: 0}
+  questUI: {fileID: 0}
+  cluesUI: {fileID: 0}
+  staminaUI: {fileID: 0}
+  playerController: {fileID: 0}
   mainMenuSceneName: MainMenu
 --- !u!114 &1675747104
 MonoBehaviour:
@@ -247306,6 +247501,131 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!1 &1785826788
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1785826789}
+  - component: {fileID: 1785826793}
+  - component: {fileID: 1785826792}
+  - component: {fileID: 1785826791}
+  - component: {fileID: 1785826790}
+  m_Layer: 0
+  m_Name: Plane
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1785826789
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1785826788}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 151.37, y: -9.1, z: -51.75}
+  m_LocalScale: {x: 1, y: 1, z: 0.25}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 520893708}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1785826790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1785826788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8977c3dcec846034e9d9da314a88a319, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  action: 1
+  questId: find_head
+  questTextIfAdding: 
+--- !u!64 &1785826791
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1785826788}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &1785826792
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1785826788}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1785826793
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1785826788}
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &1787624466
 GameObject:
   m_ObjectHideFlags: 0
@@ -366473,7 +366793,6 @@ MonoBehaviour:
   requiredKeyItem: {fileID: 0}
   requiredKeySOId: 50
   consumeKeyOnUnlock: 1
-  useSelectedSOKeyOnly: 0
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors:
@@ -399132,6 +399451,153 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2136993625}
   m_Mesh: {fileID: 4300000, guid: 2a466c3afc97ac4499023a38bc174db3, type: 3}
+--- !u!1 &2142840947
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2142840948}
+  - component: {fileID: 2142840953}
+  - component: {fileID: 2142840952}
+  - component: {fileID: 2142840951}
+  - component: {fileID: 2142840950}
+  - component: {fileID: 2142840949}
+  m_Layer: 0
+  m_Name: escape room
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2142840948
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2142840947}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.76, y: -9.18, z: -40.48}
+  m_LocalScale: {x: 1, y: 1, z: 0.25}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 995798095}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2142840949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2142840947}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8977c3dcec846034e9d9da314a88a319, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  action: 1
+  questId: escape_room
+  questTextIfAdding: Find the right key to exit the room
+--- !u!65 &2142840950
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2142840947}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 10, y: 20, z: 10}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!64 &2142840951
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2142840947}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &2142840952
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2142840947}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &2142840953
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2142840947}
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &2145123184
 GameObject:
   m_ObjectHideFlags: 0
@@ -401238,7 +401704,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &919132149135096369
 GameObject:
   m_ObjectHideFlags: 0
@@ -404308,6 +404774,7 @@ GameObject:
   - component: {fileID: 3494429798946023099}
   - component: {fileID: 3494429798944952377}
   - component: {fileID: 3494429798949105919}
+  - component: {fileID: 3494429798949105920}
   m_Layer: 0
   m_Name: BoxV1
   m_TagString: Untagged
@@ -404390,6 +404857,27 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 7d2b7b3b59c264947943972e360fa7a5, type: 3}
+--- !u!65 &3494429798949105920
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3494429798942746033}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.799932, y: 3.7999318, z: 3.7999318}
+  m_Center: {x: 2.5144465e-23, y: -0.000001794108, z: 1.8998619}
 --- !u!64 &3586753727250048350
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -406184,7 +406672,7 @@ Transform:
   m_GameObject: {fileID: 4459864850702346288}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.24, y: 3.47, z: 5}
+  m_LocalPosition: {x: 3.26, y: 3.47, z: 4.82}
   m_LocalScale: {x: 0.8, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
