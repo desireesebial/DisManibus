@@ -524,8 +524,8 @@ public class KuchisakeOnnaController : MonoBehaviour
             StartTrackedCoroutine(SmoothLookAt(direction, SMOOTH_LOOK_DURATION));
         }
 
-        // Play question voice after a delay (more atmospheric)
-        StartTrackedCoroutine(DelayedFirstQuestion());
+        // TESTING: Skip question, go directly to standup and patrol
+        StartTrackedCoroutine(TestStandupSequence());
     }
 
     /// <summary>
@@ -703,6 +703,19 @@ public class KuchisakeOnnaController : MonoBehaviour
         yield return new WaitForSeconds(standUpDuration);
 
         // Activate patrol
+        ActivatePatrolMode();
+    }
+
+    IEnumerator TestStandupSequence()
+    {
+        // Wait a moment after player approaches
+        yield return new WaitForSeconds(1f);
+
+        // Stand up
+        BeginStandUp();
+        yield return new WaitForSeconds(standUpDuration);
+
+        // Start patrolling
         ActivatePatrolMode();
     }
 
