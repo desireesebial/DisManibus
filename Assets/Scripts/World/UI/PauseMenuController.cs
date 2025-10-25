@@ -23,6 +23,7 @@ namespace World.UI
         [SerializeField] private GameObject dialogueUI;
         [SerializeField] private GameObject questUI;
         [SerializeField] private GameObject cluesUI;
+        [SerializeField] private GameObject staminaUI;
 
         [Header("Behaviour")]
         [SerializeField] private bool startPaused;
@@ -94,6 +95,12 @@ namespace World.UI
 
         public void TogglePause()
         {
+            // Don't allow pausing during cutscenes
+            if (CutsceneControl.IsPlayingCutscene)
+            {
+                return;
+            }
+
             if (isPaused)
             {
                 Resume();
@@ -148,6 +155,11 @@ namespace World.UI
             if (cluesUI != null)
             {
                 cluesUI.SetActive(false);
+            }
+
+            if (staminaUI != null)
+            {
+                staminaUI.SetActive(false);
             }
 
             if (firstSelected != null && UnityEngine.EventSystems.EventSystem.current != null)
@@ -205,6 +217,11 @@ namespace World.UI
             if (cluesUI != null)
             {
                 cluesUI.SetActive(true);
+            }
+
+            if (staminaUI != null)
+            {
+                staminaUI.SetActive(true);
             }
 
             if (lockCursorWhenResumed)
@@ -266,6 +283,11 @@ namespace World.UI
             if (cluesUI != null)
             {
                 cluesUI.SetActive(true);
+            }
+
+            if (staminaUI != null)
+            {
+                staminaUI.SetActive(true);
             }
 
             Cursor.lockState = CursorLockMode.None;

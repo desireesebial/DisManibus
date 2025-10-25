@@ -9080,7 +9080,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4459864850019384740, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       propertyPath: enableZoom
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4459864850019384740, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       propertyPath: holdToZoom
@@ -16672,7 +16672,8 @@ MonoBehaviour:
   cutsceneCam: {fileID: 419902576}
   gameplayCamera: {fileID: 369474179}
   playerCamera: {fileID: 912683053}
-  behavioursToEnableAfterCutscene: []
+  behavioursToEnableAfterCutscene:
+  - {fileID: 1790364529}
   transitionDuration: 0.5
   easeCurve:
     serializedVersion: 2
@@ -16714,6 +16715,11 @@ MonoBehaviour:
   behavioursToDisable:
   - {fileID: 1790364529}
   extraTypeNames: []
+  inventoryPanel: {fileID: 710622100}
+  healthUI: {fileID: 1222760373}
+  questUI: {fileID: 296167814}
+  itemTrackerUI: {fileID: 0}
+  staminaUI: {fileID: 1436886197}
 --- !u!320 &610464182
 PlayableDirector:
   m_ObjectHideFlags: 0
@@ -163723,10 +163729,13 @@ MonoBehaviour:
   controlsPanel: {fileID: 1181616201}
   controlsGroup: {fileID: 41381131}
   borderOverlay: {fileID: 0}
-  inventoryPanel: {fileID: 0}
-  healthUI: {fileID: 0}
-  dialogueUI: {fileID: 0}
-  playerController: {fileID: 0}
+  inventoryPanel: {fileID: 710622100}
+  healthUI: {fileID: 1222760373}
+  dialogueUI: {fileID: 1744515691}
+  questUI: {fileID: 296167814}
+  cluesUI: {fileID: 0}
+  staminaUI: {fileID: 1436886197}
+  playerController: {fileID: 1790364529}
   mainMenuSceneName: MainMenu
 --- !u!1 &927628494
 GameObject:
@@ -177004,6 +177013,11 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!1 &1436886197 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4459864851551516604, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+  m_PrefabInstance: {fileID: 369474177}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1442491606
 GameObject:
   m_ObjectHideFlags: 0
@@ -185763,11 +185777,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1194947263}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.000072101095, y: -312.91064}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0.000072101095, y: 172.61041}
   m_SizeDelta: {x: 200, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1744515693
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185879,12 +185893,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506f680d10f01194dad8779288449dc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inventoryPanel: {fileID: 0}
+  inventoryPanel: {fileID: 710622100}
   spacingAboveInventory: 10
   autoConfigureOnAwake: 1
-  disableAutomaticPositioning: 0
-  updateContinuously: 0
-  showDebugLogs: 1
+  disableAutomaticPositioning: 1
+  updateContinuously: 1
+  showDebugLogs: 0
   removeConflictingLayoutComponents: 1
 --- !u!1 &1744909992
 GameObject:
@@ -186571,7 +186585,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1773455331
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -186594,6 +186608,9 @@ MonoBehaviour:
   inventoryPanel: {fileID: 710622100}
   healthUI: {fileID: 1222760373}
   dialogueUI: {fileID: 1744515691}
+  questUI: {fileID: 0}
+  cluesUI: {fileID: 0}
+  staminaUI: {fileID: 0}
   playerController: {fileID: 1790364529}
   mainMenuSceneName: MainMenu
 --- !u!4 &1773455332
