@@ -184353,6 +184353,7 @@ GameObject:
   - component: {fileID: 1694856466}
   - component: {fileID: 1694856465}
   - component: {fileID: 1694856464}
+  - component: {fileID: 1694856469}
   m_Layer: 0
   m_Name: Jenglot Trigger
   m_TagString: Untagged
@@ -184488,6 +184489,23 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1694856462}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1694856469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1694856462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af7eba7627e35b64fbade455c7e55da9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueManager: {fileID: 1726014300}
+  lines:
+  - 'what?! - '
+  - what was that -
+  - what now ..
 --- !u!1 &1696601145
 GameObject:
   m_ObjectHideFlags: 0
