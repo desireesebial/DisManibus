@@ -89,7 +89,6 @@ public class PlayerHealthSystem : MonoBehaviour
 
     void Update()
     {
-        HandleDebugInput();
         HandleCriticalHealthBlur();
     }
 
@@ -528,24 +527,6 @@ public class PlayerHealthSystem : MonoBehaviour
         // Do not auto-toggle death UI here; it's handled by ShowDeathScreen on death
     }
 
-    private void HandleDebugInput()
-    {
-        // Debug keys for testing
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            TakeDamage(1);
-        }
-
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            Heal(1);
-        }
-
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            RestoreFullHealth();
-        }
-    }
 
     private IEnumerator InvulnerabilityFrames()
     {
