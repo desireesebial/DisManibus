@@ -21817,7 +21817,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -537, y: 492}
+  m_AnchoredPosition: {x: -525.17993, y: 464.22913}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &157450731
@@ -22030,65 +22030,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 170249445}
   m_Mesh: {fileID: 4300000, guid: b0c4b0ab6532cd2419f037089c7e2cf2, type: 3}
---- !u!1 &175717950
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 175717952}
-  - component: {fileID: 175717951}
-  m_Layer: 0
-  m_Name: PauseManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &175717951
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 175717950}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a58b5b14db7a0af4c9314d0707bab0f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pauseRoot: {fileID: 0}
-  pauseGroup: {fileID: 328854236}
-  settingsPanel: {fileID: 0}
-  settingsGroup: {fileID: 0}
-  controlsPanel: {fileID: 0}
-  controlsGroup: {fileID: 0}
-  borderOverlay: {fileID: 0}
-  inventoryPanel: {fileID: 0}
-  healthUI: {fileID: 0}
-  dialogueUI: {fileID: 0}
-  questUI: {fileID: 0}
-  cluesUI: {fileID: 0}
-  staminaUI: {fileID: 0}
-  playerController: {fileID: 0}
-  mainMenuSceneName: MainMenu
---- !u!4 &175717952
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 175717950}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 570.2497, y: 499.34048, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &178854660
 GameObject:
   m_ObjectHideFlags: 0
@@ -27996,6 +27937,7 @@ RectTransform:
   - {fileID: 1365720}
   - {fileID: 1895731021}
   - {fileID: 1369198882}
+  - {fileID: 585668451}
   - {fileID: 1685983404}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -63353,22 +63295,22 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 585668447}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.958113, y: 0.958113, z: 0.958113}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1883696663}
   - {fileID: 931980579}
   - {fileID: 157450730}
   - {fileID: 411125219}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 347053575}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 817.2682, y: -479.9225}
+  m_SizeDelta: {x: 2066.5623, y: 1003.4055}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &593401327
 GameObject:
   m_ObjectHideFlags: 0
@@ -134428,7 +134370,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -741, y: 485}
+  m_AnchoredPosition: {x: -729.17993, y: 465.46536}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &931980580
@@ -163409,6 +163351,9 @@ MonoBehaviour:
   restDuration: 60
   maxChaseCycles: 10
   autoStart: 1
+  allowRetriggerOnReenter: 0
+  maxTriggerCount: 1
+  runIndependentlyAfterTrigger: 1
   proximityMode: 0
   proximityRadius: 10
   proximityCenter: {fileID: 1112342882}
@@ -163462,9 +163407,13 @@ MonoBehaviour:
       m_Calls: []
   currentState: 0
   playerInProximity: 0
+  wasPlayerInProximity: 0
   currentCycleCount: 0
   stateTimer: 0
   isPaused: 0
+  currentTriggerCount: 0
+  isEventRunning: 0
+  hasBeenTriggered: 0
 --- !u!4 &1112342882
 Transform:
   m_ObjectHideFlags: 0
@@ -184399,6 +184348,7 @@ GameObject:
   - component: {fileID: 1369198882}
   - component: {fileID: 1369198884}
   - component: {fileID: 1369198883}
+  - component: {fileID: 1369198885}
   m_Layer: 5
   m_Name: InventoryPanel
   m_TagString: Untagged
@@ -184466,6 +184416,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1369198881}
   m_CullTransparentMesh: 1
+--- !u!114 &1369198885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1369198881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01321931a860cac4ab400585ec701981, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bottomOffset: 10
+  horizontalPadding: 20
+  autoConfigureOnAwake: 1
 --- !u!1 &1373270652
 GameObject:
   m_ObjectHideFlags: 0
@@ -219966,13 +219931,13 @@ MonoBehaviour:
   controlsPanel: {fileID: 916552157}
   controlsGroup: {fileID: 1569703278}
   borderOverlay: {fileID: 0}
-  inventoryPanel: {fileID: 0}
-  healthUI: {fileID: 0}
+  inventoryPanel: {fileID: 1369198881}
+  healthUI: {fileID: 585668447}
   dialogueUI: {fileID: 0}
   questUI: {fileID: 0}
   cluesUI: {fileID: 0}
   staminaUI: {fileID: 0}
-  playerController: {fileID: 0}
+  playerController: {fileID: 4459864850702346298}
   mainMenuSceneName: MainMenu
 --- !u!114 &1675747104
 MonoBehaviour:
@@ -364873,7 +364838,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -30.094938, y: -3.754876}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1885564808
@@ -414453,8 +414418,6 @@ SceneRoots:
   - {fileID: 1156897165}
   - {fileID: 1676519759}
   - {fileID: 2002052450}
-  - {fileID: 585668451}
   - {fileID: 1413456150}
-  - {fileID: 175717952}
   - {fileID: 189155986}
   - {fileID: 2074815572}
