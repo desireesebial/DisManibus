@@ -42641,7 +42641,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1640367601}
   - {fileID: 230555137}
   - {fileID: 1532630620}
   - {fileID: 968859344}
@@ -391505,65 +391504,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1639250486}
   m_Mesh: {fileID: -6867278842754045305, guid: 699d709381cd09541beef2b359fd68ed, type: 3}
---- !u!1 &1640367600
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1640367601}
-  - component: {fileID: 1640367602}
-  m_Layer: 0
-  m_Name: PauseManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1640367601
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1640367600}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 147317010}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1640367602
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1640367600}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a58b5b14db7a0af4c9314d0707bab0f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pauseRoot: {fileID: 0}
-  pauseGroup: {fileID: 1532630616}
-  settingsPanel: {fileID: 0}
-  settingsGroup: {fileID: 0}
-  controlsPanel: {fileID: 0}
-  controlsGroup: {fileID: 0}
-  borderOverlay: {fileID: 0}
-  inventoryPanel: {fileID: 0}
-  healthUI: {fileID: 0}
-  dialogueUI: {fileID: 0}
-  questUI: {fileID: 0}
-  cluesUI: {fileID: 0}
-  staminaUI: {fileID: 0}
-  playerController: {fileID: 0}
-  mainMenuSceneName: MainMenu
 --- !u!43 &1644359268
 Mesh:
   m_ObjectHideFlags: 0
@@ -408761,6 +408701,26 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!1 &1773367370 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5500968352166690707, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+  m_PrefabInstance: {fileID: 1801658131}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1773367372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1773367370}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01321931a860cac4ab400585ec701981, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bottomOffset: 10
+  horizontalPadding: 20
+  autoConfigureOnAwake: 1
 --- !u!1 &1783383382
 GameObject:
   m_ObjectHideFlags: 0
@@ -413899,6 +413859,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4459864850019384750, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1444937222}
+    - targetCorrespondingSourceObject: {fileID: 5500968352166690707, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1773367372}
   m_SourcePrefab: {fileID: 100100000, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
 --- !u!1 &1801658132 stripped
 GameObject:
@@ -503012,7 +502975,7 @@ MonoBehaviour:
   controlsPanel: {fileID: 1025381440}
   controlsGroup: {fileID: 1031417276}
   borderOverlay: {fileID: 0}
-  inventoryPanel: {fileID: 0}
+  inventoryPanel: {fileID: 1773367370}
   healthUI: {fileID: 0}
   dialogueUI: {fileID: 0}
   questUI: {fileID: 0}
