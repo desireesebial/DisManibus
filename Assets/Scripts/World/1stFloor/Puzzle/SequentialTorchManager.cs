@@ -136,9 +136,9 @@ public class SequentialTorchManager : MonoBehaviour
     public void OnTorchLit(int sequenceNumber)
     {
         if (puzzleComplete) return;
-        
+
         Debug.Log($"[SequentialTorchManager] Torch {sequenceNumber} lit!");
-        
+
         // Find the torch that was lit
         SequentialTorch litTorch = null;
         foreach (var torch in torches)
@@ -149,16 +149,40 @@ public class SequentialTorchManager : MonoBehaviour
                 break;
             }
         }
-        
+
         if (litTorch == null)
         {
             Debug.LogError($"[SequentialTorchManager] Could not find torch with sequence number {sequenceNumber}");
             return;
         }
 
+        // Create connection line from previous torch (if this isn't the first torch)
+        if (sequenceNumber > 1)
+        {
+            // Find the previous torch
+            SequentialTorch previousTorch = null;
+            foreach (var torch in torches)
+            {
+                if (torch.SequenceNumber == sequenceNumber - 1)
+                {
+                    previousTorch = torch;
+                    break;
+                }
+            }
+
+            if (previousTorch != null)
+            {
+                litTorch.CreateConnectionLine(previousTorch);
+            }
+            else
+            {
+                Debug.LogWarning($"[SequentialTorchManager] Could not find previous torch (sequence {sequenceNumber - 1})");
+            }
+        }
+
         // Update progress
         currentSequenceIndex++;
-        
+
         // Check if puzzle is complete
         if (currentSequenceIndex >= torches.Length)
         {
