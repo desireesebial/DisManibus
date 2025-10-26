@@ -26,6 +26,16 @@ public class DullahanChaseEventManager : MonoBehaviour
     [Tooltip("Start the chase cycle automatically when player enters proximity")]
     public bool autoStart = true;
 
+    [Header("═══ TRIGGER CONTROL SETTINGS ═══")]
+    [Tooltip("Allow event to re-trigger when player leaves and re-enters proximity")]
+    public bool allowRetriggerOnReenter = false;
+
+    [Tooltip("Maximum number of times event can be triggered (-1 = unlimited, 1 = once, 3 = three times, etc.)")]
+    public int maxTriggerCount = 1;
+
+    [Tooltip("If true, event completes all cycles independently after being triggered (player can leave area)")]
+    public bool runIndependentlyAfterTrigger = true;
+
     [Header("═══ PROXIMITY DETECTION ═══")]
     [Tooltip("Detection method: Distance uses radius check, Trigger uses OnTriggerEnter/Exit")]
     public ProximityMode proximityMode = ProximityMode.Distance;
@@ -159,9 +169,13 @@ public class DullahanChaseEventManager : MonoBehaviour
     [Header("═══ DEBUG INFO (Read Only) ═══")]
     [SerializeField] private EventState currentState = EventState.Waiting;
     [SerializeField] private bool playerInProximity = false;
+    [SerializeField] private bool wasPlayerInProximity = false;
     [SerializeField] private int currentCycleCount = 0;
     [SerializeField] private float stateTimer = 0f;
     [SerializeField] private bool isPaused = false;
+    [SerializeField] private int currentTriggerCount = 0;
+    [SerializeField] private bool isEventRunning = false;
+    [SerializeField] private bool hasBeenTriggered = false;
 
     // Private references
     private Transform player;
@@ -258,10 +272,14 @@ public class DullahanChaseEventManager : MonoBehaviour
             CheckDistanceProximity();
         }
 
-        // Handle player leaving during active states
-        if (!playerInProximity && (currentState == EventState.Chasing || currentState == EventState.Resting))
+        // If running independently, don't stop when player leaves
+        if (!runIndependentlyAfterTrigger)
         {
-            OnPlayerLeftProximity();
+            // Handle player leaving during active states (old behavior)
+            if (!playerInProximity && (currentState == EventState.Chasing || currentState == EventState.Resting))
+            {
+                OnPlayerLeftProximity();
+            }
         }
     }
 
@@ -270,24 +288,19 @@ public class DullahanChaseEventManager : MonoBehaviour
         Vector3 centerPos = proximityCenter != null ? proximityCenter.position : transform.position;
         float distance = Vector3.Distance(centerPos, player.position);
 
-        bool wasInProximity = playerInProximity;
+        // Update proximity state
+        wasPlayerInProximity = playerInProximity;
+        playerInProximity = distance <= proximityRadius;
 
-        // Check if within radius
-        if (distance <= proximityRadius)
+        // Detect entering (transition from outside to inside)
+        if (playerInProximity && !wasPlayerInProximity)
         {
-            if (!wasInProximity)
-            {
-                playerInProximity = true;
-                OnPlayerEnteredProximity();
-            }
+            OnPlayerEnteredProximity();
         }
-        else
+        // Detect exiting (transition from inside to outside)
+        else if (!playerInProximity && wasPlayerInProximity)
         {
-            if (wasInProximity)
-            {
-                playerInProximity = false;
-                // OnPlayerLeftProximity() is called separately to handle state changes
-            }
+            OnPlayerLeftProximity();
         }
     }
 
@@ -338,11 +351,39 @@ public class DullahanChaseEventManager : MonoBehaviour
         // Invoke event
         OnPlayerEnterProximity?.Invoke();
 
-        // Start chase cycle if in waiting state
-        if (currentState == EventState.Waiting)
+        // Check if we can trigger the event
+        bool canTrigger = false;
+
+        // First time entering
+        if (!hasBeenTriggered)
         {
+            canTrigger = true;
+            Debug.Log("[DullahanChase] First time trigger - event will start");
+        }
+        // Re-entering after event completed
+        else if (allowRetriggerOnReenter && !isEventRunning && currentState == EventState.Waiting)
+        {
+            // Check if we haven't exceeded max trigger count
+            if (maxTriggerCount < 0 || currentTriggerCount < maxTriggerCount)
+            {
+                canTrigger = true;
+                Debug.Log($"[DullahanChase] Re-trigger allowed - trigger count: {currentTriggerCount + 1}/{maxTriggerCount}");
+            }
+            else
+            {
+                Debug.Log($"[DullahanChase] Max trigger count reached ({maxTriggerCount}) - event will not trigger");
+            }
+        }
+
+        // Start chase cycle if allowed
+        if (canTrigger && currentState == EventState.Waiting)
+        {
+            hasBeenTriggered = true;
+            isEventRunning = true;
+            currentTriggerCount++;
             currentCycleCount = 0;
             TransitionToState(EventState.Chasing);
+            Debug.Log($"[DullahanChase] ✓ Event triggered! (Trigger #{currentTriggerCount})");
         }
     }
 
@@ -353,10 +394,18 @@ public class DullahanChaseEventManager : MonoBehaviour
         // Invoke event
         OnPlayerExitProximity?.Invoke();
 
-        // Stop active chase/rest cycle
-        if (currentState == EventState.Chasing || currentState == EventState.Resting)
+        // Only stop if not running independently
+        if (!runIndependentlyAfterTrigger)
         {
-            TransitionToState(EventState.Stopped);
+            // Stop active chase/rest cycle (old behavior)
+            if (currentState == EventState.Chasing || currentState == EventState.Resting)
+            {
+                TransitionToState(EventState.Stopped);
+            }
+        }
+        else
+        {
+            Debug.Log("[DullahanChase] Player left proximity, but event continues running independently");
         }
     }
 
@@ -487,15 +536,33 @@ public class DullahanChaseEventManager : MonoBehaviour
         {
             EndRest();
 
-            // Check if player is still in proximity
-            if (playerInProximity)
+            // If running independently, always continue with next chase cycle (don't check proximity)
+            if (runIndependentlyAfterTrigger)
             {
-                TransitionToState(EventState.Chasing);
+                // Check if we should continue cycling
+                if (maxChaseCycles < 0 || currentCycleCount < maxChaseCycles)
+                {
+                    Debug.Log("[DullahanChase] Rest ended - starting next chase cycle");
+                    TransitionToState(EventState.Chasing);
+                }
+                else
+                {
+                    Debug.Log($"[DullahanChase] All cycles completed ({currentCycleCount}/{maxChaseCycles})");
+                    TransitionToState(EventState.Stopped);
+                }
             }
             else
             {
-                Debug.Log("[DullahanChase] Player not in proximity. Returning to waiting state.");
-                TransitionToState(EventState.Waiting);
+                // Old behavior: Check if player is still in proximity
+                if (playerInProximity)
+                {
+                    TransitionToState(EventState.Chasing);
+                }
+                else
+                {
+                    Debug.Log("[DullahanChase] Player not in proximity. Returning to waiting state.");
+                    TransitionToState(EventState.Waiting);
+                }
             }
         }
     }
@@ -520,6 +587,9 @@ public class DullahanChaseEventManager : MonoBehaviour
         // Hide timer UI
         HideTimerUI();
 
+        // Mark event as no longer running
+        isEventRunning = false;
+
         // Wait a moment before resetting to waiting
         yield return new WaitForSeconds(2f);
 
@@ -528,6 +598,7 @@ public class DullahanChaseEventManager : MonoBehaviour
         {
             currentCycleCount = 0;
             TransitionToState(EventState.Waiting);
+            Debug.Log("[DullahanChase] Event ready for re-trigger (if enabled)");
         }
     }
 
@@ -853,9 +924,60 @@ public class DullahanChaseEventManager : MonoBehaviour
         currentCycleCount = 0;
         stateTimer = 0f;
         playerInProximity = false;
+        wasPlayerInProximity = false;
         isPaused = false;
+        isEventRunning = false;
+        hasBeenTriggered = false;
+        currentTriggerCount = 0;
 
         TransitionToState(EventState.Waiting);
+
+        Debug.Log("[DullahanChase] Event fully reset - ready for fresh trigger");
+    }
+
+    /// <summary>
+    /// Reset only the trigger count (allows event to be triggered again without full reset)
+    /// </summary>
+    public void ResetTriggerCount()
+    {
+        currentTriggerCount = 0;
+        hasBeenTriggered = false;
+        Debug.Log("[DullahanChase] Trigger count reset - event can be triggered again");
+    }
+
+    /// <summary>
+    /// Get current trigger count
+    /// </summary>
+    public int GetTriggerCount()
+    {
+        return currentTriggerCount;
+    }
+
+    /// <summary>
+    /// Get maximum allowed trigger count
+    /// </summary>
+    public int GetMaxTriggerCount()
+    {
+        return maxTriggerCount;
+    }
+
+    /// <summary>
+    /// Check if event is currently running
+    /// </summary>
+    public bool IsEventRunning()
+    {
+        return isEventRunning;
+    }
+
+    /// <summary>
+    /// Check if event can be triggered (respects trigger count limit)
+    /// </summary>
+    public bool CanTrigger()
+    {
+        if (isEventRunning) return false;
+        if (currentState != EventState.Waiting) return false;
+        if (maxTriggerCount >= 0 && currentTriggerCount >= maxTriggerCount) return false;
+        return true;
     }
 
     /// <summary>
@@ -975,6 +1097,13 @@ public class DullahanChaseEventManager : MonoBehaviour
         Debug.Log($"Player In Proximity: {playerInProximity}");
         Debug.Log($"Paused: {isPaused}");
         Debug.Log($"Proximity Mode: {proximityMode}");
+        Debug.Log("--- TRIGGER INFO ---");
+        Debug.Log($"Event Running: {isEventRunning}");
+        Debug.Log($"Has Been Triggered: {hasBeenTriggered}");
+        Debug.Log($"Trigger Count: {currentTriggerCount}/{(maxTriggerCount < 0 ? "∞" : maxTriggerCount.ToString())}");
+        Debug.Log($"Allow Retrigger: {allowRetriggerOnReenter}");
+        Debug.Log($"Run Independently: {runIndependentlyAfterTrigger}");
+        Debug.Log($"Can Trigger: {CanTrigger()}");
         Debug.Log("===================================");
     }
 
