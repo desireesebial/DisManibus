@@ -1268,8 +1268,8 @@ MonoBehaviour:
   interactionTextUI: {fileID: 1965755912}
   hideWorldPileOnCleared: 0
   worldPileObject: {fileID: 0}
-  enableDebugLogs: 1
-  showDebugRays: 1
+  enableDebugLogs: 0
+  showDebugRays: 0
   changeCrosshairColor: 0
   crosshairHoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!65 &58260888
@@ -1335,6 +1335,7 @@ MonoBehaviour:
   action: 0
   questId: find_clues
   questTextIfAdding: Find the clue for the exit
+  fireOnce: 1
 --- !u!114 &58260893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1378,6 +1379,7 @@ MonoBehaviour:
   action: 1
   questId: inspect_paper
   questTextIfAdding: 
+  fireOnce: 1
 --- !u!1 &61849678
 GameObject:
   m_ObjectHideFlags: 0
@@ -9291,6 +9293,10 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7562252594709440236, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+      propertyPath: enableDropping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7562252594709440236, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       propertyPath: selectedItemNameText
       value: 
       objectReference: {fileID: 902496151}
@@ -13317,6 +13323,7 @@ MonoBehaviour:
   action: 1
   questId: find_clue
   questTextIfAdding: 
+  fireOnce: 1
 --- !u!1 &466973746
 GameObject:
   m_ObjectHideFlags: 0
@@ -16953,6 +16960,12 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  groundDetectionDistance: 50
+  playerHeightAboveGround: 1
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  showGroundDetectionDebug: 1
 --- !u!114 &610464181
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17918,6 +17931,7 @@ MonoBehaviour:
   action: 1
   questId: inspect_luggage
   questTextIfAdding: 
+  fireOnce: 1
 --- !u!65 &634917436
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -164826,7 +164840,7 @@ MonoBehaviour:
   isLocked: 1
   requiredKeyID: 203
   requiredKeyItem: {fileID: 11400000, guid: 8f90cc9f89bcba6408046360383fd887, type: 2}
-  requiredKeySOId: 203
+  requiredKeySOId: 
   consumeKeyOnUnlock: 1
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
@@ -164849,7 +164863,7 @@ MonoBehaviour:
   interactVisibilityState: 0
   changeVisibilityOnCorrectCode: 0
   correctCodeVisibilityState: 0
-  affectColliders: 0
+  affectColliders: 1
   visibilityTargets: []
 --- !u!65 &956863470
 BoxCollider:
@@ -166343,7 +166357,7 @@ GameObject:
   - component: {fileID: 1028317486}
   - component: {fileID: 1028317489}
   - component: {fileID: 1028317488}
-  - component: {fileID: 1028317487}
+  - component: {fileID: 1028317490}
   m_Layer: 0
   m_Name: LeatherTrunk_Body
   m_TagString: Untagged
@@ -166367,52 +166381,6 @@ Transform:
   - {fileID: 2060683559}
   m_Father: {fileID: 1787051279}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &1028317487
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1028317485}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -0.010543603}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 0.45354304, y: 0.116420574}
-  m_EdgeRadius: 0
 --- !u!23 &1028317488
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -166465,6 +166433,28 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1028317485}
+  m_Mesh: {fileID: -6224670424476466028, guid: 3987c0abcc50b084ab6934d3d204f9a0, type: 3}
+--- !u!64 &1028317490
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1028317485}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
   m_Mesh: {fileID: -6224670424476466028, guid: 3987c0abcc50b084ab6934d3d204f9a0, type: 3}
 --- !u!1 &1033453866
 GameObject:
@@ -168696,7 +168686,7 @@ GameObject:
   - component: {fileID: 1157084647}
   - component: {fileID: 1157084650}
   - component: {fileID: 1157084649}
-  - component: {fileID: 1157084648}
+  - component: {fileID: 1157084651}
   m_Layer: 0
   m_Name: LeatherTrunk_Body
   m_TagString: Untagged
@@ -168720,52 +168710,6 @@ Transform:
   - {fileID: 1533000171}
   m_Father: {fileID: 768822049}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &1157084648
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1157084646}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -0.010543603}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 0.45354304, y: 0.116420574}
-  m_EdgeRadius: 0
 --- !u!23 &1157084649
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -168818,6 +168762,28 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1157084646}
+  m_Mesh: {fileID: -6224670424476466028, guid: 3987c0abcc50b084ab6934d3d204f9a0, type: 3}
+--- !u!64 &1157084651
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1157084646}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
   m_Mesh: {fileID: -6224670424476466028, guid: 3987c0abcc50b084ab6934d3d204f9a0, type: 3}
 --- !u!1 &1161332535
 GameObject:
@@ -186505,7 +186471,7 @@ GameObject:
   - component: {fileID: 1751978765}
   - component: {fileID: 1751978768}
   - component: {fileID: 1751978767}
-  - component: {fileID: 1751978766}
+  - component: {fileID: 1751978769}
   m_Layer: 0
   m_Name: LeatherTrunk_Lid
   m_TagString: Untagged
@@ -186530,27 +186496,6 @@ Transform:
   - {fileID: 705143299}
   m_Father: {fileID: 1818722270}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1751978766
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1751978764}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.4535436, y: 0.05396182, z: 0.3137978}
-  m_Center: {x: 0.00000043958426, y: 0.024027973, z: 0.15212488}
 --- !u!23 &1751978767
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -186603,6 +186548,28 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1751978764}
+  m_Mesh: {fileID: -5605573298869675516, guid: 3987c0abcc50b084ab6934d3d204f9a0, type: 3}
+--- !u!64 &1751978769
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1751978764}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
   m_Mesh: {fileID: -5605573298869675516, guid: 3987c0abcc50b084ab6934d3d204f9a0, type: 3}
 --- !u!1 &1753833053
 GameObject:
@@ -187275,6 +187242,9 @@ MonoBehaviour:
   damageFlashDuration: 0.2
   damageFlashColor: {r: 1, g: 0, b: 0, a: 1}
   playerController: {fileID: 1790364529}
+  staminaUI: {fileID: 0}
+  questUI: {fileID: 0}
+  itemTrackerUI: {fileID: 0}
   audioSource: {fileID: 0}
   damageSound: {fileID: 0}
   healSound: {fileID: 0}
@@ -188371,7 +188341,7 @@ GameObject:
   - component: {fileID: 1818722270}
   - component: {fileID: 1818722273}
   - component: {fileID: 1818722272}
-  - component: {fileID: 1818722271}
+  - component: {fileID: 1818722274}
   m_Layer: 0
   m_Name: LeatherTrunk_Body
   m_TagString: Untagged
@@ -188395,52 +188365,6 @@ Transform:
   - {fileID: 1751978765}
   m_Father: {fileID: 2078791650}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &1818722271
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1818722269}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -0.010543603}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 0.45354304, y: 0.116420574}
-  m_EdgeRadius: 0
 --- !u!23 &1818722272
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -188493,6 +188417,28 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1818722269}
+  m_Mesh: {fileID: -6224670424476466028, guid: 3987c0abcc50b084ab6934d3d204f9a0, type: 3}
+--- !u!64 &1818722274
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1818722269}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
   m_Mesh: {fileID: -6224670424476466028, guid: 3987c0abcc50b084ab6934d3d204f9a0, type: 3}
 --- !u!1 &1819158028
 GameObject:
@@ -329845,6 +329791,7 @@ MonoBehaviour:
   action: 0
   questId: find_exit
   questTextIfAdding: Find the exit at the end of this corridor
+  fireOnce: 1
 --- !u!65 &1997559487
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -331478,7 +331425,7 @@ GameObject:
   - component: {fileID: 2060683559}
   - component: {fileID: 2060683562}
   - component: {fileID: 2060683561}
-  - component: {fileID: 2060683560}
+  - component: {fileID: 2060683563}
   m_Layer: 0
   m_Name: LeatherTrunk_Lid
   m_TagString: Untagged
@@ -331503,27 +331450,6 @@ Transform:
   - {fileID: 260772441}
   m_Father: {fileID: 1028317486}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &2060683560
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2060683558}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.4535436, y: 0.05396182, z: 0.3137978}
-  m_Center: {x: 0.00000043958426, y: 0.024027973, z: 0.15212488}
 --- !u!23 &2060683561
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -331576,6 +331502,28 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2060683558}
+  m_Mesh: {fileID: -5605573298869675516, guid: 3987c0abcc50b084ab6934d3d204f9a0, type: 3}
+--- !u!64 &2060683563
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2060683558}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
   m_Mesh: {fileID: -5605573298869675516, guid: 3987c0abcc50b084ab6934d3d204f9a0, type: 3}
 --- !u!1 &2065850542
 GameObject:
@@ -331736,13 +331684,13 @@ MonoBehaviour:
   isLocked: 1
   requiredKeyID: 203
   requiredKeyItem: {fileID: 11400000, guid: 8f90cc9f89bcba6408046360383fd887, type: 2}
-  requiredKeySOId: 203
+  requiredKeySOId: 
   consumeKeyOnUnlock: 1
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
   linkedDoors:
   - {fileID: 956863469}
-  autoLinkDoors: 1
+  autoLinkDoors: 0
   doorAnimator: {fileID: 0}
   doorAudioSource: {fileID: 0}
   doorOpenSound: {fileID: 8300000, guid: e24211d128104074c94f6999e69a62f5, type: 3}
@@ -338632,7 +338580,6 @@ GameObject:
   - component: {fileID: 64062937282031134}
   - component: {fileID: 64062937282031132}
   - component: {fileID: 64062937282031137}
-  - component: {fileID: 64062937282031136}
   m_Layer: 0
   m_Name: MainDoor
   m_TagString: Untagged
@@ -338880,7 +338827,6 @@ GameObject:
   - component: {fileID: 23191420253507963}
   - component: {fileID: 64086887347314379}
   - component: {fileID: 64086887347314377}
-  - component: {fileID: 64086887347314378}
   m_Layer: 0
   m_Name: DoorD_V2_Left
   m_TagString: Untagged
@@ -339273,7 +339219,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4238493880018617}
   m_Layer: 0
-  m_Name: Infirmary Room 2 Door
+  m_Name: Room 3 Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -349301,6 +349247,7 @@ MonoBehaviour:
   action: 0
   questId: find_key
   questTextIfAdding: Find the Key for the exit.
+  fireOnce: 1
 --- !u!114 &64062937282031135
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -349316,27 +349263,7 @@ MonoBehaviour:
   action: 1
   questId: find_exit
   questTextIfAdding: 
---- !u!65 &64062937282031136
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1573903938371829}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 2.1135173, y: 2.9102468, z: 2.823918}
-  m_Center: {x: -0.006083897, y: 1.4362184, z: 0.035664555}
+  fireOnce: 1
 --- !u!114 &64062937282031137
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -349355,7 +349282,7 @@ MonoBehaviour:
   isLocked: 1
   requiredKeyID: 201
   requiredKeyItem: {fileID: 11400000, guid: 71240ced46456724db9c6d22d05d79e0, type: 2}
-  requiredKeySOId: 201
+  requiredKeySOId: 
   consumeKeyOnUnlock: 1
   consumeWrongSelectedKey: 0
   requireSelectedNumericKey: 0
@@ -349454,48 +349381,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300002, guid: cc8dc8258c356a14b9bf02775a033c9a, type: 3}
---- !u!114 &64086887347314378
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1684501590492843}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67ed09e9b3cd061469ff7d1ed4eb18b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  openAngle: 90
-  openSpeed: 2
-  isOpen: 0
-  isLocked: 0
-  requiredKeyID: 203
-  requiredKeyItem: {fileID: 11400000, guid: 8f90cc9f89bcba6408046360383fd887, type: 2}
-  requiredKeySOId: 
-  consumeKeyOnUnlock: 1
-  consumeWrongSelectedKey: 0
-  requireSelectedNumericKey: 0
-  linkedDoors: []
-  autoLinkDoors: 0
-  doorAnimator: {fileID: 0}
-  doorAudioSource: {fileID: 0}
-  doorOpenSound: {fileID: 8300000, guid: e24211d128104074c94f6999e69a62f5, type: 3}
-  doorCloseSound: {fileID: 8300000, guid: 6ba7071f95cebe34ca620ef7e69c421a, type: 3}
-  doorLockedSound: {fileID: 0}
-  interactionUI: {fileID: 2027195047}
-  interactionText: {fileID: 717095346}
-  openText: Press E to open
-  closeText: Press E to close
-  lockedText: Door is locked
-  headInventory: {fileID: 0}
-  playerInventory: {fileID: 369474181}
-  changeVisibilityOnInteract: 0
-  interactVisibilityState: 1
-  changeVisibilityOnCorrectCode: 0
-  correctCodeVisibilityState: 1
-  affectColliders: 0
-  visibilityTargets: []
 --- !u!114 &64086887347314379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -354794,7 +354679,7 @@ MonoBehaviour:
   deniedClip: {fileID: 0}
   promptText: {fileID: 717095346}
   promptInteractText: Press E to interact
-  promptLockedText: Chest is Locked
+  promptLockedText: Locked
   showProximityPrompt: 1
   lockedMessageDuration: 1.5
   debugDrawRay: 0
@@ -354815,6 +354700,7 @@ MonoBehaviour:
   action: 0
   questId: inspect_paper
   questTextIfAdding: Inspect the pile of paper
+  fireOnce: 1
 --- !u!114 &4135971101874858598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -354830,6 +354716,7 @@ MonoBehaviour:
   action: 1
   questId: inspect_luggage
   questTextIfAdding: 
+  fireOnce: 1
 --- !u!1 &4194650670673495422
 GameObject:
   m_ObjectHideFlags: 0
@@ -356219,16 +356106,13 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3287495093057650053}
   m_Mesh: {fileID: -6224670424476466028, guid: 3987c0abcc50b084ab6934d3d204f9a0, type: 3}
---- !u!61 &6787806441962107958
-BoxCollider2D:
+--- !u!64 &6787806441962107958
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3287495093057650053}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -356237,34 +356121,13 @@ BoxCollider2D:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
   m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -0.010543603}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 0.45354304, y: 0.116420574}
-  m_EdgeRadius: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -6224670424476466028, guid: 3987c0abcc50b084ab6934d3d204f9a0, type: 3}
 --- !u!1 &6890871271995775296
 GameObject:
   m_ObjectHideFlags: 0
@@ -357791,6 +357654,7 @@ MonoBehaviour:
   action: 1
   questId: get_key
   questTextIfAdding: 
+  fireOnce: 1
 --- !u!1 &9073903622470940114
 GameObject:
   m_ObjectHideFlags: 0
