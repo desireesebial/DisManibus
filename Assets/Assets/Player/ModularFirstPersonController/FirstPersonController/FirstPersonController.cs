@@ -1,4 +1,4 @@
-﻿// CHANGE LOG
+// CHANGE LOG
 // 
 // CHANGES || version VERSION
 //
@@ -88,6 +88,25 @@ public class FirstPersonController : MonoBehaviour
     public float sprintBarWidthPercent = .3f;
     public float sprintBarHeightPercent = .015f;
 
+    // Low Stamina Warning Colors
+    [Header("Stamina Warning Colors")]
+    [Tooltip("Stamina percentage when bar turns to low stamina color (default: 0.3 = 30%)")]
+    [Range(0.1f, 0.5f)]
+    public float lowStaminaThreshold = 0.3f;
+
+    [Tooltip("Stamina percentage when bar turns to critical color (default: 0.15 = 15%)")]
+    [Range(0.05f, 0.3f)]
+    public float criticalStaminaThreshold = 0.15f;
+
+    [Tooltip("Sprint bar color when stamina is normal (above low threshold)")]
+    public Color normalStaminaColor = new Color(0.2f, 1f, 0.2f, 1f); // Green
+
+    [Tooltip("Sprint bar color when stamina is low (below 30%)")]
+    public Color lowStaminaColor = new Color(1f, 0.8f, 0f, 1f); // Orange/Yellow
+
+    [Tooltip("Sprint bar color when stamina is critical (below 15%)")]
+    public Color criticalStaminaColor = new Color(1f, 0.2f, 0.2f, 1f); // Red
+
     // Internal Variables
     private CanvasGroup sprintBarCG;
     private bool isSprinting = false;
@@ -135,6 +154,17 @@ public class FirstPersonController : MonoBehaviour
     // Internal Variables
     private Vector3 jointOriginalPos;
     private float timer = 0;
+
+    #endregion
+
+    #region Tutorial
+
+    [Header("Stamina Tutorial")]
+    [Tooltip("Optional reference to StaminaTutorial component for first-time sprint notification")]
+    public StaminaTutorial staminaTutorial; // UPDATED 
+
+    // Internal Variables
+    private bool hasTriggeredStaminaTutorial = false;
 
     #endregion
 
@@ -272,6 +302,21 @@ public class FirstPersonController : MonoBehaviour
         }
 
         #endregion
+
+        #region Stamina Tutorial Setup
+
+        // Pass sprint bar reference to tutorial for auto-positioning
+        if (staminaTutorial != null && sprintBar != null)
+        {
+            RectTransform sprintBarRect = sprintBar.GetComponent<RectTransform>();
+            if (sprintBarRect != null)
+            {
+                staminaTutorial.SetStaminaBarReference(sprintBarRect);
+                Debug.Log("[FirstPersonController] Sprint bar reference passed to StaminaTutorial");
+            }
+        }
+
+        #endregion
     }
 
     // Helper to get an active player camera from anywhere
@@ -399,11 +444,30 @@ public class FirstPersonController : MonoBehaviour
                 sprintCooldown = sprintCooldownReset;
             }
 
-            // Handles sprintBar 
+            // Handles sprintBar
             if(useSprintBar && !unlimitedSprint)
             {
                 float sprintRemainingPercent = sprintRemaining / sprintDuration;
                 sprintBar.transform.localScale = new Vector3(sprintRemainingPercent, 1f, 1f);
+
+                // Update sprint bar color based on stamina level
+                if (sprintRemainingPercent <= criticalStaminaThreshold)
+                {
+                    // Critical stamina - use red
+                    sprintBar.color = criticalStaminaColor;
+                }
+                else if (sprintRemainingPercent <= lowStaminaThreshold)
+                {
+                    // Low stamina - smoothly transition from yellow to red
+                    float t = (sprintRemainingPercent - criticalStaminaThreshold) / (lowStaminaThreshold - criticalStaminaThreshold);
+                    sprintBar.color = Color.Lerp(criticalStaminaColor, lowStaminaColor, t);
+                }
+                else
+                {
+                    // Normal stamina - smoothly transition from green to yellow
+                    float t = (sprintRemainingPercent - lowStaminaThreshold) / (1f - lowStaminaThreshold);
+                    sprintBar.color = Color.Lerp(lowStaminaColor, normalStaminaColor, t);
+                }
             }
         }
 
@@ -474,6 +538,13 @@ public class FirstPersonController : MonoBehaviour
             // All movement calculations shile sprint is active
             if (enableSprint && Input.GetKey(sprintKey) && sprintRemaining > 0f && !isSprintCooldown)
             {
+                // Trigger stamina tutorial on first sprint
+                if (!hasTriggeredStaminaTutorial && staminaTutorial != null)
+                {
+                    staminaTutorial.ShowTutorial();
+                    hasTriggeredStaminaTutorial = true;
+                }
+
                 targetVelocity = transform.TransformDirection(targetVelocity) * sprintSpeed;
 
                 // Apply a force that attempts to reach our target velocity
@@ -640,7 +711,7 @@ public class FirstPersonController : MonoBehaviour
         EditorGUILayout.Space();
 
         fpc.playerCamera = (Camera)EditorGUILayout.ObjectField(new GUIContent("Camera", "Camera attached to the controller."), fpc.playerCamera, typeof(Camera), true);
-        fpc.fov = EditorGUILayout.Slider(new GUIContent("Field of View", "The camera’s view angle. Changes the player camera directly."), fpc.fov, fpc.zoomFOV, 179f);
+        fpc.fov = EditorGUILayout.Slider(new GUIContent("Field of View", "The camera�s view angle. Changes the player camera directly."), fpc.fov, fpc.zoomFOV, 179f);
         fpc.cameraCanMove = EditorGUILayout.ToggleLeft(new GUIContent("Enable Camera Rotation", "Determines if the camera is allowed to move."), fpc.cameraCanMove);
 
         GUI.enabled = fpc.cameraCanMove;

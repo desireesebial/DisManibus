@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Playables;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -125,9 +126,60 @@ public class CutsceneControl : MonoBehaviour
         foreach (var b in behavioursToDisable) if (b) b.enabled = true;
         foreach (var b in _auto) if (b) b.enabled = true;
 
-        // Restore UI elements
-        Debug.Log("[CutsceneControl] Calling RestoreUI()");
+        // Restore UI elements with delay to ensure it happens after all cleanup
+        Debug.Log("[CutsceneControl] Scheduling RestoreUI()");
+        StartCoroutine(RestoreUIDelayed());
+    }
+
+    private IEnumerator RestoreUIDelayed()
+    {
+        // Wait for end of frame + a bit more to ensure all cutscene cleanup is done
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForSeconds(0.1f);
+
+        Debug.Log("[CutsceneControl] Now calling RestoreUI()");
         RestoreUI();
+
+        // FORCE restore - directly enable UI elements even if not in dictionary
+        yield return new WaitForSeconds(0.2f);
+        ForceRestoreUI();
+    }
+
+    private void ForceRestoreUI()
+    {
+        Debug.Log("[CutsceneControl] ForceRestoreUI() - FORCING UI to show");
+
+        if (healthUI != null)
+        {
+            healthUI.SetActive(true);
+            Debug.Log($"[CutsceneControl] FORCED healthUI ON: {healthUI.name}");
+        }
+
+        if (questUI != null)
+        {
+            questUI.SetActive(true);
+            Debug.Log($"[CutsceneControl] FORCED questUI ON: {questUI.name}");
+        }
+
+        if (itemTrackerUI != null)
+        {
+            itemTrackerUI.SetActive(true);
+            Debug.Log($"[CutsceneControl] FORCED itemTrackerUI ON: {itemTrackerUI.name}");
+        }
+
+        if (inventoryPanel != null)
+        {
+            inventoryPanel.SetActive(true);
+            Debug.Log($"[CutsceneControl] FORCED inventoryPanel ON: {inventoryPanel.name}");
+        }
+
+        if (staminaUI != null)
+        {
+            staminaUI.SetActive(true);
+            Debug.Log($"[CutsceneControl] FORCED staminaUI ON: {staminaUI.name}");
+        }
+
+        Debug.Log("[CutsceneControl] ForceRestoreUI() complete - ALL UI should be visible now!");
     }
 
     private void HideUI()
@@ -203,8 +255,20 @@ public class CutsceneControl : MonoBehaviour
         {
             if (kvp.Key != null)
             {
-                Debug.Log($"[CutsceneControl] Restoring '{kvp.Key.name}' to {(kvp.Value ? "active" : "inactive")}");
-                kvp.Key.SetActive(kvp.Value);
+                bool shouldBeActive = kvp.Value;
+                Debug.Log($"[CutsceneControl] Restoring '{kvp.Key.name}' to {(shouldBeActive ? "active" : "inactive")}");
+                kvp.Key.SetActive(shouldBeActive);
+
+                // Double-check it actually got set
+                if (kvp.Key.activeSelf != shouldBeActive)
+                {
+                    Debug.LogWarning($"[CutsceneControl] Failed to restore '{kvp.Key.name}' - trying again!");
+                    kvp.Key.SetActive(shouldBeActive);
+                }
+                else
+                {
+                    Debug.Log($"[CutsceneControl] Successfully restored '{kvp.Key.name}' - now {(kvp.Key.activeSelf ? "ACTIVE" : "inactive")}");
+                }
             }
         }
 
