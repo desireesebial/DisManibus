@@ -43,6 +43,16 @@ public class PlayerHealthSystem : MonoBehaviour
     [Header("Player Controller")]
     public FirstPersonController playerController;
 
+    [Header("Gameplay UI to Hide on Death")]
+    [Tooltip("Stamina/Sprint bar UI")]
+    public GameObject staminaUI;
+
+    [Tooltip("Quest objectives UI")]
+    public GameObject questUI;
+
+    [Tooltip("Item tracker/clues UI")]
+    public GameObject itemTrackerUI;
+
     [Header("Audio")]
     public AudioSource audioSource;
     public AudioClip damageSound;
@@ -585,6 +595,28 @@ public class PlayerHealthSystem : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
+        // Hide all gameplay UI elements
+        if (healthUI != null)
+        {
+            healthUI.SetActive(false);
+            Debug.Log("[PlayerHealthSystem] Hiding healthUI on death");
+        }
+        if (staminaUI != null)
+        {
+            staminaUI.SetActive(false);
+            Debug.Log("[PlayerHealthSystem] Hiding staminaUI on death");
+        }
+        if (questUI != null)
+        {
+            questUI.SetActive(false);
+            Debug.Log("[PlayerHealthSystem] Hiding questUI on death");
+        }
+        if (itemTrackerUI != null)
+        {
+            itemTrackerUI.SetActive(false);
+            Debug.Log("[PlayerHealthSystem] Hiding itemTrackerUI on death");
+        }
+
         // Show death screen UI
         if (deathMessageUI != null)
             deathMessageUI.SetActive(true);
@@ -674,6 +706,28 @@ public class PlayerHealthSystem : MonoBehaviour
                 mainMenuButton.gameObject.SetActive(false);
             if (playerController != null && !playerController.enabled)
                 playerController.enabled = true;
+
+            // Restore gameplay UI elements
+            if (healthUI != null)
+            {
+                healthUI.SetActive(true);
+                Debug.Log("[PlayerHealthSystem] Restoring healthUI");
+            }
+            if (staminaUI != null)
+            {
+                staminaUI.SetActive(true);
+                Debug.Log("[PlayerHealthSystem] Restoring staminaUI");
+            }
+            if (questUI != null)
+            {
+                questUI.SetActive(true);
+                Debug.Log("[PlayerHealthSystem] Restoring questUI");
+            }
+            if (itemTrackerUI != null)
+            {
+                itemTrackerUI.SetActive(true);
+                Debug.Log("[PlayerHealthSystem] Restoring itemTrackerUI");
+            }
         }
 
         // Update UI and status
