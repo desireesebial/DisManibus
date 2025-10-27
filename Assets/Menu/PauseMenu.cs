@@ -30,6 +30,9 @@ public class PauseMenu : MonoBehaviour
     [Header("Player Camera Control")]
     [SerializeField] private FirstPersonController playerController;
 
+    [Header("Player Health")]
+    [SerializeField] private PlayerHealthSystem playerHealthSystem;
+
     [Header("Scene")]
     [SerializeField] private string mainMenuSceneName = "MainMenu";
 
@@ -60,6 +63,12 @@ public class PauseMenu : MonoBehaviour
             playerController = FindObjectOfType<FirstPersonController>();
         }
 
+        // Auto-find player health system if not assigned
+        if (playerHealthSystem == null)
+        {
+            playerHealthSystem = FindObjectOfType<PlayerHealthSystem>();
+        }
+
         Time.timeScale = 1f;
         isPaused = false;
         Cursor.visible = false;
@@ -72,6 +81,12 @@ public class PauseMenu : MonoBehaviour
         {
             // Don't allow pausing during cutscenes
             if (CutsceneControl.IsPlayingCutscene)
+            {
+                return;
+            }
+
+            // Don't allow pausing when player is dead
+            if (playerHealthSystem != null && playerHealthSystem.IsDead())
             {
                 return;
             }
@@ -89,6 +104,12 @@ public class PauseMenu : MonoBehaviour
     // ---------- main pause ----------
     public void Pause()
     {
+        // Don't allow pausing when player is dead
+        if (playerHealthSystem != null && playerHealthSystem.IsDead())
+        {
+            return;
+        }
+
         isPaused = true;
 
         SetCanvasVisible(settingsGroup, false);
