@@ -10,9 +10,17 @@ public class QuestTrigger : MonoBehaviour
 
     [TextArea] public string questTextIfAdding;
 
+    [Tooltip("If true, this trigger will only fire once and then disable itself")]
+    public bool fireOnce = true;
+
+    private bool hasFired = false;
+
     // Call from UnityEvent, OnTriggerEnter, or another script.
     public void Fire()
     {
+        // Prevent firing multiple times if fireOnce is enabled
+        if (fireOnce && hasFired) return;
+
         var qm = QuestManager.Instance;
         if (!qm) return;
 
@@ -28,14 +36,23 @@ public class QuestTrigger : MonoBehaviour
                 qm.RemoveQuest(questId);
                 break;
         }
+
+        // Mark as fired and disable if needed
+        if (fireOnce)
+        {
+            hasFired = true;
+            enabled = false; // Disable this component to prevent further triggers
+        }
     }
 
     // Example trigger (optional): auto-fire when player enters
     void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Player")) return;
+
+        // Skip if already fired and fireOnce is enabled
+        if (fireOnce && hasFired) return;
+
         Fire();
-        // If you only want it once:
-        // Destroy(this);
     }
 }
