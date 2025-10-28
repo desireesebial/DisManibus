@@ -24,7 +24,7 @@ public class VideoTrigger : MonoBehaviour
     public FirstPersonController playerController;
 
     // Internal variables
-    private bool hasPlayed = false;
+    public bool hasPlayed = false; // Public so KuchisakeOnna can monitor it
     private bool isPlayingVideo = false;
     private GameObject videoCanvas;
     private VideoPlayer videoPlayer;

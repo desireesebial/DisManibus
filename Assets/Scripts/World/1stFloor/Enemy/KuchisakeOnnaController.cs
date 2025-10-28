@@ -73,6 +73,10 @@ public class KuchisakeOnnaController : MonoBehaviour
     [Header("References")]
     [SerializeField] private KuchisakeQuestionUI questionUI;
     [SerializeField] private Transform player;
+
+    [Header("Video Trigger Integration")]
+    [Tooltip("Reference to the VideoTrigger that activates persistent chase mode")]
+    [SerializeField] private VideoTrigger videoTrigger;
     #endregion
 
     #region Private Fields
@@ -86,6 +90,12 @@ public class KuchisakeOnnaController : MonoBehaviour
 
     // Chase optimization
     private Vector3 lastChaseTargetPosition;
+
+    // Persistent chase mode (activated by video trigger)
+    private bool isPersistentChase = false;
+    private bool isPlayerInSafeZone = false;
+    private bool hasMonitoredVideoTrigger = false; // Prevents multiple activations
+    private Coroutine maskRestoreCoroutine = null; // Tracks delayed mask restoration
 
     // Coroutine tracking
     private List<Coroutine> runningCoroutines = new List<Coroutine>();
@@ -179,6 +189,9 @@ public class KuchisakeOnnaController : MonoBehaviour
     void Update()
     {
         if (!isActive || player == null) return;
+
+        // Monitor video trigger for persistent chase activation
+        MonitorVideoTrigger();
 
         // Ambient scissor sounds (only after first encounter)
         if (hasHadFirstEncounter)
@@ -348,6 +361,7 @@ public class KuchisakeOnnaController : MonoBehaviour
 
     /// <summary>
     /// Handles the patrol state behavior including movement and player detection.
+    /// In persistent chase mode, monitors for player leaving safe zone and immediately resumes chase.
     /// </summary>
     void HandlePatrol()
     {
@@ -375,6 +389,24 @@ public class KuchisakeOnnaController : MonoBehaviour
         if (player == null)
             return;
 
+        // PERSISTENT CHASE MODE: Check if player left safe zone
+        if (isPersistentChase)
+        {
+            CheckPlayerSafeZone();
+
+            if (!isPlayerInSafeZone)
+            {
+                // Player left safe zone - immediately resume chase (no questions!)
+                Debug.Log($"[KuchisakeOnna] {gameObject.name}: Player detected outside safe zone! Resuming chase!");
+                StartChase();
+                return;
+            }
+
+            // Continue patrolling while player is in safe zone
+            return;
+        }
+
+        // NORMAL MODE: Check for player detection with line of sight
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
         if (distanceToPlayer <= detectionRange)
         {
@@ -407,6 +439,7 @@ public class KuchisakeOnnaController : MonoBehaviour
 
     /// <summary>
     /// Handles the chase state, pursuing the player until caught or escaped.
+    /// In persistent chase mode, never gives up - patrols map when player is in safe zone.
     /// </summary>
     void HandleChase()
     {
@@ -415,6 +448,34 @@ public class KuchisakeOnnaController : MonoBehaviour
 
         // Set running animation during chase
         ChangeAnimationState(AnimationState.Running);
+
+        // PERSISTENT CHASE: Check if player is in safe zone (unwalkable area)
+        if (isPersistentChase)
+        {
+            CheckPlayerSafeZone();
+
+            if (isPlayerInSafeZone)
+            {
+                // Player is hiding in safe zone - patrol the entire map to find them
+                Debug.Log($"[KuchisakeOnna] {gameObject.name}: Player in safe zone. Patrolling map...");
+                currentState = EnemyState.Patrol;
+                agent.speed = patrolSpeed;
+
+                // Start 3-second timer to restore mask while patrolling
+                if (maskRestoreCoroutine != null)
+                {
+                    StopCoroutine(maskRestoreCoroutine);
+                }
+                maskRestoreCoroutine = StartTrackedCoroutine(DelayedMaskRestore(3f));
+
+                // Start patrolling all waypoints
+                if (HasValidPatrolPoints())
+                {
+                    GoToNextPatrolPoint();
+                }
+                return;
+            }
+        }
 
         // Optimize: Only update destination if player moved significantly
         float distanceFromLastUpdate = Vector3.Distance(player.position, lastChaseTargetPosition);
@@ -434,11 +495,15 @@ public class KuchisakeOnnaController : MonoBehaviour
             return;
         }
 
-        // Check if player escaped
-        if (distanceToPlayer > escapeDistance || chaseTimer <= 0)
+        // Check if player escaped (ONLY if NOT persistent chase mode)
+        if (!isPersistentChase)
         {
-            currentState = EnemyState.Retreat;
+            if (distanceToPlayer > escapeDistance || chaseTimer <= 0)
+            {
+                currentState = EnemyState.Retreat;
+            }
         }
+        // In persistent chase mode, NEVER retreat - chase forever
     }
 
     /// <summary>
@@ -603,6 +668,14 @@ public class KuchisakeOnnaController : MonoBehaviour
 
     public void OnPlayerAnswered(KuchisakeQuestionUI.Answer answer)
     {
+        // PERSISTENT CHASE MODE: Skip all question logic, just chase
+        if (isPersistentChase)
+        {
+            Debug.Log($"[KuchisakeOnna] {gameObject.name}: Persistent chase active - ignoring question answer!");
+            StartChase();
+            return;
+        }
+
         // Check if this is the first encounter
         if (!hasHadFirstEncounter)
         {
@@ -825,6 +898,21 @@ public class KuchisakeOnnaController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Coroutine that restores the mask after a delay.
+    /// Used during persistent chase when enemy switches to patrol mode.
+    /// </summary>
+    IEnumerator DelayedMaskRestore(float delay)
+    {
+        Debug.Log($"[KuchisakeOnna] {gameObject.name}: Will restore mask in {delay} seconds...");
+        yield return new WaitForSeconds(delay);
+
+        Debug.Log($"[KuchisakeOnna] {gameObject.name}: Restoring mask (patrolling mode)");
+        RestoreMask();
+
+        maskRestoreCoroutine = null;
+    }
+
     IEnumerator DelayedChase(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -836,7 +924,14 @@ public class KuchisakeOnnaController : MonoBehaviour
         currentState = EnemyState.Chase;
         chaseTimer = chaseTimeout;
 
-        // Remove mask when starting chase to show slit-mouth
+        // Cancel any pending mask restore timer
+        if (maskRestoreCoroutine != null)
+        {
+            StopCoroutine(maskRestoreCoroutine);
+            maskRestoreCoroutine = null;
+        }
+
+        // Remove mask immediately when starting chase to show slit-mouth
         RemoveMask();
 
         if (agent != null)
@@ -906,11 +1001,21 @@ public class KuchisakeOnnaController : MonoBehaviour
         // Stop all running coroutines
         StopAllTrackedCoroutines();
 
+        // Cancel mask restore coroutine if running
+        if (maskRestoreCoroutine != null)
+        {
+            StopCoroutine(maskRestoreCoroutine);
+            maskRestoreCoroutine = null;
+        }
+
         // Reset state
         currentState = requireFirstEncounter ? EnemyState.WaitingFirstEncounter : EnemyState.Patrol;
         currentAnimationState = AnimationState.Idle;
         isActive = true;
         hasHadFirstEncounter = false; // FIX: Reset first encounter flag
+        isPersistentChase = false; // Reset persistent chase flag
+        isPlayerInSafeZone = false; // Reset safe zone flag
+        hasMonitoredVideoTrigger = false; // Reset video trigger monitoring
 
         // Restore mask
         RestoreMask();
@@ -934,6 +1039,63 @@ public class KuchisakeOnnaController : MonoBehaviour
         {
             GoToNextPatrolPoint();
         }
+    }
+
+    /// <summary>
+    /// Monitors the VideoTrigger to detect when video has played/finished.
+    /// When detected, activates persistent chase mode.
+    /// </summary>
+    private void MonitorVideoTrigger()
+    {
+        // Check if we have a video trigger to monitor
+        if (videoTrigger == null)
+            return;
+
+        // Check if already monitored and activated
+        if (hasMonitoredVideoTrigger)
+            return;
+
+        // Check if video has played (either finished or skipped)
+        if (videoTrigger.hasPlayed)
+        {
+            Debug.Log($"[KuchisakeOnna] {gameObject.name}: Video trigger detected! Video has played.");
+
+            // Mark as monitored to prevent multiple activations
+            hasMonitoredVideoTrigger = true;
+
+            // Activate persistent chase mode
+            ActivatePersistentChase();
+        }
+    }
+
+    /// <summary>
+    /// Activates persistent chase mode. Called when video trigger has played.
+    /// In this mode, the enemy will chase the player indefinitely without giving up.
+    /// When player is in safe zone (unwalkable area), enemy patrols the entire map.
+    /// </summary>
+    public void ActivatePersistentChase()
+    {
+        Debug.Log($"[KuchisakeOnna] {gameObject.name}: PERSISTENT CHASE ACTIVATED! There is no escape...");
+
+        isPersistentChase = true;
+
+        // Skip first encounter if not done yet
+        if (!hasHadFirstEncounter)
+        {
+            hasHadFirstEncounter = true;
+
+            // Enable NavMesh agent
+            if (agent != null)
+            {
+                agent.enabled = true;
+            }
+        }
+
+        // Remove mask to show slit-mouth (she's revealed herself)
+        RemoveMask();
+
+        // Force immediate chase mode
+        StartChase();
     }
 
     // Animation Methods
@@ -1025,6 +1187,37 @@ public class KuchisakeOnnaController : MonoBehaviour
     #endregion
 
     #region Helper Methods
+    /// <summary>
+    /// Checks if the player is in a safe zone (unwalkable area off NavMesh).
+    /// Updates isPlayerInSafeZone flag.
+    /// </summary>
+    private void CheckPlayerSafeZone()
+    {
+        if (player == null)
+            return;
+
+        // Check if player position is on NavMesh
+        NavMeshHit hit;
+        float searchRadius = 1.5f; // Search within 1.5m of player position
+
+        // SamplePosition returns true if a valid NavMesh position is found near the player
+        bool isOnNavMesh = NavMesh.SamplePosition(player.position, out hit, searchRadius, NavMesh.AllAreas);
+
+        // If player is NOT on NavMesh, they're in a safe zone
+        bool wasInSafeZone = isPlayerInSafeZone;
+        isPlayerInSafeZone = !isOnNavMesh;
+
+        // Log when player enters/exits safe zone
+        if (isPlayerInSafeZone && !wasInSafeZone)
+        {
+            Debug.Log($"[KuchisakeOnna] {gameObject.name}: Player entered safe zone!");
+        }
+        else if (!isPlayerInSafeZone && wasInSafeZone)
+        {
+            Debug.Log($"[KuchisakeOnna] {gameObject.name}: Player left safe zone! Resuming chase!");
+        }
+    }
+
     /// <summary>
     /// Plays a sound clip safely with null checks.
     /// </summary>
