@@ -26437,6 +26437,72 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.011895185, y: 0.019986672, z: 0.013703685}
   m_Center: {x: -0.0049236687, y: 0.009714044, z: 0.000055246055}
+--- !u!1 &318771608
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 318771609}
+  - component: {fileID: 318771610}
+  m_Layer: 0
+  m_Name: HealthVisionEffects
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &318771609
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318771608}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 328854240}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &318771610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318771608}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4e91dd622b998d4e86d2bd516b2813f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerHealthSystem: {fileID: 4459864850702346307}
+  vignetteOverlay: {fileID: 1124117479}
+  postProcessVolume: {fileID: 0}
+  vignetteColor: {r: 0, g: 0, b: 0, a: 1}
+  maxVignetteIntensity: 0.8
+  minVignetteIntensity: 0
+  fullHealthPercent: 1
+  highHealthPercent: 0.66
+  midHealthPercent: 0.33
+  lowHealthPercent: 0.01
+  vignetteAtFull: 0
+  vignetteAtHigh: 0.2
+  vignetteAtMid: 0.5
+  vignetteAtLow: 0.8
+  enableBlur: 0
+  maxBlurIntensity: 5
+  transitionSpeed: 3
+  useSmoothEasing: 1
+  enablePulseAtCritical: 1
+  pulseSpeed: 2
+  pulseAmount: 0.15
+  showDebug: 1
 --- !u!43 &322843966
 Mesh:
   m_ObjectHideFlags: 0
@@ -27061,7 +27127,9 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1124117481}
   - {fileID: 1675747106}
+  - {fileID: 318771609}
   m_Father: {fileID: 1413456150}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -46804,7 +46872,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bottomOffset: 170
-  horizontalPadding: 20
+  horizontalPadding: 30
   autoConfigureOnAwake: 1
 --- !u!1 &437849969
 GameObject:
@@ -168555,6 +168623,81 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!1 &1124117478
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1124117481}
+  - component: {fileID: 1124117480}
+  - component: {fileID: 1124117479}
+  m_Layer: 5
+  m_Name: VignetteOverlay
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1124117479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1124117478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: cf636a80bc69690469cae0fba97e8629, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1124117480
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1124117478}
+  m_CullTransparentMesh: 1
+--- !u!224 &1124117481
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1124117478}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 328854240}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1125761535
 GameObject:
   m_ObjectHideFlags: 0
@@ -220198,14 +220341,14 @@ MonoBehaviour:
   controlsPanel: {fileID: 916552157}
   controlsGroup: {fileID: 1569703278}
   borderOverlay: {fileID: 0}
-  inventoryPanel: {fileID: 1369198881}
-  healthUI: {fileID: 585668447}
-  dialogueUI: {fileID: 436697164}
-  questUI: {fileID: 1739399405}
+  inventoryPanel: {fileID: 347053571}
+  healthUI: {fileID: 2074815568}
+  dialogueUI: {fileID: 1676519755}
+  questUI: {fileID: 0}
   cluesUI: {fileID: 0}
-  staminaUI: {fileID: 0}
+  staminaUI: {fileID: 1448144789}
   playerController: {fileID: 4459864850702346298}
-  playerHealthSystem: {fileID: 0}
+  playerHealthSystem: {fileID: 4459864850702346307}
   mainMenuSceneName: MainMenu
 --- !u!114 &1675747104
 MonoBehaviour:
@@ -406788,7 +406931,7 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 1
-  m_Height: 7
+  m_Height: 6
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &4459864850702346306
@@ -406907,9 +407050,9 @@ MonoBehaviour:
   damageFlashDuration: 0.2
   damageFlashColor: {r: 1, g: 0, b: 0, a: 1}
   playerController: {fileID: 4459864850702346298}
-  staminaUI: {fileID: 0}
-  questUI: {fileID: 0}
-  itemTrackerUI: {fileID: 0}
+  staminaUI: {fileID: 347053571}
+  questUI: {fileID: 1676519755}
+  itemTrackerUI: {fileID: 2074815568}
   audioSource: {fileID: 0}
   damageSound: {fileID: 0}
   healSound: {fileID: 0}
