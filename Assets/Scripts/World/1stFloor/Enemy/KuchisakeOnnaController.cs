@@ -1,122 +1,69 @@
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections;
-using System.Collections.Generic;
 
 /// <summary>
-/// Controls the Kuchisake-onna enemy AI behavior including patrol, detection, questioning, and chase mechanics.
+/// Simplified Kuchisake-onna controller with video-triggered chase behavior.
+/// States: Standby -> AggressiveChase -> WaitingAtSafeZone -> Watching -> AggressiveChase (loop)
+/// Mask is hidden during chase/waiting, visible during watching.
 /// </summary>
 public class KuchisakeOnnaController : MonoBehaviour
 {
     #region Constants
-    private const float PATROL_POINT_REACHED_DISTANCE = 0.5f;
     private const float CATCH_PLAYER_DISTANCE = 2f;
-    private const float AGENT_MOVING_THRESHOLD = 0.1f;
-    private const float RAYCAST_EYE_HEIGHT = 1.5f;
-    private const float CHASE_UPDATE_DISTANCE_THRESHOLD = 1f;
-    private const float FIRST_QUESTION_DELAY = 1f;
-    private const float SMOOTH_LOOK_DURATION = 1.5f;
-    private const float YES_SEQUENCE_MASK_DELAY = 1f;
-    private const float YES_SEQUENCE_PAUSE = 2f;
-    private const float NO_SEQUENCE_DELAY = 1f;
-    private const float NO_SEQUENCE_STANDUP_MULTIPLIER = 0.7f;
-    private const float MAYBE_SEQUENCE_DELAY = 1.5f;
-    private const float MAYBE_SEQUENCE_PAUSE = 1.5f;
+    private const float SAFE_ZONE_CHECK_RADIUS = 10f; // Large radius to find NavMesh
+    private const float SAFE_ZONE_DISTANCE_THRESHOLD = 2f; // Player must be 2m+ from NavMesh to be "safe"
+    private const float CHASE_LOG_INTERVAL = 2f;
 
-    // Animation distance states (for distanceFromPlayer parameter)
-    private const int ANIM_DISTANCE_IDLE = 0;      // Sitting/Idle state
-    private const int ANIM_DISTANCE_WALKING = 1;   // Walking/Patrol state
-    private const int ANIM_DISTANCE_RUNNING = 2;   // Running/Chase state
+    // Animation distance states
+    private const int ANIM_IDLE = 0;
+    private const int ANIM_WALKING = 1;
+    private const int ANIM_RUNNING = 2;
     #endregion
 
     #region Serialized Fields
-    [Header("AI Settings")]
-    [SerializeField] private Transform[] patrolPoints;
-    [SerializeField] private float patrolSpeed = 2f;
-    [SerializeField] private float chaseSpeed = 4f;
-    [SerializeField] private float detectionRange = 8f;
-    [SerializeField] private float chaseTimeout = 30f;
-    [SerializeField] private float escapeDistance = 20f;
+    [Header("Core References")]
+    [SerializeField] private Transform player;
+    [SerializeField] private VideoTrigger videoTrigger;
 
-    [Header("Question Settings")]
-    [SerializeField] private float questionTimer = 5f;
-    [SerializeField] private float chaseChanceOnYes = 0.7f; // 70% chance she chases even on "Yes"
-    
-    [Header("Audio")]
-    [SerializeField] private AudioSource audioSource;
-    [SerializeField] private AudioClip scissorsSnipSound;
-    [SerializeField] private AudioClip questionVoiceClip;
-    [SerializeField] private AudioClip deathScreamClip;
-    [SerializeField] private AudioClip angerSound;
-    [SerializeField] private AudioClip retreatLaughSound;
-    [SerializeField] private float ambientScissorInterval = 5f;
+    [Header("Chase Settings")]
+    [SerializeField] private float chaseSpeed = 4f;
+    [Tooltip("How many seconds to wait at safe zone edge before switching to watching mode")]
+    [SerializeField] private float safeZoneWaitTime = 5f;
 
     [Header("Visual Effects")]
-    [SerializeField] private GameObject maskObject; // Mask on face
+    [SerializeField] private GameObject maskObject;
     [SerializeField] private Material normalFaceMaterial;
     [SerializeField] private Material slitMouthMaterial;
     [SerializeField] private Renderer faceRenderer;
 
-    [Header("First Encounter")]
-    [SerializeField] private bool requireFirstEncounter = true;
-    [SerializeField] private Transform firstEncounterPosition; // Where she sits initially
-    [SerializeField] private float firstEncounterTriggerDistance = 5f; // Distance to trigger first encounter
-    [SerializeField] private Animator animator; // For sitting/standing animations
-    [SerializeField] private string nearPlayerTrigger = "nearPlayer"; // Trigger when player is near (for standing up)
-    [SerializeField] private float standUpDuration = 2f; // Time for stand up animation
+    [Header("Animation")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private string distanceParameter = "distanceFromPlayer";
 
-    [Header("Movement Animations")]
-    [SerializeField] private string distanceParameter = "distanceFromPlayer"; // Int parameter for distance-based animations
-    [Tooltip("Optional: Float parameter for walking speed control (0=idle, 1=walk)")]
-    [SerializeField] private string speedParameter = "Speed"; // Optional speed parameter
-    
-    [Header("References")]
-    [SerializeField] private KuchisakeQuestionUI questionUI;
-    [SerializeField] private Transform player;
-
-    [Header("Persistent Chase (Video Trigger)")]
-    [Tooltip("Reference to the VideoTrigger that activates persistent chase mode")]
-    [SerializeField] private VideoTrigger videoTrigger;
-    [Tooltip("Seconds to wait at safe zone edge before patrolling")]
-    [SerializeField] private float safeZoneWaitTime = 5f;
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip deathScreamClip;
+    [SerializeField] private AudioClip scissorsSnipSound;
     #endregion
 
     #region Private Fields
     private NavMeshAgent agent;
-    private int currentPatrolIndex = 0;
-    private float chaseTimer;
-    private float ambientScissorTimer;
-    private bool isActive = true;
-    private bool hasHadFirstEncounter = false;
-    private bool isStandingUp = false;
+    private EnemyState currentState = EnemyState.Standby;
+    private EnemyState lastLoggedState = EnemyState.Standby;
+    private AnimationState currentAnimationState = AnimationState.Idle;
 
-    // Chase optimization
-    private Vector3 lastChaseTargetPosition;
-
-    // Persistent chase state
-    private bool persistentChaseActive = false;
-    private bool playerInSafeZone = false;
+    private bool chaseActivated = false;
     private float safeZoneWaitTimer = 0f;
-    private Coroutine maskRestoreCoroutine;
-
-    // Coroutine tracking
-    private List<Coroutine> runningCoroutines = new List<Coroutine>();
+    private float chaseLogTimer = 0f;
     #endregion
 
     #region Enums
-
     public enum EnemyState
     {
-        WaitingFirstEncounter, // Sitting, waiting for player
-        FirstEncounter,        // First question encounter
-        StandingUp,           // Animation of standing up
-        Patrol,
-        Question,
-        Chase,
-        PersistentChase,      // Persistent chase after video trigger
-        WaitingAtSafeZone,    // Waiting at safe zone edge
-        Retreat,
-        Disabled
+        Standby,            // Idle, waiting for video to play
+        AggressiveChase,    // Chasing player with mask off
+        WaitingAtSafeZone,  // Waiting at safe zone edge
+        Watching            // Standing still, monitoring player
     }
 
     public enum AnimationState
@@ -127,26 +74,17 @@ public class KuchisakeOnnaController : MonoBehaviour
     }
     #endregion
 
-    #region Private State
-    private EnemyState currentState = EnemyState.WaitingFirstEncounter;
-    private AnimationState currentAnimationState = AnimationState.Idle;
-    #endregion
-
     #region Unity Lifecycle
-    /// <summary>
-    /// Initializes the enemy controller and sets up initial state.
-    /// </summary>
     void Start()
     {
-        // Validate and initialize NavMeshAgent
+        // Get NavMesh Agent
         agent = GetComponent<NavMeshAgent>();
         if (agent == null)
         {
-            Debug.LogError($"[KuchisakeOnna] {gameObject.name}: NavMeshAgent component not found! Enemy will not function.");
+            Debug.LogError($"[KuchisakeOnna] {gameObject.name}: NavMeshAgent component missing!");
             enabled = false;
             return;
         }
-        agent.speed = patrolSpeed;
 
         // Find player if not assigned
         if (player == null)
@@ -155,359 +93,101 @@ public class KuchisakeOnnaController : MonoBehaviour
             if (playerObj != null)
             {
                 player = playerObj.transform;
+                Debug.Log($"[KuchisakeOnna] Player found: {player.name}");
             }
             else
             {
-                Debug.LogWarning($"[KuchisakeOnna] {gameObject.name}: Player not found! Enemy will not detect player.");
+                Debug.LogError($"[KuchisakeOnna] Player not found!");
             }
         }
 
-        // Validate required references
-        ValidateSetup();
-
-        // Initialize timers
-        ambientScissorTimer = ambientScissorInterval;
-        lastChaseTargetPosition = Vector3.zero;
-
-        // Setup first encounter behavior
-        if (requireFirstEncounter)
+        // Validate video trigger
+        if (videoTrigger == null)
         {
-            SetupFirstEncounter();
+            Debug.LogError($"[KuchisakeOnna] VIDEO TRIGGER NOT ASSIGNED! Chase will never activate.");
         }
         else
         {
-            // Skip first encounter, start patrolling immediately
-            hasHadFirstEncounter = true;
-            currentState = EnemyState.Patrol;
-
-            if (HasValidPatrolPoints())
-            {
-                GoToNextPatrolPoint();
-            }
+            Debug.Log($"[KuchisakeOnna] Video trigger assigned: {videoTrigger.gameObject.name}");
         }
+
+        // Start in standby mode - disable agent, wear mask, idle animation
+        currentState = EnemyState.Standby;
+        agent.enabled = false; // INTENTIONAL: Agent disabled until video plays
+        RestoreMask();
+        ChangeAnimationState(AnimationState.Idle);
+
+        Debug.Log($"[KuchisakeOnna] Initialized in STANDBY mode. NavMeshAgent DISABLED (intentional - will enable after video).");
     }
 
-    /// <summary>
-    /// Update is called once per frame. Handles state machine and ambient effects.
-    /// </summary>
     void Update()
     {
-        if (!isActive || player == null) return;
+        if (player == null) return;
 
-        // Monitor video trigger for persistent chase activation
-        MonitorVideoTrigger();
-
-        // Ambient scissor sounds (only after first encounter)
-        if (hasHadFirstEncounter)
+        // Monitor video trigger
+        if (!chaseActivated)
         {
-            ambientScissorTimer -= Time.deltaTime;
-            if (ambientScissorTimer <= 0)
-            {
-                PlayAmbientScissors();
-                ambientScissorTimer = ambientScissorInterval;
-            }
+            MonitorVideoTrigger();
+        }
+
+        // Log state changes
+        if (currentState != lastLoggedState)
+        {
+            Debug.Log($"[KuchisakeOnna] *** STATE CHANGED: {lastLoggedState} -> {currentState} ***");
+            lastLoggedState = currentState;
         }
 
         // State machine
         switch (currentState)
         {
-            case EnemyState.WaitingFirstEncounter:
-                HandleWaitingForFirstEncounter();
+            case EnemyState.Standby:
+                HandleStandby();
                 break;
-            case EnemyState.FirstEncounter:
-                HandleQuestion();
+
+            case EnemyState.AggressiveChase:
+                HandleAggressiveChase();
                 break;
-            case EnemyState.StandingUp:
-                // Wait for stand up animation to complete
-                break;
-            case EnemyState.Patrol:
-                HandlePatrol();
-                break;
-            case EnemyState.Question:
-                HandleQuestion();
-                break;
-            case EnemyState.Chase:
-                HandleChase();
-                break;
-            case EnemyState.PersistentChase:
-                HandlePersistentChase();
-                break;
+
             case EnemyState.WaitingAtSafeZone:
                 HandleWaitingAtSafeZone();
                 break;
-            case EnemyState.Retreat:
-                HandleRetreat();
+
+            case EnemyState.Watching:
+                HandleWatching();
                 break;
-        }
-    }
-
-    /// <summary>
-    /// Cleanup running coroutines when disabled.
-    /// </summary>
-    void OnDisable()
-    {
-        StopAllTrackedCoroutines();
-    }
-
-    /// <summary>
-    /// Cleanup running coroutines when destroyed.
-    /// </summary>
-    void OnDestroy()
-    {
-        StopAllTrackedCoroutines();
-    }
-    #endregion
-
-    #region Initialization & Validation
-    /// <summary>
-    /// Validates that all required components and references are properly set up.
-    /// </summary>
-    private void ValidateSetup()
-    {
-        if (audioSource == null)
-        {
-            Debug.LogWarning($"[KuchisakeOnna] {gameObject.name}: AudioSource not assigned. Enemy will have no sound.");
-        }
-
-        if (questionUI == null)
-        {
-            Debug.LogWarning($"[KuchisakeOnna] {gameObject.name}: KuchisakeQuestionUI not assigned. Question mechanic will not work.");
-        }
-
-        if (animator != null)
-        {
-            // Validate distance parameter exists
-            if (!string.IsNullOrEmpty(distanceParameter))
-            {
-                if (!HasAnimationParameter(distanceParameter))
-                {
-                    Debug.LogWarning($"[KuchisakeOnna] {gameObject.name}: Animation parameter '{distanceParameter}' not found in Animator.");
-                }
-            }
-            else
-            {
-                Debug.LogWarning($"[KuchisakeOnna] {gameObject.name}: Distance parameter is empty! Animation system will not work.");
-            }
-
-            // Validate nearPlayer trigger exists
-            if (!string.IsNullOrEmpty(nearPlayerTrigger) && !HasAnimationParameter(nearPlayerTrigger))
-            {
-                Debug.LogWarning($"[KuchisakeOnna] {gameObject.name}: Animation parameter '{nearPlayerTrigger}' not found in Animator.");
-            }
-
-            // Check optional speed parameter
-            if (!string.IsNullOrEmpty(speedParameter) && !HasAnimationParameter(speedParameter))
-            {
-                Debug.Log($"[KuchisakeOnna] {gameObject.name}: Optional speed parameter '{speedParameter}' not found. This is OK if not using speed control.");
-            }
-        }
-        else
-        {
-            Debug.LogWarning($"[KuchisakeOnna] {gameObject.name}: Animator component not assigned! Animations will not play.");
-        }
-
-        if (!HasValidPatrolPoints())
-        {
-            Debug.LogWarning($"[KuchisakeOnna] {gameObject.name}: No valid patrol points assigned. Enemy cannot patrol.");
-        }
-    }
-
-    /// <summary>
-    /// Checks if patrol points array contains at least one valid patrol point.
-    /// </summary>
-    private bool HasValidPatrolPoints()
-    {
-        if (patrolPoints == null || patrolPoints.Length == 0)
-            return false;
-
-        foreach (var point in patrolPoints)
-        {
-            if (point != null)
-                return true;
-        }
-        return false;
-    }
-
-    void SetupFirstEncounter()
-    {
-        hasHadFirstEncounter = false;
-        currentState = EnemyState.WaitingFirstEncounter;
-        
-        // Position at first encounter location if set
-        if (firstEncounterPosition != null)
-        {
-            transform.position = firstEncounterPosition.position;
-            transform.rotation = firstEncounterPosition.rotation;
-        }
-        
-        // Disable NavMesh agent during first encounter
-        if (agent != null)
-        {
-            agent.enabled = false;
-        }
-
-        // Set animation to sitting/idle state
-        if (animator != null && !string.IsNullOrEmpty(distanceParameter))
-        {
-            animator.SetInteger(distanceParameter, ANIM_DISTANCE_IDLE);
         }
     }
     #endregion
 
     #region State Handlers
     /// <summary>
-    /// Handles the waiting state for the first encounter with the player.
+    /// Standby state - completely idle, waiting for video to trigger.
     /// </summary>
-    void HandleWaitingForFirstEncounter()
+    void HandleStandby()
     {
-        // Check if player is close enough to trigger first encounter
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-        
-        if (distanceToPlayer <= firstEncounterTriggerDistance)
-        {
-            StartFirstEncounter();
-        }
-    }
-
-    /// <summary>
-    /// Handles the patrol state behavior including movement and player detection.
-    /// In persistent chase mode, monitors for player leaving safe zone and immediately resumes chase.
-    /// </summary>
-    void HandlePatrol()
-    {
-        // Validate agent is enabled and functional
-        if (agent == null || !agent.enabled || !agent.isOnNavMesh)
-            return;
-
-        // Set walking animation if moving
-        if (agent.velocity.magnitude > AGENT_MOVING_THRESHOLD)
-        {
-            ChangeAnimationState(AnimationState.Walking);
-        }
-        else
-        {
-            ChangeAnimationState(AnimationState.Idle);
-        }
-
-        // Check if reached patrol point
-        if (!agent.pathPending && agent.remainingDistance < PATROL_POINT_REACHED_DISTANCE)
-        {
-            GoToNextPatrolPoint();
-        }
-
-        // Check for player detection
-        if (player == null)
-            return;
-
-        // PERSISTENT CHASE MODE: Check if player left safe zone
-        if (persistentChaseActive)
-        {
-            playerInSafeZone = IsPlayerInSafeZone();
-
-            if (!playerInSafeZone)
-            {
-                // Player left safe zone - resume persistent chase!
-                Debug.Log($"[KuchisakeOnna] {gameObject.name}: Player left safe zone! Resuming chase!");
-                currentState = EnemyState.PersistentChase;
-                agent.speed = chaseSpeed;
-
-                // Cancel mask restore
-                if (maskRestoreCoroutine != null)
-                {
-                    StopCoroutine(maskRestoreCoroutine);
-                    maskRestoreCoroutine = null;
-                }
-                RemoveMask();
-                return;
-            }
-
-            // Continue patrolling while player is in safe zone
-            return;
-        }
-
-        // NORMAL MODE: Check for player detection with line of sight
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-        if (distanceToPlayer <= detectionRange)
-        {
-            // Check line of sight
-            RaycastHit hit;
-            Vector3 directionToPlayer = (player.position - transform.position).normalized;
-            Vector3 rayStart = transform.position + Vector3.up * RAYCAST_EYE_HEIGHT;
-
-            if (Physics.Raycast(rayStart, directionToPlayer, out hit, detectionRange))
-            {
-                if (hit.transform == player)
-                {
-                    StartChase();
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Handles the question state. Question timing is managed by KuchisakeQuestionUI.
-    /// </summary>
-    void HandleQuestion()
-    {
-        // Set idle animation while asking question
+        // Do nothing - just wait for video
         ChangeAnimationState(AnimationState.Idle);
-
-        // Question UI handles the timer and player input
-        // This is managed by the UI script
     }
 
     /// <summary>
-    /// Handles the normal chase state, pursuing the player until caught or escaped.
+    /// Aggressive chase - relentlessly pursues player with mask off.
     /// </summary>
-    void HandleChase()
+    void HandleAggressiveChase()
     {
-        if (agent == null || !agent.enabled || !agent.isOnNavMesh || player == null)
-            return;
+        Debug.Log($"[KuchisakeOnna] >>> HandleAggressiveChase() called");
 
-        // Set running animation during chase
-        ChangeAnimationState(AnimationState.Running);
+        // Validate agent
+        bool agentValid = ValidateAgent();
+        Debug.Log($"[KuchisakeOnna] ValidateAgent result: {agentValid}");
+        if (!agentValid) return;
 
-        // Update destination if player moved significantly
-        float distanceFromLastUpdate = Vector3.Distance(player.position, lastChaseTargetPosition);
-        if (distanceFromLastUpdate > CHASE_UPDATE_DISTANCE_THRESHOLD)
+        // Check if player entered safe zone
+        bool playerInSafe = IsPlayerInSafeZone();
+        Debug.Log($"[KuchisakeOnna] IsPlayerInSafeZone result: {playerInSafe}");
+
+        if (playerInSafe)
         {
-            agent.SetDestination(player.position);
-            lastChaseTargetPosition = player.position;
-        }
-
-        chaseTimer -= Time.deltaTime;
-
-        // Check if caught player
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-        if (distanceToPlayer < CATCH_PLAYER_DISTANCE)
-        {
-            CatchPlayer();
-            return;
-        }
-
-        // Check if player escaped
-        if (distanceToPlayer > escapeDistance || chaseTimer <= 0)
-        {
-            currentState = EnemyState.Retreat;
-        }
-    }
-
-    /// <summary>
-    /// Handles persistent chase state - chases player indefinitely, never gives up.
-    /// Switches to waiting state when player enters safe zone.
-    /// </summary>
-    void HandlePersistentChase()
-    {
-        if (agent == null || !agent.enabled || !agent.isOnNavMesh || player == null)
-            return;
-
-        // Check if player is in safe zone
-        playerInSafeZone = IsPlayerInSafeZone();
-
-        if (playerInSafeZone)
-        {
-            // Player entered safe zone - wait at edge
-            Debug.Log($"[KuchisakeOnna] {gameObject.name}: Player in safe zone. Waiting at edge...");
+            Debug.Log($"[KuchisakeOnna] Player entered safe zone. Waiting at edge...");
             currentState = EnemyState.WaitingAtSafeZone;
             safeZoneWaitTimer = safeZoneWaitTime;
             agent.isStopped = true;
@@ -515,14 +195,22 @@ public class KuchisakeOnnaController : MonoBehaviour
             return;
         }
 
-        // Normal chase behavior
+        // Chase behavior
         ChangeAnimationState(AnimationState.Running);
 
-        // Update destination to player position
+        // Update destination to player
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
         if (distanceToPlayer > 1f)
         {
             agent.SetDestination(player.position);
+        }
+
+        // Periodic logging
+        chaseLogTimer += Time.deltaTime;
+        if (chaseLogTimer >= CHASE_LOG_INTERVAL)
+        {
+            Debug.Log($"[KuchisakeOnna] Chasing - Distance: {distanceToPlayer:F2}m | Velocity: {agent.velocity.magnitude:F2}");
+            chaseLogTimer = 0f;
         }
 
         // Check if caught player
@@ -533,437 +221,201 @@ public class KuchisakeOnnaController : MonoBehaviour
     }
 
     /// <summary>
-    /// Handles waiting at safe zone edge - waits for player to exit or timer to expire.
+    /// Waiting at safe zone edge - player is in unwalkable area, timer counts down.
     /// </summary>
     void HandleWaitingAtSafeZone()
     {
-        if (player == null) return;
-
-        // Idle animation (staring at player)
         ChangeAnimationState(AnimationState.Idle);
 
         // Check if player left safe zone
-        playerInSafeZone = IsPlayerInSafeZone();
-
-        if (!playerInSafeZone)
+        if (!IsPlayerInSafeZone())
         {
-            // Player exited safe zone - resume chase immediately!
-            Debug.Log($"[KuchisakeOnna] {gameObject.name}: Player left safe zone! Resuming chase...");
-            currentState = EnemyState.PersistentChase;
+            Debug.Log($"[KuchisakeOnna] Player left safe zone! Resuming chase...");
+            currentState = EnemyState.AggressiveChase;
             agent.isStopped = false;
             agent.speed = chaseSpeed;
-
-            // Cancel mask restore
-            if (maskRestoreCoroutine != null)
-            {
-                StopCoroutine(maskRestoreCoroutine);
-                maskRestoreCoroutine = null;
-            }
             RemoveMask();
             return;
         }
 
-        // Player still in safe zone - countdown timer
+        // Count down timer
         safeZoneWaitTimer -= Time.deltaTime;
 
         if (safeZoneWaitTimer <= 0)
         {
-            // Wait time expired - start patrolling
-            Debug.Log($"[KuchisakeOnna] {gameObject.name}: Wait expired. Patrolling...");
-            currentState = EnemyState.Patrol;
-            agent.isStopped = false;
-            agent.speed = patrolSpeed;
-
-            // Restore mask after 3 seconds
-            if (maskRestoreCoroutine != null)
-                StopCoroutine(maskRestoreCoroutine);
-            maskRestoreCoroutine = StartCoroutine(RestoreMaskAfterDelay(3f));
-
-            // Start patrolling
-            if (HasValidPatrolPoints())
-                GoToNextPatrolPoint();
+            Debug.Log($"[KuchisakeOnna] Wait timer expired. Switching to WATCHING mode...");
+            currentState = EnemyState.Watching;
+            RestoreMask(); // Put mask back on when watching
         }
     }
 
     /// <summary>
-    /// Handles the retreat state, teleporting to a random patrol point and resuming patrol.
+    /// Watching mode - stands still at current position, monitors for player leaving safe zone.
     /// </summary>
-    void HandleRetreat()
+    void HandleWatching()
     {
-        // Set idle animation during retreat teleport
         ChangeAnimationState(AnimationState.Idle);
 
-        // Restore mask when retreating
-        RestoreMask();
-
-        // Teleport to random valid patrol point
-        if (HasValidPatrolPoints() && agent != null)
+        // Continuously check if player left safe zone
+        if (!IsPlayerInSafeZone())
         {
-            // Find a valid patrol point
-            Transform targetPoint = GetRandomValidPatrolPoint();
-            if (targetPoint != null)
+            Debug.Log($"[KuchisakeOnna] Player left safe zone during watching! Resuming chase...");
+
+            // Resume chase
+            currentState = EnemyState.AggressiveChase;
+
+            if (agent != null)
             {
-                // Ensure agent is enabled before warping
-                if (!agent.enabled)
-                {
-                    agent.enabled = true;
-                }
-
-                // Use Warp instead of direct position assignment for NavMeshAgent safety
-                agent.Warp(targetPoint.position);
-
-                // Play retreat sound
-                PlaySound(retreatLaughSound);
+                agent.isStopped = false;
+                agent.speed = chaseSpeed;
             }
-        }
 
-        // Resume patrol
-        currentState = EnemyState.Patrol;
-        if (agent != null)
-        {
-            agent.speed = patrolSpeed;
-            agent.isStopped = false;
+            RemoveMask();
         }
-        // Note: Removed GoToNextPatrolPoint() - HandlePatrol will navigate when she reaches the warped point
+    }
+    #endregion
+
+    #region Video Trigger
+    /// <summary>
+    /// Monitors video trigger to detect when video has played.
+    /// </summary>
+    void MonitorVideoTrigger()
+    {
+        if (chaseActivated) return;
+        if (videoTrigger == null) return;
+
+        if (videoTrigger.hasPlayed)
+        {
+            Debug.Log($"[KuchisakeOnna] VIDEO PLAYED! Activating aggressive chase...");
+            ActivateChase();
+        }
     }
 
     /// <summary>
-    /// Moves to the next patrol point in the patrol route.
+    /// Activates aggressive chase mode after video plays.
     /// </summary>
-    void GoToNextPatrolPoint()
+    void ActivateChase()
     {
-        if (!HasValidPatrolPoints() || agent == null || !agent.enabled)
-            return;
+        Debug.Log($"[KuchisakeOnna] ========== ACTIVATING CHASE ==========");
 
-        // Find next valid patrol point
-        int attempts = 0;
-        int maxAttempts = patrolPoints.Length;
+        chaseActivated = true;
 
-        while (attempts < maxAttempts)
+        // Enable NavMesh agent
+        if (agent != null)
         {
-            if (patrolPoints[currentPatrolIndex] != null)
+            Debug.Log($"[KuchisakeOnna] RE-ENABLING NavMeshAgent (was disabled during standby)...");
+            agent.enabled = true;
+
+            // Validate agent is on NavMesh
+            if (!agent.isOnNavMesh)
             {
-                agent.SetDestination(patrolPoints[currentPatrolIndex].position);
-                currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
+                Debug.LogError($"[KuchisakeOnna] Agent is NOT on NavMesh at position: {transform.position}");
+
+                // Try to find nearest NavMesh point
+                NavMeshHit hit;
+                if (NavMesh.SamplePosition(transform.position, out hit, 10f, NavMesh.AllAreas))
+                {
+                    Debug.LogWarning($"[KuchisakeOnna] Nearest NavMesh: {hit.position} (distance: {Vector3.Distance(transform.position, hit.position):F2}m)");
+                    Debug.LogWarning($"[KuchisakeOnna] SOLUTION: Move enemy GameObject to NavMesh location.");
+                }
                 return;
             }
 
-            currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
-            attempts++;
+            agent.speed = chaseSpeed;
+            agent.isStopped = false;
+            Debug.Log($"[KuchisakeOnna] Agent enabled. Speed: {chaseSpeed} | On NavMesh: {agent.isOnNavMesh}");
         }
 
-        Debug.LogWarning($"[KuchisakeOnna] {gameObject.name}: No valid patrol points found!");
+        // Remove mask
+        RemoveMask();
+
+        // Start chase
+        currentState = EnemyState.AggressiveChase;
+
+        Debug.Log($"[KuchisakeOnna] Chase activated! State: {currentState}");
+        Debug.Log($"[KuchisakeOnna] Player position: {player.position} | Enemy position: {transform.position}");
+        Debug.Log($"[KuchisakeOnna] ========================================");
     }
+    #endregion
 
+    #region Safe Zone Detection
     /// <summary>
-    /// Starts the first encounter sequence with the player.
+    /// Checks if player is in a safe zone (unwalkable area, off NavMesh).
     /// </summary>
-    void StartFirstEncounter()
+    bool IsPlayerInSafeZone()
     {
-        currentState = EnemyState.FirstEncounter;
-
-        // Trigger nearPlayer to start stand-up animation
-        if (animator != null && !string.IsNullOrEmpty(nearPlayerTrigger))
+        if (player == null)
         {
-            animator.SetTrigger(nearPlayerTrigger);
+            Debug.LogWarning($"[KuchisakeOnna] IsPlayerInSafeZone: Player is NULL!");
+            return false;
         }
 
-        // Slowly face the player (no sudden movements)
+        // Check if player position is near NavMesh
+        NavMeshHit hit;
+        bool foundNavMesh = NavMesh.SamplePosition(player.position, out hit, SAFE_ZONE_CHECK_RADIUS, NavMesh.AllAreas);
+
+        // Calculate distance to nearest NavMesh point
+        float distanceToNavMesh = foundNavMesh ? Vector3.Distance(player.position, hit.position) : 999f;
+
+        // Smart detection: Player is in safe zone if:
+        // 1. No NavMesh found within search radius, OR
+        // 2. NavMesh found but player is far from it (> threshold)
+        bool inSafeZone = !foundNavMesh || distanceToNavMesh > SAFE_ZONE_DISTANCE_THRESHOLD;
+
+        Debug.Log($"[KuchisakeOnna] Smart Safe Zone Check:");
+        Debug.Log($"  Player position: {player.position}");
+        Debug.Log($"  Search radius: {SAFE_ZONE_CHECK_RADIUS}m");
+        Debug.Log($"  NavMesh found: {foundNavMesh}");
+        if (foundNavMesh)
+        {
+            Debug.Log($"  Nearest NavMesh point: {hit.position}");
+            Debug.Log($"  Distance to NavMesh: {distanceToNavMesh:F2}m");
+            Debug.Log($"  Threshold: {SAFE_ZONE_DISTANCE_THRESHOLD}m");
+        }
+        Debug.Log($"  RESULT: Player is {(inSafeZone ? "IN SAFE ZONE (chase stops)" : "ON NAVMESH (chase continues)")}");
+
+        return inSafeZone;
+    }
+    #endregion
+
+    #region Player Interaction
+    /// <summary>
+    /// Called when enemy catches the player.
+    /// </summary>
+    void CatchPlayer()
+    {
+        Debug.Log($"[KuchisakeOnna] Player caught!");
+
+        // Play death effects
+        PlaySound(deathScreamClip);
+        PlaySound(scissorsSnipSound);
+
+        // Kill player
         if (player != null)
         {
-            Vector3 direction = (player.position - transform.position).normalized;
-            StartTrackedCoroutine(SmoothLookAt(direction, SMOOTH_LOOK_DURATION));
+            PlayerHealthSystem playerHealth = player.GetComponent<PlayerHealthSystem>();
+            if (playerHealth != null)
+            {
+                playerHealth.SetHealth(0); // Instantly kill player
+            }
+            else
+            {
+                Debug.LogWarning($"[KuchisakeOnna] PlayerHealthSystem component not found!");
+            }
         }
 
-        // Show first question (proper first encounter sequence)
-        StartTrackedCoroutine(DelayedFirstQuestion());
-
-        // TESTING MODE: Uncomment below to skip question and go directly to standup and patrol
-        // StartTrackedCoroutine(TestStandupSequence());
-    }
-
-    /// <summary>
-    /// Smoothly rotates to look at a direction over time.
-    /// </summary>
-    IEnumerator SmoothLookAt(Vector3 direction, float duration)
-    {
-        Quaternion startRotation = transform.rotation;
-        Quaternion targetRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-        float elapsed = 0f;
-
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            transform.rotation = Quaternion.Slerp(startRotation, targetRotation, elapsed / duration);
-            yield return null;
-        }
-
-        transform.rotation = targetRotation;
-    }
-
-    /// <summary>
-    /// Plays the first question with a delay for tension.
-    /// </summary>
-    IEnumerator DelayedFirstQuestion()
-    {
-        // Wait a moment for tension
-        yield return new WaitForSeconds(FIRST_QUESTION_DELAY);
-
-        // Play question voice
-        PlaySound(questionVoiceClip);
-
-        // Show question UI
-        if (questionUI != null)
-        {
-            questionUI.ShowQuestion(questionTimer, this);
-        }
-    }
-
-    void StartQuestionSequence()
-    {
-        currentState = EnemyState.Question;
-
+        // Stop chasing
         if (agent != null)
         {
             agent.isStopped = true;
         }
-
-        // Face the player
-        Vector3 direction = (player.position - transform.position).normalized;
-        transform.rotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-
-        // Play question voice
-        if (audioSource != null && questionVoiceClip != null)
-        {
-            audioSource.PlayOneShot(questionVoiceClip);
-        }
-
-        // Show question UI
-        if (questionUI != null)
-        {
-            questionUI.ShowQuestion(questionTimer, this);
-        }
     }
+    #endregion
 
-    public void OnPlayerAnswered(KuchisakeQuestionUI.Answer answer)
-    {
-        // PERSISTENT CHASE MODE: Skip all question logic
-        if (persistentChaseActive)
-        {
-            Debug.Log($"[KuchisakeOnna] {gameObject.name}: Persistent chase active - ignoring question!");
-            currentState = EnemyState.PersistentChase;
-            return;
-        }
-
-        // Check if this is the first encounter
-        if (!hasHadFirstEncounter)
-        {
-            HandleFirstEncounterAnswer(answer);
-            return;
-        }
-
-        // Normal encounter behavior
-        switch (answer)
-        {
-            case KuchisakeQuestionUI.Answer.Yes:
-                // 70% chance she still chases, 30% she lets you go
-                if (Random.value < chaseChanceOnYes)
-                {
-                    StartTrackedCoroutine(DelayedChase(1.5f));
-                }
-                else
-                {
-                    // She's pleased - retreat
-                    if (agent != null)
-                    {
-                        agent.isStopped = false;
-                    }
-                    currentState = EnemyState.Retreat;
-                }
-                break;
-
-            case KuchisakeQuestionUI.Answer.No:
-                // Immediate anger and chase
-                PlaySound(angerSound);
-                StartChase();
-                break;
-
-            case KuchisakeQuestionUI.Answer.Maybe:
-                // Confusion - delayed chase
-                StartTrackedCoroutine(DelayedChase(2f));
-                break;
-        }
-    }
-
-    void HandleFirstEncounterAnswer(KuchisakeQuestionUI.Answer answer)
-    {
-        hasHadFirstEncounter = true;
-
-        switch (answer)
-        {
-            case KuchisakeQuestionUI.Answer.Yes:
-                // She seems pleased but reveals her true face
-                StartTrackedCoroutine(FirstEncounterYesSequence());
-                break;
-
-            case KuchisakeQuestionUI.Answer.No:
-                // She's offended - removes mask and stands
-                StartTrackedCoroutine(FirstEncounterNoSequence());
-                break;
-
-            case KuchisakeQuestionUI.Answer.Maybe:
-                // Confused but intrigued - stands up slowly
-                StartTrackedCoroutine(FirstEncounterMaybeSequence());
-                break;
-        }
-    }
-
-    IEnumerator FirstEncounterYesSequence()
-    {
-        // Brief pause for player reaction
-        yield return new WaitForSeconds(YES_SEQUENCE_MASK_DELAY);
-
-        // Brief pause for player to see
-        yield return new WaitForSeconds(YES_SEQUENCE_PAUSE);
-
-        // Stand up animation
-        BeginStandUp();
-        yield return new WaitForSeconds(standUpDuration);
-
-        // Activate patrol behavior (mask stays on)
-        ActivatePatrolMode(restoreMask: true);
-    }
-
-    IEnumerator FirstEncounterNoSequence()
-    {
-        PlaySound(angerSound);
-
-        yield return new WaitForSeconds(NO_SEQUENCE_DELAY);
-
-        // Stand up faster
-        BeginStandUp();
-        yield return new WaitForSeconds(standUpDuration * NO_SEQUENCE_STANDUP_MULTIPLIER);
-
-        // Immediately start chasing (mask will be removed when chase starts)
-        ActivatePatrolMode(restoreMask: true);
-        StartChase();
-    }
-
-    IEnumerator FirstEncounterMaybeSequence()
-    {
-        // Tilts head (if animation available)
-        yield return new WaitForSeconds(MAYBE_SEQUENCE_DELAY);
-
-        yield return new WaitForSeconds(MAYBE_SEQUENCE_PAUSE);
-
-        // Stand up slowly
-        BeginStandUp();
-        yield return new WaitForSeconds(standUpDuration);
-
-        // Activate patrol (mask stays on)
-        ActivatePatrolMode(restoreMask: true);
-    }
-
-    IEnumerator TestStandupSequence()
-    {
-        // Wait a moment after player approaches
-        yield return new WaitForSeconds(1f);
-
-        // Stand up
-        BeginStandUp();
-        yield return new WaitForSeconds(standUpDuration);
-
-        // Start patrolling (restore mask for testing - or set to false for scary mode)
-        ActivatePatrolMode(restoreMask: true);
-    }
-
-    void BeginStandUp()
-    {
-        currentState = EnemyState.StandingUp;
-        isStandingUp = true;
-
-        // Note: Stand-up animation was already triggered by nearPlayer in StartFirstEncounter()
-        // This method just sets the state. Animation system handles the rest via distanceFromPlayer parameter.
-    }
-
-    void ActivatePatrolMode(bool restoreMask = true)
-    {
-        isStandingUp = false;
-        currentState = EnemyState.Patrol;
-
-        // Restore mask when returning to patrol/roaming (if specified)
-        if (restoreMask)
-        {
-            RestoreMask();
-        }
-
-        // Enable NavMesh agent and warp to first patrol point
-        if (agent != null && HasValidPatrolPoints())
-        {
-            // Warp to first patrol point before enabling agent
-            // This ensures we're on NavMesh when agent is enabled
-            // Validate that patrol point 0 exists (HasValidPatrolPoints only checks ANY point is valid)
-            if (patrolPoints != null && patrolPoints.Length > 0 && patrolPoints[0] != null)
-            {
-                Transform firstPoint = patrolPoints[0];
-                agent.enabled = true; // Must enable before Warp
-
-                // Check if we're on NavMesh, if not, warp to first patrol point
-                if (!agent.isOnNavMesh)
-                {
-                    agent.Warp(firstPoint.position);
-                }
-
-                agent.speed = patrolSpeed;
-                GoToNextPatrolPoint();
-            }
-            else
-            {
-                // First patrol point is null, just enable agent and use GoToNextPatrolPoint
-                agent.enabled = true;
-                agent.speed = patrolSpeed;
-                GoToNextPatrolPoint(); // Will find first valid patrol point
-            }
-        }
-        else if (agent != null)
-        {
-            // No patrol points, just enable agent
-            agent.enabled = true;
-            agent.speed = patrolSpeed;
-        }
-    }
-
-    public void OnQuestionTimeout()
-    {
-        // Check if this is first encounter
-        if (!hasHadFirstEncounter)
-        {
-            // First encounter timeout - she stands and becomes active threat
-            hasHadFirstEncounter = true;
-
-            PlaySound(angerSound);
-
-            StartTrackedCoroutine(TimeoutStandAndActivate());
-        }
-        else
-        {
-            // Normal encounter timeout - instant death
-            KillPlayer();
-        }
-    }
-
-    IEnumerator TimeoutStandAndActivate()
-    {
-        // Stand up menacingly
-        BeginStandUp();
-        yield return new WaitForSeconds(standUpDuration);
-
-        // Start patrolling (mask stays on)
-        ActivatePatrolMode(restoreMask: true);
-
-        // Player escaped this time, but she's now active
-    }
-
+    #region Mask Management
+    /// <summary>
+    /// Removes mask to reveal slit-mouth face.
+    /// </summary>
     void RemoveMask()
     {
         if (maskObject != null)
@@ -975,320 +427,14 @@ public class KuchisakeOnnaController : MonoBehaviour
         {
             faceRenderer.material = slitMouthMaterial;
         }
-    }
 
-    IEnumerator DelayedChase(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        StartChase();
-    }
-
-    void StartChase()
-    {
-        currentState = EnemyState.Chase;
-        chaseTimer = chaseTimeout;
-
-        // Cancel any pending mask restore timer
-        if (maskRestoreCoroutine != null)
-        {
-            StopCoroutine(maskRestoreCoroutine);
-            maskRestoreCoroutine = null;
-        }
-
-        // Remove mask immediately when starting chase to show slit-mouth
-        RemoveMask();
-
-        if (agent != null)
-        {
-            agent.isStopped = false;
-            agent.speed = chaseSpeed;
-        }
-    }
-
-    void CatchPlayer()
-    {
-        KillPlayer();
+        Debug.Log($"[KuchisakeOnna] Mask removed (slit-mouth revealed)");
     }
 
     /// <summary>
-    /// Kills the player when caught.
+    /// Restores mask to hide slit-mouth face.
     /// </summary>
-    void KillPlayer()
-    {
-        // Play death sounds and effects
-        PlaySound(deathScreamClip);
-        PlaySound(scissorsSnipSound);
-
-        // Trigger player death
-        if (player != null)
-        {
-            PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
-            if (playerHealth != null)
-            {
-                playerHealth.Die();
-            }
-            else
-            {
-                Debug.LogWarning($"[KuchisakeOnna] {gameObject.name}: PlayerHealth component not found on player!");
-            }
-        }
-
-        // Disable enemy temporarily
-        currentState = EnemyState.Disabled;
-        if (agent != null)
-        {
-            agent.isStopped = true;
-        }
-    }
-
-    /// <summary>
-    /// Plays ambient scissor sounds when player is nearby.
-    /// </summary>
-    void PlayAmbientScissors()
-    {
-        // Only play if player is somewhat close
-        if (player != null)
-        {
-            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-            if (distanceToPlayer < detectionRange * 2)
-            {
-                PlaySound(scissorsSnipSound, 0.5f);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Resets the enemy to initial state for respawn or restart.
-    /// </summary>
-    public void ResetEnemy()
-    {
-        // Stop all running coroutines
-        StopAllTrackedCoroutines();
-
-        // Cancel mask restore coroutine if running
-        if (maskRestoreCoroutine != null)
-        {
-            StopCoroutine(maskRestoreCoroutine);
-            maskRestoreCoroutine = null;
-        }
-
-        // Reset state
-        currentState = requireFirstEncounter ? EnemyState.WaitingFirstEncounter : EnemyState.Patrol;
-        currentAnimationState = AnimationState.Idle;
-        isActive = true;
-        hasHadFirstEncounter = false;
-
-        // Reset persistent chase flags
-        persistentChaseActive = false;
-        playerInSafeZone = false;
-        safeZoneWaitTimer = 0f;
-
-        // Restore mask
-        RestoreMask();
-
-        // Reset NavMeshAgent
-        if (agent != null)
-        {
-            agent.isStopped = false;
-            agent.speed = patrolSpeed;
-        }
-
-        // Reset animation to idle
-        ChangeAnimationState(AnimationState.Idle);
-
-        // Start appropriate behavior
-        if (requireFirstEncounter)
-        {
-            SetupFirstEncounter();
-        }
-        else if (HasValidPatrolPoints())
-        {
-            GoToNextPatrolPoint();
-        }
-    }
-
-    /// <summary>
-    /// Monitors the VideoTrigger to detect when video has played/finished.
-    /// When detected, activates persistent chase mode.
-    /// </summary>
-    private void MonitorVideoTrigger()
-    {
-        // Only monitor if not already active
-        if (persistentChaseActive) return;
-
-        // Check if video trigger is assigned
-        if (videoTrigger == null) return;
-
-        // Check if video has played (finished or skipped)
-        if (videoTrigger.hasPlayed)
-        {
-            ActivatePersistentChase();
-        }
-    }
-
-    /// <summary>
-    /// Activates persistent chase mode. Called when video trigger has played.
-    /// In this mode, the enemy will chase the player indefinitely without giving up.
-    /// </summary>
-    public void ActivatePersistentChase()
-    {
-        Debug.Log($"[KuchisakeOnna] {gameObject.name}: PERSISTENT CHASE ACTIVATED!");
-
-        persistentChaseActive = true;
-        hasHadFirstEncounter = true;
-
-        // Enable NavMesh agent if disabled
-        if (agent != null && !agent.enabled)
-        {
-            agent.enabled = true;
-        }
-
-        // Remove mask
-        RemoveMask();
-
-        // Start persistent chase state
-        currentState = EnemyState.PersistentChase;
-        if (agent != null)
-        {
-            agent.speed = chaseSpeed;
-            agent.isStopped = false;
-        }
-    }
-
-    // Animation Methods
-    void ChangeAnimationState(AnimationState newAnimationState)
-    {
-        if (currentAnimationState == newAnimationState)
-            return;
-
-        currentAnimationState = newAnimationState;
-        UpdateAnimationParameters();
-    }
-
-    void UpdateAnimationParameters()
-    {
-        if (animator == null || string.IsNullOrEmpty(distanceParameter))
-            return;
-
-        // Update distance parameter based on current animation state
-        int distanceValue = ANIM_DISTANCE_IDLE;
-        float speedValue = 0f;
-
-        switch (currentAnimationState)
-        {
-            case AnimationState.Idle:
-                // Sitting/standing still - distance = 0
-                distanceValue = ANIM_DISTANCE_IDLE;
-                speedValue = 0f; // Frozen animation (if speed parameter exists)
-                break;
-
-            case AnimationState.Walking:
-                // Walking/patrolling - distance = 1
-                distanceValue = ANIM_DISTANCE_WALKING;
-                speedValue = 1f; // Normal walking speed
-                break;
-
-            case AnimationState.Running:
-                // Running/chasing - distance = 2
-                distanceValue = ANIM_DISTANCE_RUNNING;
-                speedValue = 0f; // Not used for running
-                break;
-        }
-
-        // Set distance parameter (primary control)
-        SetAnimInt(distanceParameter, distanceValue);
-
-        // Set optional speed parameter for smooth idle/walk transitions
-        if (!string.IsNullOrEmpty(speedParameter) && HasAnimationParameter(speedParameter))
-        {
-            SetAnimFloat(speedParameter, speedValue);
-        }
-    }
-
-    void SetAnimInt(string paramName, int value)
-    {
-        if (animator != null && !string.IsNullOrEmpty(paramName) && HasAnimationParameter(paramName))
-        {
-            animator.SetInteger(paramName, value);
-        }
-    }
-
-    void SetAnimFloat(string paramName, float value)
-    {
-        if (animator != null && !string.IsNullOrEmpty(paramName) && HasAnimationParameter(paramName))
-        {
-            animator.SetFloat(paramName, value);
-        }
-    }
-
-    void SetAnimBool(string paramName, bool value)
-    {
-        if (animator != null && !string.IsNullOrEmpty(paramName) && HasAnimationParameter(paramName))
-        {
-            animator.SetBool(paramName, value);
-        }
-    }
-
-    bool HasAnimationParameter(string paramName)
-    {
-        if (animator == null || string.IsNullOrEmpty(paramName))
-            return false;
-
-        foreach (var param in animator.parameters)
-        {
-            if (param.name == paramName)
-                return true;
-        }
-        return false;
-    }
-    #endregion
-
-    #region Helper Methods
-    /// <summary>
-    /// Checks if the player is in a safe zone (unwalkable area off NavMesh).
-    /// Returns true if player is in safe zone, false otherwise.
-    /// </summary>
-    private bool IsPlayerInSafeZone()
-    {
-        if (player == null) return false;
-
-        // Check if player position is on NavMesh
-        NavMeshHit hit;
-        float searchRadius = 1.5f;
-
-        // SamplePosition returns true if NavMesh found near player
-        bool isOnNavMesh = NavMesh.SamplePosition(player.position, out hit, searchRadius, NavMesh.AllAreas);
-
-        // Return true if player is NOT on NavMesh (in safe zone)
-        return !isOnNavMesh;
-    }
-
-    /// <summary>
-    /// Coroutine that restores the mask after a delay.
-    /// </summary>
-    IEnumerator RestoreMaskAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        RestoreMask();
-        Debug.Log($"[KuchisakeOnna] {gameObject.name}: Mask restored");
-        maskRestoreCoroutine = null;
-    }
-
-    /// <summary>
-    /// Plays a sound clip safely with null checks.
-    /// </summary>
-    private void PlaySound(AudioClip clip, float volume = 1f)
-    {
-        if (audioSource != null && clip != null)
-        {
-            audioSource.PlayOneShot(clip, volume);
-        }
-    }
-
-    /// <summary>
-    /// Restores the mask to the enemy's face.
-    /// </summary>
-    private void RestoreMask()
+    void RestoreMask()
     {
         if (maskObject != null)
         {
@@ -1299,115 +445,131 @@ public class KuchisakeOnnaController : MonoBehaviour
         {
             faceRenderer.material = normalFaceMaterial;
         }
+
+        Debug.Log($"[KuchisakeOnna] Mask restored");
+    }
+    #endregion
+
+    #region Animation
+    /// <summary>
+    /// Changes animation state and updates animator parameters.
+    /// </summary>
+    void ChangeAnimationState(AnimationState newState)
+    {
+        if (currentAnimationState == newState) return;
+
+        currentAnimationState = newState;
+        UpdateAnimator();
     }
 
     /// <summary>
-    /// Gets a random valid patrol point from the patrol points array.
+    /// Updates animator parameters based on current animation state.
     /// </summary>
-    private Transform GetRandomValidPatrolPoint()
+    void UpdateAnimator()
     {
-        if (!HasValidPatrolPoints())
-            return null;
+        if (animator == null || string.IsNullOrEmpty(distanceParameter)) return;
 
-        // Create list of valid patrol points
-        List<Transform> validPoints = new List<Transform>();
-        foreach (var point in patrolPoints)
+        int distanceValue = ANIM_IDLE;
+
+        switch (currentAnimationState)
         {
-            if (point != null)
-            {
-                validPoints.Add(point);
-            }
+            case AnimationState.Idle:
+                distanceValue = ANIM_IDLE;
+                break;
+
+            case AnimationState.Walking:
+                distanceValue = ANIM_WALKING;
+                break;
+
+            case AnimationState.Running:
+                distanceValue = ANIM_RUNNING;
+                break;
         }
 
-        if (validPoints.Count == 0)
-            return null;
+        animator.SetInteger(distanceParameter, distanceValue);
+    }
+    #endregion
 
-        // Return random valid point
-        int randomIndex = Random.Range(0, validPoints.Count);
-        return validPoints[randomIndex];
+    #region Helper Methods
+    /// <summary>
+    /// Validates that NavMesh agent is ready for movement.
+    /// </summary>
+    bool ValidateAgent()
+    {
+        if (agent == null)
+        {
+            Debug.LogError($"[KuchisakeOnna] Agent is NULL!");
+            return false;
+        }
+
+        if (!agent.enabled)
+        {
+            Debug.LogError($"[KuchisakeOnna] Agent is DISABLED!");
+            return false;
+        }
+
+        if (!agent.isOnNavMesh)
+        {
+            Debug.LogError($"[KuchisakeOnna] Agent is NOT on NavMesh!");
+            return false;
+        }
+
+        return true;
     }
 
     /// <summary>
-    /// Starts a coroutine and tracks it for cleanup.
+    /// Plays audio clip safely.
     /// </summary>
-    private void StartTrackedCoroutine(IEnumerator coroutine)
+    void PlaySound(AudioClip clip, float volume = 1f)
     {
-        Coroutine c = StartCoroutine(coroutine);
-        if (c != null)
+        if (audioSource != null && clip != null)
         {
-            runningCoroutines.Add(c);
+            audioSource.PlayOneShot(clip, volume);
         }
     }
+    #endregion
 
+    #region Public Methods
     /// <summary>
-    /// Stops all tracked coroutines and clears the list.
+    /// Resets enemy to initial state.
     /// </summary>
-    private void StopAllTrackedCoroutines()
+    public void ResetEnemy()
     {
-        foreach (var coroutine in runningCoroutines)
+        Debug.Log($"[KuchisakeOnna] Resetting enemy...");
+
+        chaseActivated = false;
+        currentState = EnemyState.Standby;
+        safeZoneWaitTimer = 0f;
+        chaseLogTimer = 0f;
+
+        if (agent != null)
         {
-            if (coroutine != null)
-            {
-                try
-                {
-                    StopCoroutine(coroutine);
-                }
-                catch
-                {
-                    // Coroutine might already be stopped, ignore error
-                }
-            }
+            agent.enabled = false;
+            agent.isStopped = false;
         }
-        runningCoroutines.Clear();
+
+        RestoreMask();
+        ChangeAnimationState(AnimationState.Idle);
     }
     #endregion
 
     #region Gizmos
-    /// <summary>
-    /// Draws debug visualization in the editor for ranges and patrol paths.
-    /// </summary>
     void OnDrawGizmosSelected()
     {
-        // Draw first encounter trigger range
-        if (requireFirstEncounter && firstEncounterPosition != null)
+        // Draw catch distance
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, CATCH_PLAYER_DISTANCE);
+
+        // Draw safe zone detection at player position
+        if (player != null)
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(firstEncounterPosition.position, firstEncounterTriggerDistance);
-            
-            // Draw line from first encounter to first patrol point
-            if (patrolPoints != null && patrolPoints.Length > 0 && patrolPoints[0] != null)
-            {
-                Gizmos.color = Color.magenta;
-                Gizmos.DrawLine(firstEncounterPosition.position, patrolPoints[0].position);
-            }
-        }
+            // Green sphere = safe zone threshold (2m from NavMesh)
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(player.position, SAFE_ZONE_DISTANCE_THRESHOLD);
 
-        // Draw detection range
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, detectionRange);
-
-        // Draw escape distance
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, escapeDistance);
-
-        // Draw patrol points
-        if (patrolPoints != null && patrolPoints.Length > 0)
-        {
+            // Cyan sphere = search radius (10m to find NavMesh)
             Gizmos.color = Color.cyan;
-            for (int i = 0; i < patrolPoints.Length; i++)
-            {
-                if (patrolPoints[i] != null)
-                {
-                    Gizmos.DrawSphere(patrolPoints[i].position, 0.3f);
-                    
-                    // Draw line to next patrol point
-                    int nextIndex = (i + 1) % patrolPoints.Length;
-                    if (patrolPoints[nextIndex] != null)
-                    {
-                        Gizmos.DrawLine(patrolPoints[i].position, patrolPoints[nextIndex].position);
-                    }
-                }
-            }
+            Gizmos.DrawWireSphere(player.position, SAFE_ZONE_CHECK_RADIUS);
         }
     }
     #endregion
