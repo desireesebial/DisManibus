@@ -14,10 +14,8 @@ public class KuchisakeQuestionUI : MonoBehaviour
     [SerializeField] private Button maybeButton;
     [SerializeField] private Image timerBarFill;
 
-    [Header("Death Screen")]
-    [SerializeField] private GameObject deathScreen;
-    [SerializeField] private TextMeshProUGUI deathText;
-    [SerializeField] private Image deathFlashImage;
+    [Header("Player Health System")]
+    [SerializeField] private PlayerHealthSystem playerHealthSystem;
 
     [Header("Audio")]
     [SerializeField] private AudioSource uiAudioSource;
@@ -50,19 +48,26 @@ public class KuchisakeQuestionUI : MonoBehaviour
         // Setup button listeners
         if (yesButton != null)
             yesButton.onClick.AddListener(() => OnAnswerSelected(Answer.Yes));
-        
+
         if (noButton != null)
             noButton.onClick.AddListener(() => OnAnswerSelected(Answer.No));
-        
+
         if (maybeButton != null)
             maybeButton.onClick.AddListener(() => OnAnswerSelected(Answer.Maybe));
+
+        // Find PlayerHealthSystem if not assigned
+        if (playerHealthSystem == null)
+        {
+            playerHealthSystem = FindObjectOfType<PlayerHealthSystem>();
+            if (playerHealthSystem == null)
+            {
+                Debug.LogWarning("[KuchisakeQuestionUI] PlayerHealthSystem not found! Death screen will not work.");
+            }
+        }
 
         // Hide UI initially
         if (questionPanel != null)
             questionPanel.SetActive(false);
-        
-        if (deathScreen != null)
-            deathScreen.SetActive(false);
     }
 
     void Update()
@@ -188,8 +193,18 @@ public class KuchisakeQuestionUI : MonoBehaviour
         // Hide question UI
         HideQuestion();
 
-        // Show death screen
-        StartCoroutine(PlayDeathSequence());
+        // Unfreeze player (so PlayerHealthSystem can manage controls)
+        FreezePlayer(false);
+
+        // Show death screen with custom Kuchisake-specific message
+        if (playerHealthSystem != null)
+        {
+            playerHealthSystem.ShowDeathScreen("You hesitated...\n\nShe didn't.");
+        }
+        else
+        {
+            Debug.LogWarning("[KuchisakeQuestionUI] PlayerHealthSystem not found! Cannot show death screen.");
+        }
 
         // Notify enemy controller
         if (enemyController != null)
@@ -198,53 +213,6 @@ public class KuchisakeQuestionUI : MonoBehaviour
         }
     }
 
-    IEnumerator PlayDeathSequence()
-    {
-        // Flash effect
-        if (deathFlashImage != null)
-        {
-            deathFlashImage.gameObject.SetActive(true);
-            Color flashColor = deathFlashImage.color;
-            
-            // Quick flash
-            for (int i = 0; i < 3; i++)
-            {
-                flashColor.a = 1f;
-                deathFlashImage.color = flashColor;
-                yield return new WaitForSeconds(0.1f);
-                
-                flashColor.a = 0f;
-                deathFlashImage.color = flashColor;
-                yield return new WaitForSeconds(0.1f);
-            }
-
-            // Final fade to red
-            float elapsed = 0f;
-            float duration = 0.5f;
-            while (elapsed < duration)
-            {
-                elapsed += Time.deltaTime;
-                flashColor.a = Mathf.Lerp(0f, 0.8f, elapsed / duration);
-                deathFlashImage.color = flashColor;
-                yield return null;
-            }
-        }
-
-        // Show death screen
-        if (deathScreen != null)
-        {
-            deathScreen.SetActive(true);
-        }
-
-        if (deathText != null)
-        {
-            deathText.text = "You hesitated...\n\nShe didn't.";
-        }
-
-        yield return new WaitForSeconds(2f);
-
-        // Player should respawn here (handled by PlayerHealth or GameManager)
-    }
 
     void HideQuestion()
     {
@@ -324,21 +292,12 @@ public class KuchisakeQuestionUI : MonoBehaviour
         isQuestionActive = false;
         StopHeartbeat();
         HideQuestion();
-        
-        if (deathScreen != null)
-        {
-            deathScreen.SetActive(false);
-        }
 
-        if (deathFlashImage != null)
-        {
-            Color flashColor = deathFlashImage.color;
-            flashColor.a = 0f;
-            deathFlashImage.color = flashColor;
-            deathFlashImage.gameObject.SetActive(false);
-        }
-
+        // Unfreeze player
         FreezePlayer(false);
+
+        // Note: Death screen is managed by PlayerHealthSystem
+        // It will handle its own reset when player respawns
     }
 }
 

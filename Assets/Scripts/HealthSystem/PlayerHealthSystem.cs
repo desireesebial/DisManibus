@@ -590,6 +590,15 @@ public class PlayerHealthSystem : MonoBehaviour
     // Death screen helpers
     private void ShowDeathScreen()
     {
+        ShowDeathScreen(null);
+    }
+
+    /// <summary>
+    /// Shows the death screen with optional custom message
+    /// </summary>
+    /// <param name="customMessage">Custom death message (null = use default)</param>
+    public void ShowDeathScreen(string customMessage)
+    {
         if (pauseOnDeath)
             Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.None;
@@ -630,11 +639,13 @@ public class PlayerHealthSystem : MonoBehaviour
         {
             deathMessageImage.gameObject.SetActive(true);
             // Death message image is already set in inspector
+            // Note: If using image-based death screen, custom messages won't show
         }
         else if (deathMessageText != null)
         {
             deathMessageText.gameObject.SetActive(true);
-            deathMessageText.text = "You are dead";
+            // Use custom message if provided, otherwise use default
+            deathMessageText.text = !string.IsNullOrEmpty(customMessage) ? customMessage : "You are dead";
         }
 
         // Show buttons

@@ -410,7 +410,7 @@ public class KuchisakeOnnaController : MonoBehaviour
     /// </summary>
     void HandleChase()
     {
-        if (agent == null || !agent.enabled || player == null)
+        if (agent == null || !agent.enabled || !agent.isOnNavMesh || player == null)
             return;
 
         // Set running animation during chase
@@ -459,6 +459,12 @@ public class KuchisakeOnnaController : MonoBehaviour
             Transform targetPoint = GetRandomValidPatrolPoint();
             if (targetPoint != null)
             {
+                // Ensure agent is enabled before warping
+                if (!agent.enabled)
+                {
+                    agent.enabled = true;
+                }
+
                 // Use Warp instead of direct position assignment for NavMeshAgent safety
                 agent.Warp(targetPoint.position);
 
@@ -472,8 +478,9 @@ public class KuchisakeOnnaController : MonoBehaviour
         if (agent != null)
         {
             agent.speed = patrolSpeed;
+            agent.isStopped = false;
         }
-        GoToNextPatrolPoint();
+        // Note: Removed GoToNextPatrolPoint() - HandlePatrol will navigate when she reaches the warped point
     }
 
     /// <summary>
@@ -524,8 +531,11 @@ public class KuchisakeOnnaController : MonoBehaviour
             StartTrackedCoroutine(SmoothLookAt(direction, SMOOTH_LOOK_DURATION));
         }
 
-        // TESTING: Skip question, go directly to standup and patrol
-        StartTrackedCoroutine(TestStandupSequence());
+        // Show first question (proper first encounter sequence)
+        StartTrackedCoroutine(DelayedFirstQuestion());
+
+        // TESTING MODE: Uncomment below to skip question and go directly to standup and patrol
+        // StartTrackedCoroutine(TestStandupSequence());
     }
 
     /// <summary>
@@ -568,7 +578,7 @@ public class KuchisakeOnnaController : MonoBehaviour
     void StartQuestionSequence()
     {
         currentState = EnemyState.Question;
-        
+
         if (agent != null)
         {
             agent.isStopped = true;
@@ -579,7 +589,7 @@ public class KuchisakeOnnaController : MonoBehaviour
         transform.rotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
 
         // Play question voice
-        if (questionVoiceClip != null)
+        if (audioSource != null && questionVoiceClip != null)
         {
             audioSource.PlayOneShot(questionVoiceClip);
         }
@@ -613,6 +623,10 @@ public class KuchisakeOnnaController : MonoBehaviour
                 else
                 {
                     // She's pleased - retreat
+                    if (agent != null)
+                    {
+                        agent.isStopped = false;
+                    }
                     currentState = EnemyState.Retreat;
                 }
                 break;
@@ -663,13 +677,13 @@ public class KuchisakeOnnaController : MonoBehaviour
 
         // Brief pause for player to see
         yield return new WaitForSeconds(YES_SEQUENCE_PAUSE);
-        
+
         // Stand up animation
         BeginStandUp();
         yield return new WaitForSeconds(standUpDuration);
-        
-        // Activate patrol behavior
-        ActivatePatrolMode();
+
+        // Activate patrol behavior (keep mask off to show slit-mouth)
+        ActivatePatrolMode(restoreMask: false);
     }
 
     IEnumerator FirstEncounterNoSequence()
@@ -685,8 +699,8 @@ public class KuchisakeOnnaController : MonoBehaviour
         BeginStandUp();
         yield return new WaitForSeconds(standUpDuration * NO_SEQUENCE_STANDUP_MULTIPLIER);
 
-        // Immediately start chasing
-        ActivatePatrolMode();
+        // Immediately start chasing (keep mask off to show slit-mouth)
+        ActivatePatrolMode(restoreMask: false);
         StartChase();
     }
 
@@ -702,8 +716,8 @@ public class KuchisakeOnnaController : MonoBehaviour
         BeginStandUp();
         yield return new WaitForSeconds(standUpDuration);
 
-        // Activate patrol
-        ActivatePatrolMode();
+        // Activate patrol (keep mask off to show slit-mouth)
+        ActivatePatrolMode(restoreMask: false);
     }
 
     IEnumerator TestStandupSequence()
@@ -715,8 +729,8 @@ public class KuchisakeOnnaController : MonoBehaviour
         BeginStandUp();
         yield return new WaitForSeconds(standUpDuration);
 
-        // Start patrolling
-        ActivatePatrolMode();
+        // Start patrolling (restore mask for testing - or set to false for scary mode)
+        ActivatePatrolMode(restoreMask: true);
     }
 
     void BeginStandUp()
@@ -728,22 +742,26 @@ public class KuchisakeOnnaController : MonoBehaviour
         // This method just sets the state. Animation system handles the rest via distanceFromPlayer parameter.
     }
 
-    void ActivatePatrolMode()
+    void ActivatePatrolMode(bool restoreMask = true)
     {
         isStandingUp = false;
         currentState = EnemyState.Patrol;
 
-        // Restore mask when returning to patrol/roaming
-        RestoreMask();
+        // Restore mask when returning to patrol/roaming (if specified)
+        if (restoreMask)
+        {
+            RestoreMask();
+        }
 
         // Enable NavMesh agent and warp to first patrol point
         if (agent != null && HasValidPatrolPoints())
         {
             // Warp to first patrol point before enabling agent
             // This ensures we're on NavMesh when agent is enabled
-            Transform firstPoint = patrolPoints[0];
-            if (firstPoint != null)
+            // Validate that patrol point 0 exists (HasValidPatrolPoints only checks ANY point is valid)
+            if (patrolPoints != null && patrolPoints.Length > 0 && patrolPoints[0] != null)
             {
+                Transform firstPoint = patrolPoints[0];
                 agent.enabled = true; // Must enable before Warp
 
                 // Check if we're on NavMesh, if not, warp to first patrol point
@@ -754,6 +772,13 @@ public class KuchisakeOnnaController : MonoBehaviour
 
                 agent.speed = patrolSpeed;
                 GoToNextPatrolPoint();
+            }
+            else
+            {
+                // First patrol point is null, just enable agent and use GoToNextPatrolPoint
+                agent.enabled = true;
+                agent.speed = patrolSpeed;
+                GoToNextPatrolPoint(); // Will find first valid patrol point
             }
         }
         else if (agent != null)
@@ -789,10 +814,10 @@ public class KuchisakeOnnaController : MonoBehaviour
         // Stand up menacingly
         BeginStandUp();
         yield return new WaitForSeconds(standUpDuration);
-        
-        // Start patrolling aggressively
-        ActivatePatrolMode();
-        
+
+        // Start patrolling aggressively (keep mask off - player timed out)
+        ActivatePatrolMode(restoreMask: false);
+
         // Player escaped this time, but she's now active
     }
 
