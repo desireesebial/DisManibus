@@ -466,7 +466,7 @@ public class KuchisakeOnnaController : MonoBehaviour
                 {
                     StopCoroutine(maskRestoreCoroutine);
                 }
-                maskRestoreCoroutine = StartTrackedCoroutine(DelayedMaskRestore(3f));
+                maskRestoreCoroutine = StartCoroutine(DelayedMaskRestore(3f));
 
                 // Start patrolling all waypoints
                 if (HasValidPatrolPoints())
