@@ -387,7 +387,7 @@ public class KuchisakeOnnaController : MonoBehaviour
             {
                 if (hit.transform == player)
                 {
-                    StartQuestionSequence();
+                    StartChase();
                 }
             }
         }
@@ -617,7 +617,6 @@ public class KuchisakeOnnaController : MonoBehaviour
                 // 70% chance she still chases, 30% she lets you go
                 if (Random.value < chaseChanceOnYes)
                 {
-                    RemoveMask();
                     StartTrackedCoroutine(DelayedChase(1.5f));
                 }
                 else
@@ -634,13 +633,11 @@ public class KuchisakeOnnaController : MonoBehaviour
             case KuchisakeQuestionUI.Answer.No:
                 // Immediate anger and chase
                 PlaySound(angerSound);
-                RemoveMask();
                 StartChase();
                 break;
 
             case KuchisakeQuestionUI.Answer.Maybe:
                 // Confusion - delayed chase
-                RemoveMask();
                 StartTrackedCoroutine(DelayedChase(2f));
                 break;
         }
@@ -671,9 +668,8 @@ public class KuchisakeOnnaController : MonoBehaviour
 
     IEnumerator FirstEncounterYesSequence()
     {
-        // She removes mask slowly to show slit mouth
+        // Brief pause for player reaction
         yield return new WaitForSeconds(YES_SEQUENCE_MASK_DELAY);
-        RemoveMask();
 
         // Brief pause for player to see
         yield return new WaitForSeconds(YES_SEQUENCE_PAUSE);
@@ -682,15 +678,12 @@ public class KuchisakeOnnaController : MonoBehaviour
         BeginStandUp();
         yield return new WaitForSeconds(standUpDuration);
 
-        // Activate patrol behavior (keep mask off to show slit-mouth)
-        ActivatePatrolMode(restoreMask: false);
+        // Activate patrol behavior (mask stays on)
+        ActivatePatrolMode(restoreMask: true);
     }
 
     IEnumerator FirstEncounterNoSequence()
     {
-        // Quick mask removal
-        RemoveMask();
-
         PlaySound(angerSound);
 
         yield return new WaitForSeconds(NO_SEQUENCE_DELAY);
@@ -699,16 +692,15 @@ public class KuchisakeOnnaController : MonoBehaviour
         BeginStandUp();
         yield return new WaitForSeconds(standUpDuration * NO_SEQUENCE_STANDUP_MULTIPLIER);
 
-        // Immediately start chasing (keep mask off to show slit-mouth)
-        ActivatePatrolMode(restoreMask: false);
+        // Immediately start chasing (mask will be removed when chase starts)
+        ActivatePatrolMode(restoreMask: true);
         StartChase();
     }
 
     IEnumerator FirstEncounterMaybeSequence()
     {
-        // Tilts head (if animation available), then removes mask
+        // Tilts head (if animation available)
         yield return new WaitForSeconds(MAYBE_SEQUENCE_DELAY);
-        RemoveMask();
 
         yield return new WaitForSeconds(MAYBE_SEQUENCE_PAUSE);
 
@@ -716,8 +708,8 @@ public class KuchisakeOnnaController : MonoBehaviour
         BeginStandUp();
         yield return new WaitForSeconds(standUpDuration);
 
-        // Activate patrol (keep mask off to show slit-mouth)
-        ActivatePatrolMode(restoreMask: false);
+        // Activate patrol (mask stays on)
+        ActivatePatrolMode(restoreMask: true);
     }
 
     IEnumerator TestStandupSequence()
@@ -796,7 +788,6 @@ public class KuchisakeOnnaController : MonoBehaviour
         {
             // First encounter timeout - she stands and becomes active threat
             hasHadFirstEncounter = true;
-            RemoveMask();
 
             PlaySound(angerSound);
 
@@ -815,8 +806,8 @@ public class KuchisakeOnnaController : MonoBehaviour
         BeginStandUp();
         yield return new WaitForSeconds(standUpDuration);
 
-        // Start patrolling aggressively (keep mask off - player timed out)
-        ActivatePatrolMode(restoreMask: false);
+        // Start patrolling (mask stays on)
+        ActivatePatrolMode(restoreMask: true);
 
         // Player escaped this time, but she's now active
     }
