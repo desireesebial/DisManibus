@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 
 /// <summary>
 /// Individual torch/candle for sequential lighting puzzle
@@ -8,23 +9,31 @@ using System.Collections.Generic;
 /// </summary>
 public class SequentialTorch : MonoBehaviour
 {
+    public enum UIMode
+    {
+        OnGUI,
+        TextMeshPro
+    }
     [Header("Torch Settings")]
     [Tooltip("Sequence number (1, 2, 3, etc.) - determines lighting order")]
     public int sequenceNumber = 1;
-    
+
     [Tooltip("How close player needs to be to interact")]
     public float interactionDistance = 3f;
-    
+
+    [Tooltip("Max angle between player look direction and torch for interaction (degrees)")]
+    public float lookAngleThreshold = 45f;
+
     [Header("Visual Components")]
     [Tooltip("The flame GameObject (should be disabled initially)")]
     public GameObject flameObject;
-    
+
     [Tooltip("The light component for illumination")]
     public Light torchLight;
-    
+
     [Tooltip("Particle system for fire effects")]
     public ParticleSystem fireParticles;
-    
+
     [Tooltip("Particle system for ready-to-light effect")]
     public ParticleSystem readyParticles;
 
@@ -45,82 +54,301 @@ public class SequentialTorch : MonoBehaviour
     public AudioClip lightSound;
     public AudioClip wrongSequenceSound;
     public AudioClip readySound;
-    
-    [Header("UI")]
-    [Tooltip("UI text for interaction prompt")]
-    public TMPro.TextMeshProUGUI interactionText;
-    
+
+    [Header("Interaction UI")]
+    [Tooltip("UI display mode - OnGUI or TextMeshPro")]
+    public UIMode uiMode = UIMode.TextMeshPro;
+
+    [Tooltip("Font size for OnGUI prompt")]
+    public int guiFontSize = 20;
+
+    [Header("TextMeshPro UI (Optional - will be created automatically if not assigned)")]
+    [Tooltip("Optional: Canvas for TMP text (will be created if null)")]
+    public Canvas tmpCanvas;
+
+    [Tooltip("Optional: TMP text component (will be created if null)")]
+    public TextMeshProUGUI tmpText;
+
+    [Tooltip("Offset above torch for TMP text (world units)")]
+    public Vector3 tmpTextOffset = new Vector3(0, 1.5f, 0);
+
+    [Tooltip("TMP font size")]
+    public float tmpFontSize = 24f;
+
     // State
     private bool isLit = false;
     private bool isReadyToLight = false;
+    private bool showingPrompt = false;
     private Transform player;
+    private Camera playerCamera;
     private AudioSource audioSource;
     private SequentialTorchManager puzzleManager;
-    
+
     // Visual feedback
     private Renderer torchRenderer;
     private Color originalColor;
     private Color readyColor = Color.yellow;
     private Color litColor = Color.orange;
-    
+
+    // UI
+    private GUIStyle promptStyle;
+    private Vector3 screenPosition;
+    private bool tmpUICreated = false;
+
     void Start()
     {
         // Find player
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj) player = playerObj.transform;
-        
+        if (playerObj)
+        {
+            player = playerObj.transform;
+
+            // Get player camera - check common locations
+            playerCamera = playerObj.GetComponentInChildren<Camera>();
+            if (!playerCamera)
+            {
+                playerCamera = Camera.main;
+            }
+        }
+
         // Find puzzle manager
         puzzleManager = FindObjectOfType<SequentialTorchManager>();
-        
+
         // Audio
         audioSource = GetComponent<AudioSource>();
         if (!audioSource) audioSource = gameObject.AddComponent<AudioSource>();
-        
+
         // Visual setup
         torchRenderer = GetComponent<Renderer>();
         if (torchRenderer) originalColor = torchRenderer.material.color;
-        
+
         // Initially unlit
         SetTorchState(false, false);
-        
-        // Hide interaction text
-        if (interactionText) interactionText.gameObject.SetActive(false);
-        
-        Debug.Log($"[SequentialTorch] Torch {sequenceNumber} initialized");
+
+        // Initialize UI based on mode
+        if (uiMode == UIMode.OnGUI)
+        {
+            InitializeGUIStyle();
+        }
+        else if (uiMode == UIMode.TextMeshPro)
+        {
+            InitializeTMPUI();
+        }
+
+        Debug.Log($"[SequentialTorch] Torch {sequenceNumber} initialized (camera found: {playerCamera != null}, UI mode: {uiMode})");
     }
-    
+
+    void InitializeGUIStyle()
+    {
+        promptStyle = new GUIStyle();
+        promptStyle.fontSize = guiFontSize;
+        promptStyle.normal.textColor = Color.white;
+        promptStyle.alignment = TextAnchor.MiddleCenter;
+        promptStyle.fontStyle = FontStyle.Bold;
+
+        // Add black outline for better visibility
+        promptStyle.normal.background = MakeBackgroundTexture(2, 2, new Color(0, 0, 0, 0.7f));
+        promptStyle.padding = new RectOffset(10, 10, 5, 5);
+    }
+
+    Texture2D MakeBackgroundTexture(int width, int height, Color color)
+    {
+        Color[] pixels = new Color[width * height];
+        for (int i = 0; i < pixels.Length; i++)
+        {
+            pixels[i] = color;
+        }
+        Texture2D texture = new Texture2D(width, height);
+        texture.SetPixels(pixels);
+        texture.Apply();
+        return texture;
+    }
+
+    void InitializeTMPUI()
+    {
+        // Create TMP UI if not assigned
+        if (tmpText == null)
+        {
+            // Create canvas if needed
+            if (tmpCanvas == null)
+            {
+                GameObject canvasObj = new GameObject($"TorchPromptCanvas_{sequenceNumber}");
+                canvasObj.transform.SetParent(transform);
+                canvasObj.transform.localPosition = tmpTextOffset;
+
+                tmpCanvas = canvasObj.AddComponent<Canvas>();
+                tmpCanvas.renderMode = RenderMode.WorldSpace;
+
+                // Configure canvas for better visibility
+                RectTransform canvasRect = tmpCanvas.GetComponent<RectTransform>();
+                canvasRect.sizeDelta = new Vector2(2, 0.5f);
+                canvasRect.localScale = Vector3.one * 0.01f; // Scale down for world space
+
+                // Add CanvasGroup for easy fade control
+                CanvasGroup canvasGroup = canvasObj.AddComponent<CanvasGroup>();
+                canvasGroup.alpha = 1f;
+                canvasGroup.interactable = false;
+                canvasGroup.blocksRaycasts = false;
+            }
+
+            // Create TMP text
+            GameObject textObj = new GameObject($"PromptText_{sequenceNumber}");
+            textObj.transform.SetParent(tmpCanvas.transform);
+            textObj.transform.localPosition = Vector3.zero;
+            textObj.transform.localRotation = Quaternion.identity;
+            textObj.transform.localScale = Vector3.one;
+
+            tmpText = textObj.AddComponent<TextMeshProUGUI>();
+            tmpText.text = "Press F to light torch";
+            tmpText.fontSize = tmpFontSize;
+            tmpText.color = Color.white;
+            tmpText.alignment = TextAlignmentOptions.Center;
+            tmpText.fontStyle = FontStyles.Bold;
+
+            // Configure rect transform
+            RectTransform textRect = tmpText.GetComponent<RectTransform>();
+            textRect.sizeDelta = new Vector2(200, 50);
+            textRect.anchorMin = new Vector2(0.5f, 0.5f);
+            textRect.anchorMax = new Vector2(0.5f, 0.5f);
+            textRect.pivot = new Vector2(0.5f, 0.5f);
+
+            tmpUICreated = true;
+            Debug.Log($"[SequentialTorch] Auto-created TMP UI for torch {sequenceNumber}");
+        }
+
+        // Make sure canvas faces camera
+        if (tmpCanvas != null)
+        {
+            tmpCanvas.gameObject.SetActive(false); // Start hidden
+        }
+    }
+
     void Update()
     {
-        if (!player || isLit) return;
-        
-        // Check distance to player
-        float distance = Vector3.Distance(transform.position, player.position);
-        bool inRange = distance <= interactionDistance;
-        
-        // Show/hide interaction prompt
-        if (interactionText)
+        if (!player || !playerCamera || isLit)
         {
-            bool showPrompt = inRange && isReadyToLight;
-            interactionText.gameObject.SetActive(showPrompt);
-            
-            if (showPrompt)
+            showingPrompt = false;
+            UpdateUIVisibility(false);
+            return;
+        }
+
+        // Check if player is looking at and close to the torch
+        bool canInteract = IsPlayerLookingAtTorch();
+
+        // Update prompt state
+        showingPrompt = canInteract && isReadyToLight;
+
+        // Update UI based on mode
+        if (uiMode == UIMode.OnGUI)
+        {
+            // Calculate screen position for GUI prompt
+            if (showingPrompt)
             {
-                interactionText.text = "Press F to light torch";
-                interactionText.color = Color.white;
+                screenPosition = playerCamera.WorldToScreenPoint(transform.position);
             }
         }
-        
+        else if (uiMode == UIMode.TextMeshPro)
+        {
+            UpdateUIVisibility(showingPrompt);
+
+            // Make canvas face camera
+            if (showingPrompt && tmpCanvas != null)
+            {
+                tmpCanvas.transform.LookAt(tmpCanvas.transform.position + playerCamera.transform.rotation * Vector3.forward,
+                                          playerCamera.transform.rotation * Vector3.up);
+            }
+        }
+
         // Handle F key press
-        if (inRange && Input.GetKeyDown(KeyCode.F))
+        if (canInteract && Input.GetKeyDown(KeyCode.F))
         {
             TryLightTorch();
         }
     }
-    
+
+    void UpdateUIVisibility(bool show)
+    {
+        if (uiMode == UIMode.TextMeshPro)
+        {
+            if (tmpCanvas != null)
+            {
+                tmpCanvas.gameObject.SetActive(show);
+            }
+            else if (tmpText != null)
+            {
+                tmpText.gameObject.SetActive(show);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Checks if player is looking at the torch and within interaction distance
+    /// </summary>
+    bool IsPlayerLookingAtTorch()
+    {
+        // Check distance first (cheaper check)
+        float distance = Vector3.Distance(transform.position, player.position);
+        if (distance > interactionDistance)
+        {
+            return false;
+        }
+
+        // Get direction from camera to torch
+        Vector3 directionToTorch = (transform.position - playerCamera.transform.position).normalized;
+        Vector3 cameraForward = playerCamera.transform.forward;
+
+        // Calculate angle between camera forward and direction to torch
+        float angle = Vector3.Angle(cameraForward, directionToTorch);
+
+        // Check if within look angle threshold
+        if (angle > lookAngleThreshold)
+        {
+            return false;
+        }
+
+        // Optional: Raycast to ensure line of sight (prevents interaction through walls)
+        RaycastHit hit;
+        if (Physics.Raycast(playerCamera.transform.position, directionToTorch, out hit, distance + 0.5f))
+        {
+            // Check if we hit this torch or its parent
+            if (hit.collider.gameObject == gameObject || hit.collider.transform.IsChildOf(transform))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    void OnGUI()
+    {
+        if (uiMode != UIMode.OnGUI || !showingPrompt || screenPosition.z <= 0)
+        {
+            return;
+        }
+
+        // Convert screen position (bottom-left origin) to GUI position (top-left origin)
+        Vector3 guiPosition = screenPosition;
+        guiPosition.y = Screen.height - guiPosition.y;
+
+        // Draw prompt text
+        string promptText = "Press F to light torch";
+        Vector2 textSize = promptStyle.CalcSize(new GUIContent(promptText));
+
+        Rect promptRect = new Rect(
+            guiPosition.x - textSize.x / 2,
+            guiPosition.y - textSize.y - 30, // Offset above torch
+            textSize.x,
+            textSize.y
+        );
+
+        GUI.Label(promptRect, promptText, promptStyle);
+    }
+
     void TryLightTorch()
     {
         if (isLit) return;
-        
+
         // Check if this torch is ready to be lit
         if (puzzleManager && !puzzleManager.CanLightTorch(sequenceNumber))
         {
@@ -128,16 +356,18 @@ public class SequentialTorch : MonoBehaviour
             ShowWrongSequenceFeedback();
             return;
         }
-        
+
         // Light the torch
         LightTorch();
     }
-    
+
     public void LightTorch()
     {
-        Debug.Log($"[SequentialTorch] ✓ Torch {sequenceNumber} LIT!");
+        Debug.Log($"[SequentialTorch] Torch {sequenceNumber} LIT!");
 
         isLit = true;
+        showingPrompt = false;
+        UpdateUIVisibility(false);
         SetTorchState(true, false);
 
         // Play sound
@@ -145,9 +375,6 @@ public class SequentialTorch : MonoBehaviour
 
         // Notify puzzle manager
         if (puzzleManager) puzzleManager.OnTorchLit(sequenceNumber);
-
-        // Hide interaction text
-        if (interactionText) interactionText.gameObject.SetActive(false);
     }
 
     public void ExtinguishTorch()
@@ -156,26 +383,25 @@ public class SequentialTorch : MonoBehaviour
 
         isLit = false;
         isReadyToLight = false;
+        showingPrompt = false;
+        UpdateUIVisibility(false);
         SetTorchState(false, false);
-
-        // Hide interaction text
-        if (interactionText) interactionText.gameObject.SetActive(false);
     }
 
     void ShowWrongSequenceFeedback()
     {
-        Debug.Log($"[SequentialTorch] ✗ Torch {sequenceNumber} - Wrong sequence!");
-        
+        Debug.Log($"[SequentialTorch] Torch {sequenceNumber} - Wrong sequence!");
+
         // Play wrong sound
         if (wrongSequenceSound) audioSource.PlayOneShot(wrongSequenceSound);
-        
+
         // Notify puzzle manager
         if (puzzleManager) puzzleManager.OnWrongSequenceAttempted(sequenceNumber);
-        
+
         // Visual feedback - red flash
         StartCoroutine(FlashRed());
     }
-    
+
     IEnumerator FlashRed()
     {
         if (torchRenderer)
@@ -186,10 +412,13 @@ public class SequentialTorch : MonoBehaviour
             torchRenderer.material.color = original;
         }
     }
-    
+
     public void SetReadyToLight(bool ready)
     {
-        if (isLit) return;
+        if (isLit)
+        {
+            return;
+        }
 
         isReadyToLight = ready;
         SetTorchState(false, ready);
@@ -317,10 +546,10 @@ public class SequentialTorch : MonoBehaviour
     {
         // Flame object
         if (flameObject) flameObject.SetActive(lit);
-        
+
         // Light component
         if (torchLight) torchLight.enabled = lit;
-        
+
         // Fire particles
         if (fireParticles)
         {
@@ -329,7 +558,7 @@ public class SequentialTorch : MonoBehaviour
             else if (!lit && fireParticles.isPlaying)
                 fireParticles.Stop();
         }
-        
+
         // Ready particles
         if (readyParticles)
         {
@@ -338,7 +567,7 @@ public class SequentialTorch : MonoBehaviour
             else if ((!ready || lit) && readyParticles.isPlaying)
                 readyParticles.Stop();
         }
-        
+
         // Torch color
         if (torchRenderer)
         {
@@ -350,15 +579,23 @@ public class SequentialTorch : MonoBehaviour
                 torchRenderer.material.color = originalColor;
         }
     }
-    
+
     public bool IsLit => isLit;
     public int SequenceNumber => sequenceNumber;
-    
+
     // Debug visualization
     void OnDrawGizmosSelected()
     {
         Gizmos.color = isReadyToLight ? Color.green : (isLit ? Color.orange : Color.gray);
         Gizmos.DrawWireSphere(transform.position, interactionDistance);
+
+        // Draw look direction cone (approximate)
+        if (Application.isPlaying && playerCamera != null)
+        {
+            Gizmos.color = Color.cyan;
+            Vector3 directionToTorch = (transform.position - playerCamera.transform.position).normalized;
+            Gizmos.DrawLine(playerCamera.transform.position, transform.position);
+        }
 
         #if UNITY_EDITOR
         // Draw sequence number
