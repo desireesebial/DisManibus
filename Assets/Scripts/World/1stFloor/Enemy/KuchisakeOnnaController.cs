@@ -733,6 +733,9 @@ public class KuchisakeOnnaController : MonoBehaviour
         isStandingUp = false;
         currentState = EnemyState.Patrol;
 
+        // Restore mask when returning to patrol/roaming
+        RestoreMask();
+
         // Enable NavMesh agent and warp to first patrol point
         if (agent != null && HasValidPatrolPoints())
         {
@@ -816,7 +819,10 @@ public class KuchisakeOnnaController : MonoBehaviour
     {
         currentState = EnemyState.Chase;
         chaseTimer = chaseTimeout;
-        
+
+        // Remove mask when starting chase to show slit-mouth
+        RemoveMask();
+
         if (agent != null)
         {
             agent.isStopped = false;
