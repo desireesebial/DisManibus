@@ -105,7 +105,7 @@ public class VideoTrigger : MonoBehaviour
     {
         Debug.Log($"VideoTrigger: Playing video '{videoClip.name}'");
 
-        hasPlayed = true;
+        // Don't set hasPlayed here - wait until video finishes or is skipped
         isPlayingVideo = true;
 
         // Save current game state
@@ -288,6 +288,10 @@ public class VideoTrigger : MonoBehaviour
 
         // Restore game state
         RestoreGameState();
+
+        // Set hasPlayed AFTER video finishes or is skipped
+        hasPlayed = true;
+        Debug.Log("VideoTrigger: hasPlayed flag set to TRUE (video finished/skipped)");
 
         isPlayingVideo = false;
     }
