@@ -129,25 +129,57 @@ namespace World.UI
             isLoading = true;
             Show(statusMessage);
 
-            float elapsedRealtime = 0f;
-            operation.allowSceneActivation = true;
+            float startTime = Time.realtimeSinceStartup;
 
-            while (!operation.isDone)
+            // Prevent scene from activating until we're ready
+            // This keeps the scene at 90% progress until we explicitly allow it
+            operation.allowSceneActivation = false;
+
+            // Phase 1: Wait for scene to load to 90% (0.9 is when Unity considers async load "done")
+            while (operation.progress < 0.9f)
             {
-                elapsedRealtime += Time.unscaledDeltaTime;
                 float normalizedProgress = Mathf.Clamp01(operation.progress / SceneProgressCompleteThreshold);
                 UpdateProgress(normalizedProgress);
                 yield return null;
             }
 
-            elapsedRealtime += Time.unscaledDeltaTime;
-            UpdateProgress(1f);
+            // Phase 2: Scene is at 90%, now ensure minimum display time is met
+            float elapsedTime = Time.realtimeSinceStartup - startTime;
+            float remainingTime = minimumDisplayTime - elapsedTime;
 
-            if (elapsedRealtime < minimumDisplayTime)
+            if (remainingTime > 0)
             {
-                yield return new WaitForSecondsRealtime(minimumDisplayTime - elapsedRealtime);
+                // Smoothly fill progress from 90% to 100% during the remaining minimum time
+                // This gives visual feedback that something is happening
+                float startProgress = 0.9f;
+                float fillTime = 0f;
+
+                while (fillTime < remainingTime)
+                {
+                    fillTime += Time.unscaledDeltaTime;
+                    float t = Mathf.Clamp01(fillTime / remainingTime);
+                    float displayProgress = Mathf.Lerp(startProgress, 1f, t);
+                    UpdateProgress(displayProgress);
+                    yield return null;
+                }
             }
 
+            // Ensure progress bar shows 100% completion
+            UpdateProgress(1f);
+
+            // Small delay so user can see 100% completion before scene switches
+            yield return new WaitForSecondsRealtime(0.2f);
+
+            // NOW allow scene to activate (happens almost instantly since it's been ready at 90%)
+            operation.allowSceneActivation = true;
+
+            // Wait for activation to complete
+            while (!operation.isDone)
+            {
+                yield return null;
+            }
+
+            // Hide loading screen after scene is fully loaded and activated
             Hide();
             isLoading = false;
         }
