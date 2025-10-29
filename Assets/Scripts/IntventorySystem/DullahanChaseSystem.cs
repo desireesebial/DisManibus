@@ -10,6 +10,18 @@ public class DullahanChaseSystem : MonoBehaviour
     public float maxDetectionRange = 20f;
     public float minDetectionRange = 5f;
     public float intensityUpdateRate = 0.1f;
+
+    [Header("Speed Progression Per Cycle")]
+    [Tooltip("If true, speed increases per cycle. If false, uses default chase speed.")]
+    public bool enableCycleProgression = true;
+
+    [Tooltip("Base speed for cycle calculations (uses minChaseSpeed by default)")]
+    public float baseCycleSpeed = 3f;
+
+    [Tooltip("Speed multipliers for each chase cycle (Cycle 1 uses index 0, Cycle 2 uses index 1, etc.)")]
+    public float[] cycleSpeedMultipliers = new float[] { 1.0f, 1.2f, 1.5f, 2.0f, 2.5f, 3.0f };
+
+    [SerializeField] private int currentCycleNumber = 0;
     
     [Header("Patrol Settings")]
     public float patrolSpeed = 2f;
@@ -314,26 +326,30 @@ public class DullahanChaseSystem : MonoBehaviour
         }
     }
     
-    public void StartChase()
+    public void StartChase(int cycleNumber = 0)
     {
         if (currentState == ChaseState.Chase) return;
-        
-        Debug.Log("[DullahanChaseSystem] Starting chase");
-        
+
+        currentCycleNumber = cycleNumber;
+        Debug.Log($"[DullahanChaseSystem] Starting chase - Cycle #{cycleNumber + 1}");
+
         currentState = ChaseState.Chase;
         isChasing = true;
         isPatrolling = false;
-        
-        // Set chase speed
-        dullahanAgent.speed = maxChaseSpeed;
-        
+
+        // Calculate speed based on cycle progression
+        float targetSpeed = CalculateCycleSpeed(cycleNumber);
+        dullahanAgent.speed = targetSpeed;
+
+        Debug.Log($"[DullahanChaseSystem] Cycle {cycleNumber + 1} speed: {targetSpeed:F1} (Base: {baseCycleSpeed}, Max: {maxChaseSpeed})");
+
         // Play chase sound
         if (audioSource != null && chaseSound != null)
         {
             audioSource.clip = chaseSound;
             audioSource.Play();
         }
-        
+
         // Notify event manager
         if (eventManager != null)
         {
@@ -444,7 +460,39 @@ public class DullahanChaseSystem : MonoBehaviour
     {
         return isPatrolling;
     }
-    
+
+    public int GetCurrentCycleNumber()
+    {
+        return currentCycleNumber;
+    }
+
+    private float CalculateCycleSpeed(int cycleNumber)
+    {
+        if (!enableCycleProgression)
+        {
+            // Disabled: use default max speed
+            return maxChaseSpeed;
+        }
+
+        // Get multiplier for this cycle
+        float multiplier = 1.0f;
+        if (cycleNumber < cycleSpeedMultipliers.Length)
+        {
+            multiplier = cycleSpeedMultipliers[cycleNumber];
+        }
+        else
+        {
+            // If beyond array length, use last multiplier
+            multiplier = cycleSpeedMultipliers[cycleSpeedMultipliers.Length - 1];
+        }
+
+        // Calculate speed: base speed * multiplier, capped at max
+        float calculatedSpeed = baseCycleSpeed * multiplier;
+        float finalSpeed = Mathf.Min(calculatedSpeed, maxChaseSpeed);
+
+        return finalSpeed;
+    }
+
     // Debug visualization
     void OnDrawGizmosSelected()
     {

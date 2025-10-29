@@ -164203,7 +164203,7 @@ MonoBehaviour:
   allowRetriggerOnReenter: 0
   maxTriggerCount: 1
   runIndependentlyAfterTrigger: 1
-  proximityMode: 0
+  proximityMode: 2
   proximityRadius: 10
   proximityCenter: {fileID: 1112342882}
   playerLayer:
@@ -164220,7 +164220,7 @@ MonoBehaviour:
   chaseText: {fileID: 483496585}
   timerFillImage: {fileID: 0}
   timerBackgroundImage: {fileID: 0}
-  showProgressBar: 1
+  showProgressBar: 0
   showPercentage: 0
   chaseColor: {r: 1, g: 0.2, b: 0.2, a: 1}
   restColor: {r: 0.2, g: 1, b: 0.2, a: 1}
@@ -411930,11 +411930,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06ffde271c7ac364fae8ad662d476cf5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxChaseSpeed: 10
+  maxChaseSpeed: 20
   minChaseSpeed: 3
   maxDetectionRange: 20
   minDetectionRange: 5
   intensityUpdateRate: 0.1
+  enableCycleProgression: 1
+  baseCycleSpeed: 3
+  cycleSpeedMultipliers:
+  - 1
+  - 1.5
+  - 2
+  - 2.5
+  currentCycleNumber: 0
   patrolSpeed: 2
   patrolRadius: 15
   patrolWaitTime: 3

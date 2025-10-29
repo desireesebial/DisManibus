@@ -648,8 +648,30 @@ public class DullahanChaseEventManager : MonoBehaviour
             }
 
             // Build display text
-            string phaseText = isChase ? "DULLAHAN CHASING! Survive:" : "REST PERIOD - Next chase in:";
-            string displayText = $"{phaseText} {timeDisplay}";
+            string phaseText;
+            string displayText;
+
+            if (isChase)
+            {
+                // Chase phase: Show cycle number and speed
+                int cycle = currentCycleCount + 1;
+                float currentSpeed = 0f;
+
+                // Get current chase speed from Dullahan
+                if (dullahanChaseSystem != null && dullahanChaseSystem.dullahanAgent != null)
+                {
+                    currentSpeed = dullahanChaseSystem.dullahanAgent.speed;
+                }
+
+                phaseText = $"CYCLE {cycle} | Speed: {currentSpeed:F1}";
+                displayText = $"{phaseText} | Survive: {timeDisplay}";
+            }
+            else
+            {
+                // Rest phase: Simple display
+                phaseText = "REST PERIOD - Next chase in:";
+                displayText = $"{phaseText} {timeDisplay}";
+            }
 
             // Add percentage if enabled
             if (showPercentage)
@@ -724,10 +746,11 @@ public class DullahanChaseEventManager : MonoBehaviour
 
     void StartChase()
     {
-        // Activate chase system
+        // Activate chase system with current cycle number for progressive difficulty
         if (dullahanChaseSystem != null)
         {
-            dullahanChaseSystem.StartChase();
+            dullahanChaseSystem.StartChase(currentCycleCount);
+            Debug.Log($"[DullahanChaseEvent] Starting chase cycle #{currentCycleCount + 1}");
         }
 
         // Play audio
