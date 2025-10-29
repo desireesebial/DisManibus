@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using DisManibus.World.FirstFloor.Enemy;
 
 /// <summary>
 /// Simplified Kuchisake-onna controller with video-triggered chase behavior.
@@ -10,8 +11,6 @@ public class KuchisakeOnnaController : MonoBehaviour
 {
     #region Constants
     private const float CATCH_PLAYER_DISTANCE = 2f;
-    private const float SAFE_ZONE_CHECK_RADIUS = 10f; // Large radius to find NavMesh
-    private const float SAFE_ZONE_DISTANCE_THRESHOLD = 2f; // Player must be 2m+ from NavMesh to be "safe"
     private const float CHASE_LOG_INTERVAL = 2f;
 
     // Animation distance states
@@ -44,6 +43,20 @@ public class KuchisakeOnnaController : MonoBehaviour
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip deathScreamClip;
     [SerializeField] private AudioClip scissorsSnipSound;
+
+    [Header("Patrol Settings")]
+    [Tooltip("Patrol waypoints. If empty, will auto-generate waypoints in radius.")]
+    [SerializeField] private Transform[] patrolWaypoints;
+    [Tooltip("How long to watch player in safe zone before starting patrol")]
+    [SerializeField] private float watchingTimeout = 10f;
+    [Tooltip("Speed while patrolling (slower than chase speed)")]
+    [SerializeField] private float patrolSpeed = 2f;
+    [Tooltip("How long to wait at each patrol waypoint before moving to next")]
+    [SerializeField] private float patrolWaitTime = 3f;
+    [Tooltip("If no waypoints assigned, generate patrol points in this radius")]
+    [SerializeField] private float autoPatrolRadius = 20f;
+    [Tooltip("Number of waypoints to auto-generate if none assigned")]
+    [SerializeField] private int autoWaypointCount = 4;
     #endregion
 
     #region Private Fields
@@ -55,6 +68,14 @@ public class KuchisakeOnnaController : MonoBehaviour
     private bool chaseActivated = false;
     private float safeZoneWaitTimer = 0f;
     private float chaseLogTimer = 0f;
+
+    // Patrol tracking
+    private int currentPatrolWaypointIndex = -1;
+    private float patrolWaitTimer = 0f;
+    private float watchingTimer = 0f;
+    private System.Collections.Generic.List<int> unusedPatrolWaypoints = new System.Collections.Generic.List<int>();
+    private System.Collections.Generic.List<Vector3> generatedPatrolPoints = new System.Collections.Generic.List<Vector3>();
+    private bool usingGeneratedWaypoints = false;
     #endregion
 
     #region Enums
@@ -63,7 +84,8 @@ public class KuchisakeOnnaController : MonoBehaviour
         Standby,            // Idle, waiting for video to play
         AggressiveChase,    // Chasing player with mask off
         WaitingAtSafeZone,  // Waiting at safe zone edge
-        Watching            // Standing still, monitoring player
+        Watching,           // Standing still, monitoring player
+        Patrol              // Walking between waypoints with mask on
     }
 
     public enum AnimationState
@@ -251,15 +273,28 @@ public class KuchisakeOnnaController : MonoBehaviour
 
     /// <summary>
     /// Watching mode - stands still at current position, monitors for player leaving safe zone.
+    /// After timeout, transitions to patrol mode.
     /// </summary>
     void HandleWatching()
     {
         ChangeAnimationState(AnimationState.Idle);
 
+        // Increment watching timer
+        watchingTimer += Time.deltaTime;
+
+        // Check if watching timeout expired -> start patrol
+        if (watchingTimer >= watchingTimeout)
+        {
+            Debug.Log($"[KuchisakeOnna] Watching timeout expired ({watchingTimeout}s). Starting patrol...");
+            TransitionToPatrol();
+            return;
+        }
+
         // Continuously check if player left safe zone
         if (!IsPlayerInSafeZone())
         {
             Debug.Log($"[KuchisakeOnna] Player left safe zone during watching! Resuming chase...");
+            watchingTimer = 0f; // Reset timer
 
             // Resume chase
             currentState = EnemyState.AggressiveChase;
@@ -271,6 +306,54 @@ public class KuchisakeOnnaController : MonoBehaviour
             }
 
             RemoveMask();
+        }
+    }
+
+    /// <summary>
+    /// Patrol mode - walks between waypoints with mask on, looking for player to exit safe zone.
+    /// </summary>
+    void HandlePatrol()
+    {
+        ChangeAnimationState(AnimationState.Walking);
+
+        // Always check if player left safe zone
+        if (!IsPlayerInSafeZone())
+        {
+            Debug.Log($"[KuchisakeOnna] Player left safe zone during patrol! Resuming chase...");
+            currentState = EnemyState.AggressiveChase;
+            watchingTimer = 0f; // Reset timer
+            patrolWaitTimer = 0f; // Reset timer
+
+            if (agent != null)
+            {
+                agent.isStopped = false;
+                agent.speed = chaseSpeed;
+            }
+
+            RemoveMask();
+            return;
+        }
+
+        // Validate agent
+        if (!ValidateAgent()) return;
+
+        // Check if reached waypoint
+        if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.1f)
+        {
+            // Wait at waypoint
+            patrolWaitTimer += Time.deltaTime;
+
+            if (patrolWaitTimer >= patrolWaitTime)
+            {
+                // Move to next waypoint
+                GoToNextPatrolWaypoint();
+                patrolWaitTimer = 0f;
+            }
+            else
+            {
+                // Idle while waiting
+                ChangeAnimationState(AnimationState.Idle);
+            }
         }
     }
     #endregion
@@ -340,41 +423,188 @@ public class KuchisakeOnnaController : MonoBehaviour
 
     #region Safe Zone Detection
     /// <summary>
-    /// Checks if player is in a safe zone (unwalkable area, off NavMesh).
+    /// Checks if player is in a safe zone using trigger-based detection.
     /// </summary>
     bool IsPlayerInSafeZone()
     {
-        if (player == null)
+        return SafeZoneTrigger.IsPlayerInAnySafeZone;
+    }
+    #endregion
+
+    #region Patrol Methods
+    /// <summary>
+    /// Transitions from Watching to Patrol mode
+    /// </summary>
+    void TransitionToPatrol()
+    {
+        currentState = EnemyState.Patrol;
+        watchingTimer = 0f;
+
+        // Initialize patrol waypoints
+        InitializePatrolWaypoints();
+
+        // Configure agent for patrol
+        if (agent != null)
         {
-            Debug.LogWarning($"[KuchisakeOnna] IsPlayerInSafeZone: Player is NULL!");
-            return false;
+            agent.speed = patrolSpeed;
+            agent.isStopped = false;
         }
 
-        // Check if player position is near NavMesh
-        NavMeshHit hit;
-        bool foundNavMesh = NavMesh.SamplePosition(player.position, out hit, SAFE_ZONE_CHECK_RADIUS, NavMesh.AllAreas);
+        // Ensure mask is on
+        RestoreMask();
 
-        // Calculate distance to nearest NavMesh point
-        float distanceToNavMesh = foundNavMesh ? Vector3.Distance(player.position, hit.position) : 999f;
+        // Go to first waypoint
+        GoToNextPatrolWaypoint();
+    }
 
-        // Smart detection: Player is in safe zone if:
-        // 1. No NavMesh found within search radius, OR
-        // 2. NavMesh found but player is far from it (> threshold)
-        bool inSafeZone = !foundNavMesh || distanceToNavMesh > SAFE_ZONE_DISTANCE_THRESHOLD;
-
-        Debug.Log($"[KuchisakeOnna] Smart Safe Zone Check:");
-        Debug.Log($"  Player position: {player.position}");
-        Debug.Log($"  Search radius: {SAFE_ZONE_CHECK_RADIUS}m");
-        Debug.Log($"  NavMesh found: {foundNavMesh}");
-        if (foundNavMesh)
+    /// <summary>
+    /// Initialize patrol waypoint system
+    /// </summary>
+    void InitializePatrolWaypoints()
+    {
+        // Check if manual waypoints assigned
+        if (patrolWaypoints != null && patrolWaypoints.Length > 0)
         {
-            Debug.Log($"  Nearest NavMesh point: {hit.position}");
-            Debug.Log($"  Distance to NavMesh: {distanceToNavMesh:F2}m");
-            Debug.Log($"  Threshold: {SAFE_ZONE_DISTANCE_THRESHOLD}m");
-        }
-        Debug.Log($"  RESULT: Player is {(inSafeZone ? "IN SAFE ZONE (chase stops)" : "ON NAVMESH (chase continues)")}");
+            // Count valid waypoints
+            int validCount = 0;
+            foreach (var wp in patrolWaypoints)
+            {
+                if (wp != null) validCount++;
+            }
 
-        return inSafeZone;
+            if (validCount > 0)
+            {
+                usingGeneratedWaypoints = false;
+                ResetUnusedPatrolWaypoints();
+                Debug.Log($"[KuchisakeOnna] Using {validCount} manual patrol waypoints");
+                return;
+            }
+        }
+
+        // Generate waypoints automatically
+        GeneratePatrolWaypoints();
+    }
+
+    /// <summary>
+    /// Generate patrol waypoints in circle pattern around current position
+    /// </summary>
+    void GeneratePatrolWaypoints()
+    {
+        generatedPatrolPoints.Clear();
+        Vector3 center = transform.position;
+
+        for (int i = 0; i < autoWaypointCount; i++)
+        {
+            float angle = (360f / autoWaypointCount) * i;
+            float distance = Random.Range(autoPatrolRadius * 0.6f, autoPatrolRadius);
+
+            Vector3 direction = Quaternion.Euler(0, angle, 0) * Vector3.forward;
+            Vector3 targetPos = center + direction * distance;
+
+            // Sample NavMesh to find valid position
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(targetPos, out hit, autoPatrolRadius, NavMesh.AllAreas))
+            {
+                generatedPatrolPoints.Add(hit.position);
+            }
+        }
+
+        usingGeneratedWaypoints = true;
+        ResetUnusedPatrolWaypoints();
+        Debug.Log($"[KuchisakeOnna] Generated {generatedPatrolPoints.Count} patrol waypoints");
+    }
+
+    /// <summary>
+    /// Move to next patrol waypoint using random selection
+    /// </summary>
+    void GoToNextPatrolWaypoint()
+    {
+        int waypointCount = GetPatrolWaypointCount();
+
+        if (waypointCount == 0)
+        {
+            Debug.LogWarning($"[KuchisakeOnna] No patrol waypoints available!");
+            return;
+        }
+
+        // Reset list if empty (all waypoints visited)
+        if (unusedPatrolWaypoints.Count == 0)
+        {
+            ResetUnusedPatrolWaypoints();
+        }
+
+        // Prevent immediate repeat of last waypoint if possible
+        if (currentPatrolWaypointIndex != -1 && unusedPatrolWaypoints.Count > 1)
+        {
+            unusedPatrolWaypoints.Remove(currentPatrolWaypointIndex);
+        }
+
+        // Pick random unused waypoint
+        if (unusedPatrolWaypoints.Count > 0)
+        {
+            int randomIndex = Random.Range(0, unusedPatrolWaypoints.Count);
+            currentPatrolWaypointIndex = unusedPatrolWaypoints[randomIndex];
+            unusedPatrolWaypoints.RemoveAt(randomIndex);
+        }
+
+        Vector3 destination = GetPatrolWaypointPosition(currentPatrolWaypointIndex);
+
+        if (agent != null && agent.isOnNavMesh)
+        {
+            agent.SetDestination(destination);
+            Debug.Log($"[KuchisakeOnna] Moving to patrol waypoint {currentPatrolWaypointIndex} at {destination}");
+        }
+    }
+
+    /// <summary>
+    /// Reset the list of unused waypoints for random patrol
+    /// </summary>
+    void ResetUnusedPatrolWaypoints()
+    {
+        unusedPatrolWaypoints.Clear();
+        int count = GetPatrolWaypointCount();
+
+        for (int i = 0; i < count; i++)
+        {
+            unusedPatrolWaypoints.Add(i);
+        }
+    }
+
+    /// <summary>
+    /// Get waypoint position by index
+    /// </summary>
+    Vector3 GetPatrolWaypointPosition(int index)
+    {
+        if (usingGeneratedWaypoints)
+        {
+            if (index >= 0 && index < generatedPatrolPoints.Count)
+                return generatedPatrolPoints[index];
+        }
+        else
+        {
+            if (patrolWaypoints != null && index >= 0 && index < patrolWaypoints.Length)
+            {
+                if (patrolWaypoints[index] != null)
+                    return patrolWaypoints[index].position;
+            }
+        }
+
+        Debug.LogWarning($"[KuchisakeOnna] Invalid waypoint index: {index}");
+        return transform.position;
+    }
+
+    /// <summary>
+    /// Get total number of patrol waypoints
+    /// </summary>
+    int GetPatrolWaypointCount()
+    {
+        if (usingGeneratedWaypoints)
+            return generatedPatrolPoints.Count;
+
+        if (patrolWaypoints != null)
+            return patrolWaypoints.Length;
+
+        return 0;
     }
     #endregion
 
@@ -560,17 +790,8 @@ public class KuchisakeOnnaController : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, CATCH_PLAYER_DISTANCE);
 
-        // Draw safe zone detection at player position
-        if (player != null)
-        {
-            // Green sphere = safe zone threshold (2m from NavMesh)
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(player.position, SAFE_ZONE_DISTANCE_THRESHOLD);
-
-            // Cyan sphere = search radius (10m to find NavMesh)
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawWireSphere(player.position, SAFE_ZONE_CHECK_RADIUS);
-        }
+        // Safe zone visualization is now handled by SafeZoneTrigger components
+        // (Green = player inside, Yellow = empty)
     }
     #endregion
 }
