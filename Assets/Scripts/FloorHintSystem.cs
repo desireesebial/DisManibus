@@ -39,7 +39,7 @@ public class FloorHintSystem : MonoBehaviour
         }
 
         // Ensure instruction text is hidden initially
-        if (instructionText != null)
+        if (instructionText != null && instructionText.gameObject != null)
         {
             instructionText.gameObject.SetActive(debugShowImmediately);
         }
