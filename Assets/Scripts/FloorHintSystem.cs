@@ -60,10 +60,50 @@ public class FloorHintSystem : MonoBehaviour
 
     void Update()
     {
-        // Don't count time during cutscenes or when game is paused
+        // Handle pause state - hide hint UI when paused
         if (Time.timeScale == 0f)
         {
+            // Game is paused - hide hint UI if it's shown
+            if (hintButtonShown)
+            {
+                if (hintButton != null && hintButton.activeSelf)
+                {
+                    hintButton.SetActive(false);
+                }
+
+                if (instructionText != null && instructionText.gameObject.activeSelf)
+                {
+                    instructionText.gameObject.SetActive(false);
+                }
+
+                // Close hint panel if it's open
+                if (isPanelOpen && hintPanel != null)
+                {
+                    hintPanel.SetActive(false);
+                }
+            }
+
             return;
+        }
+
+        // Game is not paused - restore hint UI if it should be shown
+        if (hintButtonShown)
+        {
+            if (hintButton != null && !hintButton.activeSelf)
+            {
+                hintButton.SetActive(true);
+            }
+
+            if (instructionText != null && !instructionText.gameObject.activeSelf)
+            {
+                instructionText.gameObject.SetActive(true);
+            }
+
+            // Restore hint panel state (it stays closed unless player opens it)
+            if (isPanelOpen && hintPanel != null && !hintPanel.activeSelf)
+            {
+                hintPanel.SetActive(true);
+            }
         }
 
         // Track time on floor
@@ -78,7 +118,7 @@ public class FloorHintSystem : MonoBehaviour
             }
         }
 
-        // Check for Z key press to toggle hint panel (only when button is shown)
+        // Check for Z key press to toggle hint panel (only when button is shown and not paused)
         if (hintButtonShown && Input.GetKeyDown(KeyCode.Z))
         {
             ToggleHintPanel();
