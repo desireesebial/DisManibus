@@ -81,8 +81,8 @@ public class ItemTracker : MonoBehaviour
         DialogueFlags.Set(perItemFlagPrefix + norm);
 
         collected.Add(norm);
-        RefreshUI();
 
+        // Check if complete BEFORE refreshing UI to avoid showing "1/1" with strikethrough
         if (IsComplete)
         {
             OnCompleted?.Invoke();
@@ -90,7 +90,13 @@ public class ItemTracker : MonoBehaviour
             if (setCompletionFlag && !string.IsNullOrEmpty(completionFlag))
                 DialogueFlags.Set(completionFlag);
 
-            Invoke(nameof(Hide), autoHideDelayWhenComplete);
+            // Hide immediately without showing completed state
+            Hide();
+        }
+        else
+        {
+            // Only refresh UI if not complete (still collecting items)
+            RefreshUI();
         }
     }
 

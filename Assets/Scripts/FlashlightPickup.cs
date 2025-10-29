@@ -5,7 +5,14 @@ public class FlashlightPickup : MonoBehaviour
     [Header("Pickup Settings")]
     [Tooltip("The FlashlightController to unlock when picked up. If null, will search for one in the scene.")]
     public FlashlightController flashlightController;
-    
+
+    [Header("Quest Integration")]
+    [Tooltip("Item name to register with ItemTracker when picked up (must match ItemTracker.requiredItems)")]
+    public string itemName = "flashlight";
+
+    [Tooltip("Register this pickup with ItemTracker quest system to show '0/1 Items found' progress")]
+    public bool registerWithItemTracker = true;
+
     [Tooltip("Trigger-based pickup (player walks into it) or require interaction key press?")]
     public bool autoPickupOnTrigger = true;
     
@@ -259,6 +266,20 @@ public class FlashlightPickup : MonoBehaviour
         // Unlock the flashlight controller
         flashlightController.PickupFlashlight();
         Debug.Log($"[FlashlightPickup] ✓ FlashlightController unlocked - Player can now use flashlight with key '{flashlightController.flashlightKey}'!");
+
+        // Register with item tracker quest system
+        if (registerWithItemTracker && !string.IsNullOrEmpty(itemName))
+        {
+            if (ItemTracker.Instance != null)
+            {
+                ItemTracker.Instance.RegisterItem(itemName);
+                Debug.Log($"[FlashlightPickup] ✓ Registered '{itemName}' with ItemTracker - Quest updated to show completion");
+            }
+            else
+            {
+                Debug.LogWarning($"[FlashlightPickup] ItemTracker not found in scene! Quest will not update. Make sure ItemTracker component exists.");
+            }
+        }
 
         // Play effects
         PlayPickupEffects();
