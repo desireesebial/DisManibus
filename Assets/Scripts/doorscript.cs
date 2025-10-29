@@ -143,6 +143,11 @@ public class doorscript : MonoBehaviour
         {
             interactionUI.SetActive(false);
             SetupInteractionUI();
+            ValidateUISetup(); // Validate that UI is properly configured
+        }
+        else
+        {
+            Debug.LogWarning($"[Door] {gameObject.name}: interactionUI is not assigned! Door interaction prompts will not be displayed.");
         }
 
         CacheVisibilityTargets();
@@ -198,6 +203,48 @@ public class doorscript : MonoBehaviour
         {
             interactionText.gameObject.SetActive(true);
         }
+    }
+
+    /// <summary>
+    /// Validates that the UI is properly configured and logs warnings for potential issues
+    /// </summary>
+    private void ValidateUISetup()
+    {
+        if (interactionUI == null)
+        {
+            Debug.LogError($"[Door] {gameObject.name}: VALIDATION FAILED - interactionUI is null!");
+            return;
+        }
+
+        if (interactionText == null)
+        {
+            Debug.LogError($"[Door] {gameObject.name}: VALIDATION FAILED - interactionText is null after setup!");
+            return;
+        }
+
+        // Check if interactionText GameObject is active
+        if (interactionText.gameObject != interactionUI && !interactionText.gameObject.activeSelf)
+        {
+            Debug.LogWarning($"[Door] {gameObject.name}: VALIDATION WARNING - interactionText GameObject '{interactionText.gameObject.name}' is inactive!");
+        }
+
+        // Check if the text strings are configured
+        if (string.IsNullOrEmpty(lockedText))
+        {
+            Debug.LogWarning($"[Door] {gameObject.name}: VALIDATION WARNING - lockedText is empty or null!");
+        }
+
+        if (string.IsNullOrEmpty(openText))
+        {
+            Debug.LogWarning($"[Door] {gameObject.name}: VALIDATION WARNING - openText is empty or null!");
+        }
+
+        if (string.IsNullOrEmpty(closeText))
+        {
+            Debug.LogWarning($"[Door] {gameObject.name}: VALIDATION WARNING - closeText is empty or null!");
+        }
+
+        Debug.Log($"[Door] {gameObject.name}: UI validation passed. interactionUI='{interactionUI.name}', interactionText='{interactionText.name}', lockedText='{lockedText}'");
     }
 
     private void HandlePlayerInteraction()
@@ -557,9 +604,36 @@ public class doorscript : MonoBehaviour
 
     private void ShowLockedMessage()
     {
+        if (ENABLE_VERBOSE_LOGGING)
+            Debug.Log($"[Door] {gameObject.name}: ShowLockedMessage() called. _playerInRange={_playerInRange}, _isAnimating={_isAnimating}, interactionUI={(interactionUI != null ? "assigned" : "NULL")}, interactionText={(interactionText != null ? "assigned" : "NULL")}");
+
+        if (interactionUI == null)
+        {
+            Debug.LogWarning($"[Door] {gameObject.name}: Cannot show locked message - interactionUI is null!");
+            return;
+        }
+
         if (interactionText != null)
         {
+            // CRITICAL FIX: Ensure the UI is visible when showing locked message
+            // This overrides the normal UpdateUI() behavior that hides UI when _playerInRange is false or _isAnimating is true
+            interactionUI.SetActive(true);
+
+            if (ENABLE_VERBOSE_LOGGING)
+                Debug.Log($"[Door] {gameObject.name}: Activated interactionUI to show locked message");
+
             interactionText.text = lockedText;
+
+            if (ENABLE_VERBOSE_LOGGING)
+                Debug.Log($"[Door] {gameObject.name}: Set locked text to '{lockedText}'");
+
+            // Ensure the text GameObject is active
+            if (interactionText.gameObject != interactionUI && !interactionText.gameObject.activeInHierarchy)
+            {
+                interactionText.gameObject.SetActive(true);
+                if (ENABLE_VERBOSE_LOGGING)
+                    Debug.Log($"[Door] {gameObject.name}: Activated interactionText GameObject");
+            }
 
             // Stop any previous reset coroutine
             if (_resetTextCoroutine != null)
@@ -568,6 +642,10 @@ public class doorscript : MonoBehaviour
             }
 
             _resetTextCoroutine = StartCoroutine(ResetInteractionText());
+        }
+        else
+        {
+            Debug.LogWarning($"[Door] {gameObject.name}: Cannot show locked message - interactionText is null!");
         }
     }
 
@@ -588,9 +666,15 @@ public class doorscript : MonoBehaviour
             return;
         }
 
+        if (ENABLE_VERBOSE_LOGGING)
+            Debug.Log($"[Door] {gameObject.name}: UpdateUI() called. _playerInRange={_playerInRange}, _isAnimating={_isAnimating}, isLocked={isLocked}, isOpen={isOpen}");
+
         if (_playerInRange && !_isAnimating)
         {
             interactionUI.SetActive(true);
+
+            if (ENABLE_VERBOSE_LOGGING)
+                Debug.Log($"[Door] {gameObject.name}: Showing UI (player in range and not animating)");
 
             if (interactionText != null)
             {
@@ -603,6 +687,9 @@ public class doorscript : MonoBehaviour
                 {
                     interactionText.text = isOpen ? closeText : openText;
                 }
+
+                if (ENABLE_VERBOSE_LOGGING)
+                    Debug.Log($"[Door] {gameObject.name}: Updated text to '{interactionText.text}'");
 
                 // Ensure the text GameObject is active
                 if (!interactionText.gameObject.activeInHierarchy && interactionText.gameObject != interactionUI)
@@ -617,24 +704,37 @@ public class doorscript : MonoBehaviour
         }
         else
         {
+            if (ENABLE_VERBOSE_LOGGING)
+                Debug.Log($"[Door] {gameObject.name}: Hiding UI (_playerInRange={_playerInRange}, _isAnimating={_isAnimating})");
+
             interactionUI.SetActive(false);
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        if (ENABLE_VERBOSE_LOGGING)
+            Debug.Log($"[Door] {gameObject.name}: OnTriggerEnter called by '{other.gameObject.name}' with tag '{other.tag}'");
+
         if (other.CompareTag("Player"))
         {
             _playerInRange = true;
+            if (ENABLE_VERBOSE_LOGGING)
+                Debug.Log($"[Door] {gameObject.name}: Player entered range, setting _playerInRange=true");
             UpdateUI();
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
+        if (ENABLE_VERBOSE_LOGGING)
+            Debug.Log($"[Door] {gameObject.name}: OnTriggerExit called by '{other.gameObject.name}' with tag '{other.tag}'");
+
         if (other.CompareTag("Player"))
         {
             _playerInRange = false;
+            if (ENABLE_VERBOSE_LOGGING)
+                Debug.Log($"[Door] {gameObject.name}: Player exited range, setting _playerInRange=false");
             UpdateUI();
         }
     }
