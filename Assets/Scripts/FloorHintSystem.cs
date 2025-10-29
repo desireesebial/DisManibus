@@ -19,6 +19,7 @@ public class FloorHintSystem : MonoBehaviour
     public GameObject hintButton;
     public GameObject hintPanel;
     public Text hintTextDisplay;
+    public Text instructionText;
 
     [Header("Debug")]
     [Tooltip("Enable to show hint button immediately for testing")]
@@ -35,6 +36,12 @@ public class FloorHintSystem : MonoBehaviour
         {
             hintButton.SetActive(debugShowImmediately);
             hintButtonShown = debugShowImmediately;
+        }
+
+        // Ensure instruction text is hidden initially
+        if (instructionText != null)
+        {
+            instructionText.gameObject.SetActive(debugShowImmediately);
         }
 
         // Ensure hint panel is hidden initially
@@ -70,6 +77,12 @@ public class FloorHintSystem : MonoBehaviour
                 ShowHintButton();
             }
         }
+
+        // Check for Z key press to toggle hint panel (only when button is shown)
+        if (hintButtonShown && Input.GetKeyDown(KeyCode.Z))
+        {
+            ToggleHintPanel();
+        }
     }
 
     /// <summary>
@@ -81,6 +94,13 @@ public class FloorHintSystem : MonoBehaviour
         {
             hintButton.SetActive(true);
             hintButtonShown = true;
+
+            // Also show instruction text
+            if (instructionText != null)
+            {
+                instructionText.gameObject.SetActive(true);
+            }
+
             Debug.Log($"[FloorHintSystem] Hint button shown after {timeOnFloor} seconds");
         }
     }
