@@ -17,7 +17,7 @@ public class HintSystemSetup : EditorWindow
         "Assets/Scenes/4th Floor (better version).unity",
         "Assets/Scenes/3rd floor (better version).unity",
         "Assets/Scenes/2nd Floor (Better Version).unity",
-        "Assets/Scenes/1st Floor (GOOD ENDING).unity"
+        "Assets/Scenes/1st Floor (BAD ENDING).unity"
     };
 
     // Hint texts for each floor
