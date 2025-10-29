@@ -480,22 +480,25 @@ public class PlayerHealthSystem : MonoBehaviour
 
     private void UpdateHealthUI()
     {
-        // Update health bars
-        for (int i = 0; i < healthBars.Length; i++)
+        // Update health bars (optional - only if array is assigned)
+        if (healthBars != null && healthBars.Length > 0)
         {
-            if (healthBars[i] != null)
+            for (int i = 0; i < healthBars.Length; i++)
             {
-                bool isActive = i < currentHealth;
-                healthBars[i].fillAmount = isActive ? 1f : 0f;
-                if (isActive)
+                if (healthBars[i] != null)
                 {
-                    // Color bars based on current state
-                    if (currentHealth >= maxHealth)
-                        healthBars[i].color = healthyBarColor;
-                    else if (currentHealth == 2)
-                        healthBars[i].color = injuredBarColor;
-                    else if (currentHealth == 1)
-                        healthBars[i].color = criticalBarColor;
+                    bool isActive = i < currentHealth;
+                    healthBars[i].fillAmount = isActive ? 1f : 0f;
+                    if (isActive)
+                    {
+                        // Color bars based on current state
+                        if (currentHealth >= maxHealth)
+                            healthBars[i].color = healthyBarColor;
+                        else if (currentHealth == 2)
+                            healthBars[i].color = injuredBarColor;
+                        else if (currentHealth == 1)
+                            healthBars[i].color = criticalBarColor;
+                    }
                 }
             }
         }
