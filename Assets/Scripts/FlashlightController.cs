@@ -55,11 +55,25 @@ public class FlashlightController : MonoBehaviour
 	[Tooltip("If true, the light cannot be toggled on while battery is fully depleted and recharging.")]
 	public bool lockUseWhenDepleted = true;
 
+	[Header("Low Battery Warning")]
+	[Tooltip("Enable blinking warning when battery is low.")]
+	public bool enableLowBatteryBlink = true;
+	[Tooltip("Battery percentage (0-1) at which blinking warning starts. Default: 0.2 = 20%")]
+	[Range(0.05f, 0.5f)]
+	public float lowBatteryThreshold = 0.2f;
+	[Tooltip("Slowest blink interval in seconds (when battery first reaches threshold).")]
+	public float blinkIntervalMax = 0.3f;
+	[Tooltip("Fastest blink interval in seconds (when battery is nearly depleted).")]
+	public float blinkIntervalMin = 0.1f;
+
     // Private variables
     private AudioSource audioSource;
     private Transform playerCamera;
 	private float rechargeTimer;
     private bool warnedAboutSelfTogglingVisual;
+	private bool isBlinking;
+	private float blinkTimer;
+	private bool blinkState;
 
     private void Start()
     {
@@ -188,10 +202,17 @@ public class FlashlightController : MonoBehaviour
             PlayAudioEffect(turnOffSound);
             return;
         }
-        
+
         isFlashlightOn = !isFlashlightOn;
         flashlightLight.enabled = isFlashlightOn;
-        
+
+        // Stop blinking if turning off manually
+        if (!isFlashlightOn && isBlinking)
+        {
+            isBlinking = false;
+            blinkTimer = 0f;
+        }
+
         // Play audio effect
         if (isFlashlightOn)
         {
@@ -467,9 +488,54 @@ public class FlashlightController : MonoBehaviour
 			if (batteryCapacitySeconds > 0f)
 			{
 				batterySecondsRemaining -= Time.deltaTime;
+
+				// Check if battery is in low warning range
+				float batteryPercent = GetBatteryPercent();
+				bool shouldBlink = enableLowBatteryBlink && batteryPercent <= lowBatteryThreshold && batteryPercent > 0f;
+
+				if (shouldBlink)
+				{
+					// Calculate current blink interval based on battery percentage
+					// As battery goes from lowBatteryThreshold -> 0%, speed increases (interval decreases)
+					float normalizedBattery = batteryPercent / lowBatteryThreshold; // 1.0 at threshold, 0.0 at empty
+					float currentBlinkInterval = Mathf.Lerp(blinkIntervalMin, blinkIntervalMax, normalizedBattery);
+
+					// Handle blinking
+					if (!isBlinking)
+					{
+						isBlinking = true;
+						blinkTimer = 0f;
+						blinkState = true; // Start with light on
+					}
+
+					blinkTimer += Time.deltaTime;
+					if (blinkTimer >= currentBlinkInterval)
+					{
+						blinkTimer = 0f;
+						blinkState = !blinkState;
+						if (flashlightLight != null)
+						{
+							flashlightLight.enabled = blinkState;
+						}
+					}
+				}
+				else if (isBlinking)
+				{
+					// Battery above threshold, stop blinking
+					isBlinking = false;
+					blinkTimer = 0f;
+					if (flashlightLight != null)
+					{
+						flashlightLight.enabled = true; // Ensure light is on
+					}
+				}
+
+				// Check for depletion
 				if (batterySecondsRemaining <= 0f)
 				{
 					batterySecondsRemaining = 0f;
+					isBlinking = false;
+					blinkTimer = 0f;
 					// Auto turn off and start recharge delay
 					SetFlashlightState(false);
 					rechargeTimer = 0f;
@@ -481,6 +547,13 @@ public class FlashlightController : MonoBehaviour
 		else
 		{
 			// Not on: advance recharge timer
+			// Ensure blinking is stopped when light is off
+			if (isBlinking)
+			{
+				isBlinking = false;
+				blinkTimer = 0f;
+			}
+
 			rechargeTimer += Time.deltaTime;
 			if (batterySecondsRemaining < batteryCapacitySeconds && rechargeTimer >= rechargeDelaySeconds)
 			{
