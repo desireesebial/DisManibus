@@ -17,7 +17,7 @@ public class HintSystemSetup : EditorWindow
         "Assets/Scenes/4th Floor (better version).unity",
         "Assets/Scenes/3rd floor (better version).unity",
         "Assets/Scenes/2nd Floor (Better Version).unity",
-        "Assets/Scenes/1st Floor (GOOD ENDING).unity"
+        "Assets/Scenes/1st Floor (BAD ENDING).unity"
     };
 
     // Hint texts for each floor
@@ -154,6 +154,11 @@ public class HintSystemSetup : EditorWindow
         hintButton.transform.SetParent(canvas.transform, false);
         hintSystem.hintButton = hintButton;
 
+        // Create instruction text
+        GameObject instructionTextObj = CreateInstructionText(canvas);
+        instructionTextObj.transform.SetParent(canvas.transform, false);
+        hintSystem.instructionText = instructionTextObj.GetComponent<Text>();
+
         // Create hint panel
         GameObject hintPanel = CreateHintPanel(canvas);
         hintPanel.transform.SetParent(canvas.transform, false);
@@ -170,20 +175,7 @@ public class HintSystemSetup : EditorWindow
             }
         }
 
-        // Setup hint button to call ToggleHintPanel
-        Button hintButtonComponent = hintButton.GetComponent<Button>();
-        UnityEditor.Events.UnityEventTools.AddPersistentListener(hintButtonComponent.onClick, hintSystem.ToggleHintPanel);
-
-        // Setup close button to call ToggleHintPanel
-        Button[] buttons = hintPanel.GetComponentsInChildren<Button>();
-        foreach (Button btn in buttons)
-        {
-            if (btn.gameObject.name == "CloseButton")
-            {
-                UnityEditor.Events.UnityEventTools.AddPersistentListener(btn.onClick, hintSystem.ToggleHintPanel);
-                break;
-            }
-        }
+        // No button event listeners needed - hint panel is controlled by Z key only
 
         // Mark scene as dirty and save
         EditorSceneManager.MarkSceneDirty(scene);
@@ -220,7 +212,7 @@ public class HintSystemSetup : EditorWindow
 
     private static GameObject CreateHintButton(Canvas canvas)
     {
-        // Create button GameObject
+        // Create hint indicator GameObject (visual only, not clickable)
         GameObject buttonObj = new GameObject("HintButton");
         RectTransform buttonRect = buttonObj.AddComponent<RectTransform>();
 
@@ -231,21 +223,9 @@ public class HintSystemSetup : EditorWindow
         buttonRect.anchoredPosition = new Vector2(0, -20); // 20 pixels from top
         buttonRect.sizeDelta = new Vector2(80, 80);
 
-        // Add Image component for background
+        // Add Image component for background (visual only)
         Image buttonImage = buttonObj.AddComponent<Image>();
         buttonImage.color = new Color(0.15f, 0f, 0f, 0.9f); // Dark red, mostly opaque
-
-        // Add Button component
-        Button button = buttonObj.AddComponent<Button>();
-
-        // Set button colors (horror theme)
-        ColorBlock colors = button.colors;
-        colors.normalColor = new Color(0.15f, 0f, 0f, 0.9f);     // Dark red
-        colors.highlightedColor = new Color(0.3f, 0f, 0f, 1f);   // Brighter red on hover
-        colors.pressedColor = new Color(0.5f, 0f, 0f, 1f);       // Even brighter when pressed
-        colors.selectedColor = new Color(0.15f, 0f, 0f, 0.9f);   // Same as normal
-        colors.disabledColor = new Color(0.1f, 0.1f, 0.1f, 0.5f); // Gray when disabled
-        button.colors = colors;
 
         // Create text child
         GameObject textObj = new GameObject("Text");
@@ -269,8 +249,39 @@ public class HintSystemSetup : EditorWindow
         outline.effectColor = Color.black;
         outline.effectDistance = new Vector2(2, -2);
 
-        Debug.Log("[HintSystemSetup] Created hint button");
+        Debug.Log("[HintSystemSetup] Created hint indicator (visual only)");
         return buttonObj;
+    }
+
+    private static GameObject CreateInstructionText(Canvas canvas)
+    {
+        // Create instruction text GameObject
+        GameObject instructionObj = new GameObject("InstructionText");
+        RectTransform instructionRect = instructionObj.AddComponent<RectTransform>();
+
+        // Position below the hint button (button is at -20, button height is 80, so text starts at -100)
+        instructionRect.anchorMin = new Vector2(0.5f, 1f);
+        instructionRect.anchorMax = new Vector2(0.5f, 1f);
+        instructionRect.pivot = new Vector2(0.5f, 1f);
+        instructionRect.anchoredPosition = new Vector2(0, -105); // Just below the button
+        instructionRect.sizeDelta = new Vector2(100, 25);
+
+        // Add Text component
+        Text instructionText = instructionObj.AddComponent<Text>();
+        instructionText.text = "[Z] Open/Close";
+        instructionText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        instructionText.fontSize = 14;
+        instructionText.fontStyle = FontStyle.Bold;
+        instructionText.alignment = TextAnchor.MiddleCenter;
+        instructionText.color = new Color(0.7f, 0f, 0f, 1f); // Dark red text
+
+        // Add outline for better visibility
+        Outline outline = instructionObj.AddComponent<Outline>();
+        outline.effectColor = Color.black;
+        outline.effectDistance = new Vector2(1, -1);
+
+        Debug.Log("[HintSystemSetup] Created instruction text");
+        return instructionObj;
     }
 
     private static GameObject CreateHintPanel(Canvas canvas)
@@ -316,7 +327,7 @@ public class HintSystemSetup : EditorWindow
         GameObject hintTextObj = new GameObject("HintText");
         hintTextObj.transform.SetParent(panelObj.transform, false);
         RectTransform hintTextRect = hintTextObj.AddComponent<RectTransform>();
-        hintTextRect.anchorMin = new Vector2(0.1f, 0.2f);
+        hintTextRect.anchorMin = new Vector2(0.1f, 0.15f);
         hintTextRect.anchorMax = new Vector2(0.9f, 0.75f);
         hintTextRect.sizeDelta = Vector2.zero;
         hintTextRect.anchoredPosition = Vector2.zero;
@@ -330,41 +341,27 @@ public class HintSystemSetup : EditorWindow
         hintText.horizontalOverflow = HorizontalWrapMode.Wrap;
         hintText.verticalOverflow = VerticalWrapMode.Overflow;
 
-        // Create close button
-        GameObject closeButtonObj = new GameObject("CloseButton");
-        closeButtonObj.transform.SetParent(panelObj.transform, false);
-        RectTransform closeButtonRect = closeButtonObj.AddComponent<RectTransform>();
-        closeButtonRect.anchorMin = new Vector2(0.5f, 0.05f);
-        closeButtonRect.anchorMax = new Vector2(0.5f, 0.05f);
-        closeButtonRect.pivot = new Vector2(0.5f, 0f);
-        closeButtonRect.anchoredPosition = Vector2.zero;
-        closeButtonRect.sizeDelta = new Vector2(150, 50);
+        // Create close instruction text
+        GameObject closeInstructionObj = new GameObject("CloseInstruction");
+        closeInstructionObj.transform.SetParent(panelObj.transform, false);
+        RectTransform closeInstructionRect = closeInstructionObj.AddComponent<RectTransform>();
+        closeInstructionRect.anchorMin = new Vector2(0.1f, 0.05f);
+        closeInstructionRect.anchorMax = new Vector2(0.9f, 0.12f);
+        closeInstructionRect.sizeDelta = Vector2.zero;
+        closeInstructionRect.anchoredPosition = Vector2.zero;
 
-        Image closeButtonImage = closeButtonObj.AddComponent<Image>();
-        closeButtonImage.color = new Color(0.2f, 0f, 0f, 1f);
+        Text closeInstructionText = closeInstructionObj.AddComponent<Text>();
+        closeInstructionText.text = "Press [Z] to close";
+        closeInstructionText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        closeInstructionText.fontSize = 16;
+        closeInstructionText.fontStyle = FontStyle.Bold;
+        closeInstructionText.alignment = TextAnchor.MiddleCenter;
+        closeInstructionText.color = new Color(0.7f, 0f, 0f, 1f); // Dark red text
 
-        Button closeButton = closeButtonObj.AddComponent<Button>();
-        ColorBlock closeColors = closeButton.colors;
-        closeColors.normalColor = new Color(0.2f, 0f, 0f, 1f);
-        closeColors.highlightedColor = new Color(0.4f, 0f, 0f, 1f);
-        closeColors.pressedColor = new Color(0.6f, 0f, 0f, 1f);
-        closeButton.colors = closeColors;
-
-        // Close button text
-        GameObject closeTextObj = new GameObject("Text");
-        closeTextObj.transform.SetParent(closeButtonObj.transform, false);
-        RectTransform closeTextRect = closeTextObj.AddComponent<RectTransform>();
-        closeTextRect.anchorMin = Vector2.zero;
-        closeTextRect.anchorMax = Vector2.one;
-        closeTextRect.sizeDelta = Vector2.zero;
-
-        Text closeText = closeTextObj.AddComponent<Text>();
-        closeText.text = "CLOSE";
-        closeText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        closeText.fontSize = 20;
-        closeText.fontStyle = FontStyle.Bold;
-        closeText.alignment = TextAnchor.MiddleCenter;
-        closeText.color = new Color(0.9f, 0.8f, 0.8f, 1f);
+        // Add outline for better visibility
+        Outline closeInstructionOutline = closeInstructionObj.AddComponent<Outline>();
+        closeInstructionOutline.effectColor = Color.black;
+        closeInstructionOutline.effectDistance = new Vector2(1, -1);
 
         Debug.Log("[HintSystemSetup] Created hint panel");
         return panelObj;
