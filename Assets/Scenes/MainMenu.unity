@@ -131,9 +131,8 @@ GameObject:
   - component: {fileID: 209155840}
   - component: {fileID: 209155839}
   - component: {fileID: 209155838}
-  - component: {fileID: 209155837}
   m_Layer: 5
-  m_Name: Button (1)
+  m_Name: New Game
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -159,23 +158,6 @@ RectTransform:
   m_AnchoredPosition: {x: -108, y: -133}
   m_SizeDelta: {x: 241.1461, y: 79.2801}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &209155837
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 209155835}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a79f1f7e17790424b9233107dffc16f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gameSceneName: 4th Floor (better version)
-  useTransitionManager: 1
-  newGameButton: {fileID: 209155838}
-  buttonImage: {fileID: 209155839}
-  buttonText: {fileID: 0}
 --- !u!114 &209155838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -220,9 +202,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: LoadGameScript, Assembly-CSharp
-        m_MethodName: 
+      - m_Target: {fileID: 1513410751}
+        m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
+        m_MethodName: NewGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1171,7 +1153,7 @@ GameObject:
   - component: {fileID: 1153908262}
   - component: {fileID: 1153908265}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Load Game
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1241,8 +1223,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1153908265}
-        m_TargetAssemblyTypeName: LoadGameScript, Assembly-CSharp
+      - m_Target: {fileID: 1513410751}
+        m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
         m_MethodName: LoadGame
         m_Mode: 1
         m_Arguments:
@@ -1317,7 +1299,7 @@ GameObject:
   - component: {fileID: 1263617210}
   - component: {fileID: 1263617209}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1387,8 +1369,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SettingsScript, Assembly-CSharp
+      - m_Target: {fileID: 1513410751}
+        m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
         m_MethodName: OpenSettings
         m_Mode: 1
         m_Arguments:
@@ -1450,7 +1432,7 @@ GameObject:
   - component: {fileID: 1512457068}
   - component: {fileID: 1512457067}
   m_Layer: 5
-  m_Name: Button
+  m_Name: ExitGame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1473,7 +1455,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -147, y: -503}
+  m_AnchoredPosition: {x: -147, y: -481}
   m_SizeDelta: {x: 161.6857, y: 49.6282}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1512457067
@@ -1520,8 +1502,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: ExitGameScript, Assembly-CSharp
+      - m_Target: {fileID: 1513410751}
+        m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
         m_MethodName: ExitGame
         m_Mode: 1
         m_Arguments:
@@ -1570,6 +1552,60 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1512457065}
   m_CullTransparentMesh: 1
+--- !u!1 &1513410750
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1513410752}
+  - component: {fileID: 1513410751}
+  m_Layer: 0
+  m_Name: MainMenuManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1513410751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1513410750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0e729f6b86ebf3419a2bbbf111f2ddc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameSceneName: 4th Floor (better version)
+  useTransitionManager: 1
+  newGameLoadingMessage: Starting New Game
+  loadGameLoadingMessage: Loading Game
+  loadGameButton: {fileID: 1153908262}
+  settingsPanel: {fileID: 0}
+  creditsPanel: {fileID: 0}
+  controlsPanel: {fileID: 0}
+  confirmExitPanel: {fileID: 0}
+  requireExitConfirmation: 0
+--- !u!4 &1513410752
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1513410750}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 501.64886, y: 0, z: 682.7798}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2068028653
 GameObject:
   m_ObjectHideFlags: 0
@@ -1772,3 +1808,4 @@ SceneRoots:
   - {fileID: 982927529}
   - {fileID: 2139132921}
   - {fileID: 975467053}
+  - {fileID: 1513410752}
