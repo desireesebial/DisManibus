@@ -47,10 +47,13 @@ namespace World.SceneTransition
                 return;
             }
 
-            saveManager.SaveGame();
+            saveManager.SaveCheckpoint();
             hasSaved = true;
             onCheckpointReached?.Invoke();
+
+#if UNITY_EDITOR
             Debug.Log($"Checkpoint saved at '{name}'.");
+#endif
         }
 
         public void ResetCheckpoint()

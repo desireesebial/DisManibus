@@ -75,7 +75,7 @@ public class MainMenuController : MonoBehaviour
         UpdateLoadButtonState();
 
         // Load game scene with transition
-        LoadGameScene(newGameLoadingMessage);
+        LoadGameScene(gameSceneName, newGameLoadingMessage);
     }
 
     /// <summary>
@@ -90,19 +90,22 @@ public class MainMenuController : MonoBehaviour
             return;
         }
 
-        // Check if save file exists
-        if (!SaveLoad.SaveSystem.HasSaveData())
+        // Try to load the save data
+        if (!SaveLoad.SaveSystem.TryLoadPlayer(out SaveLoad.SaveData data))
         {
-            Debug.LogWarning("[MainMenu] No save file found.");
+            Debug.LogWarning("[MainMenu] Failed to load save data.");
             // TODO: Show a "No Save File" message to the player
             return;
         }
 
-        Debug.Log("[MainMenu] Loading saved game...");
+        Debug.Log($"[MainMenu] Loading saved game from scene: {data.sceneName}");
         isTransitioning = true;
 
-        // Load game scene with transition
-        LoadGameScene(loadGameLoadingMessage);
+        // Set pending load data so it gets applied when scene loads
+        SaveLoad.SaveManager.SetPendingLoadData(data);
+
+        // Load the scene where the player saved (NOT the hardcoded scene)
+        LoadGameScene(data.sceneName, loadGameLoadingMessage);
     }
 
     /// <summary>
@@ -276,17 +279,17 @@ public class MainMenuController : MonoBehaviour
     /// <summary>
     /// Loads the game scene using the transition manager if available.
     /// </summary>
-    private void LoadGameScene(string loadingMessage)
+    private void LoadGameScene(string sceneName, string loadingMessage)
     {
         if (useTransitionManager && SceneTransitionManager.Instance != null)
         {
-            Debug.Log($"[MainMenu] Loading scene '{gameSceneName}' with SceneTransitionManager");
-            SceneTransitionManager.Instance.LoadScene(gameSceneName, loadingMessage);
+            Debug.Log($"[MainMenu] Loading scene '{sceneName}' with SceneTransitionManager");
+            SceneTransitionManager.Instance.LoadScene(sceneName, loadingMessage);
         }
         else
         {
-            Debug.Log($"[MainMenu] Loading scene '{gameSceneName}' directly");
-            StartCoroutine(LoadSceneWithLoadingScreen(gameSceneName, loadingMessage));
+            Debug.Log($"[MainMenu] Loading scene '{sceneName}' directly");
+            StartCoroutine(LoadSceneWithLoadingScreen(sceneName, loadingMessage));
         }
     }
 
