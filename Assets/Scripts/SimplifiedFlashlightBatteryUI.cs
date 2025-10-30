@@ -17,6 +17,14 @@ public class SimplifiedFlashlightBatteryUI : MonoBehaviour
     [Tooltip("The Fill image of the slider")]
     public Image fillImage;
 
+    [Header("Flashlight Icon")]
+    [Tooltip("Flashlight icon that shows on/off state via opacity")]
+    public Image flashlightIcon;
+
+    [Tooltip("Opacity when flashlight is OFF (0-1)")]
+    [Range(0f, 1f)]
+    public float iconOffOpacity = 0.3f;
+
     [Tooltip("Reference to PlayerHealthSystem (auto-assigned)")]
     public PlayerHealthSystem playerHealth;
 
@@ -47,6 +55,9 @@ public class SimplifiedFlashlightBatteryUI : MonoBehaviour
 
         // Always update battery values (even when hidden)
         UpdateBatteryUI();
+
+        // Update flashlight icon opacity
+        UpdateFlashlightIcon();
     }
 
     private void HandleVisibility()
@@ -93,14 +104,33 @@ public class SimplifiedFlashlightBatteryUI : MonoBehaviour
         }
     }
 
+    private void UpdateFlashlightIcon()
+    {
+        if (flashlightIcon == null || flashlight == null)
+            return;
+
+        // Check if flashlight is currently on
+        bool isOn = flashlight.IsFlashlightOn();
+
+        // Get current color
+        Color iconColor = flashlightIcon.color;
+
+        // Set opacity based on flashlight state
+        iconColor.a = isOn ? 1f : iconOffOpacity;
+
+        // Apply color
+        flashlightIcon.color = iconColor;
+    }
+
     /// <summary>
     /// Manually assign references if not set in inspector
     /// </summary>
-    public void SetReferences(FlashlightController controller, Slider slider, Image fill, PlayerHealthSystem health = null)
+    public void SetReferences(FlashlightController controller, Slider slider, Image fill, PlayerHealthSystem health = null, Image icon = null)
     {
         flashlight = controller;
         batterySlider = slider;
         fillImage = fill;
         playerHealth = health;
+        flashlightIcon = icon;
     }
 }
