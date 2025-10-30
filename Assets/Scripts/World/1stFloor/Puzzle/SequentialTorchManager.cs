@@ -48,6 +48,8 @@ public class SequentialTorchManager : MonoBehaviour
     // State
     private int currentSequenceIndex = 0;
     private bool puzzleComplete = false;
+    private bool isResetting = false; // Prevent multiple simultaneous resets
+    private List<int> lightingOrder = new List<int>(); // Track the order torches were lit
     private AudioSource audioSource;
     
     void Start()
@@ -107,14 +109,8 @@ public class SequentialTorchManager : MonoBehaviour
             torch.ExtinguishTorch();
         }
 
-        // Make first torch ready
-        if (torches.Length > 0)
-        {
-            torches[0].SetReadyToLight(true);
-            currentSequenceIndex = 0;
-        }
-
-        // Reset state
+        // Reset state (all torches are now interactable - no "ready" concept)
+        currentSequenceIndex = 0;
         puzzleComplete = false;
 
         // Hide completion effects
@@ -127,23 +123,59 @@ public class SequentialTorchManager : MonoBehaviour
     
     public bool CanLightTorch(int sequenceNumber)
     {
-        if (puzzleComplete) return false;
-        
-        // Check if this is the next torch in sequence
-        return sequenceNumber == currentSequenceIndex + 1;
+        // Puzzle already complete - no more lighting allowed
+        if (puzzleComplete)
+        {
+            Debug.LogWarning($"[SequentialTorchManager] Cannot light torch {sequenceNumber} - puzzle already complete");
+            return false;
+        }
+
+        // Validate sequence number is within bounds
+        if (sequenceNumber < 1 || sequenceNumber > torches.Length)
+        {
+            Debug.LogError($"[SequentialTorchManager] Invalid sequence number {sequenceNumber}. Must be between 1 and {torches.Length}");
+            return false;
+        }
+
+        // Check if this torch is already lit (prevent duplicate lighting)
+        if (lightingOrder.Contains(sequenceNumber))
+        {
+            Debug.LogWarning($"[SequentialTorchManager] Torch {sequenceNumber} is already lit. Cannot light again.");
+            return false;
+        }
+
+        // Allow any torch to be lit (no sequential restriction)
+        Debug.Log($"[SequentialTorchManager] Allowing torch {sequenceNumber} to be lit (current order: {string.Join("→", lightingOrder)})");
+        return true;
     }
     
     public void OnTorchLit(int sequenceNumber)
     {
-        if (puzzleComplete) return;
+        // Safety check: puzzle already complete
+        if (puzzleComplete)
+        {
+            Debug.LogWarning($"[SequentialTorchManager] OnTorchLit called for torch {sequenceNumber}, but puzzle is already complete. Ignoring.");
+            return;
+        }
 
-        Debug.Log($"[SequentialTorchManager] Torch {sequenceNumber} lit!");
+        // Safety check: torch already in lighting order (shouldn't happen)
+        if (lightingOrder.Contains(sequenceNumber))
+        {
+            Debug.LogWarning($"[SequentialTorchManager] Torch {sequenceNumber} already in lighting order! Ignoring duplicate.");
+            return;
+        }
+
+        // Add torch to lighting order
+        lightingOrder.Add(sequenceNumber);
+        currentSequenceIndex = lightingOrder.Count;
+
+        Debug.Log($"[SequentialTorchManager] ✓ Torch {sequenceNumber} lit! Order so far: [{string.Join("→", lightingOrder)}] ({lightingOrder.Count}/{torches.Length})");
 
         // Find the torch that was lit
         SequentialTorch litTorch = null;
         foreach (var torch in torches)
         {
-            if (torch.SequenceNumber == sequenceNumber)
+            if (torch != null && torch.SequenceNumber == sequenceNumber)
             {
                 litTorch = torch;
                 break;
@@ -156,127 +188,234 @@ public class SequentialTorchManager : MonoBehaviour
             return;
         }
 
-        // Create connection line from previous torch (if this isn't the first torch)
-        if (sequenceNumber > 1)
+        // Verify the torch is actually lit (double-check state consistency)
+        if (!litTorch.IsLit)
         {
-            // Find the previous torch
+            Debug.LogError($"[SequentialTorchManager] Torch {sequenceNumber} reported as lit, but IsLit flag is false! State inconsistency detected.");
+            return;
+        }
+
+        // Create connection line from previously lit torch (if this isn't the first torch)
+        if (lightingOrder.Count > 1)
+        {
+            // Find the previous torch in lighting order (not sequence order)
+            int previousSequenceNumber = lightingOrder[lightingOrder.Count - 2];
             SequentialTorch previousTorch = null;
             foreach (var torch in torches)
             {
-                if (torch.SequenceNumber == sequenceNumber - 1)
+                if (torch != null && torch.SequenceNumber == previousSequenceNumber)
                 {
                     previousTorch = torch;
                     break;
                 }
             }
 
-            if (previousTorch != null)
+            if (previousTorch != null && previousTorch.IsLit)
             {
                 litTorch.CreateConnectionLine(previousTorch);
+                Debug.Log($"[SequentialTorchManager] Created connection line from torch {previousSequenceNumber} to torch {sequenceNumber}");
             }
             else
             {
-                Debug.LogWarning($"[SequentialTorchManager] Could not find previous torch (sequence {sequenceNumber - 1})");
+                Debug.LogWarning($"[SequentialTorchManager] Could not create connection line: previous torch ({previousSequenceNumber}) is {(previousTorch == null ? "null" : "not lit")}");
             }
         }
 
-        // Update progress
-        currentSequenceIndex++;
-
-        // Check if puzzle is complete
-        if (currentSequenceIndex >= torches.Length)
+        // Check if all torches are now lit
+        if (lightingOrder.Count >= torches.Length)
         {
+            Debug.Log($"[SequentialTorchManager] All {torches.Length} torches lit! Validating sequence...");
+            ValidateFinalSequence();
+        }
+    }
+
+    void ValidateFinalSequence()
+    {
+        // Build the correct sequence [1, 2, 3, 4, 5, ...]
+        List<int> correctSequence = new List<int>();
+        for (int i = 1; i <= torches.Length; i++)
+        {
+            correctSequence.Add(i);
+        }
+
+        // Compare lighting order with correct sequence
+        bool isCorrect = true;
+        if (lightingOrder.Count != correctSequence.Count)
+        {
+            isCorrect = false;
+        }
+        else
+        {
+            for (int i = 0; i < lightingOrder.Count; i++)
+            {
+                if (lightingOrder[i] != correctSequence[i])
+                {
+                    isCorrect = false;
+                    break;
+                }
+            }
+        }
+
+        // Display results
+        string actualOrder = string.Join("→", lightingOrder);
+        string expectedOrder = string.Join("→", correctSequence);
+
+        if (isCorrect)
+        {
+            Debug.Log($"[SequentialTorchManager] ✓✓✓ CORRECT SEQUENCE! [{actualOrder}] matches expected [{expectedOrder}]");
             CompletePuzzle();
         }
         else
         {
-            // Make next torch ready
-            if (currentSequenceIndex < torches.Length)
-            {
-                torches[currentSequenceIndex].SetReadyToLight(true);
-                Debug.Log($"[SequentialTorchManager] Torch {torches[currentSequenceIndex].SequenceNumber} is now ready to light");
-            }
+            Debug.LogWarning($"[SequentialTorchManager] ❌❌❌ WRONG SEQUENCE! Lit: [{actualOrder}], Expected: [{expectedOrder}]. Resetting puzzle...");
+            StartCoroutine(ResetAfterDelay());
         }
     }
-    
+
     void CompletePuzzle()
     {
         // Guard against completing puzzle multiple times
         if (puzzleComplete)
         {
-            Debug.LogWarning("[SequentialTorchManager] Puzzle already completed!");
+            Debug.LogWarning("[SequentialTorchManager] CompletePuzzle() called, but puzzle is already completed! Ignoring.");
             return;
         }
 
-        Debug.Log("[SequentialTorchManager] 🎉 PUZZLE COMPLETED!");
-
-        puzzleComplete = true;
-        
-        // Play completion sound
-        if (puzzleCompleteSound) audioSource.PlayOneShot(puzzleCompleteSound);
-        
-        // Play completion particles
-        if (completionParticles) completionParticles.Play();
-        
-        // Turn on completion light
-        if (completionLight) completionLight.enabled = true;
-        
-        // Unlock door
-        if (rewardDoor) rewardDoor.UnlockDoor();
-        
-        // Spawn reward items
-        if (rewardItems != null && rewardSpawnPoint)
+        // Verify all torches are actually lit (sanity check)
+        int litCount = 0;
+        foreach (var torch in torches)
         {
-            foreach (var item in rewardItems)
+            if (torch != null && torch.IsLit)
             {
-                if (item)
-                {
-                    Instantiate(item, rewardSpawnPoint.position, rewardSpawnPoint.rotation);
-                }
+                litCount++;
             }
         }
-        
-        // Enable/activate reward GameObjects
-        if (rewardGameObjects != null)
+
+        if (litCount != torches.Length)
         {
+            Debug.LogError($"[SequentialTorchManager] CRITICAL ERROR: CompletePuzzle() called, but only {litCount}/{torches.Length} torches are lit! Aborting completion.");
+            return;
+        }
+
+        Debug.Log("[SequentialTorchManager] 🎉🎉🎉 PUZZLE COMPLETED! 🎉🎉🎉");
+
+        // Mark puzzle as complete
+        puzzleComplete = true;
+
+        // Play completion sound
+        if (puzzleCompleteSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(puzzleCompleteSound);
+            Debug.Log("[SequentialTorchManager] ♫ Playing completion sound");
+        }
+
+        // Play completion particles
+        if (completionParticles != null)
+        {
+            completionParticles.Play();
+            Debug.Log("[SequentialTorchManager] ✨ Playing completion particles");
+        }
+
+        // Turn on completion light
+        if (completionLight != null)
+        {
+            completionLight.enabled = true;
+            Debug.Log("[SequentialTorchManager] 💡 Enabled completion light");
+        }
+
+        // Unlock door
+        if (rewardDoor != null)
+        {
+            rewardDoor.UnlockDoor();
+            Debug.Log("[SequentialTorchManager] 🚪 Unlocked reward door");
+        }
+
+        // Spawn reward items
+        if (rewardItems != null && rewardItems.Length > 0)
+        {
+            if (rewardSpawnPoint != null)
+            {
+                int spawnedCount = 0;
+                foreach (var item in rewardItems)
+                {
+                    if (item != null)
+                    {
+                        Instantiate(item, rewardSpawnPoint.position, rewardSpawnPoint.rotation);
+                        spawnedCount++;
+                    }
+                    else
+                    {
+                        Debug.LogWarning("[SequentialTorchManager] Null reward item in array, skipping");
+                    }
+                }
+                Debug.Log($"[SequentialTorchManager] 📦 Spawned {spawnedCount} reward items at {rewardSpawnPoint.name}");
+            }
+            else
+            {
+                Debug.LogWarning("[SequentialTorchManager] Reward items assigned, but no reward spawn point! Cannot spawn items.");
+            }
+        }
+
+        // Enable/activate reward GameObjects
+        if (rewardGameObjects != null && rewardGameObjects.Length > 0)
+        {
+            int enabledCount = 0;
             foreach (var rewardObj in rewardGameObjects)
             {
-                if (rewardObj)
+                if (rewardObj != null)
                 {
+                    bool wasActive = rewardObj.activeInHierarchy;
                     rewardObj.SetActive(true);
-                    Debug.Log($"[SequentialTorchManager] Enabled reward GameObject: {rewardObj.name}");
+                    enabledCount++;
+                    Debug.Log($"[SequentialTorchManager] ✓ Enabled reward GameObject: '{rewardObj.name}' (was {(wasActive ? "active" : "inactive")})");
+                }
+                else
+                {
+                    Debug.LogWarning("[SequentialTorchManager] Null reward GameObject in array, skipping");
                 }
             }
+            Debug.Log($"[SequentialTorchManager] Enabled {enabledCount} reward GameObjects");
         }
-        
-        // Make reward GameObjects visible
-        if (rewardVisibleObjects != null)
+
+        // Make reward GameObjects visible (from invisible to visible)
+        if (rewardVisibleObjects != null && rewardVisibleObjects.Length > 0)
         {
+            int visibleCount = 0;
             foreach (var visibleObj in rewardVisibleObjects)
             {
-                if (visibleObj)
+                if (visibleObj != null)
                 {
                     // Enable the GameObject if it's disabled
-                    if (!visibleObj.activeInHierarchy)
+                    bool wasActive = visibleObj.activeInHierarchy;
+                    if (!wasActive)
                     {
                         visibleObj.SetActive(true);
+                        Debug.Log($"[SequentialTorchManager] Activated previously inactive GameObject: '{visibleObj.name}'");
                     }
-                    
-                    // Make sure it's visible (in case it was hidden by other means)
-                    Renderer[] renderers = visibleObj.GetComponentsInChildren<Renderer>();
+
+                    // Make sure all renderers are enabled (make visible)
+                    Renderer[] renderers = visibleObj.GetComponentsInChildren<Renderer>(true); // Include inactive children
+                    int enabledRenderers = 0;
                     foreach (var renderer in renderers)
                     {
-                        if (renderer)
+                        if (renderer != null)
                         {
                             renderer.enabled = true;
+                            enabledRenderers++;
                         }
                     }
-                    
-                    Debug.Log($"[SequentialTorchManager] Made visible reward GameObject: {visibleObj.name}");
+
+                    visibleCount++;
+                    Debug.Log($"[SequentialTorchManager] ✓ Made visible reward GameObject: '{visibleObj.name}' ({enabledRenderers} renderers enabled)");
+                }
+                else
+                {
+                    Debug.LogWarning("[SequentialTorchManager] Null reward visible GameObject in array, skipping");
                 }
             }
+            Debug.Log($"[SequentialTorchManager] 👁 Made {visibleCount} GameObjects visible");
         }
-        
+
         // Start celebration coroutine
         StartCoroutine(CelebrationSequence());
     }
@@ -322,52 +461,96 @@ public class SequentialTorchManager : MonoBehaviour
     
     public void ResetPuzzle()
     {
-        Debug.Log("[SequentialTorchManager] Resetting puzzle...");
+        Debug.Log("[SequentialTorchManager] 🔄 Resetting puzzle to initial state...");
 
         // Play reset sound
-        if (puzzleResetSound) audioSource.PlayOneShot(puzzleResetSound);
-
-        // Extinguish and reset all torches
-        foreach (var torch in torches)
+        if (puzzleResetSound != null && audioSource != null)
         {
-            if (torch != null)
-            {
-                torch.ExtinguishTorch();
-            }
+            audioSource.PlayOneShot(puzzleResetSound);
         }
 
-        // Reset state
+        // Extinguish and reset all torches with validation
+        int extinguishedCount = 0;
+        if (torches != null && torches.Length > 0)
+        {
+            foreach (var torch in torches)
+            {
+                if (torch != null)
+                {
+                    torch.ExtinguishTorch();
+                    extinguishedCount++;
+                }
+                else
+                {
+                    Debug.LogWarning("[SequentialTorchManager] Null torch found in torches array during reset");
+                }
+            }
+            Debug.Log($"[SequentialTorchManager] Extinguished {extinguishedCount}/{torches.Length} torches");
+        }
+        else
+        {
+            Debug.LogError("[SequentialTorchManager] Cannot reset - torches array is null or empty!");
+        }
+
+        // Reset state variables
         currentSequenceIndex = 0;
         puzzleComplete = false;
 
-        // Make first torch ready again
-        if (torches.Length > 0)
-        {
-            torches[0].SetReadyToLight(true);
-        }
+        // Clear lighting order
+        lightingOrder.Clear();
+        Debug.Log("[SequentialTorchManager] Cleared lighting order history. All torches are now interactable.");
 
         // Hide completion effects
-        if (completionParticles && completionParticles.isPlaying)
+        if (completionParticles != null && completionParticles.isPlaying)
+        {
             completionParticles.Stop();
+            Debug.Log("[SequentialTorchManager] Stopped completion particles");
+        }
 
-        if (completionLight)
+        if (completionLight != null)
+        {
             completionLight.enabled = false;
+            Debug.Log("[SequentialTorchManager] Disabled completion light");
+        }
+
+        Debug.Log("[SequentialTorchManager] ✓ Puzzle reset complete");
     }
     
     public void OnWrongSequenceAttempted(int sequenceNumber)
     {
-        if (!resetOnWrongSequence) return;
-        
-        Debug.Log($"[SequentialTorchManager] Wrong sequence attempted on torch {sequenceNumber} - resetting puzzle");
-        
+        // Check if reset on wrong sequence is enabled
+        if (!resetOnWrongSequence)
+        {
+            Debug.LogWarning($"[SequentialTorchManager] Wrong sequence attempted on torch {sequenceNumber}, but reset is disabled. Ignoring.");
+            return;
+        }
+
+        // Prevent multiple simultaneous reset attempts
+        if (isResetting)
+        {
+            Debug.LogWarning($"[SequentialTorchManager] Reset already in progress. Ignoring repeated wrong sequence attempt.");
+            return;
+        }
+
+        // Calculate what the expected torch was
+        int expectedSequenceNumber = currentSequenceIndex + 1;
+
+        Debug.LogWarning($"[SequentialTorchManager] ❌ WRONG SEQUENCE! Player attempted torch {sequenceNumber}, but expected torch {expectedSequenceNumber}. Resetting puzzle in {resetDelay} seconds...");
+
         // Start reset coroutine
         StartCoroutine(ResetAfterDelay());
     }
-    
+
     IEnumerator ResetAfterDelay()
     {
+        isResetting = true;
+
+        Debug.Log($"[SequentialTorchManager] Waiting {resetDelay} seconds before reset...");
         yield return new WaitForSeconds(resetDelay);
+
         ResetPuzzle();
+
+        isResetting = false;
     }
     
     // Public getters for other scripts

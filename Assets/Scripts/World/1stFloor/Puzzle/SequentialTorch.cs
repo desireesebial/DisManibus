@@ -1,19 +1,14 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 
 /// <summary>
 /// Individual torch/candle for sequential lighting puzzle
 /// Each torch can only be lit when the previous one in sequence is already lit
+/// NOTE: Use TorchInteractionPrompt component for UI prompts
 /// </summary>
 public class SequentialTorch : MonoBehaviour
 {
-    public enum UIMode
-    {
-        OnGUI,
-        TextMeshPro
-    }
     [Header("Torch Settings")]
     [Tooltip("Sequence number (1, 2, 3, etc.) - determines lighting order")]
     public int sequenceNumber = 1;
@@ -55,30 +50,9 @@ public class SequentialTorch : MonoBehaviour
     public AudioClip wrongSequenceSound;
     public AudioClip readySound;
 
-    [Header("Interaction UI")]
-    [Tooltip("UI display mode - OnGUI or TextMeshPro")]
-    public UIMode uiMode = UIMode.TextMeshPro;
-
-    [Tooltip("Font size for OnGUI prompt")]
-    public int guiFontSize = 20;
-
-    [Header("TextMeshPro UI (Optional - will be created automatically if not assigned)")]
-    [Tooltip("Optional: Canvas for TMP text (will be created if null)")]
-    public Canvas tmpCanvas;
-
-    [Tooltip("Optional: TMP text component (will be created if null)")]
-    public TextMeshProUGUI tmpText;
-
-    [Tooltip("Offset above torch for TMP text (world units)")]
-    public Vector3 tmpTextOffset = new Vector3(0, 1.5f, 0);
-
-    [Tooltip("TMP font size")]
-    public float tmpFontSize = 24f;
-
     // State
     private bool isLit = false;
     private bool isReadyToLight = false;
-    private bool showingPrompt = false;
     private Transform player;
     private Camera playerCamera;
     private AudioSource audioSource;
@@ -89,11 +63,6 @@ public class SequentialTorch : MonoBehaviour
     private Color originalColor;
     private Color readyColor = Color.yellow;
     private Color litColor = Color.orange;
-
-    // UI
-    private GUIStyle promptStyle;
-    private Vector3 screenPosition;
-    private bool tmpUICreated = false;
 
     void Start()
     {
@@ -125,159 +94,23 @@ public class SequentialTorch : MonoBehaviour
         // Initially unlit
         SetTorchState(false, false);
 
-        // Initialize UI based on mode
-        if (uiMode == UIMode.OnGUI)
-        {
-            InitializeGUIStyle();
-        }
-        else if (uiMode == UIMode.TextMeshPro)
-        {
-            InitializeTMPUI();
-        }
-
-        Debug.Log($"[SequentialTorch] Torch {sequenceNumber} initialized (camera found: {playerCamera != null}, UI mode: {uiMode})");
-    }
-
-    void InitializeGUIStyle()
-    {
-        promptStyle = new GUIStyle();
-        promptStyle.fontSize = guiFontSize;
-        promptStyle.normal.textColor = Color.white;
-        promptStyle.alignment = TextAnchor.MiddleCenter;
-        promptStyle.fontStyle = FontStyle.Bold;
-
-        // Add black outline for better visibility
-        promptStyle.normal.background = MakeBackgroundTexture(2, 2, new Color(0, 0, 0, 0.7f));
-        promptStyle.padding = new RectOffset(10, 10, 5, 5);
-    }
-
-    Texture2D MakeBackgroundTexture(int width, int height, Color color)
-    {
-        Color[] pixels = new Color[width * height];
-        for (int i = 0; i < pixels.Length; i++)
-        {
-            pixels[i] = color;
-        }
-        Texture2D texture = new Texture2D(width, height);
-        texture.SetPixels(pixels);
-        texture.Apply();
-        return texture;
-    }
-
-    void InitializeTMPUI()
-    {
-        // Create TMP UI if not assigned
-        if (tmpText == null)
-        {
-            // Create canvas if needed
-            if (tmpCanvas == null)
-            {
-                GameObject canvasObj = new GameObject($"TorchPromptCanvas_{sequenceNumber}");
-                canvasObj.transform.SetParent(transform);
-                canvasObj.transform.localPosition = tmpTextOffset;
-
-                tmpCanvas = canvasObj.AddComponent<Canvas>();
-                tmpCanvas.renderMode = RenderMode.WorldSpace;
-
-                // Configure canvas for better visibility
-                RectTransform canvasRect = tmpCanvas.GetComponent<RectTransform>();
-                canvasRect.sizeDelta = new Vector2(2, 0.5f);
-                canvasRect.localScale = Vector3.one * 0.01f; // Scale down for world space
-
-                // Add CanvasGroup for easy fade control
-                CanvasGroup canvasGroup = canvasObj.AddComponent<CanvasGroup>();
-                canvasGroup.alpha = 1f;
-                canvasGroup.interactable = false;
-                canvasGroup.blocksRaycasts = false;
-            }
-
-            // Create TMP text
-            GameObject textObj = new GameObject($"PromptText_{sequenceNumber}");
-            textObj.transform.SetParent(tmpCanvas.transform);
-            textObj.transform.localPosition = Vector3.zero;
-            textObj.transform.localRotation = Quaternion.identity;
-            textObj.transform.localScale = Vector3.one;
-
-            tmpText = textObj.AddComponent<TextMeshProUGUI>();
-            tmpText.text = "Press F to light torch";
-            tmpText.fontSize = tmpFontSize;
-            tmpText.color = Color.white;
-            tmpText.alignment = TextAlignmentOptions.Center;
-            tmpText.fontStyle = FontStyles.Bold;
-
-            // Configure rect transform
-            RectTransform textRect = tmpText.GetComponent<RectTransform>();
-            textRect.sizeDelta = new Vector2(200, 50);
-            textRect.anchorMin = new Vector2(0.5f, 0.5f);
-            textRect.anchorMax = new Vector2(0.5f, 0.5f);
-            textRect.pivot = new Vector2(0.5f, 0.5f);
-
-            tmpUICreated = true;
-            Debug.Log($"[SequentialTorch] Auto-created TMP UI for torch {sequenceNumber}");
-        }
-
-        // Make sure canvas faces camera
-        if (tmpCanvas != null)
-        {
-            tmpCanvas.gameObject.SetActive(false); // Start hidden
-        }
+        Debug.Log($"[SequentialTorch] Torch {sequenceNumber} initialized (camera found: {playerCamera != null})");
     }
 
     void Update()
     {
         if (!player || !playerCamera || isLit)
         {
-            showingPrompt = false;
-            UpdateUIVisibility(false);
             return;
         }
 
         // Check if player is looking at and close to the torch
         bool canInteract = IsPlayerLookingAtTorch();
 
-        // Update prompt state
-        showingPrompt = canInteract && isReadyToLight;
-
-        // Update UI based on mode
-        if (uiMode == UIMode.OnGUI)
-        {
-            // Calculate screen position for GUI prompt
-            if (showingPrompt)
-            {
-                screenPosition = playerCamera.WorldToScreenPoint(transform.position);
-            }
-        }
-        else if (uiMode == UIMode.TextMeshPro)
-        {
-            UpdateUIVisibility(showingPrompt);
-
-            // Make canvas face camera
-            if (showingPrompt && tmpCanvas != null)
-            {
-                tmpCanvas.transform.LookAt(tmpCanvas.transform.position + playerCamera.transform.rotation * Vector3.forward,
-                                          playerCamera.transform.rotation * Vector3.up);
-            }
-        }
-
         // Handle F key press
         if (canInteract && Input.GetKeyDown(KeyCode.F))
         {
             TryLightTorch();
-        }
-    }
-
-    void UpdateUIVisibility(bool show)
-    {
-        if (uiMode == UIMode.TextMeshPro)
-        {
-            if (tmpCanvas != null)
-            {
-                tmpCanvas.gameObject.SetActive(show);
-            }
-            else if (tmpText != null)
-            {
-                tmpText.gameObject.SetActive(show);
-            }
         }
     }
 
@@ -320,61 +153,66 @@ public class SequentialTorch : MonoBehaviour
         return false;
     }
 
-    void OnGUI()
+    void TryLightTorch()
     {
-        if (uiMode != UIMode.OnGUI || !showingPrompt || screenPosition.z <= 0)
+        // Safety check: already lit
+        if (isLit)
         {
+            Debug.LogWarning($"[SequentialTorch] Torch {sequenceNumber} is already lit. Ignoring interaction.");
             return;
         }
 
-        // Convert screen position (bottom-left origin) to GUI position (top-left origin)
-        Vector3 guiPosition = screenPosition;
-        guiPosition.y = Screen.height - guiPosition.y;
+        // Safety check: no puzzle manager assigned
+        if (puzzleManager == null)
+        {
+            Debug.LogError($"[SequentialTorch] Torch {sequenceNumber} has no puzzle manager assigned! Cannot verify sequence.");
+            return;
+        }
 
-        // Draw prompt text
-        string promptText = "Press F to light torch";
-        Vector2 textSize = promptStyle.CalcSize(new GUIContent(promptText));
-
-        Rect promptRect = new Rect(
-            guiPosition.x - textSize.x / 2,
-            guiPosition.y - textSize.y - 30, // Offset above torch
-            textSize.x,
-            textSize.y
-        );
-
-        GUI.Label(promptRect, promptText, promptStyle);
-    }
-
-    void TryLightTorch()
-    {
-        if (isLit) return;
-
-        // Check if this torch is ready to be lit
-        if (puzzleManager && !puzzleManager.CanLightTorch(sequenceNumber))
+        // Check if this torch is ready to be lit (asks manager if sequence is correct)
+        if (!puzzleManager.CanLightTorch(sequenceNumber))
         {
             // Wrong sequence - show feedback
+            Debug.Log($"[SequentialTorch] Torch {sequenceNumber} - Wrong sequence detected!");
             ShowWrongSequenceFeedback();
             return;
         }
 
-        // Light the torch
+        // All checks passed - light the torch
+        Debug.Log($"[SequentialTorch] Torch {sequenceNumber} - Lighting now...");
         LightTorch();
     }
 
     public void LightTorch()
     {
-        Debug.Log($"[SequentialTorch] Torch {sequenceNumber} LIT!");
+        // Double-check to prevent lighting already-lit torch
+        if (isLit)
+        {
+            Debug.LogWarning($"[SequentialTorch] LightTorch() called on torch {sequenceNumber}, but it's already lit. Ignoring.");
+            return;
+        }
 
+        Debug.Log($"[SequentialTorch] 🔥 Torch {sequenceNumber} LIT!");
+
+        // Set lit state
         isLit = true;
-        showingPrompt = false;
-        UpdateUIVisibility(false);
         SetTorchState(true, false);
 
         // Play sound
-        if (lightSound) audioSource.PlayOneShot(lightSound);
+        if (lightSound && audioSource != null)
+        {
+            audioSource.PlayOneShot(lightSound);
+        }
 
         // Notify puzzle manager
-        if (puzzleManager) puzzleManager.OnTorchLit(sequenceNumber);
+        if (puzzleManager != null)
+        {
+            puzzleManager.OnTorchLit(sequenceNumber);
+        }
+        else
+        {
+            Debug.LogWarning($"[SequentialTorch] Torch {sequenceNumber} lit, but no puzzle manager to notify!");
+        }
     }
 
     public void ExtinguishTorch()
@@ -383,8 +221,6 @@ public class SequentialTorch : MonoBehaviour
 
         isLit = false;
         isReadyToLight = false;
-        showingPrompt = false;
-        UpdateUIVisibility(false);
         SetTorchState(false, false);
     }
 
