@@ -177,6 +177,10 @@ public class KuchisakeOnnaController : MonoBehaviour
             case EnemyState.Watching:
                 HandleWatching();
                 break;
+
+            case EnemyState.Patrol:
+                HandlePatrol();
+                break;
         }
     }
     #endregion
@@ -314,8 +318,6 @@ public class KuchisakeOnnaController : MonoBehaviour
     /// </summary>
     void HandlePatrol()
     {
-        ChangeAnimationState(AnimationState.Walking);
-
         // Always check if player left safe zone
         if (!IsPlayerInSafeZone())
         {
@@ -336,6 +338,16 @@ public class KuchisakeOnnaController : MonoBehaviour
 
         // Validate agent
         if (!ValidateAgent()) return;
+
+        // If no waypoints available, stay idle in place
+        if (GetPatrolWaypointCount() == 0)
+        {
+            ChangeAnimationState(AnimationState.Idle);
+            return;
+        }
+
+        // Set walking animation if moving
+        ChangeAnimationState(AnimationState.Walking);
 
         // Check if reached waypoint
         if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.1f)
@@ -523,7 +535,16 @@ public class KuchisakeOnnaController : MonoBehaviour
 
         if (waypointCount == 0)
         {
-            Debug.LogWarning($"[KuchisakeOnna] No patrol waypoints available!");
+            Debug.LogWarning($"[KuchisakeOnna] No patrol waypoints available! Staying in place and monitoring for player leaving safe zone.");
+
+            // Stop the agent in place but keep patrol state active
+            // HandlePatrol() will continue to check if player leaves safe zone
+            if (agent != null && agent.isOnNavMesh)
+            {
+                agent.isStopped = true;
+                agent.velocity = Vector3.zero;
+            }
+
             return;
         }
 
