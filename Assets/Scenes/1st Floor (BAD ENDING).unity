@@ -144592,18 +144592,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53a614efc33b74b438f3a9fb27e2a757, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerHealthSystem: {fileID: 1019884116}
-  healthSlider: {fileID: 516470956}
-  sliderFillImage: {fileID: 219704790}
-  useColorGradient: 1
-  healthyColor: {r: 0.1, g: 0.8, b: 0.1, a: 1}
-  injuredColor: {r: 1, g: 0.65, b: 0.1, a: 1}
-  criticalColor: {r: 0.9, g: 0.1, b: 0.1, a: 1}
-  enableShake: 1
-  shakeIntensity: 15
-  shakeDuration: 0.4
-  smoothTransition: 1
-  transitionDuration: 0.4
 --- !u!114 &516470956
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -268300,7 +268288,7 @@ Transform:
   m_GameObject: {fileID: 1102632364}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10.45, y: 0, z: 75.34}
+  m_LocalPosition: {x: 10.45, y: -0.26999998, z: 75.34}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -326640,8 +326628,8 @@ MonoBehaviour:
   requirePickup: 0
   hasFlashlight: 1
   needPickupMessage: You need to find a flashlight first!
-  batteryCapacitySeconds: 60
-  batterySecondsRemaining: 60
+  batteryCapacitySeconds: 10
+  batterySecondsRemaining: 10
   rechargeDelaySeconds: 3
   rechargeRatePerSecond: 1
   lockUseWhenDepleted: 1
