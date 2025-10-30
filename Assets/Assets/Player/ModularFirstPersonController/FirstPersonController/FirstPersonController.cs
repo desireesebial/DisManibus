@@ -254,7 +254,32 @@ public class FirstPersonController : MonoBehaviour
         playerCamera.fieldOfView = fov;
         originalScale = transform.localScale;
         originalWalkSpeed = walkSpeed; // Store original walk speed
-        jointOriginalPos = joint.localPosition;
+
+        // Handle head bob joint assignment
+        if (enableHeadBob)
+        {
+            if (joint == null)
+            {
+                // Try to auto-assign to camera transform as a sensible default
+                if (playerCamera != null)
+                {
+                    joint = playerCamera.transform;
+                    Debug.LogWarning("[FirstPersonController] Head bob 'joint' was not assigned. Auto-assigned to camera transform.");
+                }
+                else
+                {
+                    // No valid joint available, disable head bob
+                    enableHeadBob = false;
+                    Debug.LogError("[FirstPersonController] Head bob 'joint' is not assigned and camera is null. Head bob has been disabled.");
+                }
+            }
+
+            // Only set joint position if we have a valid joint
+            if (joint != null)
+            {
+                jointOriginalPos = joint.localPosition;
+            }
+        }
 
         if (!unlimitedSprint)
         {
@@ -703,6 +728,12 @@ public class FirstPersonController : MonoBehaviour
 
     private void HeadBob()
     {
+        // Safety check - don't run if joint is null
+        if (joint == null)
+        {
+            return;
+        }
+
         if(isWalking)
         {
             // Calculates HeadBob speed during sprint
