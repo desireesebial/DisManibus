@@ -140,6 +140,7 @@ public class FirstPersonController : MonoBehaviour
     // Internal Variables
     private bool isCrouched = false;
     private Vector3 originalScale;
+    private float originalWalkSpeed; // Store original walk speed to avoid accumulation errors
 
     #endregion
     #endregion
@@ -223,13 +224,19 @@ public class FirstPersonController : MonoBehaviour
         if (targetState)
         {
             transform.localScale = new Vector3(originalScale.x, crouchHeight, originalScale.z);
-            walkSpeed *= speedReduction;
+            walkSpeed = originalWalkSpeed * speedReduction; // Use stored value to avoid accumulation
             isCrouched = true;
         }
         else
         {
+            // Check if there's enough space to stand up
+            if (!CanStandUp())
+            {
+                return; // Don't uncrouch if there's an obstacle above
+            }
+
             transform.localScale = new Vector3(originalScale.x, originalScale.y, originalScale.z);
-            walkSpeed /= speedReduction;
+            walkSpeed = originalWalkSpeed; // Restore original walk speed
             isCrouched = false;
         }
     }
@@ -246,6 +253,7 @@ public class FirstPersonController : MonoBehaviour
         // Set internal variables
         playerCamera.fieldOfView = fov;
         originalScale = transform.localScale;
+        originalWalkSpeed = walkSpeed; // Store original walk speed
         jointOriginalPos = joint.localPosition;
 
         if (!unlimitedSprint)
@@ -491,16 +499,22 @@ public class FirstPersonController : MonoBehaviour
             {
                 Crouch();
             }
-            
+
             if(Input.GetKeyDown(crouchKey) && holdToCrouch)
             {
-                isCrouched = false;
-                Crouch();
+                // When pressing crouch key, set to crouch (was inverted before)
+                if (!isCrouched)
+                {
+                    Crouch();
+                }
             }
             else if(Input.GetKeyUp(crouchKey) && holdToCrouch)
             {
-                isCrouched = true;
-                Crouch();
+                // When releasing crouch key, uncrouch (was inverted before)
+                if (isCrouched)
+                {
+                    Crouch();
+                }
             }
         }
 
@@ -524,6 +538,13 @@ public class FirstPersonController : MonoBehaviour
             // Calculate how fast we should be moving
             Vector3 targetVelocity = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 
+            // Normalize diagonal movement to prevent faster speed when pressing two keys
+            // (e.g., W+D would be 1.414x faster without normalization)
+            if (targetVelocity.magnitude > 1f)
+            {
+                targetVelocity.Normalize();
+            }
+
             // Checks if player is walking and isGrounded
             // Will allow head bob
             if (targetVelocity.x != 0 || targetVelocity.z != 0 && isGrounded)
@@ -538,40 +559,53 @@ public class FirstPersonController : MonoBehaviour
             // All movement calculations shile sprint is active
             if (enableSprint && Input.GetKey(sprintKey) && sprintRemaining > 0f && !isSprintCooldown)
             {
-                // Trigger stamina tutorial on first sprint
-                if (!hasTriggeredStaminaTutorial && staminaTutorial != null)
+                // Don't allow sprinting while crouched - prevents collision issues
+                if (isCrouched)
                 {
-                    staminaTutorial.ShowTutorial();
-                    hasTriggeredStaminaTutorial = true;
+                    // Use walk speed instead when trying to sprint while crouched
+                    targetVelocity = transform.TransformDirection(targetVelocity) * walkSpeed;
+
+                    Vector3 velocity = rb.linearVelocity;
+                    Vector3 velocityChange = (targetVelocity - velocity);
+                    velocityChange.x = Mathf.Clamp(velocityChange.x, -maxVelocityChange, maxVelocityChange);
+                    velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
+                    velocityChange.y = 0;
+
+                    rb.AddForce(velocityChange, ForceMode.VelocityChange);
                 }
-
-                targetVelocity = transform.TransformDirection(targetVelocity) * sprintSpeed;
-
-                // Apply a force that attempts to reach our target velocity
-                Vector3 velocity = rb.linearVelocity;
-                Vector3 velocityChange = (targetVelocity - velocity);
-                velocityChange.x = Mathf.Clamp(velocityChange.x, -maxVelocityChange, maxVelocityChange);
-                velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
-                velocityChange.y = 0;
-
-                // Player is only moving when valocity change != 0
-                // Makes sure fov change only happens during movement
-                if (velocityChange.x != 0 || velocityChange.z != 0)
+                else
                 {
-                    isSprinting = true;
-
-                    if (isCrouched)
+                    // Normal sprint behavior when not crouched
+                    // Trigger stamina tutorial on first sprint
+                    if (!hasTriggeredStaminaTutorial && staminaTutorial != null)
                     {
-                        Crouch();
+                        staminaTutorial.ShowTutorial();
+                        hasTriggeredStaminaTutorial = true;
                     }
 
-                    if (hideBarWhenFull && !unlimitedSprint)
-                    {
-                        sprintBarCG.alpha += 5 * Time.deltaTime;
-                    }
-                }
+                    targetVelocity = transform.TransformDirection(targetVelocity) * sprintSpeed;
 
-                rb.AddForce(velocityChange, ForceMode.VelocityChange);
+                    // Apply a force that attempts to reach our target velocity
+                    Vector3 velocity = rb.linearVelocity;
+                    Vector3 velocityChange = (targetVelocity - velocity);
+                    velocityChange.x = Mathf.Clamp(velocityChange.x, -maxVelocityChange, maxVelocityChange);
+                    velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
+                    velocityChange.y = 0;
+
+                    // Player is only moving when valocity change != 0
+                    // Makes sure fov change only happens during movement
+                    if (velocityChange.x != 0 || velocityChange.z != 0)
+                    {
+                        isSprinting = true;
+
+                        if (hideBarWhenFull && !unlimitedSprint)
+                        {
+                            sprintBarCG.alpha += 5 * Time.deltaTime;
+                        }
+                    }
+
+                    rb.AddForce(velocityChange, ForceMode.VelocityChange);
+                }
             }
             // All movement calculations while walking
             else
@@ -602,7 +636,8 @@ public class FirstPersonController : MonoBehaviour
     // Sets isGrounded based on a raycast sent straigth down from the player object
     private void CheckGround()
     {
-        Vector3 origin = new Vector3(transform.position.x, transform.position.y - (transform.localScale.y * .5f), transform.position.z);
+        // Use original scale for consistent ground checking, regardless of crouch state
+        Vector3 origin = new Vector3(transform.position.x, transform.position.y - (originalScale.y * .5f), transform.position.z);
         Vector3 direction = transform.TransformDirection(Vector3.down);
         float distance = .75f;
 
@@ -615,6 +650,27 @@ public class FirstPersonController : MonoBehaviour
         {
             isGrounded = false;
         }
+    }
+
+    // Checks if there's enough space above the player to stand up from crouch
+    private bool CanStandUp()
+    {
+        // Calculate the height difference between crouch and stand
+        float heightDifference = originalScale.y - crouchHeight;
+
+        // Cast a ray upward from the top of the crouched player to check for obstacles
+        Vector3 origin = transform.position + Vector3.up * (crouchHeight * 0.5f);
+        float checkDistance = heightDifference * 0.5f + 0.1f; // Add small buffer
+
+        // Check if there's an obstacle above
+        if (Physics.Raycast(origin, Vector3.up, checkDistance))
+        {
+            Debug.DrawRay(origin, Vector3.up * checkDistance, Color.yellow);
+            return false; // Can't stand up, obstacle detected
+        }
+
+        Debug.DrawRay(origin, Vector3.up * checkDistance, Color.green);
+        return true; // Safe to stand up
     }
 
     private void Jump()
@@ -711,7 +767,7 @@ public class FirstPersonController : MonoBehaviour
         EditorGUILayout.Space();
 
         fpc.playerCamera = (Camera)EditorGUILayout.ObjectField(new GUIContent("Camera", "Camera attached to the controller."), fpc.playerCamera, typeof(Camera), true);
-        fpc.fov = EditorGUILayout.Slider(new GUIContent("Field of View", "The camera’s view angle. Changes the player camera directly."), fpc.fov, fpc.zoomFOV, 179f);
+        fpc.fov = EditorGUILayout.Slider(new GUIContent("Field of View", "The cameraï¿½s view angle. Changes the player camera directly."), fpc.fov, fpc.zoomFOV, 179f);
         fpc.cameraCanMove = EditorGUILayout.ToggleLeft(new GUIContent("Enable Camera Rotation", "Determines if the camera is allowed to move."), fpc.cameraCanMove);
 
         GUI.enabled = fpc.cameraCanMove;
