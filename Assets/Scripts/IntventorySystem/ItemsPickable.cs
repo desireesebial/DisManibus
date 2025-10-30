@@ -19,6 +19,13 @@ public class ItemsPickable : MonoBehaviour, IPickable
 
     public void PickItem()
     {
+        // Mark as picked up in save system (if PersistentItem component exists)
+        var persistentItem = GetComponent<SaveLoad.PersistentItem>();
+        if (persistentItem != null)
+        {
+            persistentItem.MarkAsPickedUp();
+        }
+
         // Add pickup effect here if needed
         if (highlightEffect != null)
         {
