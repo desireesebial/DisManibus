@@ -4,25 +4,26 @@ using TMPro;
 public class DoorMessageHandler : MonoBehaviour
 {
     [Header("References")]
-    public doorscript door;                     // auto-found if left empty (parent)
-    public TextMeshProUGUI messageText;         // “Door Locked”
-    public TextMeshProUGUI promptText;          // “Press [E] to interact”
-    public Transform player;                    // auto-found by tag "Player"
-    public Camera playerCamera;                 // auto-found as Camera.main
+    public doorscript door;
+    public TextMeshProUGUI messageText;
+    public TextMeshProUGUI promptText;
+    public Transform player;
+    public Camera playerCamera;
     public KeyCode interactKey = KeyCode.E;
+    public DialogueManager dialogueManager;     // ✅ Reference to DialogueManager
 
     [Header("Interaction")]
-    public float interactRange = 3f;            // distance check
-    public LayerMask doorMask = ~0;             // set to a “Door” layer if you have one
+    public float interactRange = 3f;
+    public LayerMask doorMask = ~0;
 
     [Header("Feedback")]
-    public float messageDuration = 1.0f;        // how long “Door Locked” stays
-    public AudioSource audioSource;             // fallback to door’s AudioSource
-    public AudioClip lockedSound;               // rattle/click
+    public float messageDuration = 1.0f;
+    public AudioSource audioSource;
+    public AudioClip lockedSound;
     public float shakeIntensity = 2f;
     public float shakeDuration = 0.2f;
+    public string lockedDoorDialogue = "It's locked... maybe there's a key nearby."; // ✅ Custom line
 
-    // internals
     private Coroutine hideRoutine;
     private bool isShaking = false;
     private bool soundCooldown = false;
@@ -38,6 +39,7 @@ public class DoorMessageHandler : MonoBehaviour
         }
         if (!playerCamera) playerCamera = Camera.main;
         if (!audioSource && door) audioSource = door.doorAudioSource;
+        if (!dialogueManager) dialogueManager = FindObjectOfType<DialogueManager>(); // ✅ Auto-find
 
         if (messageText) messageText.text = "";
         if (promptText) promptText.text = "";
@@ -50,30 +52,30 @@ public class DoorMessageHandler : MonoBehaviour
     {
         if (!door || !player || !playerCamera) return;
 
-        // 1) Only show prompt when close AND aiming at THIS door AND not already open
         bool closeEnough = DistanceToDoor(player.position) <= interactRange;
         bool aimingAtThisDoor = IsAimingAtThisDoor();
 
         if (promptText)
             promptText.text = (closeEnough && aimingAtThisDoor && !door.IsOpen()) ? "Press [E] to interact" : "";
 
-        // 2) Only react on key press if close & aiming at this door
         if (closeEnough && aimingAtThisDoor && Input.GetKeyDown(interactKey))
             StartCoroutine(HandleAttempt());
     }
 
     System.Collections.IEnumerator HandleAttempt()
     {
-        // Record rotation to detect if door actually opened
         Quaternion startRot = door.transform.rotation;
-        yield return new WaitForSeconds(0.15f); // let doorscript do its thing
+        yield return new WaitForSeconds(0.15f);
         Quaternion endRot = door.transform.rotation;
 
-        // If the door moved (opened), do nothing
         if (Quaternion.Angle(startRot, endRot) > 1f || door.IsOpen())
             yield break;
 
-        // Still closed → locked feedback
+        // ✅ Trigger dialogue when locked
+        if (dialogueManager)
+            dialogueManager.ShowLine(lockedDoorDialogue);
+
+        // Optional: keep visual/sound feedback
         ShowMessage("Door Locked");
         PlayLockedSound();
         if (!isShaking) StartCoroutine(ShakeDoor());
@@ -84,7 +86,6 @@ public class DoorMessageHandler : MonoBehaviour
     {
         if (doorCollider)
         {
-            // accurate distance to the collider surface
             Vector3 cp = doorCollider.ClosestPoint(fromPos);
             return Vector3.Distance(fromPos, cp);
         }
@@ -96,11 +97,9 @@ public class DoorMessageHandler : MonoBehaviour
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         if (Physics.Raycast(ray, out RaycastHit hit, interactRange + 1f, doorMask, QueryTriggerInteraction.Ignore))
         {
-            // Hit this door’s collider (or a child)
             if (hit.collider && (hit.collider.transform == door.transform || hit.collider.transform.IsChildOf(door.transform)))
                 return true;
 
-            // If your door meshes/colliders are nested, also allow parent matching
             var dcol = doorCollider ? doorCollider.transform : door.transform;
             if (hit.collider && (dcol == hit.collider.transform || dcol.IsChildOf(hit.collider.transform)))
                 return true;
