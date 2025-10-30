@@ -63,6 +63,15 @@ public class HealthBarSliderUI : MonoBehaviour
             }
         }
 
+        // Configure slider to prevent user interaction and glitching
+        if (healthSlider != null)
+        {
+            healthSlider.interactable = false; // Prevent user from dragging the slider
+            healthSlider.minValue = 0f;
+            healthSlider.maxValue = 1f;
+            healthSlider.wholeNumbers = false;
+        }
+
         // Get fill image if not assigned
         if (sliderFillImage == null && healthSlider != null)
         {
