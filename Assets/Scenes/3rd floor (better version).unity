@@ -18543,7 +18543,7 @@ MonoBehaviour:
   healthUI: {fileID: 1222760373}
   questUI: {fileID: 296167814}
   itemTrackerUI: {fileID: 0}
-  staminaUI: {fileID: 0}
+  staminaUI: {fileID: 1056614697}
 --- !u!320 &610464182
 PlayableDirector:
   m_ObjectHideFlags: 0
@@ -160451,18 +160451,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53a614efc33b74b438f3a9fb27e2a757, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerHealthSystem: {fileID: 1790364530}
-  healthSlider: {fileID: 756409885}
-  sliderFillImage: {fileID: 297803425}
-  useColorGradient: 1
-  healthyColor: {r: 0.1, g: 0.8, b: 0.1, a: 1}
-  injuredColor: {r: 1, g: 0.65, b: 0.1, a: 1}
-  criticalColor: {r: 0.9, g: 0.1, b: 0.1, a: 1}
-  enableShake: 1
-  shakeIntensity: 15
-  shakeDuration: 0.4
-  smoothTransition: 1
-  transitionDuration: 0.4
 --- !u!114 &756409885
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166461,7 +166449,7 @@ MonoBehaviour:
   healthUI: {fileID: 1222760373}
   dialogueUI: {fileID: 1744515691}
   questUI: {fileID: 296167814}
-  cluesUI: {fileID: 0}
+  cluesUI: {fileID: 1056614697}
   staminaUI: {fileID: 1779210369}
   playerController: {fileID: 1790364529}
   playerHealthSystem: {fileID: 1790364530}
@@ -333742,7 +333730,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 271945cb0f651dd42821761920a80c48, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: a8f31978b6da3574d80106783847bf96, type: 2}
+      objectReference: {fileID: 2100000, guid: 42f98b5d25c933b4dacfbedb791651df, type: 2}
     - target: {fileID: 919132149155446097, guid: 271945cb0f651dd42821761920a80c48, type: 3}
       propertyPath: m_Name
       value: Controls
