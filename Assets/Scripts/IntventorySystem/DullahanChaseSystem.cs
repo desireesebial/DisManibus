@@ -10,6 +10,7 @@ public class DullahanChaseSystem : MonoBehaviour
     public float maxDetectionRange = 20f;
     public float minDetectionRange = 5f;
     public float intensityUpdateRate = 0.1f;
+    public float attackRange = 2f; // Distance to stop from player (should match EnemyDamageController's attackRange)
 
     [Header("Speed Progression Per Cycle")]
     [Tooltip("If true, speed increases per cycle. If false, uses default chase speed.")]
@@ -71,6 +72,7 @@ public class DullahanChaseSystem : MonoBehaviour
     private Vector3 patrolCenter;
     private DullahanAudioManager audioManager;
     private DullahanChaseEventManager eventManager;
+    private bool isEventControlled = false; // True when chase is controlled by event manager
     
     public enum ChaseState
     {
@@ -191,9 +193,9 @@ public class DullahanChaseSystem : MonoBehaviour
                 }
             }
         }
-        
-        // Check for player detection
-        if (playerTransform != null)
+
+        // Check for player detection (only if not event-controlled)
+        if (!isEventControlled && playerTransform != null)
         {
             float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
             if (distanceToPlayer <= maxDetectionRange)
@@ -206,22 +208,32 @@ public class DullahanChaseSystem : MonoBehaviour
     void HandleChase()
     {
         if (!isChasing || playerTransform == null) return;
-        
+
         // Update chase intensity based on distance
         float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
         float normalizedDistance = Mathf.Clamp01(1f - (distanceToPlayer / maxDetectionRange));
-        
+
         currentChaseIntensity = Mathf.Lerp(currentChaseIntensity, normalizedDistance, intensityIncreaseRate * Time.deltaTime);
-        
+
         // Set chase speed based on intensity
         float currentSpeed = Mathf.Lerp(minChaseSpeed, maxChaseSpeed, currentChaseIntensity);
         dullahanAgent.speed = currentSpeed;
-        
-        // Move towards player
-        dullahanAgent.SetDestination(playerTransform.position);
+
+        // Move towards player only if beyond attack range
+        if (distanceToPlayer > attackRange)
+        {
+            dullahanAgent.SetDestination(playerTransform.position);
+            dullahanAgent.isStopped = false;
+        }
+        else
+        {
+            // Stop moving when within attack range to prevent pushing
+            dullahanAgent.isStopped = true;
+        }
+
         lastKnownPlayerPosition = playerTransform.position;
         lastDetectionTime = Time.time;
-        
+
         // Check if player is out of range
         if (distanceToPlayer > maxDetectionRange)
         {
@@ -328,10 +340,14 @@ public class DullahanChaseSystem : MonoBehaviour
     
     public void StartChase(int cycleNumber = 0)
     {
-        if (currentState == ChaseState.Chase) return;
+        // Allow re-initialization to update cycle number and speed settings
 
         currentCycleNumber = cycleNumber;
-        Debug.Log($"[DullahanChaseSystem] Starting chase - Cycle #{cycleNumber + 1}");
+
+        // If cycle number provided or already chasing, this is event-controlled
+        isEventControlled = (cycleNumber > 0 || currentState == ChaseState.Chase);
+
+        Debug.Log($"[DullahanChaseSystem] Starting chase - Cycle #{cycleNumber + 1}, Event Controlled: {isEventControlled}");
 
         currentState = ChaseState.Chase;
         isChasing = true;
@@ -340,6 +356,10 @@ public class DullahanChaseSystem : MonoBehaviour
         // Calculate speed based on cycle progression
         float targetSpeed = CalculateCycleSpeed(cycleNumber);
         dullahanAgent.speed = targetSpeed;
+
+        // Set stopping distance to attack range to prevent pushing
+        dullahanAgent.stoppingDistance = attackRange;
+        dullahanAgent.isStopped = false; // Ensure agent starts moving
 
         Debug.Log($"[DullahanChaseSystem] Cycle {cycleNumber + 1} speed: {targetSpeed:F1} (Base: {baseCycleSpeed}, Max: {maxChaseSpeed})");
 
@@ -360,11 +380,12 @@ public class DullahanChaseSystem : MonoBehaviour
     public void EndChase()
     {
         if (currentState != ChaseState.Chase) return;
-        
+
         Debug.Log("[DullahanChaseSystem] Ending chase");
-        
+
         isChasing = false;
-        
+        isEventControlled = false; // Reset event control flag
+
         // Stop audio
         if (audioSource != null)
         {
@@ -381,21 +402,25 @@ public class DullahanChaseSystem : MonoBehaviour
     public void StartPatrol()
     {
         Debug.Log("[DullahanChaseSystem] Starting patrol");
-        
+
         currentState = ChaseState.Patrol;
         isPatrolling = true;
         isChasing = false;
-        
+
         // Set patrol speed
         dullahanAgent.speed = patrolSpeed;
-        
+
+        // Reset stopping distance for patrol
+        dullahanAgent.stoppingDistance = 0.5f;
+        dullahanAgent.isStopped = false;
+
         // Play patrol sound
         if (audioSource != null && patrolSound != null)
         {
             audioSource.clip = patrolSound;
             audioSource.Play();
         }
-        
+
         // Generate first patrol point
         if (useWaypointPatrol && patrolWaypoints.Length > 0)
         {
@@ -410,13 +435,17 @@ public class DullahanChaseSystem : MonoBehaviour
     public void StartSearch()
     {
         Debug.Log("[DullahanChaseSystem] Starting search");
-        
+
         currentState = ChaseState.Search;
         isChasing = false;
         isPatrolling = false;
-        
+
         // Set search speed
         dullahanAgent.speed = minChaseSpeed;
+
+        // Reset stopping distance for search
+        dullahanAgent.stoppingDistance = 1f;
+        dullahanAgent.isStopped = false;
     }
     
     void MoveToNextWaypoint()

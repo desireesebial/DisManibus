@@ -481,6 +481,9 @@ public class DullahanChaseEventManager : MonoBehaviour
         // Start chase
         StartChase();
 
+        // Ensure timer UI is visible (redundant call for robustness)
+        ShowTimerUI();
+
         // Run chase timer
         stateTimer = 0f;
         while (stateTimer < chaseDuration && currentState == EventState.Chasing)
@@ -518,6 +521,9 @@ public class DullahanChaseEventManager : MonoBehaviour
 
         // Start rest period
         StartRest();
+
+        // Ensure timer UI is visible (redundant call for robustness)
+        ShowTimerUI();
 
         // Run rest timer
         stateTimer = 0f;
@@ -734,9 +740,27 @@ public class DullahanChaseEventManager : MonoBehaviour
     /// </summary>
     void ShowTimerUI()
     {
+        Debug.Log($"[DullahanChase] ShowTimerUI called - enableUI: {enableUI}, chaseUI: {(chaseUI != null ? "assigned" : "NULL")}");
+
         if (enableUI && chaseUI != null)
         {
             chaseUI.SetActive(true);
+
+            // Fix: Ensure canvas has proper scale (prevents zero scale issue)
+            if (chaseUI.transform.localScale == Vector3.zero)
+            {
+                chaseUI.transform.localScale = Vector3.one;
+                Debug.LogWarning("[DullahanChase] Canvas had zero scale - automatically fixed to (1,1,1)");
+            }
+
+            Debug.Log("[DullahanChase] Timer UI activated successfully");
+        }
+        else
+        {
+            if (!enableUI)
+                Debug.LogWarning("[DullahanChase] Timer UI not shown - enableUI is false");
+            if (chaseUI == null)
+                Debug.LogWarning("[DullahanChase] Timer UI not shown - chaseUI is not assigned in Inspector");
         }
     }
 

@@ -53,6 +53,7 @@ public class KamatayanController : MonoBehaviour
     [SerializeField] float loseChaseDistance = 25f;
     [SerializeField] float chaseTimeout = 30f;
     [SerializeField] bool persistentChase = true;
+    [SerializeField] float attackRange = 2f; // Distance to stop from player (should match EnemyDamageController's attackRange)
 
     [Header("Animation Parameters")]
     [SerializeField] string animParamIsIdle = "IsIdle";
@@ -238,6 +239,7 @@ public class KamatayanController : MonoBehaviour
     {
         ChangeState(KamatayanAnimationState.Patrolling);
         navMeshAgent.speed = patrolSpeed;
+        navMeshAgent.stoppingDistance = waypointReachedDistance; // Reset stopping distance for patrol
         navMeshAgent.isStopped = false;
         
         // Get next waypoint
@@ -365,10 +367,11 @@ public class KamatayanController : MonoBehaviour
         isChasing = true;
         chaseStartTime = Time.time;
         navMeshAgent.speed = chaseSpeed;
+        navMeshAgent.stoppingDistance = attackRange; // Stop at attack range to prevent pushing
         navMeshAgent.isStopped = false;
-        
+
         LogDebug("Started chasing player!");
-        
+
         while (isChasing)
         {
             if (player == null)
@@ -376,26 +379,36 @@ public class KamatayanController : MonoBehaviour
                 isChasing = false;
                 break;
             }
-            
-            // Update destination to player position
-            lastKnownPlayerPosition = player.position;
-            navMeshAgent.SetDestination(lastKnownPlayerPosition);
-            
-            // Check if should stop chasing
+
+            // Check distance to player
             float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+
+            // Update destination to player position only if not within attack range
+            if (distanceToPlayer > attackRange)
+            {
+                lastKnownPlayerPosition = player.position;
+                navMeshAgent.SetDestination(lastKnownPlayerPosition);
+            }
+            else
+            {
+                // Stop moving when within attack range
+                navMeshAgent.isStopped = true;
+            }
+
+            // Check if should stop chasing
             float chaseTime = Time.time - chaseStartTime;
-            
+
             if (distanceToPlayer > loseChaseDistance || chaseTime > chaseTimeout)
             {
                 isChasing = false;
                 LogDebug("Lost player, returning to patrol");
                 break;
             }
-            
-            // Check if still detecting player
-            if (persistentChase || CheckForPlayer())
+
+            // Check if still detecting player or within attack range
+            if (persistentChase || CheckForPlayer() || distanceToPlayer <= attackRange)
             {
-                // Continue chasing
+                // Continue chasing or stay in attack range
             }
             else
             {
@@ -403,7 +416,13 @@ public class KamatayanController : MonoBehaviour
                 LogDebug("Player out of detection, returning to patrol");
                 break;
             }
-            
+
+            // Resume movement if player moves out of attack range
+            if (distanceToPlayer > attackRange && navMeshAgent.isStopped)
+            {
+                navMeshAgent.isStopped = false;
+            }
+
             yield return new WaitForSeconds(0.1f);
         }
     }
@@ -414,7 +433,11 @@ public class KamatayanController : MonoBehaviour
     IEnumerator ReturnToPatrolState()
     {
         LogDebug("Returning to patrol route");
-        
+
+        // Reset stopping distance for patrol
+        navMeshAgent.stoppingDistance = waypointReachedDistance;
+        navMeshAgent.isStopped = false;
+
         // Find nearest waypoint
         Vector3 nearestWaypoint = GetNearestWaypoint();
         navMeshAgent.SetDestination(nearestWaypoint);
