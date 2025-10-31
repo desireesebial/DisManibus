@@ -28,6 +28,12 @@ public class KuchisakeOnnaController : MonoBehaviour
     [SerializeField] private float chaseSpeed = 4f;
     [Tooltip("How many seconds to wait at safe zone edge before switching to watching mode")]
     [SerializeField] private float safeZoneWaitTime = 5f;
+    [Tooltip("Distance to stop from player to prevent pushing (matches attack range)")]
+    [SerializeField] private float attackRange = 2f;
+    [Tooltip("Time between attacks in seconds")]
+    [SerializeField] private float attackCooldown = 1f;
+    [Tooltip("Damage dealt per attack (set to 100+ for instant kill)")]
+    [SerializeField] private int attackDamage = 100;
 
     [Header("Visual Effects")]
     [SerializeField] private GameObject maskObject;
@@ -76,6 +82,10 @@ public class KuchisakeOnnaController : MonoBehaviour
     private System.Collections.Generic.List<int> unusedPatrolWaypoints = new System.Collections.Generic.List<int>();
     private System.Collections.Generic.List<Vector3> generatedPatrolPoints = new System.Collections.Generic.List<Vector3>();
     private bool usingGeneratedWaypoints = false;
+
+    // Attack tracking
+    private float lastAttackTime = 0f;
+    private bool isWithinAttackRange = false;
     #endregion
 
     #region Enums
@@ -197,6 +207,7 @@ public class KuchisakeOnnaController : MonoBehaviour
 
     /// <summary>
     /// Aggressive chase - relentlessly pursues player with mask off.
+    /// Stops at attack range to prevent pushing, attacks on cooldown.
     /// </summary>
     void HandleAggressiveChase()
     {
@@ -217,17 +228,43 @@ public class KuchisakeOnnaController : MonoBehaviour
             currentState = EnemyState.WaitingAtSafeZone;
             safeZoneWaitTimer = safeZoneWaitTime;
             agent.isStopped = true;
+            isWithinAttackRange = false;
             ChangeAnimationState(AnimationState.Idle);
             return;
         }
 
-        // Chase behavior
-        ChangeAnimationState(AnimationState.Running);
-
-        // Update destination to player
+        // Calculate distance to player
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-        if (distanceToPlayer > 1f)
+
+        // Check if within attack range
+        if (distanceToPlayer <= attackRange)
         {
+            // Stop moving to prevent pushing
+            if (!agent.isStopped)
+            {
+                agent.isStopped = true;
+                Debug.Log($"[KuchisakeOnna] Stopped at attack range ({attackRange}m)");
+            }
+
+            isWithinAttackRange = true;
+            ChangeAnimationState(AnimationState.Idle);
+
+            // Attack on cooldown
+            AttackPlayer();
+        }
+        else
+        {
+            // Resume chase if player moved away
+            if (agent.isStopped)
+            {
+                agent.isStopped = false;
+                Debug.Log($"[KuchisakeOnna] Player moved away, resuming chase");
+            }
+
+            isWithinAttackRange = false;
+            ChangeAnimationState(AnimationState.Running);
+
+            // Set destination to player
             agent.SetDestination(player.position);
         }
 
@@ -235,14 +272,8 @@ public class KuchisakeOnnaController : MonoBehaviour
         chaseLogTimer += Time.deltaTime;
         if (chaseLogTimer >= CHASE_LOG_INTERVAL)
         {
-            Debug.Log($"[KuchisakeOnna] Chasing - Distance: {distanceToPlayer:F2}m | Velocity: {agent.velocity.magnitude:F2}");
+            Debug.Log($"[KuchisakeOnna] Chasing - Distance: {distanceToPlayer:F2}m | In Attack Range: {isWithinAttackRange} | Velocity: {agent.velocity.magnitude:F2}");
             chaseLogTimer = 0f;
-        }
-
-        // Check if caught player
-        if (distanceToPlayer < CATCH_PLAYER_DISTANCE)
-        {
-            CatchPlayer();
         }
     }
 
@@ -417,8 +448,9 @@ public class KuchisakeOnnaController : MonoBehaviour
             }
 
             agent.speed = chaseSpeed;
+            agent.stoppingDistance = attackRange; // Stop at attack range to prevent pushing
             agent.isStopped = false;
-            Debug.Log($"[KuchisakeOnna] Agent enabled. Speed: {chaseSpeed} | On NavMesh: {agent.isOnNavMesh}");
+            Debug.Log($"[KuchisakeOnna] Agent enabled. Speed: {chaseSpeed} | Stopping Distance: {attackRange} | On NavMesh: {agent.isOnNavMesh}");
         }
 
         // Remove mask
@@ -631,7 +663,50 @@ public class KuchisakeOnnaController : MonoBehaviour
 
     #region Player Interaction
     /// <summary>
-    /// Called when enemy catches the player.
+    /// Attacks the player with cooldown system.
+    /// </summary>
+    void AttackPlayer()
+    {
+        // Check cooldown
+        if (Time.time - lastAttackTime < attackCooldown)
+            return;
+
+        lastAttackTime = Time.time;
+
+        // Play attack sound
+        PlaySound(scissorsSnipSound);
+
+        // Deal damage to player
+        if (player != null)
+        {
+            PlayerHealthSystem playerHealth = player.GetComponent<PlayerHealthSystem>();
+            if (playerHealth != null)
+            {
+                playerHealth.ApplyDamage(attackDamage);
+                Debug.Log($"[KuchisakeOnna] Attacked player for {attackDamage} damage. Player health: {playerHealth.CurrentHealth}");
+
+                // Check if player died
+                if (playerHealth.CurrentHealth <= 0)
+                {
+                    Debug.Log($"[KuchisakeOnna] Player killed!");
+                    PlaySound(deathScreamClip);
+
+                    // Stop chasing
+                    if (agent != null)
+                    {
+                        agent.isStopped = true;
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"[KuchisakeOnna] PlayerHealthSystem component not found!");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Called when enemy catches the player (legacy method - now uses AttackPlayer with cooldown).
     /// </summary>
     void CatchPlayer()
     {
@@ -792,6 +867,10 @@ public class KuchisakeOnnaController : MonoBehaviour
         currentState = EnemyState.Standby;
         safeZoneWaitTimer = 0f;
         chaseLogTimer = 0f;
+
+        // Reset attack tracking
+        lastAttackTime = 0f;
+        isWithinAttackRange = false;
 
         if (agent != null)
         {

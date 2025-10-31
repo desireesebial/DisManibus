@@ -9955,7 +9955,7 @@ PrefabInstance:
     - target: {fileID: 4459864850019384740, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       propertyPath: joint
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1745443765}
     - target: {fileID: 4459864850019384740, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       propertyPath: zoomKey
       value: 324
@@ -190056,6 +190056,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemScriptableObject: {fileID: 11400000, guid: 8f90cc9f89bcba6408046360383fd887, type: 2}
   highlightEffect: {fileID: 0}
+--- !u!4 &1745443765 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4459864851508666808, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+  m_PrefabInstance: {fileID: 369474177}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1746585043
 GameObject:
   m_ObjectHideFlags: 0
@@ -191022,7 +191027,7 @@ MonoBehaviour:
   playerCamera: {fileID: 369474179}
   shakeIntensity: 0.5
   shakeDuration: 0.3
-  damageFlashDuration: 0.2
+  damageFlashDuration: 0.8
   damageFlashColor: {r: 1, g: 0, b: 0, a: 1}
   playerController: {fileID: 1790364529}
   staminaUI: {fileID: 1779210369}
