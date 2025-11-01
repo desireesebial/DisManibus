@@ -163234,9 +163234,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a266812af974bb4dae6b72511ea2de8, type: 3}
   m_Name: 
   m_EditorClassIdentifier:
-  globalLight: {fileID: 2125209886}
-  minBrightness: 0.3
-  maxBrightness: 2
+  globalVolumeProfile: {fileID: 11400000, guid: 0cfae375c7d3a9345b18921e34c365e3, type: 2}
+  minExposure: -2
+  maxExposure: 2
   brightnessSlider: {fileID: 41543464}
   masterMixer: {fileID: 24100000, guid: a1b2c3d4e5f6789012345678901234ab, type: 2}
   masterVolumeParameter: MasterVolume
@@ -340646,7 +340646,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2125209885}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 11
   m_Type: 1
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}

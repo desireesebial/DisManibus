@@ -3,13 +3,14 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Rendering;
 
 public class SettingsScript : MonoBehaviour
 {
-    [Header("Lighting")]
-    [SerializeField] private Light globalLight;
-    [SerializeField] private float minBrightness = 0.3f;
-    [SerializeField] private float maxBrightness = 2f;
+    [Header("Post-Processing (Brightness via Exposure)")]
+    [SerializeField] private VolumeProfile globalVolumeProfile;
+    [SerializeField] private float minExposure = -2f;
+    [SerializeField] private float maxExposure = 2f;
     [SerializeField] private Slider brightnessSlider;
 
     [Header("Audio")]
@@ -135,9 +136,9 @@ public class SettingsScript : MonoBehaviour
 
         if (brightnessSlider != null)
         {
-            float savedBrightness = PlayerPrefs.GetFloat("Settings_Brightness", 1f);
-            brightnessSlider.value = Mathf.InverseLerp(minBrightness, maxBrightness, savedBrightness);
-            ApplyBrightness(savedBrightness);
+            float savedExposure = PlayerPrefs.GetFloat("Settings_Brightness", 0f);
+            brightnessSlider.value = Mathf.InverseLerp(minExposure, maxExposure, savedExposure);
+            ApplyBrightness(savedExposure);
         }
 
         if (volumeSlider != null)
@@ -210,8 +211,8 @@ public class SettingsScript : MonoBehaviour
     {
         if (brightnessSlider != null)
         {
-            float targetBrightness = Mathf.Lerp(minBrightness, maxBrightness, brightnessSlider.value);
-            PlayerPrefs.SetFloat("Settings_Brightness", targetBrightness);
+            float targetExposure = Mathf.Lerp(minExposure, maxExposure, brightnessSlider.value);
+            PlayerPrefs.SetFloat("Settings_Brightness", targetExposure);
         }
 
         if (volumeSlider != null)
@@ -255,18 +256,21 @@ public class SettingsScript : MonoBehaviour
             return;
         }
 
-        float targetBrightness = Mathf.Lerp(minBrightness, maxBrightness, normalizedValue);
-        ApplyBrightness(targetBrightness);
+        float targetExposure = Mathf.Lerp(minExposure, maxExposure, normalizedValue);
+        ApplyBrightness(targetExposure);
     }
 
-    private void ApplyBrightness(float value)
+    private void ApplyBrightness(float exposureValue)
     {
-        if (globalLight == null)
+        if (globalVolumeProfile == null)
         {
             return;
         }
 
-        globalLight.intensity = value;
+        if (globalVolumeProfile.TryGet(out UnityEngine.Rendering.Universal.ColorAdjustments colorAdjustments))
+        {
+            colorAdjustments.postExposure.Override(exposureValue);
+        }
     }
 
     private void OnVolumeSliderChanged(float normalizedValue)
@@ -344,6 +348,18 @@ public class SettingsScript : MonoBehaviour
     public void OnApplyButtonPressed()
     {
         SaveSettings();
+
+        // Navigate back to previous menu (pause menu or main menu)
+        if (pauseMenuRoot != null)
+        {
+            // In-game: return to pause menu
+            ShowPauseMenu();
+        }
+        else if (settingsMenuRoot != null)
+        {
+            // Main menu: just close settings panel
+            settingsMenuRoot.SetActive(false);
+        }
     }
 
     public void OnBackButtonPressed()
