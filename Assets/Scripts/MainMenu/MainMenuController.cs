@@ -47,6 +47,19 @@ public class MainMenuController : MonoBehaviour
     private void Start()
     {
         UpdateLoadButtonState();
+
+        // Ensure all panels start closed to prevent UI blocking issues
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false);
+
+        if (creditsPanel != null)
+            creditsPanel.SetActive(false);
+
+        if (controlsPanel != null)
+            controlsPanel.SetActive(false);
+
+        if (confirmExitPanel != null)
+            confirmExitPanel.SetActive(false);
     }
 
     #endregion
