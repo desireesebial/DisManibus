@@ -13344,6 +13344,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 733697515}
+  - {fileID: 1557649628}
   - {fileID: 1110812200}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -159830,6 +159831,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetSceneName: 2nd Floor (Better Version)
   targetSceneBuildIndex: 3
+  requiresPuzzleCompletion: 0
   useTrigger: 1
   interactKey: 101
   playerTag: Player
@@ -184199,6 +184201,95 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1555636514}
   m_Mesh: {fileID: 5461320835613783329, guid: 2ec8da8e3124a68429b7d476fc764f89, type: 3}
+--- !u!1 &1557649627
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1557649628}
+  - component: {fileID: 1557649630}
+  - component: {fileID: 1557649629}
+  m_Layer: 0
+  m_Name: Traverse
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1557649628
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1557649627}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1086.09, y: 4.69, z: -1043.22}
+  m_LocalScale: {x: 28.30041, y: 9.371089, z: 7.4533367}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 420291013}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1557649629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1557649627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccfc2e8b4da39694da177d39850f93db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetSceneName: 4th Floor (better version)
+  targetSceneBuildIndex: 3
+  requiresPuzzleCompletion: 1
+  useTrigger: 1
+  interactKey: 101
+  playerTag: Player
+  saveOnTransition: 1
+  requireHoldToActivate: 1
+  holdDuration: 1.5
+  interactionUIPanel: {fileID: 1805508977}
+  interactionLabel: {fileID: 137235161}
+  holdProgressImage: {fileID: 0}
+  holdProgressSlider: {fileID: 0}
+  tapPromptFormat: Press {0} to enter
+  holdPromptFormat: Hold {0} to enter
+  showHoldDurationInPrompt: 1
+  onPortalActivated:
+    m_PersistentCalls:
+      m_Calls: []
+  onPortalFailed:
+    m_PersistentCalls:
+      m_Calls: []
+  loadingMessage: Loading...
+--- !u!65 &1557649630
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1557649627}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.3071275, y: 1, z: 1}
+  m_Center: {x: 0.34644204, y: 0, z: 0}
 --- !u!1 &1561661318
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,6 +4,7 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using World.UI;
+using DisManibus.World.SceneTransition;
 
 namespace World.SceneTransition
 {
@@ -13,6 +14,10 @@ namespace World.SceneTransition
         [Header("Destination Scene")]
         [SerializeField] private string targetSceneName;
         [SerializeField] private int targetSceneBuildIndex = -1;
+
+        [Header("Portal Unlock Requirements")]
+        [Tooltip("If true, this portal will only be active after the 1st floor sequential torch puzzle is completed")]
+        [SerializeField] private bool requiresPuzzleCompletion = false;
 
         [Header("Interaction")]
         [SerializeField] private bool useTrigger = true;
@@ -43,9 +48,35 @@ namespace World.SceneTransition
         private float holdTimer;
         private bool holdActivationTriggered;
         private bool isActivating;
+        private Collider portalCollider;
+        private Renderer[] portalRenderers;
 
         private void Start()
         {
+            // Cache references
+            portalCollider = GetComponent<Collider>();
+            portalRenderers = GetComponentsInChildren<Renderer>(true);
+
+            // Check if portal should be locked based on puzzle completion
+            if (requiresPuzzleCompletion)
+            {
+                bool portalsUnlocked = PortalManager.ArePortalsUnlocked();
+
+                if (!portalsUnlocked)
+                {
+                    // Lock the portal - disable interaction and visibility
+                    LockPortal();
+                    Debug.Log($"[ScenePortal] '{name}' is locked - waiting for sequential torch puzzle completion");
+                    return; // Don't initialize interaction UI for locked portals
+                }
+                else
+                {
+                    // Portals are unlocked - ensure portal is fully enabled
+                    UnlockPortal();
+                    Debug.Log($"[ScenePortal] '{name}' is unlocked - puzzle completed!");
+                }
+            }
+
             ResetHoldState();
             HideInteractionUI();
             UpdatePromptText();
@@ -392,6 +423,72 @@ namespace World.SceneTransition
             else
             {
                 interactionLabel.text = string.Format(tapPromptFormat, keyName);
+            }
+        }
+
+        /// <summary>
+        /// Locks the portal - disables collider and makes invisible
+        /// </summary>
+        private void LockPortal()
+        {
+            // Disable script to prevent any interaction
+            this.enabled = false;
+
+            // Disable collider to prevent trigger detection
+            if (portalCollider != null)
+            {
+                portalCollider.enabled = false;
+            }
+
+            // Disable all renderers to make portal invisible
+            if (portalRenderers != null)
+            {
+                foreach (var renderer in portalRenderers)
+                {
+                    if (renderer != null)
+                    {
+                        renderer.enabled = false;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Unlocks the portal - enables collider and makes visible
+        /// </summary>
+        private void UnlockPortal()
+        {
+            // Enable script
+            this.enabled = true;
+
+            // Enable collider
+            if (portalCollider != null)
+            {
+                portalCollider.enabled = true;
+            }
+
+            // Enable all renderers to make portal visible
+            if (portalRenderers != null)
+            {
+                foreach (var renderer in portalRenderers)
+                {
+                    if (renderer != null)
+                    {
+                        renderer.enabled = true;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Public method to unlock this portal (can be called by other scripts)
+        /// </summary>
+        public void ForceUnlockPortal()
+        {
+            if (requiresPuzzleCompletion)
+            {
+                UnlockPortal();
+                Debug.Log($"[ScenePortal] '{name}' has been force-unlocked");
             }
         }
 

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using DisManibus.World.SceneTransition;
 
 /// <summary>
 /// Manages the sequential torch lighting puzzle
@@ -301,6 +302,9 @@ public class SequentialTorchManager : MonoBehaviour
 
         // Mark puzzle as complete
         puzzleComplete = true;
+
+        // Unlock all portals across all scenes
+        PortalManager.UnlockAllPortals();
 
         // Play completion sound
         if (puzzleCompleteSound != null && audioSource != null)
