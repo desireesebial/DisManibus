@@ -4,6 +4,16 @@ using System.Collections.Generic;
 using DisManibus.World.SceneTransition;
 
 /// <summary>
+/// Defines the ending type for this scene
+/// </summary>
+public enum EndingType
+{
+    None,           // No special ending behavior
+    GoodEnding,     // Good ending: enemy disappears
+    BadEnding       // Bad ending: enemy becomes enraged
+}
+
+/// <summary>
 /// Manages the sequential torch lighting puzzle
 /// Controls which torches can be lit and handles puzzle completion
 /// </summary>
@@ -42,9 +52,13 @@ public class SequentialTorchManager : MonoBehaviour
     [Header("Visual Effects")]
     [Tooltip("Particle system for puzzle completion")]
     public ParticleSystem completionParticles;
-    
+
     [Tooltip("Light to turn on when puzzle is complete")]
     public Light completionLight;
+
+    [Header("Ending Behavior")]
+    [Tooltip("Ending type for this scene - affects Kuchisake Onna behavior after puzzle completion")]
+    public EndingType endingType = EndingType.None;
     
     // State
     private int currentSequenceIndex = 0;
@@ -422,6 +436,42 @@ public class SequentialTorchManager : MonoBehaviour
 
         // Start celebration coroutine
         StartCoroutine(CelebrationSequence());
+
+        // Trigger ending-specific behavior for Kuchisake Onna
+        TriggerEndingBehavior();
+    }
+
+    /// <summary>
+    /// Triggers ending-specific behavior for Kuchisake Onna based on endingType
+    /// </summary>
+    void TriggerEndingBehavior()
+    {
+        // Find Kuchisake Onna in the scene
+        KuchisakeOnnaController enemy = FindObjectOfType<KuchisakeOnnaController>();
+
+        if (enemy == null)
+        {
+            Debug.LogWarning("[SequentialTorchManager] No KuchisakeOnnaController found in scene. Ending behavior skipped.");
+            return;
+        }
+
+        // Trigger behavior based on ending type
+        switch (endingType)
+        {
+            case EndingType.None:
+                Debug.Log("[SequentialTorchManager] EndingType is None. No special enemy behavior triggered.");
+                break;
+
+            case EndingType.GoodEnding:
+                Debug.Log("[SequentialTorchManager] GOOD ENDING: Making Kuchisake Onna disappear...");
+                enemy.DisappearEnemy();
+                break;
+
+            case EndingType.BadEnding:
+                Debug.Log("[SequentialTorchManager] BAD ENDING: Enraging Kuchisake Onna...");
+                enemy.EnrageEnemy();
+                break;
+        }
     }
     
     IEnumerator CelebrationSequence()

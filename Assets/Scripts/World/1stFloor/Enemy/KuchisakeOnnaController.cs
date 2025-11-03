@@ -86,6 +86,9 @@ public class KuchisakeOnnaController : MonoBehaviour
     // Attack tracking
     private float lastAttackTime = 0f;
     private bool isWithinAttackRange = false;
+
+    // Ending behavior flags
+    private bool ignoreSafeZones = false;
     #endregion
 
     #region Enums
@@ -468,9 +471,16 @@ public class KuchisakeOnnaController : MonoBehaviour
     #region Safe Zone Detection
     /// <summary>
     /// Checks if player is in a safe zone using trigger-based detection.
+    /// Returns false if ignoreSafeZones flag is set (bad ending behavior).
     /// </summary>
     bool IsPlayerInSafeZone()
     {
+        // If we're ignoring safe zones (bad ending), player is never safe
+        if (ignoreSafeZones)
+        {
+            return false;
+        }
+
         return SafeZoneTrigger.IsPlayerInAnySafeZone;
     }
     #endregion
@@ -852,6 +862,62 @@ public class KuchisakeOnnaController : MonoBehaviour
         {
             audioSource.PlayOneShot(clip, volume);
         }
+    }
+    #endregion
+
+    #region Ending Behaviors
+    /// <summary>
+    /// Good ending behavior: Makes the enemy disappear (instant disable).
+    /// Called when sequential torch puzzle is completed in GOOD ENDING scene.
+    /// </summary>
+    public void DisappearEnemy()
+    {
+        Debug.Log("[KuchisakeOnna] DisappearEnemy() called - Good ending behavior activated");
+
+        // Stop all current behavior
+        if (agent != null && agent.enabled)
+        {
+            agent.isStopped = true;
+            agent.enabled = false;
+        }
+
+        Debug.Log("[KuchisakeOnna] Enemy disabled. Good ending complete.");
+
+        // Immediately disable the GameObject
+        gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    /// Bad ending behavior: Makes the enemy more aggressive and dangerous.
+    /// Called when sequential torch puzzle is completed in BAD ENDING scene.
+    /// </summary>
+    public void EnrageEnemy()
+    {
+        Debug.Log("[KuchisakeOnna] EnrageEnemy() called - Bad ending behavior activated");
+        Debug.Log("[KuchisakeOnna] 💀 BAD ENDING MODE: Enemy is now ENRAGED! 💀");
+
+        // Boost movement speed
+        float oldSpeed = chaseSpeed;
+        chaseSpeed = 6f;
+        if (agent != null)
+        {
+            agent.speed = chaseSpeed;
+        }
+        Debug.Log($"[KuchisakeOnna] Chase speed boosted: {oldSpeed} → {chaseSpeed}");
+
+        // Reduce attack cooldown for more frequent attacks
+        float oldCooldown = attackCooldown;
+        attackCooldown = 0.5f;
+        Debug.Log($"[KuchisakeOnna] Attack cooldown reduced: {oldCooldown}s → {attackCooldown}s");
+
+        // Enable safe zone ignore mode
+        ignoreSafeZones = true;
+        Debug.Log("[KuchisakeOnna] Safe zones are now DISABLED - player cannot hide!");
+
+        // Increase damage if needed (optional - currently instant kill already)
+        Debug.Log($"[KuchisakeOnna] Attack damage: {attackDamage} (instant kill)");
+
+        Debug.Log("[KuchisakeOnna] ========== ENRAGE COMPLETE - PLAYER BEWARE! ==========");
     }
     #endregion
 
