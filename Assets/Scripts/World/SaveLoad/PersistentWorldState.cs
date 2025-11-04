@@ -57,6 +57,14 @@ namespace SaveLoad
             DontDestroyOnLoad(gameObject);
         }
 
+        private void OnDestroy()
+        {
+            if (instance == this)
+            {
+                instance = null;
+            }
+        }
+
         public void RegisterEntity(PersistentEntity entity)
         {
             if (entity == null || registeredEntities.Contains(entity))

@@ -54,7 +54,15 @@ public class SceneTransitionManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    
+
+    void OnDestroy()
+    {
+        if (instance == this)
+        {
+            instance = null;
+        }
+    }
+
     void Start()
     {
         // Ensure we start with a fade in
