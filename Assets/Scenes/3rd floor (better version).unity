@@ -356206,6 +356206,9 @@ GameObject:
   - component: {fileID: 7713875980773053211}
   - component: {fileID: 8424480999051324507}
   - component: {fileID: 8424480999051324508}
+  - component: {fileID: 8424480999051324509}
+  - component: {fileID: 4135971101874858597}
+  - component: {fileID: 4135971101874858598}
   m_Layer: 0
   m_Name: LeatherTrunk_Lid
   m_TagString: Untagged
@@ -358887,8 +358890,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4135971101874858595}
-  - component: {fileID: 4135971101874858598}
-  - component: {fileID: 4135971101874858597}
   - component: {fileID: 4135971101874858596}
   m_Layer: 0
   m_Name: Blue Key | Clue
@@ -359255,12 +359256,12 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3615892840002384089}
+  m_GameObject: {fileID: 96585288858230127}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8977c3dcec846034e9d9da314a88a319, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   action: 0
   questId: inspect_paper
   questTextIfAdding: Inspect the pile of paper
@@ -359271,15 +359272,15 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3615892840002384089}
+  m_GameObject: {fileID: 96585288858230127}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8977c3dcec846034e9d9da314a88a319, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   action: 1
   questId: inspect_luggage
-  questTextIfAdding: 
+  questTextIfAdding:
   fireOnce: 1
 --- !u!1 &4194650670673495422
 GameObject:
@@ -361820,6 +361821,27 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -5605573298869675516, guid: 3987c0abcc50b084ab6934d3d204f9a0, type: 3}
+--- !u!65 &8424480999051324509
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 96585288858230127}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 0.3, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!33 &8472238063351365842
 MeshFilter:
   m_ObjectHideFlags: 0
