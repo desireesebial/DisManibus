@@ -189,8 +189,13 @@ public class SettingsScript : MonoBehaviour
         {
             resolutionDropdown.ClearOptions();
             resolutionDropdown.AddOptions(options);
+
+            // Prevent onChange callbacks during initialization
+            isApplyingChanges = true;
             resolutionDropdown.value = currentResolutionIndex;
             resolutionDropdown.RefreshShownValue();
+            isApplyingChanges = false;
+
             resolutionDropdown.onValueChanged.AddListener(OnResolutionChanged);
         }
 
@@ -198,8 +203,13 @@ public class SettingsScript : MonoBehaviour
         {
             resolutionDropdownTMP.ClearOptions();
             resolutionDropdownTMP.AddOptions(options);
+
+            // Prevent onChange callbacks during initialization
+            isApplyingChanges = true;
             resolutionDropdownTMP.value = currentResolutionIndex;
             resolutionDropdownTMP.RefreshShownValue();
+            isApplyingChanges = false;
+
             resolutionDropdownTMP.onValueChanged.AddListener(OnResolutionChangedTMP);
         }
     }
@@ -274,6 +284,70 @@ public class SettingsScript : MonoBehaviour
                 // Invalid saved index - clear it and use current resolution
                 Debug.LogWarning($"[SettingsScript] Saved resolution index {savedResolutionIndex} is invalid (valid range: 0-{availableResolutions.Length - 1}). Resetting to current resolution.");
                 PlayerPrefs.DeleteKey("Settings_ResolutionIndex");
+            }
+            else
+            {
+                // First launch - no saved resolution, apply native/current resolution
+                Debug.Log("[SettingsScript] First launch detected - applying native resolution for best presentation.");
+
+                // Find the index of the current/native resolution
+                int nativeResolutionIndex = -1;
+                for (int i = 0; i < availableResolutions.Length; i++)
+                {
+                    if (availableResolutions[i].width == Screen.currentResolution.width &&
+                        availableResolutions[i].height == Screen.currentResolution.height)
+                    {
+                        nativeResolutionIndex = i;
+                        break;
+                    }
+                }
+
+                // If we found the native resolution, use it; otherwise use highest available
+                if (nativeResolutionIndex >= 0)
+                {
+                    ApplyResolution(nativeResolutionIndex);
+
+                    if (resolutionDropdown != null)
+                    {
+                        resolutionDropdown.value = nativeResolutionIndex;
+                        resolutionDropdown.RefreshShownValue();
+                    }
+
+                    if (resolutionDropdownTMP != null)
+                    {
+                        resolutionDropdownTMP.value = nativeResolutionIndex;
+                        resolutionDropdownTMP.RefreshShownValue();
+                    }
+
+                    // Save this as the default for future launches
+                    PlayerPrefs.SetInt("Settings_ResolutionIndex", nativeResolutionIndex);
+                    PlayerPrefs.Save();
+
+                    Debug.Log($"[SettingsScript] Applied native resolution: {availableResolutions[nativeResolutionIndex].width}x{availableResolutions[nativeResolutionIndex].height}");
+                }
+                else
+                {
+                    // Fallback: use highest available resolution
+                    int highestIndex = availableResolutions.Length - 1;
+                    ApplyResolution(highestIndex);
+
+                    if (resolutionDropdown != null)
+                    {
+                        resolutionDropdown.value = highestIndex;
+                        resolutionDropdown.RefreshShownValue();
+                    }
+
+                    if (resolutionDropdownTMP != null)
+                    {
+                        resolutionDropdownTMP.value = highestIndex;
+                        resolutionDropdownTMP.RefreshShownValue();
+                    }
+
+                    PlayerPrefs.SetInt("Settings_ResolutionIndex", highestIndex);
+                    PlayerPrefs.Save();
+
+                    Debug.Log($"[SettingsScript] Applied highest resolution: {availableResolutions[highestIndex].width}x{availableResolutions[highestIndex].height}");
+                }
             }
         }
 
