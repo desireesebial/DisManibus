@@ -2,6 +2,19 @@
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+/// <summary>
+/// Primary pause menu controller with integrated Settings and Controls panel support.
+/// Uses CanvasGroup visibility system for smooth transitions between panels.
+///
+/// USAGE:
+/// - Use this controller when you need pause menu WITH settings/controls panels
+/// - Automatically hides gameplay UI elements when paused
+/// - Integrates with FirstPersonController for camera control
+/// - Prevents pausing during cutscenes and when player is dead
+///
+/// ALTERNATIVE:
+/// - For simpler pause menus without settings integration, see PauseMenuController
+/// </summary>
 public class PauseMenu : MonoBehaviour
 {
     [Header("UI Panels (auto-wires if left empty)")]
@@ -169,7 +182,6 @@ public class PauseMenu : MonoBehaviour
 
     public void Resume()
     {
-        Debug.Log("[PauseMenu] Resume() called");
         isPaused = false;
 
         SetCanvasVisible(pauseGroup, false);
@@ -177,16 +189,9 @@ public class PauseMenu : MonoBehaviour
         SetCanvasVisible(controlsGroup, false);
 
         // Hide border overlay
-        Debug.Log($"[PauseMenu] borderOverlay is null? {borderOverlay == null}");
         if (borderOverlay != null)
         {
-            Debug.Log($"[PauseMenu] Hiding border: {borderOverlay.gameObject.name}, currently active: {borderOverlay.gameObject.activeSelf}");
             borderOverlay.gameObject.SetActive(false);
-            Debug.Log($"[PauseMenu] Border hidden. Now active: {borderOverlay.gameObject.activeSelf}");
-        }
-        else
-        {
-            Debug.LogWarning("[PauseMenu] borderOverlay is NULL! Cannot hide border.");
         }
 
         // Show gameplay UI
@@ -231,20 +236,20 @@ public class PauseMenu : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    // ---------- settings ----------
+    /// <summary>
+    /// Opens the settings panel and ensures it renders properly on top of the pause menu
+    /// </summary>
     public void OpenSettings()
     {
-        // 1) Hide Pause (no input, no draw)
+        // Hide pause menu
         SetCanvasVisible(pauseGroup, false);
         if (pauseGroup) pauseGroup.blocksRaycasts = false;
 
-        // 2) Make sure Settings root is active
+        // Activate and show settings panel
         if (settingsPanel) settingsPanel.SetActive(true);
-
-        // 3) Make Settings visible & clickable
         SetCanvasVisible(settingsGroup, true);
 
-        // 4) FORCE settings to render on top of pause
+        // Ensure settings renders on top of pause menu
         var settingsCanvas = settingsPanel.GetComponentInParent<Canvas>();
         if (!settingsCanvas) settingsCanvas = settingsPanel.AddComponent<Canvas>();
         var pauseCanvas = pauseRoot ? pauseRoot.GetComponentInParent<Canvas>() : null;
@@ -254,24 +259,21 @@ public class PauseMenu : MonoBehaviour
         if (pauseCanvas && pauseCanvas.overrideSorting && settingsCanvas.sortingOrder <= pauseCanvas.sortingOrder)
             settingsCanvas.sortingOrder = pauseCanvas.sortingOrder + 1;
 
-        // 5) Ensure a GraphicRaycaster exists so clicks work
+        // Ensure GraphicRaycaster exists for click detection
         if (!settingsPanel.GetComponentInParent<UnityEngine.UI.GraphicRaycaster>())
             settingsPanel.AddComponent<UnityEngine.UI.GraphicRaycaster>();
 
-        // 6) If your Settings has a background covering the screen, it can block clicks.
-        //    Make sure the INTERACTIVE container is on top.
+        // Ensure interactive panel is on top
         var panel = settingsPanel.transform.Find("Panel Settings");
         if (panel) panel.SetAsLastSibling();
 
-        // 7) Last safeguard: if any child CanvasGroups exist, open them too
+        // Ensure all child CanvasGroups are properly visible and interactive
         foreach (var g in settingsPanel.GetComponentsInChildren<CanvasGroup>(true))
         {
             g.alpha = 1f;
             g.interactable = true;
             g.blocksRaycasts = true;
         }
-
-        Debug.Log("[PauseMenu] OpenSettings → forced visible & on top");
     }
 
 
@@ -371,6 +373,9 @@ public class PauseMenu : MonoBehaviour
 
     static CanvasGroup GetCanvasGroup(GameObject go) => go ? go.GetComponent<CanvasGroup>() : null;
 
+    /// <summary>
+    /// Automatically finds and wires up UI panels if not assigned in the Inspector
+    /// </summary>
     void AutoWire()
     {
         if (!pauseRoot) pauseRoot = GameObject.Find("Pause Menu");
@@ -391,7 +396,5 @@ public class PauseMenu : MonoBehaviour
             if (c) controlsPanel = c;
         }
         if (!controlsGroup && controlsPanel) controlsGroup = controlsPanel.GetComponent<CanvasGroup>();
-
-        Debug.Log($"[PauseMenu] AutoWire → pauseRoot={pauseRoot}, settingsPanel={settingsPanel}, controlsPanel={controlsPanel}, pauseGroup={pauseGroup}, settingsGroup={settingsGroup}, controlsGroup={controlsGroup}");
     }
 }

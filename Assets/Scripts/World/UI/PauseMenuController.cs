@@ -6,6 +6,19 @@ using UnityEngine.UI;
 
 namespace World.UI
 {
+    /// <summary>
+    /// Simplified pause menu controller without settings panel integration.
+    /// Cleaner implementation using GameObject activation for pause menu visibility.
+    ///
+    /// USAGE:
+    /// - Use this for simple pause menus that don't need settings/controls panels
+    /// - Supports both Unity Input System and legacy Input (fallback)
+    /// - Includes UnityEvents for extensibility (onPaused, onResumed)
+    /// - Prevents pausing during cutscenes
+    ///
+    /// ALTERNATIVE:
+    /// - For pause menus WITH settings/controls integration, use PauseMenu instead
+    /// </summary>
     public class PauseMenuController : MonoBehaviour
     {
         [Header("Input")]
