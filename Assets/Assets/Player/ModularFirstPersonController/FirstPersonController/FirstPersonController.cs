@@ -158,11 +158,55 @@ public class FirstPersonController : MonoBehaviour
 
     #endregion
 
+    #region Audio System
+
+    [Header("Audio Sources")]
+    [Tooltip("Audio source for footstep sounds (walk and sprint)")]
+    public AudioSource footstepAudioSource;
+
+    [Tooltip("Audio source for breathing sounds (exhausted/fatigued state)")]
+    public AudioSource breathingAudioSource;
+
+    [Header("Footstep Audio")]
+    [Tooltip("Sound played when walking (drag and drop audio clip)")]
+    public AudioClip walkFootstepSound;
+
+    [Tooltip("Sound played when sprinting (drag and drop audio clip)")]
+    public AudioClip sprintFootstepSound;
+
+    [Tooltip("Time interval between walk footstep sounds in seconds")]
+    public float walkFootstepInterval = 0.5f;
+
+    [Tooltip("Time interval between sprint footstep sounds in seconds")]
+    public float sprintFootstepInterval = 0.35f;
+
+    [Header("Stamina Audio")]
+    [Tooltip("Looping sound played when stamina is exhausted (drag and drop audio clip)")]
+    public AudioClip exhaustedBreathingSound;
+
+    [Tooltip("Stamina percentage where breathing starts to fade out (default: 0.3 = 30%)")]
+    [Range(0.1f, 0.5f)]
+    public float breathingFadeOutThreshold = 0.3f;
+
+    // Internal Variables
+    private float nextFootstepTime = 0f;
+    private bool isExhaustedBreathingPlaying = false;
+
+    #endregion
+
+    #region Stamina Recovery Gate
+
+    // Internal Variables
+    private bool canSprintAgain = true; // Gate to prevent sprinting until 30% stamina recovered
+    private bool isFatigued = false; // Player is fatigued when stamina hits 0
+
+    #endregion
+
     #region Tutorial
 
     [Header("Stamina Tutorial")]
     [Tooltip("Optional reference to StaminaTutorial component for first-time sprint notification")]
-    public StaminaTutorial staminaTutorial; // UPDATED 
+    public StaminaTutorial staminaTutorial; // UPDATED
 
     // Internal Variables
     private bool hasTriggeredStaminaTutorial = false;
@@ -453,6 +497,8 @@ public class FirstPersonController : MonoBehaviour
                     {
                         isSprinting = false;
                         isSprintCooldown = true;
+                        canSprintAgain = false; // Gate sprint until 30% recovery
+                        isFatigued = true; // Player is now fatigued
                     }
                 }
             }
@@ -460,6 +506,14 @@ public class FirstPersonController : MonoBehaviour
             {
                 // Regain sprint while not sprinting
                 sprintRemaining = Mathf.Clamp(sprintRemaining += 1 * Time.deltaTime, 0, sprintDuration);
+
+                // Check if stamina has recovered to 30% threshold - allow sprinting again
+                float staminaPercent = sprintRemaining / sprintDuration;
+                if (!canSprintAgain && staminaPercent >= breathingFadeOutThreshold)
+                {
+                    canSprintAgain = true;
+                    isFatigued = false; // No longer fatigued
+                }
             }
 
             // Handles sprint cooldown 
@@ -552,6 +606,9 @@ public class FirstPersonController : MonoBehaviour
             HeadBob();
         }
 
+        HandleFootsteps();
+        HandleExhaustedBreathing();
+
     }
 
     void FixedUpdate()
@@ -581,8 +638,9 @@ public class FirstPersonController : MonoBehaviour
                 isWalking = false;
             }
 
-            // All movement calculations shile sprint is active
-            if (enableSprint && Input.GetKey(sprintKey) && sprintRemaining > 0f && !isSprintCooldown)
+            // All movement calculations while sprint is active
+            // Added canSprintAgain check to enforce 30% recovery gate
+            if (enableSprint && Input.GetKey(sprintKey) && sprintRemaining > 0f && !isSprintCooldown && canSprintAgain)
             {
                 // Don't allow sprinting while crouched - prevents collision issues
                 if (isCrouched)
@@ -759,6 +817,93 @@ public class FirstPersonController : MonoBehaviour
             // Resets when play stops moving
             timer = 0;
             joint.localPosition = new Vector3(Mathf.Lerp(joint.localPosition.x, jointOriginalPos.x, Time.deltaTime * bobSpeed), Mathf.Lerp(joint.localPosition.y, jointOriginalPos.y, Time.deltaTime * bobSpeed), Mathf.Lerp(joint.localPosition.z, jointOriginalPos.z, Time.deltaTime * bobSpeed));
+        }
+    }
+
+    private void HandleFootsteps()
+    {
+        // Safety checks - ensure we have audio source and are grounded
+        if (footstepAudioSource == null || !isGrounded)
+        {
+            return;
+        }
+
+        // Check if player is moving (velocity magnitude threshold)
+        float currentSpeed = rb.linearVelocity.magnitude;
+        bool isMoving = currentSpeed > 0.1f && isWalking;
+
+        if (isMoving && Time.time >= nextFootstepTime)
+        {
+            // Determine which footstep sound to play based on sprint state
+            AudioClip footstepToPlay = null;
+            float footstepInterval = walkFootstepInterval;
+
+            if (isSprinting && sprintFootstepSound != null)
+            {
+                footstepToPlay = sprintFootstepSound;
+                footstepInterval = sprintFootstepInterval;
+            }
+            else if (walkFootstepSound != null)
+            {
+                footstepToPlay = walkFootstepSound;
+                footstepInterval = walkFootstepInterval;
+            }
+
+            // Play the footstep sound if we have a valid clip
+            if (footstepToPlay != null)
+            {
+                footstepAudioSource.PlayOneShot(footstepToPlay);
+                nextFootstepTime = Time.time + footstepInterval;
+            }
+        }
+
+        // Reset footstep timer when not moving to ensure immediate sound on next movement
+        if (!isMoving)
+        {
+            nextFootstepTime = 0f;
+        }
+    }
+
+    private void HandleExhaustedBreathing()
+    {
+        // Safety checks - ensure we have audio source and clip
+        if (breathingAudioSource == null || exhaustedBreathingSound == null)
+        {
+            return;
+        }
+
+        // If player is fatigued, play and manage breathing audio
+        if (isFatigued)
+        {
+            // Start playing the breathing loop if not already playing
+            if (!isExhaustedBreathingPlaying)
+            {
+                breathingAudioSource.clip = exhaustedBreathingSound;
+                breathingAudioSource.loop = true;
+                breathingAudioSource.Play();
+                isExhaustedBreathingPlaying = true;
+            }
+
+            // Calculate fade out based on stamina recovery (0% to 30%)
+            float staminaPercent = sprintRemaining / sprintDuration;
+
+            // Volume lerps from 1.0 (at 0% stamina) to 0.0 (at 30% stamina)
+            // Using inverse lerp to map stamina percentage to volume
+            if (staminaPercent <= breathingFadeOutThreshold)
+            {
+                float volumeFactor = 1f - (staminaPercent / breathingFadeOutThreshold);
+                breathingAudioSource.volume = Mathf.Clamp01(volumeFactor);
+            }
+        }
+        else
+        {
+            // Stop breathing audio when no longer fatigued
+            if (isExhaustedBreathingPlaying)
+            {
+                breathingAudioSource.Stop();
+                breathingAudioSource.volume = 1f; // Reset volume for next time
+                isExhaustedBreathingPlaying = false;
+            }
         }
     }
 

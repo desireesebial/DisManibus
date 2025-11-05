@@ -59,6 +59,23 @@ public class PlayerHealthSystem : MonoBehaviour
     public AudioClip healSound;
     public AudioClip criticalHealthSound;
 
+    [Header("Groaning Audio")]
+    [Tooltip("Array of groaning sounds played when player takes damage (drag and drop audio clips)")]
+    public AudioClip[] groaningSounds;
+
+    [Header("Knockback Settings")]
+    [Tooltip("Force applied when player is knocked back by damage")]
+    public float knockbackForce = 5f;
+
+    [Tooltip("Maximum distance player will be pushed back (for wall collision prevention)")]
+    public float knockbackDistance = 2f;
+
+    [Tooltip("Upward force component added to knockback for more dynamic feel")]
+    public float knockbackUpwardForce = 2f;
+
+    [Tooltip("Layer mask for detecting walls during knockback (prevents pushing through walls)")]
+    public LayerMask wallLayerMask;
+
     [Header("Post-Processing")]
     public MonoBehaviour postProcessVolume; // Changed from PostProcessVolume to MonoBehaviour for compatibility
     public float blurIntensity = 1f;
@@ -91,6 +108,7 @@ public class PlayerHealthSystem : MonoBehaviour
     private float originalWalkSpeed;
     private float originalMouseSensitivity;
     private bool hasDied = false;
+    private Rigidbody playerRigidbody; // For knockback force application
 
     void Start()
     {
@@ -123,6 +141,10 @@ public class PlayerHealthSystem : MonoBehaviour
 
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
+
+        // Get Rigidbody for knockback system
+        if (playerRigidbody == null)
+            playerRigidbody = GetComponent<Rigidbody>();
 
         // Store original camera position
         if (playerCamera != null)
@@ -453,9 +475,80 @@ public class PlayerHealthSystem : MonoBehaviour
 
     private void PlayDamageSound()
     {
-        if (audioSource != null && damageSound != null)
+        if (audioSource == null) return;
+
+        // Prioritize groaning sounds if available for variation
+        if (groaningSounds != null && groaningSounds.Length > 0)
+        {
+            // Filter out null clips
+            AudioClip[] validClips = System.Array.FindAll(groaningSounds, clip => clip != null);
+
+            if (validClips.Length > 0)
+            {
+                // Select random groaning sound
+                int randomIndex = Random.Range(0, validClips.Length);
+                audioSource.PlayOneShot(validClips[randomIndex]);
+                return;
+            }
+        }
+
+        // Fall back to single damage sound if no groaning sounds available
+        if (damageSound != null)
         {
             audioSource.PlayOneShot(damageSound);
+        }
+    }
+
+    private void ApplyKnockback(Vector3 enemyPosition)
+    {
+        // Safety check - ensure we have a rigidbody
+        if (playerRigidbody == null)
+        {
+            Debug.LogWarning("Cannot apply knockback: playerRigidbody is null");
+            return;
+        }
+
+        // Calculate knockback direction (away from enemy)
+        Vector3 playerPosition = transform.position;
+        Vector3 knockbackDirection = (playerPosition - enemyPosition).normalized;
+
+        // Flatten the direction to horizontal plane (optional - prevents vertical knockback from flying enemies)
+        knockbackDirection.y = 0;
+        knockbackDirection.Normalize();
+
+        // Raycast to check for walls in the knockback direction
+        float safeKnockbackDistance = knockbackDistance;
+        RaycastHit hit;
+
+        // Cast from player position in knockback direction
+        if (Physics.Raycast(playerPosition, knockbackDirection, out hit, knockbackDistance, wallLayerMask))
+        {
+            // Wall detected - reduce knockback distance to prevent going through walls
+            // Use half the distance to the wall to be safe
+            safeKnockbackDistance = hit.distance * 0.5f;
+            Debug.Log($"Wall detected at {hit.distance}m. Reducing knockback to {safeKnockbackDistance}m");
+
+            // If wall is too close (less than 0.5m), don't apply horizontal knockback
+            if (safeKnockbackDistance < 0.5f)
+            {
+                Debug.Log("Wall too close - skipping horizontal knockback");
+                knockbackDirection = Vector3.zero;
+            }
+        }
+
+        // Apply knockback force
+        if (knockbackDirection != Vector3.zero)
+        {
+            // Horizontal knockback
+            Vector3 knockbackForceVector = knockbackDirection * knockbackForce;
+
+            // Add upward component for more dynamic feel
+            knockbackForceVector.y = knockbackUpwardForce;
+
+            // Apply impulse force for instant impact
+            playerRigidbody.AddForce(knockbackForceVector, ForceMode.Impulse);
+
+            Debug.Log($"Applied knockback: direction={knockbackDirection}, force={knockbackForce}, distance={safeKnockbackDistance}");
         }
     }
 
@@ -558,34 +651,42 @@ public class PlayerHealthSystem : MonoBehaviour
     // Enemy contact handling
     private void OnTriggerEnter(Collider other)
     {
-        TryApplyEnemyContactDamage(other.gameObject);
+        TryApplyEnemyContactDamage(other.gameObject, other.transform.position);
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        TryApplyEnemyContactDamage(collision.gameObject);
+        TryApplyEnemyContactDamage(collision.gameObject, collision.transform.position);
     }
 
-    private void TryApplyEnemyContactDamage(GameObject other)
+    private void TryApplyEnemyContactDamage(GameObject other, Vector3 enemyPosition)
     {
         if (other == null || currentHealth <= 0) return;
 
         if (!isInvulnerable)
         {
+            bool damageApplied = false;
+
             if (!string.IsNullOrEmpty(jenglotTag) && other.CompareTag(jenglotTag))
             {
                 TakeDamage(Mathf.Max(1, jenglotDamage));
-                return;
+                damageApplied = true;
             }
-            if (!string.IsNullOrEmpty(kamatayanTag) && other.CompareTag(kamatayanTag))
+            else if (!string.IsNullOrEmpty(kamatayanTag) && other.CompareTag(kamatayanTag))
             {
                 TakeDamage(Mathf.Max(1, kamatayanDamage));
-                return;
+                damageApplied = true;
             }
-            if (!string.IsNullOrEmpty(dullahanTag) && other.CompareTag(dullahanTag))
+            else if (!string.IsNullOrEmpty(dullahanTag) && other.CompareTag(dullahanTag))
             {
                 TakeDamage(Mathf.Max(1, dullahanDamage));
-                return;
+                damageApplied = true;
+            }
+
+            // Apply knockback if damage was applied
+            if (damageApplied)
+            {
+                ApplyKnockback(enemyPosition);
             }
         }
     }
