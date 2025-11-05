@@ -1330,12 +1330,9 @@ GameObject:
   m_Component:
   - component: {fileID: 58260886}
   - component: {fileID: 58260887}
-  - component: {fileID: 58260894}
-  - component: {fileID: 58260892}
   - component: {fileID: 58260888}
   - component: {fileID: 58260889}
   - component: {fileID: 58260893}
-  - component: {fileID: 58260895}
   m_Layer: 0
   m_Name: blue key pile
   m_TagString: Untagged
@@ -1457,22 +1454,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &58260892
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 58260885}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8977c3dcec846034e9d9da314a88a319, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  action: 0
-  questId: find_clues
-  questTextIfAdding: Find the clue for the exit
-  fireOnce: 1
 --- !u!114 &58260893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1501,58 +1482,6 @@ MonoBehaviour:
   unlockFlag: 
   setFlagWhenDone: 
   betweenLinesDelay: 1
---- !u!114 &58260894
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 58260885}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8977c3dcec846034e9d9da314a88a319, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  action: 1
-  questId: inspect_paper
-  questTextIfAdding: 
-  fireOnce: 1
---- !u!114 &58260895
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 58260885}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cae38d26bcc748249a79da36a74a0a3b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dialogueManager: {fileID: 1726014300}
-  poolA:
-  - B ...
-  - L ...
-  - U ...
-  - 'E ... '
-  - 
-  - 'Oh... '
-  - 'Blue? so it makes up a word '
-  poolB: []
-  switchFlag: code_clue
-  usePoolBWhenFlagPresent: 1
-  flagsToSetOnInteract: []
-  setFlagsWhen: 1
-  setFlagsOnlyOnce: 1
-  interactKey: 102
-  mustFinishBeforeNext: 0
-  playSequentially: 1
-  wrapSequence: 0
-  randomize: 0
-  avoidImmediateRepeat: 1
-  clearAfterEachLine: 1
-  clearDelay: 1
-  clearOnExit: 1
 --- !u!1 &61849678
 GameObject:
   m_ObjectHideFlags: 0
@@ -191382,6 +191311,13 @@ MonoBehaviour:
   damageSound: {fileID: 0}
   healSound: {fileID: 0}
   criticalHealthSound: {fileID: 0}
+  groaningSounds: []
+  knockbackForce: 5
+  knockbackDistance: 2
+  knockbackUpwardForce: 2
+  wallLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
   postProcessVolume: {fileID: 0}
   blurIntensity: 1
   blurDuration: 5
