@@ -202,6 +202,21 @@ public class FirstPersonController : MonoBehaviour
 
     #endregion
 
+    #region Exhaustion System
+
+    [Header("Exhaustion System")]
+    [Tooltip("Speed multiplier when exhausted (0.5 = 50% of walk speed, matching crouch)")]
+    [Range(0.3f, 0.9f)]
+    public float exhaustedSpeedReduction = 0.5f;
+
+    [Tooltip("Speed of the smooth transition when entering/exiting exhaustion (higher = faster)")]
+    public float exhaustionTransitionSpeed = 2f;
+
+    // Internal Variables
+    private float currentSpeedMultiplier = 1f; // Current speed multiplier (1.0 = normal, 0.5 = exhausted)
+
+    #endregion
+
     #region Tutorial
 
     [Header("Stamina Tutorial")]
@@ -394,6 +409,57 @@ public class FirstPersonController : MonoBehaviour
         }
 
         #endregion
+
+        #region Audio Validation
+
+        if (enableSprint && !unlimitedSprint)
+        {
+            if (breathingAudioSource == null)
+            {
+                Debug.LogError("[FirstPersonController] REQUIRED: Breathing AudioSource must be assigned for exhaustion system!", this);
+            }
+            else if (!breathingAudioSource.enabled)
+            {
+                Debug.LogWarning("[FirstPersonController] Breathing AudioSource is disabled - enabling it.", this);
+                breathingAudioSource.enabled = true;
+            }
+
+            if (exhaustedBreathingSound == null)
+            {
+                Debug.LogError("[FirstPersonController] REQUIRED: Exhausted breathing sound must be assigned!", this);
+            }
+        }
+
+        if (footstepAudioSource != null && !footstepAudioSource.enabled)
+        {
+            Debug.LogWarning("[FirstPersonController] Footstep AudioSource is disabled - enabling it.", this);
+            footstepAudioSource.enabled = true;
+        }
+
+        #endregion
+    }
+
+    private void OnValidate()
+    {
+        #region Audio Validation
+        if (enableSprint && !unlimitedSprint)
+        {
+            if (breathingAudioSource == null)
+            {
+                Debug.LogWarning("[FirstPersonController] Breathing AudioSource not assigned! Exhaustion audio won't play.", this);
+            }
+
+            if (exhaustedBreathingSound == null)
+            {
+                Debug.LogWarning("[FirstPersonController] Exhausted breathing sound not assigned! Exhaustion audio won't play.", this);
+            }
+        }
+
+        if (footstepAudioSource == null)
+        {
+            Debug.LogWarning("[FirstPersonController] Footstep AudioSource not assigned! Footstep sounds won't play.", this);
+        }
+        #endregion
     }
 
     // Helper to get an active player camera from anywhere
@@ -495,6 +561,7 @@ public class FirstPersonController : MonoBehaviour
                     sprintRemaining -= 1 * Time.deltaTime;
                     if (sprintRemaining <= 0)
                     {
+                        Debug.Log("[FirstPersonController] Stamina depleted - Player is now fatigued", this);
                         isSprinting = false;
                         isSprintCooldown = true;
                         canSprintAgain = false; // Gate sprint until 30% recovery
@@ -511,6 +578,7 @@ public class FirstPersonController : MonoBehaviour
                 float staminaPercent = sprintRemaining / sprintDuration;
                 if (!canSprintAgain && staminaPercent >= breathingFadeOutThreshold)
                 {
+                    Debug.Log($"[FirstPersonController] Stamina recovered to {staminaPercent:P0} - Player no longer fatigued", this);
                     canSprintAgain = true;
                     isFatigued = false; // No longer fatigued
                 }
@@ -608,6 +676,7 @@ public class FirstPersonController : MonoBehaviour
 
         HandleFootsteps();
         HandleExhaustedBreathing();
+        HandleExhaustion();
 
     }
 
@@ -646,7 +715,7 @@ public class FirstPersonController : MonoBehaviour
                 if (isCrouched)
                 {
                     // Use walk speed instead when trying to sprint while crouched
-                    targetVelocity = transform.TransformDirection(targetVelocity) * walkSpeed;
+                    targetVelocity = transform.TransformDirection(targetVelocity) * walkSpeed * currentSpeedMultiplier;
 
                     Vector3 velocity = rb.linearVelocity;
                     Vector3 velocityChange = (targetVelocity - velocity);
@@ -700,7 +769,7 @@ public class FirstPersonController : MonoBehaviour
                     sprintBarCG.alpha -= 3 * Time.deltaTime;
                 }
 
-                targetVelocity = transform.TransformDirection(targetVelocity) * walkSpeed;
+                targetVelocity = transform.TransformDirection(targetVelocity) * walkSpeed * currentSpeedMultiplier;
 
                 // Apply a force that attempts to reach our target velocity
                 Vector3 velocity = rb.linearVelocity;
@@ -869,6 +938,10 @@ public class FirstPersonController : MonoBehaviour
         // Safety checks - ensure we have audio source and clip
         if (breathingAudioSource == null || exhaustedBreathingSound == null)
         {
+            if (isFatigued && Time.frameCount % 300 == 0) // Log warning every 5 seconds at 60fps
+            {
+                Debug.LogWarning("[FirstPersonController] Cannot play exhausted breathing - AudioSource or AudioClip is missing!", this);
+            }
             return;
         }
 
@@ -878,6 +951,7 @@ public class FirstPersonController : MonoBehaviour
             // Start playing the breathing loop if not already playing
             if (!isExhaustedBreathingPlaying)
             {
+                Debug.Log("[FirstPersonController] Starting exhausted breathing - stamina depleted", this);
                 breathingAudioSource.clip = exhaustedBreathingSound;
                 breathingAudioSource.loop = true;
                 breathingAudioSource.Play();
@@ -893,6 +967,12 @@ public class FirstPersonController : MonoBehaviour
             {
                 float volumeFactor = 1f - (staminaPercent / breathingFadeOutThreshold);
                 breathingAudioSource.volume = Mathf.Clamp01(volumeFactor);
+
+                // Debug log every second (60 frames at 60fps)
+                if (Time.frameCount % 60 == 0)
+                {
+                    Debug.Log($"[FirstPersonController] Fatigued - Stamina: {staminaPercent:P0}, Volume: {breathingAudioSource.volume:F2}", this);
+                }
             }
         }
         else
@@ -900,10 +980,32 @@ public class FirstPersonController : MonoBehaviour
             // Stop breathing audio when no longer fatigued
             if (isExhaustedBreathingPlaying)
             {
+                Debug.Log("[FirstPersonController] Stopping exhausted breathing - stamina recovered", this);
                 breathingAudioSource.Stop();
                 breathingAudioSource.volume = 1f; // Reset volume for next time
                 isExhaustedBreathingPlaying = false;
             }
+        }
+    }
+
+    private void HandleExhaustion()
+    {
+        // Determine target speed multiplier based on fatigue state
+        float targetMultiplier = isFatigued ? exhaustedSpeedReduction : 1f;
+
+        // Smoothly lerp to target multiplier
+        float previousMultiplier = currentSpeedMultiplier;
+        currentSpeedMultiplier = Mathf.Lerp(currentSpeedMultiplier, targetMultiplier,
+                                           exhaustionTransitionSpeed * Time.deltaTime);
+
+        // Log state changes
+        if (previousMultiplier >= 0.99f && currentSpeedMultiplier < 0.99f)
+        {
+            Debug.Log($"[FirstPersonController] Exhaustion started - Speed reducing to {exhaustedSpeedReduction:P0}", this);
+        }
+        else if (previousMultiplier < 0.99f && currentSpeedMultiplier >= 0.99f)
+        {
+            Debug.Log("[FirstPersonController] Exhaustion ended - Speed restored to normal", this);
         }
     }
 
@@ -1107,6 +1209,52 @@ public class FirstPersonController : MonoBehaviour
         fpc.bobSpeed = EditorGUILayout.Slider(new GUIContent("Speed", "Determines how often a bob rotation is completed."), fpc.bobSpeed, 1, 20);
         fpc.bobAmount = EditorGUILayout.Vector3Field(new GUIContent("Bob Amount", "Determines the amount the joint moves in both directions on every axes."), fpc.bobAmount);
         GUI.enabled = true;
+
+        #endregion
+
+        #region Audio System
+
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+        GUILayout.Label("Audio System", new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold, fontSize = 13 }, GUILayout.ExpandWidth(true));
+        EditorGUILayout.Space();
+
+        // Audio Sources
+        GUILayout.Label("Audio Sources", new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleLeft, fontStyle = FontStyle.Bold, fontSize = 12 }, GUILayout.ExpandWidth(true));
+        fpc.footstepAudioSource = (AudioSource)EditorGUILayout.ObjectField(new GUIContent("Footstep Audio Source", "Audio source for footstep sounds (walk and sprint)"), fpc.footstepAudioSource, typeof(AudioSource), true);
+        fpc.breathingAudioSource = (AudioSource)EditorGUILayout.ObjectField(new GUIContent("Breathing Audio Source", "Audio source for breathing sounds (exhausted/fatigued state)"), fpc.breathingAudioSource, typeof(AudioSource), true);
+
+        EditorGUILayout.Space();
+
+        // Footstep Audio
+        GUILayout.Label("Footstep Audio", new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleLeft, fontStyle = FontStyle.Bold, fontSize = 12 }, GUILayout.ExpandWidth(true));
+        fpc.walkFootstepSound = (AudioClip)EditorGUILayout.ObjectField(new GUIContent("Walk Footstep Sound", "Sound played when walking"), fpc.walkFootstepSound, typeof(AudioClip), false);
+        fpc.sprintFootstepSound = (AudioClip)EditorGUILayout.ObjectField(new GUIContent("Sprint Footstep Sound", "Sound played when sprinting"), fpc.sprintFootstepSound, typeof(AudioClip), false);
+        fpc.walkFootstepInterval = EditorGUILayout.Slider(new GUIContent("Walk Interval", "Time interval between walk footstep sounds in seconds"), fpc.walkFootstepInterval, 0.1f, 2f);
+        fpc.sprintFootstepInterval = EditorGUILayout.Slider(new GUIContent("Sprint Interval", "Time interval between sprint footstep sounds in seconds"), fpc.sprintFootstepInterval, 0.1f, 2f);
+
+        EditorGUILayout.Space();
+
+        // Stamina Audio
+        GUILayout.Label("Stamina Audio", new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleLeft, fontStyle = FontStyle.Bold, fontSize = 12 }, GUILayout.ExpandWidth(true));
+        fpc.exhaustedBreathingSound = (AudioClip)EditorGUILayout.ObjectField(new GUIContent("Exhausted Breathing", "Looping sound played when stamina is exhausted"), fpc.exhaustedBreathingSound, typeof(AudioClip), false);
+        fpc.breathingFadeOutThreshold = EditorGUILayout.Slider(new GUIContent("Breathing Fade Out", "Stamina percentage where breathing starts to fade out"), fpc.breathingFadeOutThreshold, 0.1f, 0.5f);
+
+        #endregion
+
+        #region Exhaustion System
+
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+        GUILayout.Label("Exhaustion System", new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold, fontSize = 13 }, GUILayout.ExpandWidth(true));
+        EditorGUILayout.Space();
+
+        GUILayout.Label("Speed Reduction", new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleLeft, fontStyle = FontStyle.Bold, fontSize = 12 }, GUILayout.ExpandWidth(true));
+        fpc.exhaustedSpeedReduction = EditorGUILayout.Slider(new GUIContent("Exhausted Speed", "Speed multiplier when exhausted (0.5 = 50% speed, matching crouch)"), fpc.exhaustedSpeedReduction, 0.3f, 0.9f);
+        fpc.exhaustionTransitionSpeed = EditorGUILayout.Slider(new GUIContent("Transition Speed", "How quickly speed transitions when entering/exiting exhaustion"), fpc.exhaustionTransitionSpeed, 0.5f, 5f);
+
+        EditorGUILayout.Space();
+        EditorGUILayout.HelpBox("When stamina depletes completely, movement speed is reduced until stamina recovers to 30%. The speed reduction matches the breathing fade timing.", MessageType.Info);
 
         #endregion
 
