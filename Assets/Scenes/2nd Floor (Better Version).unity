@@ -378,6 +378,8 @@ GameObject:
   - component: {fileID: 4025349}
   - component: {fileID: 4025348}
   - component: {fileID: 4025347}
+  - component: {fileID: 4025350}
+  - component: {fileID: 4025351}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -510,6 +512,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &4025350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4025345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 4025349}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &4025351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4025345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 4025349}
 --- !u!1 &7831158
 GameObject:
   m_ObjectHideFlags: 0
@@ -12262,6 +12307,8 @@ GameObject:
   - component: {fileID: 61154100}
   - component: {fileID: 61154099}
   - component: {fileID: 61154098}
+  - component: {fileID: 61154101}
+  - component: {fileID: 61154102}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -12394,6 +12441,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &61154101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 61154096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 61154100}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &61154102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 61154096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 61154100}
 --- !u!43 &61900105
 Mesh:
   m_ObjectHideFlags: 0
@@ -12796,7 +12886,125 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1462732053699718131, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1609871139}
+    - targetCorrespondingSourceObject: {fileID: 6337729577710894697, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 67609139}
+    - targetCorrespondingSourceObject: {fileID: 6337729577710894697, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 67609141}
+    - targetCorrespondingSourceObject: {fileID: 7755790746620971486, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 67609138}
+    - targetCorrespondingSourceObject: {fileID: 7755790746620971486, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 67609140}
   m_SourcePrefab: {fileID: 100100000, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+--- !u!1 &67609134 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7755790746620971486, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+  m_PrefabInstance: {fileID: 67609133}
+  m_PrefabAsset: {fileID: 0}
+--- !u!108 &67609135 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 6030047810864934683, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+  m_PrefabInstance: {fileID: 67609133}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &67609136 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6337729577710894697, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+  m_PrefabInstance: {fileID: 67609133}
+  m_PrefabAsset: {fileID: 0}
+--- !u!108 &67609137 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 7088896674651584804, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+  m_PrefabInstance: {fileID: 67609133}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &67609138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 67609134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 67609135}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &67609139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 67609136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 67609137}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &67609140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 67609134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 67609135}
+--- !u!114 &67609141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 67609136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 67609137}
 --- !u!1 &73008935
 GameObject:
   m_ObjectHideFlags: 0
@@ -13494,6 +13702,8 @@ GameObject:
   - component: {fileID: 96912027}
   - component: {fileID: 96912026}
   - component: {fileID: 96912025}
+  - component: {fileID: 96912028}
+  - component: {fileID: 96912029}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -13626,6 +13836,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &96912028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 96912023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 96912027}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &96912029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 96912023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 96912027}
 --- !u!43 &102058867
 Mesh:
   m_ObjectHideFlags: 0
@@ -14565,6 +14818,8 @@ GameObject:
   - component: {fileID: 118710414}
   - component: {fileID: 118710413}
   - component: {fileID: 118710412}
+  - component: {fileID: 118710415}
+  - component: {fileID: 118710416}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -14697,6 +14952,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &118710415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 118710410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 118710414}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &118710416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 118710410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 118710414}
 --- !u!1 &119023983
 GameObject:
   m_ObjectHideFlags: 0
@@ -21086,6 +21384,8 @@ GameObject:
   - component: {fileID: 142296578}
   - component: {fileID: 142296577}
   - component: {fileID: 142296576}
+  - component: {fileID: 142296579}
+  - component: {fileID: 142296580}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -21218,6 +21518,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &142296579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 142296574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 142296578}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &142296580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 142296574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 142296578}
 --- !u!1 &143599649
 GameObject:
   m_ObjectHideFlags: 0
@@ -49032,6 +49375,8 @@ GameObject:
   - component: {fileID: 465783678}
   - component: {fileID: 465783680}
   - component: {fileID: 465783679}
+  - component: {fileID: 465783681}
+  - component: {fileID: 465783682}
   m_Layer: 0
   m_Name: CandleLight
   m_TagString: Untagged
@@ -49142,6 +49487,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &465783681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 465783677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 465783680}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &465783682
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 465783677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 465783680}
 --- !u!1 &468496485
 GameObject:
   m_ObjectHideFlags: 0
@@ -64428,6 +64816,8 @@ GameObject:
   - component: {fileID: 606955936}
   - component: {fileID: 606955935}
   - component: {fileID: 606955934}
+  - component: {fileID: 606955937}
+  - component: {fileID: 606955938}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -64560,6 +64950,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &606955937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 606955932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 606955936}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &606955938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 606955932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 606955936}
 --- !u!1 &614387456
 GameObject:
   m_ObjectHideFlags: 0
@@ -70795,6 +71228,8 @@ GameObject:
   - component: {fileID: 642506678}
   - component: {fileID: 642506680}
   - component: {fileID: 642506679}
+  - component: {fileID: 642506681}
+  - component: {fileID: 642506682}
   m_Layer: 0
   m_Name: Point Light (7)
   m_TagString: Untagged
@@ -70905,6 +71340,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &642506681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 642506677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 642506680}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &642506682
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 642506677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 642506680}
 --- !u!1 &646358065
 GameObject:
   m_ObjectHideFlags: 0
@@ -71660,6 +72138,8 @@ GameObject:
   - component: {fileID: 656867139}
   - component: {fileID: 656867138}
   - component: {fileID: 656867137}
+  - component: {fileID: 656867140}
+  - component: {fileID: 656867141}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -71792,6 +72272,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &656867140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 656867135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 656867139}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &656867141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 656867135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 656867139}
 --- !u!1 &659664119 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1462732053699718131, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
@@ -71909,6 +72432,8 @@ GameObject:
   - component: {fileID: 670360623}
   - component: {fileID: 670360625}
   - component: {fileID: 670360624}
+  - component: {fileID: 670360626}
+  - component: {fileID: 670360627}
   m_Layer: 0
   m_Name: CandleLight (2)
   m_TagString: Untagged
@@ -72019,6 +72544,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &670360626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 670360622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 670360625}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &670360627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 670360622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 670360625}
 --- !u!43 &675147503
 Mesh:
   m_ObjectHideFlags: 0
@@ -91792,6 +92360,8 @@ GameObject:
   - component: {fileID: 779997056}
   - component: {fileID: 779997055}
   - component: {fileID: 779997054}
+  - component: {fileID: 779997057}
+  - component: {fileID: 779997058}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -91924,6 +92494,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &779997057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 779997052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 779997056}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &779997058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 779997052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 779997056}
 --- !u!1 &782990380
 GameObject:
   m_ObjectHideFlags: 0
@@ -102519,6 +103132,8 @@ GameObject:
   - component: {fileID: 805214930}
   - component: {fileID: 805214929}
   - component: {fileID: 805214928}
+  - component: {fileID: 805214931}
+  - component: {fileID: 805214932}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -102651,6 +103266,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &805214931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 805214926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 805214930}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &805214932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 805214926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 805214930}
 --- !u!1 &810426925
 GameObject:
   m_ObjectHideFlags: 0
@@ -102696,6 +103354,8 @@ GameObject:
   - component: {fileID: 811078949}
   - component: {fileID: 811078948}
   - component: {fileID: 811078947}
+  - component: {fileID: 811078950}
+  - component: {fileID: 811078951}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -102828,6 +103488,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &811078950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 811078945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 811078949}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &811078951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 811078945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 811078949}
 --- !u!1 &812328542
 GameObject:
   m_ObjectHideFlags: 0
@@ -105448,6 +106151,8 @@ GameObject:
   - component: {fileID: 866118505}
   - component: {fileID: 866118504}
   - component: {fileID: 866118503}
+  - component: {fileID: 866118506}
+  - component: {fileID: 866118507}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -105580,6 +106285,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &866118506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 866118501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 866118505}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &866118507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 866118501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 866118505}
 --- !u!1 &866540159
 GameObject:
   m_ObjectHideFlags: 0
@@ -110752,6 +111500,8 @@ GameObject:
   - component: {fileID: 869524273}
   - component: {fileID: 869524272}
   - component: {fileID: 869524271}
+  - component: {fileID: 869524274}
+  - component: {fileID: 869524275}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -110884,6 +111634,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &869524274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 869524269}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 869524273}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &869524275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 869524269}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 869524273}
 --- !u!43 &869797506
 Mesh:
   m_ObjectHideFlags: 0
@@ -134777,6 +135570,8 @@ GameObject:
   - component: {fileID: 927814322}
   - component: {fileID: 927814321}
   - component: {fileID: 927814320}
+  - component: {fileID: 927814323}
+  - component: {fileID: 927814324}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -134909,6 +135704,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &927814323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 927814318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 927814322}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &927814324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 927814318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 927814322}
 --- !u!43 &931531276
 Mesh:
   m_ObjectHideFlags: 0
@@ -135724,6 +136562,8 @@ GameObject:
   - component: {fileID: 941906179}
   - component: {fileID: 941906178}
   - component: {fileID: 941906177}
+  - component: {fileID: 941906180}
+  - component: {fileID: 941906181}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -135856,6 +136696,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &941906180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 941906175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 941906179}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &941906181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 941906175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 941906179}
 --- !u!1 &945313387
 GameObject:
   m_ObjectHideFlags: 0
@@ -136107,6 +136990,8 @@ GameObject:
   - component: {fileID: 953827677}
   - component: {fileID: 953827676}
   - component: {fileID: 953827675}
+  - component: {fileID: 953827678}
+  - component: {fileID: 953827679}
   m_Layer: 0
   m_Name: CandleLight (2)
   m_TagString: Untagged
@@ -136239,6 +137124,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &953827678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 953827673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 953827677}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &953827679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 953827673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 953827677}
 --- !u!1 &954199161
 GameObject:
   m_ObjectHideFlags: 0
@@ -149830,6 +150758,8 @@ GameObject:
   - component: {fileID: 1023260731}
   - component: {fileID: 1023260730}
   - component: {fileID: 1023260729}
+  - component: {fileID: 1023260732}
+  - component: {fileID: 1023260733}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -149962,6 +150892,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1023260732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1023260727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1023260731}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1023260733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1023260727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1023260731}
 --- !u!1 &1028880468
 GameObject:
   m_ObjectHideFlags: 0
@@ -163192,6 +164165,8 @@ GameObject:
   - component: {fileID: 1091713144}
   - component: {fileID: 1091713146}
   - component: {fileID: 1091713145}
+  - component: {fileID: 1091713147}
+  - component: {fileID: 1091713148}
   m_Layer: 0
   m_Name: CandleLight
   m_TagString: Untagged
@@ -163302,6 +164277,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1091713147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1091713143}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1091713146}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1091713148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1091713143}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1091713146}
 --- !u!1 &1106820798
 GameObject:
   m_ObjectHideFlags: 0
@@ -170339,6 +171357,8 @@ GameObject:
   - component: {fileID: 1157922235}
   - component: {fileID: 1157922237}
   - component: {fileID: 1157922236}
+  - component: {fileID: 1157922238}
+  - component: {fileID: 1157922239}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -170449,6 +171469,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1157922238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1157922234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1157922237}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1157922239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1157922234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1157922237}
 --- !u!1 &1159432487
 GameObject:
   m_ObjectHideFlags: 0
@@ -171425,6 +172488,8 @@ GameObject:
   - component: {fileID: 1183099120}
   - component: {fileID: 1183099119}
   - component: {fileID: 1183099118}
+  - component: {fileID: 1183099121}
+  - component: {fileID: 1183099122}
   m_Layer: 0
   m_Name: CandleLight
   m_TagString: Untagged
@@ -171557,6 +172622,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1183099121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1183099116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1183099120}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1183099122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1183099116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1183099120}
 --- !u!1 &1184719219
 GameObject:
   m_ObjectHideFlags: 0
@@ -173300,6 +174408,8 @@ GameObject:
   - component: {fileID: 1215218910}
   - component: {fileID: 1215218909}
   - component: {fileID: 1215218908}
+  - component: {fileID: 1215218911}
+  - component: {fileID: 1215218912}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -173432,6 +174542,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1215218911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1215218906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1215218910}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1215218912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1215218906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1215218910}
 --- !u!1 &1215532918
 GameObject:
   m_ObjectHideFlags: 0
@@ -173982,6 +175135,8 @@ GameObject:
   - component: {fileID: 1228167360}
   - component: {fileID: 1228167359}
   - component: {fileID: 1228167358}
+  - component: {fileID: 1228167361}
+  - component: {fileID: 1228167362}
   m_Layer: 0
   m_Name: CandleLight
   m_TagString: Untagged
@@ -174114,6 +175269,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1228167361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1228167356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1228167360}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1228167362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1228167356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1228167360}
 --- !u!1 &1231770614
 GameObject:
   m_ObjectHideFlags: 0
@@ -174877,6 +176075,8 @@ GameObject:
   - component: {fileID: 1253780514}
   - component: {fileID: 1253780513}
   - component: {fileID: 1253780512}
+  - component: {fileID: 1253780515}
+  - component: {fileID: 1253780516}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -175009,6 +176209,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1253780515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1253780510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1253780514}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1253780516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1253780510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1253780514}
 --- !u!1 &1260095079
 GameObject:
   m_ObjectHideFlags: 0
@@ -175131,6 +176374,8 @@ GameObject:
   - component: {fileID: 1264079154}
   - component: {fileID: 1264079153}
   - component: {fileID: 1264079152}
+  - component: {fileID: 1264079155}
+  - component: {fileID: 1264079156}
   m_Layer: 0
   m_Name: Point Light (6)
   m_TagString: Untagged
@@ -175241,6 +176486,49 @@ Transform:
   m_Children: []
   m_Father: {fileID: 858897433}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1264079155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1264079151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1264079153}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1264079156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1264079151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1264079153}
 --- !u!1 &1264850280
 GameObject:
   m_ObjectHideFlags: 0
@@ -178409,6 +179697,8 @@ GameObject:
   - component: {fileID: 1315451105}
   - component: {fileID: 1315451104}
   - component: {fileID: 1315451103}
+  - component: {fileID: 1315451106}
+  - component: {fileID: 1315451107}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -178541,6 +179831,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1315451106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1315451101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1315451105}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1315451107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1315451101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1315451105}
 --- !u!1 &1318029046
 GameObject:
   m_ObjectHideFlags: 0
@@ -184535,6 +185868,8 @@ GameObject:
   - component: {fileID: 1353019755}
   - component: {fileID: 1353019754}
   - component: {fileID: 1353019753}
+  - component: {fileID: 1353019756}
+  - component: {fileID: 1353019757}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -184667,6 +186002,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1353019756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1353019751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1353019755}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1353019757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1353019751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1353019755}
 --- !u!1 &1355486693
 GameObject:
   m_ObjectHideFlags: 0
@@ -191802,6 +193180,8 @@ GameObject:
   - component: {fileID: 1389998460}
   - component: {fileID: 1596436215}
   - component: {fileID: 1596436216}
+  - component: {fileID: 1596436217}
+  - component: {fileID: 1596436218}
   m_Layer: 0
   m_Name: CandleLight
   m_TagString: Untagged
@@ -198173,6 +199553,8 @@ GameObject:
   - component: {fileID: 1423698397}
   - component: {fileID: 1423698396}
   - component: {fileID: 1423698395}
+  - component: {fileID: 1423698398}
+  - component: {fileID: 1423698399}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -198305,6 +199687,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1423698398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1423698393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1423698397}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1423698399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1423698393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1423698397}
 --- !u!1 &1424719569
 GameObject:
   m_ObjectHideFlags: 0
@@ -199999,6 +201424,8 @@ GameObject:
   - component: {fileID: 1453435205}
   - component: {fileID: 1453435207}
   - component: {fileID: 1453435206}
+  - component: {fileID: 1453435208}
+  - component: {fileID: 1453435209}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -200109,6 +201536,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1453435208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1453435204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1453435207}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1453435209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1453435204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1453435207}
 --- !u!1 &1455198351
 GameObject:
   m_ObjectHideFlags: 0
@@ -200121,6 +201591,8 @@ GameObject:
   - component: {fileID: 1455198355}
   - component: {fileID: 1455198354}
   - component: {fileID: 1455198353}
+  - component: {fileID: 1455198356}
+  - component: {fileID: 1455198357}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -200253,6 +201725,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1455198356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1455198351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1455198355}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1455198357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1455198351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1455198355}
 --- !u!1 &1461310801
 GameObject:
   m_ObjectHideFlags: 0
@@ -215213,6 +216728,49 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!114 &1596436217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1383922776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1389998460}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1596436218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1383922776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1389998460}
 --- !u!1 &1597164857
 GameObject:
   m_ObjectHideFlags: 0
@@ -222098,6 +223656,8 @@ GameObject:
   - component: {fileID: 1661621214}
   - component: {fileID: 1661621213}
   - component: {fileID: 1661621212}
+  - component: {fileID: 1661621215}
+  - component: {fileID: 1661621216}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -222230,6 +223790,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1661621215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661621210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1661621214}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1661621216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661621210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1661621214}
 --- !u!1 &1668332351
 GameObject:
   m_ObjectHideFlags: 0
@@ -243892,6 +245495,8 @@ GameObject:
   - component: {fileID: 1749471967}
   - component: {fileID: 1749471966}
   - component: {fileID: 1749471965}
+  - component: {fileID: 1749471968}
+  - component: {fileID: 1749471969}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -244024,6 +245629,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1749471968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1749471963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1749471967}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1749471969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1749471963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1749471967}
 --- !u!1 &1750330664
 GameObject:
   m_ObjectHideFlags: 0
@@ -367594,6 +369242,8 @@ GameObject:
   - component: {fileID: 1885564812}
   - component: {fileID: 1885564811}
   - component: {fileID: 1885564810}
+  - component: {fileID: 1885564813}
+  - component: {fileID: 1885564814}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -367726,6 +369376,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1885564813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1885564808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1885564812}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1885564814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1885564808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1885564812}
 --- !u!1 &1886401933
 GameObject:
   m_ObjectHideFlags: 0
@@ -369788,7 +371481,125 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1462732053699718131, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
       insertIndex: -1
       addedObject: {fileID: 659664121}
+    - targetCorrespondingSourceObject: {fileID: 6337729577710894697, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1930605768}
+    - targetCorrespondingSourceObject: {fileID: 6337729577710894697, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1930605770}
+    - targetCorrespondingSourceObject: {fileID: 7755790746620971486, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1930605767}
+    - targetCorrespondingSourceObject: {fileID: 7755790746620971486, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1930605769}
   m_SourcePrefab: {fileID: 100100000, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+--- !u!1 &1930605763 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7755790746620971486, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+  m_PrefabInstance: {fileID: 1930605762}
+  m_PrefabAsset: {fileID: 0}
+--- !u!108 &1930605764 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 6030047810864934683, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+  m_PrefabInstance: {fileID: 1930605762}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1930605765 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6337729577710894697, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+  m_PrefabInstance: {fileID: 1930605762}
+  m_PrefabAsset: {fileID: 0}
+--- !u!108 &1930605766 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 7088896674651584804, guid: 66bbee4412a4efa4bbc6fc5207812fea, type: 3}
+  m_PrefabInstance: {fileID: 1930605762}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1930605767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1930605763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1930605764}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1930605768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1930605765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1930605766}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1930605769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1930605763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1930605764}
+--- !u!114 &1930605770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1930605765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1930605766}
 --- !u!1 &1932742959
 GameObject:
   m_ObjectHideFlags: 0
@@ -371315,6 +373126,8 @@ GameObject:
   - component: {fileID: 1970735254}
   - component: {fileID: 1970735253}
   - component: {fileID: 1970735252}
+  - component: {fileID: 1970735255}
+  - component: {fileID: 1970735256}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -371447,6 +373260,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1970735255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1970735250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1970735254}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1970735256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1970735250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1970735254}
 --- !u!1 &1973525339
 GameObject:
   m_ObjectHideFlags: 0
@@ -382454,6 +384310,8 @@ GameObject:
   - component: {fileID: 2027816168}
   - component: {fileID: 2027816170}
   - component: {fileID: 2027816169}
+  - component: {fileID: 2027816171}
+  - component: {fileID: 2027816172}
   m_Layer: 0
   m_Name: CandleLight
   m_TagString: Untagged
@@ -382564,6 +384422,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &2027816171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2027816167}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 2027816170}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &2027816172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2027816167}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 2027816170}
 --- !u!1 &2035874277
 GameObject:
   m_ObjectHideFlags: 0
@@ -388613,6 +390514,8 @@ GameObject:
   - component: {fileID: 2055998752}
   - component: {fileID: 2055998751}
   - component: {fileID: 2055998750}
+  - component: {fileID: 2055998753}
+  - component: {fileID: 2055998754}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -388745,6 +390648,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &2055998753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2055998748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 2055998752}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &2055998754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2055998748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 2055998752}
 --- !u!1 &2056818345
 GameObject:
   m_ObjectHideFlags: 0
@@ -394253,6 +396199,8 @@ GameObject:
   - component: {fileID: 2069853290}
   - component: {fileID: 2080220520}
   - component: {fileID: 1565553826}
+  - component: {fileID: 2080220521}
+  - component: {fileID: 2080220522}
   m_Layer: 0
   m_Name: CandleLight
   m_TagString: Untagged
@@ -394767,6 +396715,8 @@ GameObject:
   - component: {fileID: 2079087160}
   - component: {fileID: 2079087159}
   - component: {fileID: 2079087158}
+  - component: {fileID: 2079087161}
+  - component: {fileID: 2079087162}
   m_Layer: 0
   m_Name: CandleLight
   m_TagString: Untagged
@@ -394899,6 +396849,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &2079087161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2079087156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 2079087160}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &2079087162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2079087156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 2079087160}
 --- !u!108 &2080220520
 Light:
   m_ObjectHideFlags: 0
@@ -394964,6 +396957,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &2080220521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2069424202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 2080220520}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &2080220522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2069424202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 2080220520}
 --- !u!43 &2086970169
 Mesh:
   m_ObjectHideFlags: 0
@@ -400370,6 +402406,8 @@ GameObject:
   - component: {fileID: 2112703638}
   - component: {fileID: 2112703637}
   - component: {fileID: 2112703636}
+  - component: {fileID: 2112703639}
+  - component: {fileID: 2112703640}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -400502,6 +402540,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &2112703639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2112703634}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 2112703638}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &2112703640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2112703634}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 2112703638}
 --- !u!43 &2116058896
 Mesh:
   m_ObjectHideFlags: 0
@@ -400724,6 +402805,8 @@ GameObject:
   - component: {fileID: 2123422483}
   - component: {fileID: 2123422482}
   - component: {fileID: 2123422481}
+  - component: {fileID: 2123422484}
+  - component: {fileID: 2123422485}
   m_Layer: 0
   m_Name: CandleLight (1)
   m_TagString: Untagged
@@ -400856,6 +402939,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &2123422484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2123422479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 2123422483}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &2123422485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2123422479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 2123422483}
 --- !u!43 &2125312493
 Mesh:
   m_ObjectHideFlags: 0
@@ -408901,6 +411027,16 @@ MonoBehaviour:
   joint: {fileID: 4459864849749799974}
   bobSpeed: 10
   bobAmount: {x: 0, y: 0.1, z: 0}
+  footstepAudioSource: {fileID: 0}
+  breathingAudioSource: {fileID: 0}
+  walkFootstepSound: {fileID: 0}
+  sprintFootstepSound: {fileID: 0}
+  walkFootstepInterval: 0.5
+  sprintFootstepInterval: 0.35
+  exhaustedBreathingSound: {fileID: 0}
+  breathingFadeOutThreshold: 0.3
+  exhaustedSpeedReduction: 0.5
+  exhaustionTransitionSpeed: 2
   staminaTutorial: {fileID: 0}
 --- !u!54 &4459864850702346299
 Rigidbody:
@@ -409144,6 +411280,13 @@ MonoBehaviour:
   damageSound: {fileID: 0}
   healSound: {fileID: 0}
   criticalHealthSound: {fileID: 0}
+  groaningSounds: []
+  knockbackForce: 5
+  knockbackDistance: 2
+  knockbackUpwardForce: 2
+  wallLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
   postProcessVolume: {fileID: 0}
   blurIntensity: 1
   blurDuration: 5
@@ -410791,8 +412934,67 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 270018692479576872, guid: 2967ab90ba266de42a377d4bd856a6c6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5539532300683696262}
+    - targetCorrespondingSourceObject: {fileID: 270018692479576872, guid: 2967ab90ba266de42a377d4bd856a6c6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5539532300683696263}
   m_SourcePrefab: {fileID: 100100000, guid: 2967ab90ba266de42a377d4bd856a6c6, type: 3}
+--- !u!1 &5539532300683696260 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 270018692479576872, guid: 2967ab90ba266de42a377d4bd856a6c6, type: 3}
+  m_PrefabInstance: {fileID: 5539532300683696259}
+  m_PrefabAsset: {fileID: 0}
+--- !u!108 &5539532300683696261 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 8062105364471369826, guid: 2967ab90ba266de42a377d4bd856a6c6, type: 3}
+  m_PrefabInstance: {fileID: 5539532300683696259}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5539532300683696262
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5539532300683696260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 5539532300683696261}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &5539532300683696263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5539532300683696260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 5539532300683696261}
 --- !u!4 &5572989458782274857
 Transform:
   m_ObjectHideFlags: 0

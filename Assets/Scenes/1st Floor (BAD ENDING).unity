@@ -5661,6 +5661,8 @@ GameObject:
   - component: {fileID: 42714250}
   - component: {fileID: 42714252}
   - component: {fileID: 42714251}
+  - component: {fileID: 42714253}
+  - component: {fileID: 42714254}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -5771,6 +5773,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &42714253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 42714249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 42714252}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &42714254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 42714249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 42714252}
 --- !u!1 &43386794
 GameObject:
   m_ObjectHideFlags: 0
@@ -25966,6 +26011,8 @@ GameObject:
   - component: {fileID: 104750453}
   - component: {fileID: 104750455}
   - component: {fileID: 104750454}
+  - component: {fileID: 104750456}
+  - component: {fileID: 104750457}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -26076,6 +26123,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &104750456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 104750452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 104750455}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &104750457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 104750452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 104750455}
 --- !u!1 &109747332
 GameObject:
   m_ObjectHideFlags: 0
@@ -36852,6 +36942,8 @@ GameObject:
   - component: {fileID: 130679641}
   - component: {fileID: 130679643}
   - component: {fileID: 130679642}
+  - component: {fileID: 130679644}
+  - component: {fileID: 130679645}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -36962,6 +37054,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &130679644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 130679640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 130679643}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &130679645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 130679640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 130679643}
 --- !u!1 &132188518
 GameObject:
   m_ObjectHideFlags: 0
@@ -57223,6 +57358,8 @@ GameObject:
   - component: {fileID: 182532898}
   - component: {fileID: 182532900}
   - component: {fileID: 182532899}
+  - component: {fileID: 182532901}
+  - component: {fileID: 182532902}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -57333,6 +57470,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &182532901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182532897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 182532900}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &182532902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182532897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 182532900}
 --- !u!1 &183616368
 GameObject:
   m_ObjectHideFlags: 0
@@ -62608,6 +62788,8 @@ GameObject:
   - component: {fileID: 199788686}
   - component: {fileID: 199788688}
   - component: {fileID: 199788687}
+  - component: {fileID: 199788689}
+  - component: {fileID: 199788690}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -62718,6 +62900,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &199788689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 199788685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 199788688}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &199788690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 199788685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 199788688}
 --- !u!1 &202517853
 GameObject:
   m_ObjectHideFlags: 0
@@ -62729,6 +62954,8 @@ GameObject:
   - component: {fileID: 202517854}
   - component: {fileID: 202517856}
   - component: {fileID: 202517855}
+  - component: {fileID: 202517857}
+  - component: {fileID: 202517858}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -62839,6 +63066,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &202517857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 202517853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 202517856}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &202517858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 202517853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 202517856}
 --- !u!1 &204185821
 GameObject:
   m_ObjectHideFlags: 0
@@ -83595,6 +83865,8 @@ GameObject:
   - component: {fileID: 278999983}
   - component: {fileID: 278999985}
   - component: {fileID: 278999984}
+  - component: {fileID: 278999986}
+  - component: {fileID: 278999987}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -83705,6 +83977,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &278999986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 278999982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 278999985}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &278999987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 278999982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 278999985}
 --- !u!1 &279235940
 GameObject:
   m_ObjectHideFlags: 0
@@ -118213,6 +118528,8 @@ GameObject:
   - component: {fileID: 372010978}
   - component: {fileID: 372010980}
   - component: {fileID: 372010979}
+  - component: {fileID: 372010981}
+  - component: {fileID: 372010982}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -118323,6 +118640,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &372010981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 372010977}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 372010980}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &372010982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 372010977}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 372010980}
 --- !u!1 &376159662
 GameObject:
   m_ObjectHideFlags: 0
@@ -160273,6 +160633,8 @@ GameObject:
   - component: {fileID: 568834820}
   - component: {fileID: 568834822}
   - component: {fileID: 568834821}
+  - component: {fileID: 568834823}
+  - component: {fileID: 568834824}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -160383,6 +160745,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &568834823
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 568834819}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 568834822}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &568834824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 568834819}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 568834822}
 --- !u!43 &572572364
 Mesh:
   m_ObjectHideFlags: 0
@@ -166106,6 +166511,8 @@ GameObject:
   - component: {fileID: 607245485}
   - component: {fileID: 607245487}
   - component: {fileID: 607245486}
+  - component: {fileID: 607245488}
+  - component: {fileID: 607245489}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -166216,6 +166623,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &607245488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 607245484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 607245487}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &607245489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 607245484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 607245487}
 --- !u!1 &607745436
 GameObject:
   m_ObjectHideFlags: 0
@@ -171686,6 +172136,8 @@ GameObject:
   - component: {fileID: 642033730}
   - component: {fileID: 642033732}
   - component: {fileID: 642033731}
+  - component: {fileID: 642033733}
+  - component: {fileID: 642033734}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -171796,6 +172248,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &642033733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 642033729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 642033732}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &642033734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 642033729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 642033732}
 --- !u!1 &642436407
 GameObject:
   m_ObjectHideFlags: 0
@@ -187532,6 +188027,8 @@ GameObject:
   - component: {fileID: 707002409}
   - component: {fileID: 707002411}
   - component: {fileID: 707002410}
+  - component: {fileID: 707002412}
+  - component: {fileID: 707002413}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -187642,6 +188139,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &707002412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 707002408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 707002411}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &707002413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 707002408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 707002411}
 --- !u!1 &707159653
 GameObject:
   m_ObjectHideFlags: 0
@@ -198894,6 +199434,8 @@ GameObject:
   - component: {fileID: 762309020}
   - component: {fileID: 762309022}
   - component: {fileID: 762309021}
+  - component: {fileID: 762309023}
+  - component: {fileID: 762309024}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -199004,6 +199546,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &762309023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 762309019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 762309022}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &762309024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 762309019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 762309022}
 --- !u!33 &763497496
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -208486,6 +209071,8 @@ GameObject:
   - component: {fileID: 805056245}
   - component: {fileID: 805056247}
   - component: {fileID: 805056246}
+  - component: {fileID: 805056248}
+  - component: {fileID: 805056249}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -208596,6 +209183,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &805056248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 805056244}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 805056247}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &805056249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 805056244}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 805056247}
 --- !u!1 &811253008
 GameObject:
   m_ObjectHideFlags: 0
@@ -208896,6 +209526,8 @@ GameObject:
   - component: {fileID: 851006573}
   - component: {fileID: 851006575}
   - component: {fileID: 851006574}
+  - component: {fileID: 851006576}
+  - component: {fileID: 851006577}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -209006,6 +209638,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &851006576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 851006572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 851006575}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &851006577
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 851006572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 851006575}
 --- !u!1 &851024883
 GameObject:
   m_ObjectHideFlags: 0
@@ -209129,6 +209804,8 @@ GameObject:
   - component: {fileID: 852212183}
   - component: {fileID: 852212185}
   - component: {fileID: 852212184}
+  - component: {fileID: 852212186}
+  - component: {fileID: 852212187}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -209239,6 +209916,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &852212186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 852212182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 852212185}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &852212187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 852212182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 852212185}
 --- !u!1 &856110231
 GameObject:
   m_ObjectHideFlags: 0
@@ -215281,6 +216001,8 @@ GameObject:
   - component: {fileID: 899809880}
   - component: {fileID: 899809882}
   - component: {fileID: 899809881}
+  - component: {fileID: 899809883}
+  - component: {fileID: 899809884}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -215391,6 +216113,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &899809883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 899809879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 899809882}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &899809884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 899809879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 899809882}
 --- !u!1 &904962697
 GameObject:
   m_ObjectHideFlags: 0
@@ -254361,6 +255126,8 @@ GameObject:
   - component: {fileID: 971857357}
   - component: {fileID: 971857359}
   - component: {fileID: 971857358}
+  - component: {fileID: 971857360}
+  - component: {fileID: 971857361}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -254471,6 +255238,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &971857360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 971857356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 971857359}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &971857361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 971857356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 971857359}
 --- !u!1 &973535026
 GameObject:
   m_ObjectHideFlags: 0
@@ -256121,6 +256931,13 @@ MonoBehaviour:
   damageSound: {fileID: 0}
   healSound: {fileID: 0}
   criticalHealthSound: {fileID: 0}
+  groaningSounds: []
+  knockbackForce: 5
+  knockbackDistance: 2
+  knockbackUpwardForce: 2
+  wallLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
   postProcessVolume: {fileID: 0}
   blurIntensity: 1
   blurDuration: 5
@@ -256573,6 +257390,8 @@ GameObject:
   - component: {fileID: 1027424149}
   - component: {fileID: 1027424151}
   - component: {fileID: 1027424150}
+  - component: {fileID: 1027424152}
+  - component: {fileID: 1027424153}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -256683,6 +257502,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1027424152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1027424148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1027424151}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1027424153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1027424148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1027424151}
 --- !u!1 &1028471867
 GameObject:
   m_ObjectHideFlags: 0
@@ -257179,6 +258041,8 @@ GameObject:
   - component: {fileID: 1044195140}
   - component: {fileID: 1044195142}
   - component: {fileID: 1044195141}
+  - component: {fileID: 1044195143}
+  - component: {fileID: 1044195144}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -257289,6 +258153,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1044195143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1044195139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1044195142}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1044195144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1044195139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1044195142}
 --- !u!1 &1044201845
 GameObject:
   m_ObjectHideFlags: 0
@@ -257855,6 +258762,8 @@ GameObject:
   - component: {fileID: 1060381930}
   - component: {fileID: 1060381932}
   - component: {fileID: 1060381931}
+  - component: {fileID: 1060381933}
+  - component: {fileID: 1060381934}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -257965,6 +258874,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1060381933
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060381929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1060381932}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1060381934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060381929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1060381932}
 --- !u!1 &1063375716
 GameObject:
   m_ObjectHideFlags: 0
@@ -278486,6 +279438,8 @@ GameObject:
   - component: {fileID: 1144676740}
   - component: {fileID: 1144676742}
   - component: {fileID: 1144676741}
+  - component: {fileID: 1144676743}
+  - component: {fileID: 1144676744}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -278596,6 +279550,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1144676743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1144676739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1144676742}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1144676744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1144676739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1144676742}
 --- !u!1 &1144869240
 GameObject:
   m_ObjectHideFlags: 0
@@ -303360,6 +304357,8 @@ GameObject:
   - component: {fileID: 1173551632}
   - component: {fileID: 1173551634}
   - component: {fileID: 1173551633}
+  - component: {fileID: 1173551635}
+  - component: {fileID: 1173551636}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -303470,6 +304469,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1173551635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1173551631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1173551634}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1173551636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1173551631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1173551634}
 --- !u!1 &1173684346 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1654736843778140, guid: 78e8b38d431ddef4fa2994a3f2d6e2ff, type: 3}
@@ -303491,6 +304533,8 @@ GameObject:
   - component: {fileID: 1174038735}
   - component: {fileID: 1174038737}
   - component: {fileID: 1174038736}
+  - component: {fileID: 1174038738}
+  - component: {fileID: 1174038739}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -303601,6 +304645,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1174038738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1174038734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1174038737}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1174038739
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1174038734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1174038737}
 --- !u!1 &1174220898
 GameObject:
   m_ObjectHideFlags: 0
@@ -326619,6 +327706,8 @@ GameObject:
   - component: {fileID: 1302030077}
   - component: {fileID: 1302030079}
   - component: {fileID: 1302030078}
+  - component: {fileID: 1302030080}
+  - component: {fileID: 1302030081}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -326729,6 +327818,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1302030080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1302030076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1302030079}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1302030081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1302030076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1302030079}
 --- !u!1 &1304665748
 GameObject:
   m_ObjectHideFlags: 0
@@ -337382,6 +338514,8 @@ GameObject:
   - component: {fileID: 1355937715}
   - component: {fileID: 1355937717}
   - component: {fileID: 1355937716}
+  - component: {fileID: 1355937718}
+  - component: {fileID: 1355937719}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -337492,6 +338626,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1355937718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1355937714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1355937717}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1355937719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1355937714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1355937717}
 --- !u!1 &1363398751
 GameObject:
   m_ObjectHideFlags: 0
@@ -337977,6 +339154,8 @@ GameObject:
   - component: {fileID: 1373827288}
   - component: {fileID: 1373827290}
   - component: {fileID: 1373827289}
+  - component: {fileID: 1373827291}
+  - component: {fileID: 1373827292}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -338087,6 +339266,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1373827291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1373827287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1373827290}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1373827292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1373827287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1373827290}
 --- !u!1 &1374866495
 GameObject:
   m_ObjectHideFlags: 0
@@ -343042,6 +344264,8 @@ GameObject:
   - component: {fileID: 1375152686}
   - component: {fileID: 1375152688}
   - component: {fileID: 1375152687}
+  - component: {fileID: 1375152689}
+  - component: {fileID: 1375152690}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -343152,6 +344376,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1375152689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1375152685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1375152688}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1375152690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1375152685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1375152688}
 --- !u!1 &1377373787
 GameObject:
   m_ObjectHideFlags: 0
@@ -354210,6 +355477,8 @@ GameObject:
   - component: {fileID: 1406132330}
   - component: {fileID: 1406132332}
   - component: {fileID: 1406132331}
+  - component: {fileID: 1406132333}
+  - component: {fileID: 1406132334}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -354320,6 +355589,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1406132333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1406132329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1406132332}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1406132334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1406132329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1406132332}
 --- !u!1 &1407657509
 GameObject:
   m_ObjectHideFlags: 0
@@ -354625,6 +355937,8 @@ GameObject:
   - component: {fileID: 1414430230}
   - component: {fileID: 1414430232}
   - component: {fileID: 1414430231}
+  - component: {fileID: 1414430233}
+  - component: {fileID: 1414430234}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -354735,6 +356049,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1414430233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1414430229}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1414430232}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1414430234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1414430229}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1414430232}
 --- !u!1 &1415726593
 GameObject:
   m_ObjectHideFlags: 0
@@ -355441,6 +356798,8 @@ GameObject:
   - component: {fileID: 1432067200}
   - component: {fileID: 1432067202}
   - component: {fileID: 1432067201}
+  - component: {fileID: 1432067203}
+  - component: {fileID: 1432067204}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -355551,6 +356910,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1432067203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1432067199}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1432067202}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1432067204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1432067199}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1432067202}
 --- !u!1 &1432230396
 GameObject:
   m_ObjectHideFlags: 0
@@ -355562,6 +356964,8 @@ GameObject:
   - component: {fileID: 1432230397}
   - component: {fileID: 1432230399}
   - component: {fileID: 1432230398}
+  - component: {fileID: 1432230400}
+  - component: {fileID: 1432230401}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -355672,6 +357076,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1432230400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1432230396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1432230399}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1432230401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1432230396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1432230399}
 --- !u!4 &1434705595 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4459864850019384738, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
@@ -371350,6 +372797,8 @@ GameObject:
   - component: {fileID: 1487683169}
   - component: {fileID: 1487683171}
   - component: {fileID: 1487683170}
+  - component: {fileID: 1487683172}
+  - component: {fileID: 1487683173}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -371460,6 +372909,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1487683172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1487683168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1487683171}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1487683173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1487683168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1487683171}
 --- !u!1 &1493212680
 GameObject:
   m_ObjectHideFlags: 0
@@ -377297,6 +378789,8 @@ GameObject:
   - component: {fileID: 1520894632}
   - component: {fileID: 1520894634}
   - component: {fileID: 1520894633}
+  - component: {fileID: 1520894635}
+  - component: {fileID: 1520894636}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -377407,6 +378901,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1520894635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1520894631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1520894634}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1520894636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1520894631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1520894634}
 --- !u!1 &1527504762
 GameObject:
   m_ObjectHideFlags: 0
@@ -413821,6 +415358,8 @@ GameObject:
   - component: {fileID: 1632606749}
   - component: {fileID: 1632606751}
   - component: {fileID: 1632606750}
+  - component: {fileID: 1632606752}
+  - component: {fileID: 1632606753}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -413931,6 +415470,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1632606752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1632606748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1632606751}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1632606753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1632606748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1632606751}
 --- !u!1 &1634318639
 GameObject:
   m_ObjectHideFlags: 0
@@ -413942,6 +415524,8 @@ GameObject:
   - component: {fileID: 1634318640}
   - component: {fileID: 1634318642}
   - component: {fileID: 1634318641}
+  - component: {fileID: 1634318643}
+  - component: {fileID: 1634318644}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -414052,6 +415636,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1634318643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1634318639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1634318642}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1634318644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1634318639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1634318642}
 --- !u!1 &1635771554
 GameObject:
   m_ObjectHideFlags: 0
@@ -419856,6 +421483,8 @@ GameObject:
   - component: {fileID: 1660824498}
   - component: {fileID: 1660824500}
   - component: {fileID: 1660824499}
+  - component: {fileID: 1660824501}
+  - component: {fileID: 1660824502}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -419966,6 +421595,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1660824501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1660824497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1660824500}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1660824502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1660824497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1660824500}
 --- !u!1 &1674650839
 GameObject:
   m_ObjectHideFlags: 0
@@ -420344,6 +422016,8 @@ GameObject:
   - component: {fileID: 1690909419}
   - component: {fileID: 1690909421}
   - component: {fileID: 1690909420}
+  - component: {fileID: 1690909422}
+  - component: {fileID: 1690909423}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -420454,6 +422128,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1690909422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1690909418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1690909421}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1690909423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1690909418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1690909421}
 --- !u!1 &1706129712
 GameObject:
   m_ObjectHideFlags: 0
@@ -431380,6 +433097,8 @@ GameObject:
   - component: {fileID: 1783383383}
   - component: {fileID: 1783383385}
   - component: {fileID: 1783383384}
+  - component: {fileID: 1783383386}
+  - component: {fileID: 1783383387}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -431490,6 +433209,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1783383386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1783383382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1783383385}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1783383387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1783383382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1783383385}
 --- !u!1 &1792083378
 GameObject:
   m_ObjectHideFlags: 0
@@ -436841,6 +438603,8 @@ GameObject:
   - component: {fileID: 1810603653}
   - component: {fileID: 1810603655}
   - component: {fileID: 1810603654}
+  - component: {fileID: 1810603656}
+  - component: {fileID: 1810603657}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -436951,6 +438715,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1810603656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1810603652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1810603655}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1810603657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1810603652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1810603655}
 --- !u!1 &1813565124
 GameObject:
   m_ObjectHideFlags: 0
@@ -458547,6 +460354,8 @@ GameObject:
   - component: {fileID: 1830216343}
   - component: {fileID: 1830216345}
   - component: {fileID: 1830216344}
+  - component: {fileID: 1830216346}
+  - component: {fileID: 1830216347}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -458657,6 +460466,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1830216346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1830216342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1830216345}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1830216347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1830216342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1830216345}
 --- !u!1 &1831467852
 GameObject:
   m_ObjectHideFlags: 0
@@ -458668,6 +460520,8 @@ GameObject:
   - component: {fileID: 1831467853}
   - component: {fileID: 1831467855}
   - component: {fileID: 1831467854}
+  - component: {fileID: 1831467856}
+  - component: {fileID: 1831467857}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -458778,6 +460632,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1831467856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1831467852}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1831467855}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1831467857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1831467852}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1831467855}
 --- !u!1 &1841794742
 GameObject:
   m_ObjectHideFlags: 0
@@ -458789,6 +460686,8 @@ GameObject:
   - component: {fileID: 1841794743}
   - component: {fileID: 1841794745}
   - component: {fileID: 1841794744}
+  - component: {fileID: 1841794746}
+  - component: {fileID: 1841794747}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -458899,6 +460798,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1841794746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1841794742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1841794745}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1841794747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1841794742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1841794745}
 --- !u!1 &1848465884
 GameObject:
   m_ObjectHideFlags: 0
@@ -464561,6 +466503,8 @@ GameObject:
   - component: {fileID: 1879957199}
   - component: {fileID: 1879957201}
   - component: {fileID: 1879957200}
+  - component: {fileID: 1879957202}
+  - component: {fileID: 1879957203}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -464671,6 +466615,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1879957202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1879957198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1879957201}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1879957203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1879957198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1879957201}
 --- !u!1 &1881960314
 GameObject:
   m_ObjectHideFlags: 0
@@ -491467,6 +493454,8 @@ GameObject:
   - component: {fileID: 1971527463}
   - component: {fileID: 1971527465}
   - component: {fileID: 1971527464}
+  - component: {fileID: 1971527466}
+  - component: {fileID: 1971527467}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -491577,6 +493566,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1971527466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1971527462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 1971527465}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &1971527467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1971527462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 1971527465}
 --- !u!1 &1971910834
 GameObject:
   m_ObjectHideFlags: 0
@@ -508304,6 +510336,8 @@ GameObject:
   - component: {fileID: 2059586071}
   - component: {fileID: 2059586073}
   - component: {fileID: 2059586072}
+  - component: {fileID: 2059586074}
+  - component: {fileID: 2059586075}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -508414,6 +510448,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &2059586074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2059586070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 2059586073}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &2059586075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2059586070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 2059586073}
 --- !u!64 &2066366338
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -509651,6 +511728,8 @@ GameObject:
   - component: {fileID: 2091036526}
   - component: {fileID: 2091036528}
   - component: {fileID: 2091036527}
+  - component: {fileID: 2091036529}
+  - component: {fileID: 2091036530}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -509761,6 +511840,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &2091036529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2091036525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 2091036528}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &2091036530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2091036525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 2091036528}
 --- !u!1 &2092096909
 GameObject:
   m_ObjectHideFlags: 0
@@ -510466,6 +512588,8 @@ GameObject:
   - component: {fileID: 2106829071}
   - component: {fileID: 2106829073}
   - component: {fileID: 2106829072}
+  - component: {fileID: 2106829074}
+  - component: {fileID: 2106829075}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -510576,6 +512700,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &2106829074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2106829070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 2106829073}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &2106829075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2106829070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 2106829073}
 --- !u!1 &2107791955
 GameObject:
   m_ObjectHideFlags: 0
@@ -510587,6 +512754,8 @@ GameObject:
   - component: {fileID: 2107791956}
   - component: {fileID: 2107791958}
   - component: {fileID: 2107791957}
+  - component: {fileID: 2107791959}
+  - component: {fileID: 2107791960}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -510697,6 +512866,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &2107791959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2107791955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 2107791958}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &2107791960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2107791955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 2107791958}
 --- !u!1 &2114151217
 GameObject:
   m_ObjectHideFlags: 0
@@ -520705,6 +522917,8 @@ GameObject:
   - component: {fileID: 2122775102}
   - component: {fileID: 2122775104}
   - component: {fileID: 2122775103}
+  - component: {fileID: 2122775105}
+  - component: {fileID: 2122775106}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -520815,6 +523029,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &2122775105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2122775101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 2122775104}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &2122775106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2122775101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 2122775104}
 --- !u!1 &2124015355
 GameObject:
   m_ObjectHideFlags: 0
@@ -521005,6 +523262,8 @@ GameObject:
   - component: {fileID: 2128416212}
   - component: {fileID: 2128416214}
   - component: {fileID: 2128416213}
+  - component: {fileID: 2128416215}
+  - component: {fileID: 2128416216}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -521115,6 +523374,49 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &2128416215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2128416211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 2128416214}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &2128416216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2128416211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 2128416214}
 --- !u!1 &2129227844
 GameObject:
   m_ObjectHideFlags: 0
@@ -563931,6 +566233,8 @@ GameObject:
   - component: {fileID: 7965732060070861062}
   - component: {fileID: 6155477481970312147}
   - component: {fileID: 7965732060070861063}
+  - component: {fileID: 7965732060070861064}
+  - component: {fileID: 7965732060070861065}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -564775,6 +567079,49 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!114 &7965732060070861064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6904812427418812089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1337540ed3973a49ad3d1959e65cd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLight: {fileID: 6155477481970312147}
+  controlEmission: 0
+  emissionRenderer: {fileID: 0}
+  emissionColorProperty: _EmissionColor
+  emissionIntensityMultiplier: 1
+  baseIntensity: 0
+  intensityVariance: 0.5
+  mode: 2
+  noiseSpeed: 1.5
+  burstProbabilityPerSecond: 0.25
+  burstDimFactor: 0.1
+  burstDurationRange: {x: 0.05, y: 0.25}
+  blinkIntervalRange: {x: 0.5, y: 5}
+  blinkOffDurationRange: {x: 1, y: 5}
+--- !u!114 &7965732060070861065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6904812427418812089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minOffDuration: 1
+  maxOffDuration: 5
+  minTimeBetweenBlinks: 10
+  maxTimeBetweenBlinks: 30
+  targetLight: {fileID: 6155477481970312147}
 --- !u!33 &7979873280124986570
 MeshFilter:
   m_ObjectHideFlags: 0
