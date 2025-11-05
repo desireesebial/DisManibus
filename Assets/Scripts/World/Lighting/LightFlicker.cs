@@ -52,10 +52,10 @@ public class LightFlicker : MonoBehaviour
 	[Min(0f)]
 	[SerializeField] private Vector2 burstDurationRange = new Vector2(0.05f, 0.25f);
 
-	[Header("Blink Settings")] 
+	[Header("Blink Settings")]
 	[Tooltip("Randomized interval range between blinks (seconds).")]
 	[Min(0f)]
-	[SerializeField] private Vector2 blinkIntervalRange = new Vector2(1.5f, 4f);
+	[SerializeField] private Vector2 blinkIntervalRange = new Vector2(1f, 5f);
 	[Tooltip("How long the light stays OFF during a blink (seconds).")]
 	[Min(0f)]
 	[SerializeField] private float blinkOffDuration = 0.08f;
