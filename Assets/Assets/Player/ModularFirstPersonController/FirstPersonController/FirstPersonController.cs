@@ -897,25 +897,30 @@ public class FirstPersonController : MonoBehaviour
             return;
         }
 
-        // Check if player is moving (velocity magnitude threshold)
-        float currentSpeed = rb.linearVelocity.magnitude;
-        bool isMoving = currentSpeed > 0.1f && isWalking;
+        // Check if player is pressing movement keys (INPUT-BASED, not velocity-based)
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float verticalInput = Input.GetAxis("Vertical");
+        bool hasMovementInput = (Mathf.Abs(horizontalInput) > 0.1f || Mathf.Abs(verticalInput) > 0.1f);
 
-        if (isMoving && Time.time >= nextFootstepTime)
+        if (hasMovementInput && Time.time >= nextFootstepTime)
         {
             // Determine which footstep sound to play based on sprint state
             AudioClip footstepToPlay = null;
             float footstepInterval = walkFootstepInterval;
 
+            // Sprint audio: Only play when BOTH sprinting AND pressing movement keys (Shift + WASD)
             if (isSprinting && sprintFootstepSound != null)
             {
                 footstepToPlay = sprintFootstepSound;
                 footstepInterval = sprintFootstepInterval;
+                Debug.Log("Playing sprint footstep sound (Shift + WASD pressed)");
             }
+            // Walk audio: Play when pressing movement keys WITHOUT sprint (WASD only)
             else if (walkFootstepSound != null)
             {
                 footstepToPlay = walkFootstepSound;
                 footstepInterval = walkFootstepInterval;
+                Debug.Log("Playing walk footstep sound (WASD pressed, no Shift)");
             }
 
             // Play the footstep sound if we have a valid clip
@@ -926,8 +931,8 @@ public class FirstPersonController : MonoBehaviour
             }
         }
 
-        // Reset footstep timer when not moving to ensure immediate sound on next movement
-        if (!isMoving)
+        // Reset footstep timer when not pressing movement keys
+        if (!hasMovementInput)
         {
             nextFootstepTime = 0f;
         }

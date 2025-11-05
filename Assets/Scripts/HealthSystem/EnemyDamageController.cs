@@ -86,11 +86,24 @@ public class EnemyDamageController : MonoBehaviour
         // Get audio source if not assigned
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
-        
+
+        // Configure AudioSource to ensure attack sounds only play when triggered
+        if (audioSource != null)
+        {
+            audioSource.playOnAwake = false; // Prevent auto-play on start
+            audioSource.loop = false; // Ensure sounds don't loop
+            audioSource.Stop(); // Stop any audio that might be playing
+            Debug.Log($"[EnemyDamageController] {gameObject.name} - AudioSource configured: playOnAwake=false, loop=false");
+        }
+        else
+        {
+            Debug.LogWarning($"[EnemyDamageController] {gameObject.name} - No AudioSource found! Add AudioSource component to play attack sounds.");
+        }
+
         // Set enemy tag based on type
         SetEnemyTag();
-        
-        Debug.Log($"Enemy {gameObject.name} initialized. Health: {currentHealth}/{maxHealth}, Type: {enemyType}");
+
+        Debug.Log($"[EnemyDamageController] {gameObject.name} initialized. Health: {currentHealth}/{maxHealth}, Type: {enemyType}");
     }
     
     private void SetEnemyTag()
@@ -118,13 +131,16 @@ public class EnemyDamageController : MonoBehaviour
     private void CheckForPlayerAndAttack()
     {
         if (playerTransform == null || playerHealthSystem == null) return;
-        
+
         float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
-        
+
         if (distanceToPlayer <= attackRange)
         {
-            if (Time.time - lastAttackTime >= attackCooldown)
+            float timeSinceLastAttack = Time.time - lastAttackTime;
+
+            if (timeSinceLastAttack >= attackCooldown)
             {
+                Debug.Log($"[EnemyDamageController] {gameObject.name} is in attack range ({distanceToPlayer:F2}m <= {attackRange}m). Attacking!");
                 AttackPlayer();
             }
         }
@@ -132,24 +148,44 @@ public class EnemyDamageController : MonoBehaviour
     
     public void AttackPlayer()
     {
-        if (playerHealthSystem == null || !IsAlive) return;
-        
-        // Deal damage to player
+        if (playerHealthSystem == null || !IsAlive)
+        {
+            Debug.LogWarning($"[EnemyDamageController] {gameObject.name} cannot attack: playerHealthSystem={playerHealthSystem != null}, IsAlive={IsAlive}");
+            return;
+        }
+
+        Debug.Log($"[EnemyDamageController] {gameObject.name} ({enemyType}) is attacking player for {damageToPlayer} damage");
+
+        // Deal damage to player FIRST
         playerHealthSystem.ApplyDamage(damageToPlayer);
-        
-        // Play attack sound
+
+        // ONLY play attack sound AFTER damage is successfully applied to player
         if (audioSource != null && attackSound != null)
         {
+            // Safety check: Ensure AudioSource isn't set to loop (should never loop attack sounds)
+            if (audioSource.loop)
+            {
+                Debug.LogWarning($"[EnemyDamageController] {gameObject.name} - AudioSource loop is enabled! Disabling loop for attack sounds.");
+                audioSource.loop = false;
+            }
+
+            // Play attack sound using PlayOneShot (doesn't interrupt other sounds, plays once)
             audioSource.PlayOneShot(attackSound);
+            Debug.Log($"[EnemyDamageController] ✓ Playing attack sound for {gameObject.name} - Sound will play once and stop automatically");
         }
-        
+        else
+        {
+            if (audioSource == null)
+                Debug.LogWarning($"[EnemyDamageController] {gameObject.name} - AudioSource is not assigned! Cannot play attack sound.");
+            if (attackSound == null)
+                Debug.LogWarning($"[EnemyDamageController] {gameObject.name} - Attack Sound AudioClip is not assigned! Assign it in Inspector.");
+        }
+
         // Trigger attack event
         OnEnemyAttack?.Invoke();
-        
+
         // Update last attack time
         lastAttackTime = Time.time;
-        
-        Debug.Log($"Enemy {gameObject.name} attacked player for {damageToPlayer} damage");
     }
     
     public void TakeDamage(int damage)
@@ -268,19 +304,45 @@ public class EnemyDamageController : MonoBehaviour
     // Collision detection for player contact
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log($"[EnemyDamageController] {gameObject.name} OnTriggerEnter with {other.gameObject.name} (tag: {other.tag})");
+
         if (other.CompareTag("Player") && IsAlive)
         {
-            // Deal contact damage
-            AttackPlayer();
+            float timeSinceLastAttack = Time.time - lastAttackTime;
+            Debug.Log($"[EnemyDamageController] Player contact detected! Time since last attack: {timeSinceLastAttack:F2}s, Cooldown: {attackCooldown}s");
+
+            // Check if cooldown has passed
+            if (timeSinceLastAttack >= attackCooldown)
+            {
+                // Deal contact damage
+                AttackPlayer();
+            }
+            else
+            {
+                Debug.Log($"[EnemyDamageController] Attack on cooldown. Wait {(attackCooldown - timeSinceLastAttack):F2}s more.");
+            }
         }
     }
-    
+
     private void OnCollisionEnter(Collision collision)
     {
+        Debug.Log($"[EnemyDamageController] {gameObject.name} OnCollisionEnter with {collision.gameObject.name} (tag: {collision.gameObject.tag})");
+
         if (collision.gameObject.CompareTag("Player") && IsAlive)
         {
-            // Deal contact damage
-            AttackPlayer();
+            float timeSinceLastAttack = Time.time - lastAttackTime;
+            Debug.Log($"[EnemyDamageController] Player contact detected! Time since last attack: {timeSinceLastAttack:F2}s, Cooldown: {attackCooldown}s");
+
+            // Check if cooldown has passed
+            if (timeSinceLastAttack >= attackCooldown)
+            {
+                // Deal contact damage
+                AttackPlayer();
+            }
+            else
+            {
+                Debug.Log($"[EnemyDamageController] Attack on cooldown. Wait {(attackCooldown - timeSinceLastAttack):F2}s more.");
+            }
         }
     }
     

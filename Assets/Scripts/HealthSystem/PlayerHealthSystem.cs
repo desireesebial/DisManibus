@@ -194,21 +194,28 @@ public class PlayerHealthSystem : MonoBehaviour
 
     public void ApplyDamage(int damage)
     {
-        if (isInvulnerable || !IsAlive) return;
+        if (isInvulnerable || !IsAlive)
+        {
+            Debug.Log($"Damage blocked: invulnerable={isInvulnerable}, isAlive={IsAlive}");
+            return;
+        }
 
         int previousHealth = currentHealth;
         currentHealth = Mathf.Max(0, currentHealth - damage);
-        
+
         int healthChange = currentHealth - previousHealth;
-        
+
+        Debug.Log($"ApplyDamage called: damage={damage}, previousHealth={previousHealth}, currentHealth={currentHealth}, healthChange={healthChange}");
+
         if (Mathf.Abs(healthChange) > 0)
         {
             OnHealthChanged?.Invoke(currentHealth);
-            
-            // Visual and audio feedback
+
+            // Visual and audio feedback - ALWAYS play when damage is applied
             StartCoroutine(CameraShake());
             StartDamageFlash();
-            PlayDamageSound();
+            PlayDamageSound(); // Groaning audio plays here
+            Debug.Log("Playing damage sound and visual effects");
 
             // Apply debuffs based on health state
             ApplyHealthDebuffs();
@@ -235,6 +242,10 @@ public class PlayerHealthSystem : MonoBehaviour
             UpdateStatusUI();
 
             Debug.Log($"Player took {damage} damage. Health: {currentHealth}/{maxHealth}");
+        }
+        else
+        {
+            Debug.LogWarning($"Health did not change! This should not happen. damage={damage}, health={currentHealth}");
         }
     }
 
@@ -661,33 +672,55 @@ public class PlayerHealthSystem : MonoBehaviour
 
     private void TryApplyEnemyContactDamage(GameObject other, Vector3 enemyPosition)
     {
-        if (other == null || currentHealth <= 0) return;
+        Debug.Log($"TryApplyEnemyContactDamage called: enemy={other?.name}, tag={other?.tag}, isInvulnerable={isInvulnerable}, currentHealth={currentHealth}");
+
+        if (other == null || currentHealth <= 0)
+        {
+            Debug.Log($"Early return: other is null={other == null}, health <= 0={currentHealth <= 0}");
+            return;
+        }
 
         if (!isInvulnerable)
         {
             bool damageApplied = false;
+            int damageAmount = 0;
 
             if (!string.IsNullOrEmpty(jenglotTag) && other.CompareTag(jenglotTag))
             {
-                TakeDamage(Mathf.Max(1, jenglotDamage));
+                damageAmount = Mathf.Max(1, jenglotDamage);
+                Debug.Log($"Jenglot hit detected! Applying {damageAmount} damage");
+                TakeDamage(damageAmount);
                 damageApplied = true;
             }
             else if (!string.IsNullOrEmpty(kamatayanTag) && other.CompareTag(kamatayanTag))
             {
-                TakeDamage(Mathf.Max(1, kamatayanDamage));
+                damageAmount = Mathf.Max(1, kamatayanDamage);
+                Debug.Log($"Kamatayan hit detected! Applying {damageAmount} damage");
+                TakeDamage(damageAmount);
                 damageApplied = true;
             }
             else if (!string.IsNullOrEmpty(dullahanTag) && other.CompareTag(dullahanTag))
             {
-                TakeDamage(Mathf.Max(1, dullahanDamage));
+                damageAmount = Mathf.Max(1, dullahanDamage);
+                Debug.Log($"Dullahan hit detected! Applying {damageAmount} damage");
+                TakeDamage(damageAmount);
                 damageApplied = true;
+            }
+            else
+            {
+                Debug.Log($"No matching enemy tag found. Object tag: '{other.tag}', Expected tags: '{jenglotTag}', '{kamatayanTag}', '{dullahanTag}'");
             }
 
             // Apply knockback if damage was applied
             if (damageApplied)
             {
+                Debug.Log($"Damage applied, now applying knockback from position {enemyPosition}");
                 ApplyKnockback(enemyPosition);
             }
+        }
+        else
+        {
+            Debug.Log("Player is invulnerable, damage blocked");
         }
     }
 
