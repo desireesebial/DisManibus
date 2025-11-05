@@ -102,8 +102,8 @@ namespace DisManibus.Editor
                     blinkLight.targetLight = light;
                     blinkLight.minOffDuration = 1f;
                     blinkLight.maxOffDuration = 5f;
-                    blinkLight.minTimeBetweenBlinks = 10f;
-                    blinkLight.maxTimeBetweenBlinks = 30f;
+                    blinkLight.minTimeBetweenBlinks = 0.5f;
+                    blinkLight.maxTimeBetweenBlinks = 3f;
 
                     Debug.Log($"Added BlinkLight to: {light.gameObject.name} in scene {scene.name}");
                     sceneLightsAdded++;

@@ -19,12 +19,12 @@ namespace DisManibus.World.Lighting
         public float maxOffDuration = 5f;
 
         [Tooltip("Minimum time between blinks (in seconds)")]
-        [Range(5f, 30f)]
-        public float minTimeBetweenBlinks = 10f;
+        [Range(0.5f, 10f)]
+        public float minTimeBetweenBlinks = 0.5f;
 
         [Tooltip("Maximum time between blinks (in seconds)")]
-        [Range(10f, 60f)]
-        public float maxTimeBetweenBlinks = 30f;
+        [Range(1f, 15f)]
+        public float maxTimeBetweenBlinks = 3f;
 
         [Header("References")]
         [Tooltip("The light to blink. If not set, will auto-find on this GameObject")]
