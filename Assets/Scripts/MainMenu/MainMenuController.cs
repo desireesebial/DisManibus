@@ -28,6 +28,7 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private GameObject creditsPanel;
     [SerializeField] private GameObject controlsPanel;
     [SerializeField] private GameObject confirmExitPanel;
+    [SerializeField] private GameObject levelSelectPanel;
     #endregion
 
     #region Exit Settings
@@ -60,6 +61,9 @@ public class MainMenuController : MonoBehaviour
 
         if (confirmExitPanel != null)
             confirmExitPanel.SetActive(false);
+
+        if (levelSelectPanel != null)
+            levelSelectPanel.SetActive(false);
     }
 
     #endregion
@@ -214,6 +218,38 @@ public class MainMenuController : MonoBehaviour
         if (controlsPanel != null)
         {
             controlsPanel.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// Opens the level select panel for demo/presentation purposes.
+    /// Call this method from your Demo button's onClick event.
+    /// </summary>
+    public void OpenLevelSelect()
+    {
+        Debug.Log("[MainMenu] Opening level select...");
+
+        if (levelSelectPanel != null)
+        {
+            levelSelectPanel.SetActive(true);
+        }
+        else
+        {
+            Debug.LogWarning("[MainMenu] Level select panel not assigned!");
+        }
+    }
+
+    /// <summary>
+    /// Closes the level select panel.
+    /// Call this method from your Level Select panel's close/back button.
+    /// </summary>
+    public void CloseLevelSelect()
+    {
+        Debug.Log("[MainMenu] Closing level select...");
+
+        if (levelSelectPanel != null)
+        {
+            levelSelectPanel.SetActive(false);
         }
     }
 
