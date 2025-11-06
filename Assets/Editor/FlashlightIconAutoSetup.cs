@@ -160,14 +160,13 @@ public class FlashlightIconAutoSetup : EditorWindow
         FlashlightController flashlight = GameObject.FindObjectOfType<FlashlightController>();
         iconToggle.flashlight = flashlight;
         iconToggle.flashlightIcon = iconImage;
-        iconToggle.iconOffOpacity = 0.5f; // Higher opacity for visibility in dark areas
 
         EditorUtility.SetDirty(batteryGO);
 
         log.Add($"  ✓ SUCCESS: Added icon with toggle functionality");
         log.Add($"    - Position: Center-top of battery slider");
         log.Add($"    - Size: 40x40 pixels");
-        log.Add($"    - Opacity toggle: Enabled");
+        log.Add($"    - Sprite swapping: Ready (assign sprites with Setup Flashlight Circle Background)");
 
         EditorSceneManager.SaveScene(scene);
         return true;

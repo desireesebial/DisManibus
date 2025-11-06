@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Simple script to toggle flashlight icon opacity based on flashlight on/off state
+/// Toggles flashlight icon sprite and circle background color based on flashlight on/off state
 /// Attach this to the Battery GameObject that contains the FlashlightIcon
 /// </summary>
 public class FlashlightIconToggle : MonoBehaviour
@@ -14,10 +14,22 @@ public class FlashlightIconToggle : MonoBehaviour
     [Tooltip("The flashlight icon Image (will be auto-found if not assigned)")]
     public Image flashlightIcon;
 
-    [Header("Settings")]
-    [Tooltip("Opacity when flashlight is OFF (0-1)")]
-    [Range(0f, 1f)]
-    public float iconOffOpacity = 0.5f;
+    [Header("Icon Sprites")]
+    [Tooltip("Sprite to use when flashlight is ON")]
+    public Sprite flashlightOnSprite;
+
+    [Tooltip("Sprite to use when flashlight is OFF")]
+    public Sprite flashlightOffSprite;
+
+    [Header("Circle Background")]
+    [Tooltip("Circle background image behind the flashlight icon")]
+    public Image circleBackground;
+
+    [Tooltip("Color of circle when flashlight is ON")]
+    public Color circleOnColor = new Color(1f, 0.8f, 0f, 0.8f); // Bright yellow-orange with transparency
+
+    [Tooltip("Color of circle when flashlight is OFF")]
+    public Color circleOffColor = new Color(0.2f, 0.2f, 0.2f, 0.6f); // Dark gray with transparency
 
     void Start()
     {
@@ -46,13 +58,21 @@ public class FlashlightIconToggle : MonoBehaviour
         // Check if flashlight is currently on
         bool isOn = flashlight.IsFlashlightOn();
 
-        // Get current color
+        // Swap icon sprite based on flashlight state
+        if (flashlightOnSprite != null && flashlightOffSprite != null)
+        {
+            flashlightIcon.sprite = isOn ? flashlightOnSprite : flashlightOffSprite;
+        }
+
+        // Ensure icon is fully opaque
         Color iconColor = flashlightIcon.color;
-
-        // Set opacity based on flashlight state
-        iconColor.a = isOn ? 1f : iconOffOpacity;
-
-        // Apply color
+        iconColor.a = 1f;
         flashlightIcon.color = iconColor;
+
+        // Update circle background color
+        if (circleBackground != null)
+        {
+            circleBackground.color = isOn ? circleOnColor : circleOffColor;
+        }
     }
 }

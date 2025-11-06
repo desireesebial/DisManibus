@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Simplified flashlight battery UI that displays battery level with color-coded fill.
+/// Shows flashlight on/off state by swapping icon sprites and changing circle background color.
 /// Hides during pause, cutscenes, and when player is dead.
 /// </summary>
 public class SimplifiedFlashlightBatteryUI : MonoBehaviour
@@ -18,12 +19,24 @@ public class SimplifiedFlashlightBatteryUI : MonoBehaviour
     public Image fillImage;
 
     [Header("Flashlight Icon")]
-    [Tooltip("Flashlight icon that shows on/off state via opacity")]
+    [Tooltip("Flashlight icon image component")]
     public Image flashlightIcon;
 
-    [Tooltip("Opacity when flashlight is OFF (0-1)")]
-    [Range(0f, 1f)]
-    public float iconOffOpacity = 0.3f;
+    [Tooltip("Sprite to use when flashlight is ON")]
+    public Sprite flashlightOnSprite;
+
+    [Tooltip("Sprite to use when flashlight is OFF")]
+    public Sprite flashlightOffSprite;
+
+    [Header("Circle Background")]
+    [Tooltip("Circle background image behind the flashlight icon")]
+    public Image circleBackground;
+
+    [Tooltip("Color of circle when flashlight is ON")]
+    public Color circleOnColor = new Color(1f, 0.8f, 0f, 0.8f); // Bright yellow-orange with transparency
+
+    [Tooltip("Color of circle when flashlight is OFF")]
+    public Color circleOffColor = new Color(0.2f, 0.2f, 0.2f, 0.6f); // Dark gray with transparency
 
     [Tooltip("Reference to PlayerHealthSystem (auto-assigned)")]
     public PlayerHealthSystem playerHealth;
@@ -112,25 +125,36 @@ public class SimplifiedFlashlightBatteryUI : MonoBehaviour
         // Check if flashlight is currently on
         bool isOn = flashlight.IsFlashlightOn();
 
-        // Get current color
+        // Swap icon sprite based on flashlight state
+        if (flashlightOnSprite != null && flashlightOffSprite != null)
+        {
+            flashlightIcon.sprite = isOn ? flashlightOnSprite : flashlightOffSprite;
+        }
+
+        // Ensure icon is fully opaque
         Color iconColor = flashlightIcon.color;
-
-        // Set opacity based on flashlight state
-        iconColor.a = isOn ? 1f : iconOffOpacity;
-
-        // Apply color
+        iconColor.a = 1f;
         flashlightIcon.color = iconColor;
+
+        // Update circle background color
+        if (circleBackground != null)
+        {
+            circleBackground.color = isOn ? circleOnColor : circleOffColor;
+        }
     }
 
     /// <summary>
     /// Manually assign references if not set in inspector
     /// </summary>
-    public void SetReferences(FlashlightController controller, Slider slider, Image fill, PlayerHealthSystem health = null, Image icon = null)
+    public void SetReferences(FlashlightController controller, Slider slider, Image fill, PlayerHealthSystem health = null, Image icon = null, Sprite onSprite = null, Sprite offSprite = null, Image circle = null)
     {
         flashlight = controller;
         batterySlider = slider;
         fillImage = fill;
         playerHealth = health;
         flashlightIcon = icon;
+        flashlightOnSprite = onSprite;
+        flashlightOffSprite = offSprite;
+        circleBackground = circle;
     }
 }
