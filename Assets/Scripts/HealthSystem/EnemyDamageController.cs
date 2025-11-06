@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.AI;
 
 /// <summary>
 /// Simple enemy damage controller that can be attached to any enemy mob.
@@ -14,6 +15,10 @@ public class EnemyDamageController : MonoBehaviour
     [SerializeField] private int damageToPlayer = 1;
     [SerializeField] private float attackCooldown = 1f;
     [SerializeField] private float attackRange = 2f;
+
+    [Header("Movement Pause")]
+    [SerializeField] private bool pauseMovementAfterAttack = true;
+    [Tooltip("If true, enemy will stop moving for the duration of the attack cooldown after hitting the player")]
     
     [Header("Enemy Type")]
     [SerializeField] private EnemyType enemyType = EnemyType.Jenglot;
@@ -45,6 +50,12 @@ public class EnemyDamageController : MonoBehaviour
     private PlayerHealthSystem playerHealthSystem;
     private Transform playerTransform;
     private bool isDead = false;
+    private NavMeshAgent navMeshAgent;
+    private bool isMovementPaused = false;
+    private DullahanChaseSystem dullahanChaseSystem;
+    private DullahanMeleeAttack dullahanMeleeAttack;
+    private EnemySmartPatrol enemySmartPatrol;
+    private KuchisakeOnnaController kuchisakeController;
     
     public enum EnemyType
     {
@@ -71,7 +82,7 @@ public class EnemyDamageController : MonoBehaviour
     {
         // Set initial health
         currentHealth = maxHealth;
-        
+
         // Find player components
         if (playerHealthSystem == null)
         {
@@ -82,7 +93,36 @@ public class EnemyDamageController : MonoBehaviour
                 playerTransform = player.transform;
             }
         }
-        
+
+        // Get NavMeshAgent if available (for movement pause)
+        // Try to find it on this GameObject first
+        navMeshAgent = GetComponent<NavMeshAgent>();
+
+        // If not found, try to find it on parent or children
+        if (navMeshAgent == null)
+        {
+            navMeshAgent = GetComponentInParent<NavMeshAgent>();
+        }
+        if (navMeshAgent == null)
+        {
+            navMeshAgent = GetComponentInChildren<NavMeshAgent>();
+        }
+
+        if (navMeshAgent != null)
+        {
+            Debug.Log($"[EnemyDamageController] {gameObject.name} - Found NavMeshAgent for movement pause");
+        }
+        else
+        {
+            Debug.LogWarning($"[EnemyDamageController] {gameObject.name} - No NavMeshAgent found! Movement pause will not work.");
+        }
+
+        // Find other movement components to synchronize pause
+        dullahanChaseSystem = GetComponent<DullahanChaseSystem>();
+        dullahanMeleeAttack = GetComponent<DullahanMeleeAttack>();
+        enemySmartPatrol = GetComponent<EnemySmartPatrol>();
+        kuchisakeController = GetComponent<KuchisakeOnnaController>();
+
         // Get audio source if not assigned
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
@@ -130,6 +170,7 @@ public class EnemyDamageController : MonoBehaviour
     
     private void CheckForPlayerAndAttack()
     {
+        if (isMovementPaused) return;
         if (playerTransform == null || playerHealthSystem == null) return;
 
         float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
@@ -186,6 +227,38 @@ public class EnemyDamageController : MonoBehaviour
 
         // Update last attack time
         lastAttackTime = Time.time;
+
+        // Pause movement after attack
+        if (pauseMovementAfterAttack)
+        {
+            if (navMeshAgent == null)
+            {
+                Debug.LogWarning($"[EnemyDamageController] {gameObject.name} - Cannot pause movement: NavMeshAgent is NULL!");
+            }
+            else if (isMovementPaused)
+            {
+                Debug.Log($"[EnemyDamageController] {gameObject.name} - Movement already paused, skipping");
+            }
+            else
+            {
+                // CRITICAL: Set pause flag and stop agent IMMEDIATELY
+                isMovementPaused = true;
+
+                if (navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
+                {
+                    navMeshAgent.isStopped = true;
+                    navMeshAgent.ResetPath();
+                    navMeshAgent.velocity = UnityEngine.Vector3.zero;
+                    Debug.Log($"[EnemyDamageController] {gameObject.name} - Agent STOPPED immediately in AttackPlayer()");
+                }
+
+                StartCoroutine(PauseMovementAfterAttack(attackCooldown));
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[EnemyDamageController] {gameObject.name} - Pause Movement After Attack is DISABLED!");
+        }
     }
     
     public void TakeDamage(int damage)
@@ -304,6 +377,9 @@ public class EnemyDamageController : MonoBehaviour
     // Collision detection for player contact
     private void OnTriggerEnter(Collider other)
     {
+        // Don't process any collisions during cooldown period
+        if (isMovementPaused) return;
+
         Debug.Log($"[EnemyDamageController] {gameObject.name} OnTriggerEnter with {other.gameObject.name} (tag: {other.tag})");
 
         if (other.CompareTag("Player") && IsAlive)
@@ -326,6 +402,9 @@ public class EnemyDamageController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        // Don't process any collisions during cooldown period
+        if (isMovementPaused) return;
+
         Debug.Log($"[EnemyDamageController] {gameObject.name} OnCollisionEnter with {collision.gameObject.name} (tag: {collision.gameObject.tag})");
 
         if (collision.gameObject.CompareTag("Player") && IsAlive)
@@ -346,6 +425,62 @@ public class EnemyDamageController : MonoBehaviour
         }
     }
     
+    // Movement pause coroutine - PUBLIC so other scripts can trigger it
+    public System.Collections.IEnumerator PauseMovementAfterAttack(float duration)
+    {
+        // Note: isMovementPaused is already set to true in AttackPlayer() before this coroutine starts
+
+        // CRITICAL: Pause ALL other movement scripts
+        if (dullahanChaseSystem != null)
+        {
+            dullahanChaseSystem.PauseMovementAfterAttack(duration);
+            Debug.Log($"[EnemyDamageController] Triggered DullahanChaseSystem pause");
+        }
+        if (dullahanMeleeAttack != null)
+        {
+            dullahanMeleeAttack.SetMovementPaused(true);
+            Debug.Log($"[EnemyDamageController] Triggered DullahanMeleeAttack pause");
+        }
+        if (enemySmartPatrol != null)
+        {
+            enemySmartPatrol.SetMovementPaused(true);
+            Debug.Log($"[EnemyDamageController] Triggered EnemySmartPatrol pause");
+        }
+        if (kuchisakeController != null)
+        {
+            kuchisakeController.SetMovementPausedExternal(true);
+            Debug.Log($"[EnemyDamageController] Triggered KuchisakeOnnaController pause");
+        }
+
+        Debug.Log($"[EnemyDamageController] {gameObject.name} pausing movement for {duration} seconds");
+
+        // Wait for cooldown duration
+        yield return new WaitForSeconds(duration);
+
+        // Resume other movement scripts
+        if (dullahanMeleeAttack != null)
+        {
+            dullahanMeleeAttack.SetMovementPaused(false);
+        }
+        if (enemySmartPatrol != null)
+        {
+            enemySmartPatrol.SetMovementPaused(false);
+        }
+        if (kuchisakeController != null)
+        {
+            kuchisakeController.SetMovementPausedExternal(false);
+        }
+
+        // Resume movement
+        if (navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh && IsAlive && !isDead)
+        {
+            navMeshAgent.isStopped = false;
+            Debug.Log($"[EnemyDamageController] {gameObject.name} resuming movement");
+        }
+
+        isMovementPaused = false;
+    }
+
     // Public getters
     public bool IsDead() => isDead;
     public float GetDistanceToPlayer()

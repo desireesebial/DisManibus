@@ -83,6 +83,7 @@ public class JenglotAI : MonoBehaviour
 	bool hasDetectedPlayer;
     JenglotAnimationState currentAnimationState = JenglotAnimationState.Idle;
     bool wasFrozenByFlashlight = false; // Track if we were frozen to maintain freeze state
+    bool isMovementPaused = false; // Track if movement is paused after attack
 
     void Reset()
     {
@@ -172,6 +173,12 @@ public class JenglotAI : MonoBehaviour
     {
         if (player == null || navMeshAgent == null)
             return;
+
+        // Don't update if movement is paused (after attack)
+        if (isMovementPaused)
+        {
+            return;
+        }
 
 		bool playerDetected = IsPlayerDetected();
 		bool frozenByFlashlight = IsFrozenByPlayerFlashlight();
@@ -323,6 +330,8 @@ public class JenglotAI : MonoBehaviour
 
 	void TryAttack()
     {
+        if (isMovementPaused) return;
+
         if (Time.time - lastAttackTime < attackCooldown)
             return;
 
@@ -349,6 +358,23 @@ public class JenglotAI : MonoBehaviour
 		{
 			LaunchProjectile();
 		}
+
+        // Pause movement after attack to give player escape chance
+        if (!isMovementPaused)
+        {
+            // CRITICAL: Set pause flag and stop agent IMMEDIATELY
+            isMovementPaused = true;
+
+            if (navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
+            {
+                navMeshAgent.isStopped = true;
+                navMeshAgent.ResetPath();
+                navMeshAgent.velocity = UnityEngine.Vector3.zero;
+                Debug.Log($"[{name}] Agent STOPPED immediately in TryAttack()");
+            }
+
+            StartCoroutine(PauseMovementAfterAttack(attackCooldown));
+        }
     }
 
 	void PerformHitscan()
@@ -466,6 +492,28 @@ public class JenglotAI : MonoBehaviour
             animator.SetBool(animParamIsIdle, true);
             Debug.Log($"[{name}] FORCED idle animation");
         }
+    }
+
+    /// <summary>
+    /// Pauses enemy movement for specified duration after attacking player.
+    /// Gives player a chance to escape.
+    /// </summary>
+    System.Collections.IEnumerator PauseMovementAfterAttack(float duration)
+    {
+        // Note: isMovementPaused is already set to true in TryAttack() before this coroutine starts
+        Debug.Log($"[{name}] Pausing movement for {duration} seconds after attack");
+
+        // Wait for cooldown duration
+        yield return new WaitForSeconds(duration);
+
+        // Resume movement
+        if (navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
+        {
+            navMeshAgent.isStopped = false;
+            Debug.Log($"[{name}] Resuming movement after {duration}s pause");
+        }
+
+        isMovementPaused = false;
     }
 
     void OnDrawGizmosSelected()

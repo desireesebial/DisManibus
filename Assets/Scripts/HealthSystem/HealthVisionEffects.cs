@@ -52,6 +52,13 @@ public class HealthVisionEffects : MonoBehaviour
     [Range(0f, 10f)]
     public float maxBlurIntensity = 5f;
 
+    [Header("Blur Intensity at Each Threshold")]
+    [Tooltip("Blur intensity at each health level")]
+    [Range(0f, 10f)] public float blurAtFull = 0f;
+    [Range(0f, 10f)] public float blurAtHigh = 2.5f;
+    [Range(0f, 10f)] public float blurAtMid = 3.0f;
+    [Range(0f, 10f)] public float blurAtLow = 3.5f;
+
     [Header("Transition Settings")]
     [Tooltip("How fast effects transition when health changes")]
     public float transitionSpeed = 3f;
@@ -155,11 +162,10 @@ public class HealthVisionEffects : MonoBehaviour
 
         int currentHealth = playerHealthSystem.CurrentHealth;
         int maxHealth = playerHealthSystem.MaxHealth;
-        float healthPercent = (float)currentHealth / maxHealth;
 
         // Determine target intensities based on exact health value
         targetVignetteIntensity = CalculateVignetteIntensity(currentHealth);
-        targetBlurIntensity = enableBlur ? CalculateBlurIntensity(healthPercent) : 0f;
+        targetBlurIntensity = enableBlur ? CalculateBlurIntensity(currentHealth) : 0f;
 
         // Check if at critical health for pulse effect (1 HP remaining)
         isCriticalHealth = currentHealth == 1;
@@ -196,10 +202,30 @@ public class HealthVisionEffects : MonoBehaviour
         }
     }
 
-    private float CalculateBlurIntensity(float healthPercent)
+    private float CalculateBlurIntensity(int currentHealth)
     {
-        // Blur scales linearly with health loss
-        return Mathf.Lerp(maxBlurIntensity, 0f, healthPercent);
+        // Simple discrete health checks for 3-health system
+        // Health = 3 → No blur
+        // Health = 2 → Moderate blur
+        // Health = 1 → Strong blur
+
+        if (currentHealth >= 3)
+        {
+            return blurAtFull; // No blur at full health
+        }
+        else if (currentHealth == 2)
+        {
+            return blurAtHigh; // Moderate blur at 2 HP
+        }
+        else if (currentHealth == 1)
+        {
+            return blurAtLow; // Strong blur at 1 HP (critical)
+        }
+        else
+        {
+            // Dead or 0 health - maximum blur
+            return maxBlurIntensity;
+        }
     }
 
     private void UpdateEffects()

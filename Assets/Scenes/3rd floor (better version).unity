@@ -12449,7 +12449,7 @@ MonoBehaviour:
   requireDirectIllumination: 1
   stayFrozenUntilFlashlightOff: 1
   attackRange: 3
-  attackCooldown: 3
+  attackCooldown: 4.5
   attackDamage: 10
   onChantAttack:
     m_PersistentCalls:
@@ -12506,8 +12506,9 @@ MonoBehaviour:
   maxHealth: 100
   currentHealth: 0
   damageToPlayer: 1
-  attackCooldown: 1
+  attackCooldown: 4.5
   attackRange: 5
+  pauseMovementAfterAttack: 1
   enemyType: 0
   audioSource: {fileID: 0}
   attackSound: {fileID: 0}

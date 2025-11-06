@@ -24,6 +24,7 @@ public class EnemySmartPatrol : MonoBehaviour
     private bool wasNearLastFrame = false;
     private List<int> unusedWaypointIndices = new List<int>();
     private int lastWaypoint = -1;
+    private bool isMovementPaused = false;
 
     void Start()
     {
@@ -35,6 +36,8 @@ public class EnemySmartPatrol : MonoBehaviour
 
     void Update()
     {
+        if (isMovementPaused) return;
+
         bool isNear = IsPlayerClose();
 
         // Play "near" sound when entering proximity
@@ -138,6 +141,23 @@ public class EnemySmartPatrol : MonoBehaviour
         for (int i = 0; i < waypoints.Length; i++)
         {
             unusedWaypointIndices.Add(i);
+        }
+    }
+
+    public void SetMovementPaused(bool paused)
+    {
+        isMovementPaused = paused;
+        if (paused && agent != null)
+        {
+            agent.isStopped = true;
+            agent.ResetPath();
+            agent.velocity = Vector3.zero;
+            Debug.Log($"[EnemySmartPatrol] Movement PAUSED");
+        }
+        else if (!paused && agent != null)
+        {
+            agent.isStopped = false;
+            Debug.Log($"[EnemySmartPatrol] Movement RESUMED");
         }
     }
 }

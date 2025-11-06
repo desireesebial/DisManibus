@@ -86,6 +86,7 @@ public class KuchisakeOnnaController : MonoBehaviour
     // Attack tracking
     private float lastAttackTime = 0f;
     private bool isWithinAttackRange = false;
+    private bool isMovementPaused = false;
 
     // Ending behavior flags
     private bool ignoreSafeZones = false;
@@ -159,6 +160,13 @@ public class KuchisakeOnnaController : MonoBehaviour
     {
         if (player == null) return;
 
+        // CRITICAL: Don't do ANYTHING when movement is paused
+        if (isMovementPaused)
+        {
+            Debug.Log($"[KuchisakeOnna] Update() BLOCKED - isMovementPaused = TRUE");
+            return;
+        }
+
         // Monitor video trigger
         if (!chaseActivated)
         {
@@ -221,6 +229,12 @@ public class KuchisakeOnnaController : MonoBehaviour
         Debug.Log($"[KuchisakeOnna] ValidateAgent result: {agentValid}");
         if (!agentValid) return;
 
+        // Don't chase if movement is paused (after attack)
+        if (isMovementPaused)
+        {
+            return;
+        }
+
         // Check if player entered safe zone
         bool playerInSafe = IsPlayerInSafeZone();
         Debug.Log($"[KuchisakeOnna] IsPlayerInSafeZone result: {playerInSafe}");
@@ -269,6 +283,7 @@ public class KuchisakeOnnaController : MonoBehaviour
 
             // Set destination to player
             agent.SetDestination(player.position);
+            Debug.Log($"[KuchisakeOnna] >>> agent.SetDestination() called at line 287 - Player pos: {player.position}");
         }
 
         // Periodic logging
@@ -352,6 +367,8 @@ public class KuchisakeOnnaController : MonoBehaviour
     /// </summary>
     void HandlePatrol()
     {
+        if (isMovementPaused) return;
+
         // Always check if player left safe zone
         if (!IsPlayerInSafeZone())
         {
@@ -677,6 +694,8 @@ public class KuchisakeOnnaController : MonoBehaviour
     /// </summary>
     void AttackPlayer()
     {
+        if (isMovementPaused) return;
+
         // Check cooldown
         if (Time.time - lastAttackTime < attackCooldown)
             return;
@@ -705,6 +724,27 @@ public class KuchisakeOnnaController : MonoBehaviour
                     if (agent != null)
                     {
                         agent.isStopped = true;
+                    }
+                }
+                else
+                {
+                    // Player survived - pause movement to give them a chance to escape
+                    if (!isMovementPaused)
+                    {
+                        // CRITICAL: Set pause flag IMMEDIATELY before starting coroutine
+                        isMovementPaused = true;
+
+                        // IMMEDIATELY stop the agent
+                        if (agent != null && agent.enabled && agent.isOnNavMesh)
+                        {
+                            agent.isStopped = true;
+                            agent.ResetPath();
+                            agent.velocity = Vector3.zero;
+                            Debug.Log($"[KuchisakeOnna] Agent STOPPED immediately in AttackPlayer()");
+                        }
+
+                        StartCoroutine(PauseMovementAfterAttack(attackCooldown));
+                        Debug.Log($"[KuchisakeOnna] isMovementPaused set to TRUE immediately");
                     }
                 }
             }
@@ -863,6 +903,28 @@ public class KuchisakeOnnaController : MonoBehaviour
             audioSource.PlayOneShot(clip, volume);
         }
     }
+
+    /// <summary>
+    /// Pauses enemy movement for specified duration after attacking player.
+    /// Gives player a chance to escape.
+    /// </summary>
+    private System.Collections.IEnumerator PauseMovementAfterAttack(float duration)
+    {
+        // Note: isMovementPaused is already set to true in AttackPlayer() before this coroutine starts
+        Debug.Log($"[KuchisakeOnna] Pausing movement for {duration} seconds after attack");
+
+        // Wait for cooldown duration
+        yield return new WaitForSeconds(duration);
+
+        // Resume movement only if still in aggressive chase state
+        if (agent != null && agent.enabled && agent.isOnNavMesh && currentState == EnemyState.AggressiveChase)
+        {
+            agent.isStopped = false;
+            Debug.Log($"[KuchisakeOnna] Resuming chase after {duration}s pause");
+        }
+
+        isMovementPaused = false;
+    }
     #endregion
 
     #region Ending Behaviors
@@ -922,6 +984,26 @@ public class KuchisakeOnnaController : MonoBehaviour
     #endregion
 
     #region Public Methods
+    /// <summary>
+    /// Called by EnemyDamageController to sync pause state
+    /// </summary>
+    public void SetMovementPausedExternal(bool paused)
+    {
+        isMovementPaused = paused;
+        if (paused && agent != null && agent.enabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.ResetPath();
+            agent.velocity = Vector3.zero;
+            Debug.Log($"[KuchisakeOnna] Movement paused by EnemyDamageController");
+        }
+        else if (!paused && agent != null && agent.enabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = false;
+            Debug.Log($"[KuchisakeOnna] Movement resumed by EnemyDamageController");
+        }
+    }
+
     /// <summary>
     /// Resets enemy to initial state.
     /// </summary>

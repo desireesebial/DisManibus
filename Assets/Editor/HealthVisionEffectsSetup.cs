@@ -193,13 +193,19 @@ public class HealthVisionEffectsSetup : EditorWindow
 
         // Configure intensity at each threshold
         component.vignetteAtFull = 0f;     // No vignette at full health
-        component.vignetteAtHigh = 0.2f;   // Mild vignette at 2/3 HP
+        component.vignetteAtHigh = 0.70f;  // Strong vignette at 2 HP
         component.vignetteAtMid = 0.5f;    // Moderate vignette at 1/3 HP
-        component.vignetteAtLow = 0.8f;    // Strong vignette at critical health
+        component.vignetteAtLow = 1.0f;    // Maximum vignette at critical health (1 HP)
 
         // Configure blur settings
-        component.enableBlur = false; // Disable by default (optional post-processing)
+        component.enableBlur = true;       // Enable blur effects
         component.maxBlurIntensity = 5f;
+
+        // Configure blur intensity at each threshold
+        component.blurAtFull = 0f;         // No blur at full health
+        component.blurAtHigh = 2.5f;       // Moderate blur at 2 HP
+        component.blurAtMid = 3.0f;        // Higher blur at 1/3 HP
+        component.blurAtLow = 3.5f;        // Strong blur at critical health (1 HP)
 
         // Configure transition settings
         component.transitionSpeed = 3f;

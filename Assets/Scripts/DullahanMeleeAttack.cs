@@ -46,6 +46,8 @@ public class DullahanMeleeAttack : MonoBehaviour
     private Renderer dullahanRenderer;
     private Material originalMaterial;
     private Coroutine attackCoroutine;
+    private DullahanChaseSystem chaseSystem;
+    private bool isMovementPaused = false;
 
     void Start()
     {
@@ -55,6 +57,8 @@ public class DullahanMeleeAttack : MonoBehaviour
 
     void Update()
     {
+        if (isMovementPaused) return;
+
         CheckPlayerDistance();
         HandleAttack();
     }
@@ -68,14 +72,17 @@ public class DullahanMeleeAttack : MonoBehaviour
             player = playerObj.transform;
             playerHealthSystem = playerObj.GetComponent<PlayerHealthSystem>();
         }
-        
+
+        // Get DullahanChaseSystem for movement pause
+        chaseSystem = GetComponent<DullahanChaseSystem>();
+
         // Get components
         if (animator == null)
             animator = GetComponent<Animator>();
-        
+
         if (attackPoint == null)
             attackPoint = transform;
-        
+
         dullahanRenderer = GetComponent<Renderer>();
         if (dullahanRenderer != null)
             originalMaterial = dullahanRenderer.material;
@@ -100,6 +107,7 @@ public class DullahanMeleeAttack : MonoBehaviour
     
     void HandleAttack()
     {
+        if (isMovementPaused) return;
         if (!canAttack || isAttacking) return;
         
         if (playerInRange && Time.time - lastAttackTime >= attackCooldown)
@@ -110,6 +118,7 @@ public class DullahanMeleeAttack : MonoBehaviour
 
     public void StartAttack()
     {
+        if (isMovementPaused) return;
         if (isAttacking) return;
         
         Debug.Log("[DullahanMeleeAttack] Starting attack");
@@ -127,6 +136,8 @@ public class DullahanMeleeAttack : MonoBehaviour
     
     IEnumerator PerformAttack()
     {
+        if (isMovementPaused) yield break;
+
         // Play attack animation
         if (animator != null)
             animator.SetTrigger(attackAnimationTrigger);
@@ -158,6 +169,8 @@ public class DullahanMeleeAttack : MonoBehaviour
     
     void PerformAttackDamage()
     {
+        if (isMovementPaused) return;
+
         // Check if player is in attack range
         Collider[] hitColliders = Physics.OverlapSphere(attackPoint.position, attackRadius, playerLayer);
         
@@ -173,12 +186,25 @@ public class DullahanMeleeAttack : MonoBehaviour
                     playerHealth.TakeDamage((int)attackDamage);
                     Debug.Log($"[DullahanMeleeAttack] Hit player for {attackDamage} damage");
                     hitPlayer = true;
+
+                    // IMMEDIATELY pause this component
+                    isMovementPaused = true;
+                    Debug.Log($"[DullahanMeleeAttack] PAUSED for {attackCooldown} seconds");
+
+                    // Pause chase system movement
+                    if (chaseSystem != null)
+                    {
+                        chaseSystem.PauseMovementAfterAttack(attackCooldown);
+                    }
+
+                    // Start coroutine to unpause after cooldown
+                    StartCoroutine(UnpauseAfterCooldown(attackCooldown));
                 }
-                
+
                 // Play hit sound
                 if (audioSource != null && hitSound != null)
                     audioSource.PlayOneShot(hitSound);
-                
+
                 break;
             }
         }
@@ -282,12 +308,24 @@ public class DullahanMeleeAttack : MonoBehaviour
         float timeSinceLastAttack = Time.time - lastAttackTime;
         return Mathf.Max(0f, attackCooldown - timeSinceLastAttack);
     }
-    
+
     public bool IsPlayerInRange()
     {
         return playerInRange;
     }
-    
+
+    public void SetMovementPaused(bool paused)
+    {
+        isMovementPaused = paused;
+    }
+
+    private IEnumerator UnpauseAfterCooldown(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        isMovementPaused = false;
+        Debug.Log($"[DullahanMeleeAttack] UNPAUSED after {duration}s cooldown");
+    }
+
     // Debug methods
     public void TestAttack()
     {

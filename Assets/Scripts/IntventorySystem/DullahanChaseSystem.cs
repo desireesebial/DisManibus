@@ -73,6 +73,9 @@ public class DullahanChaseSystem : MonoBehaviour
     private DullahanAudioManager audioManager;
     private DullahanChaseEventManager eventManager;
     private bool isEventControlled = false; // True when chase is controlled by event manager
+    private bool isMovementPaused = false; // True when movement is paused after attack
+    private DullahanMeleeAttack meleeAttack;
+    private EnemySmartPatrol smartPatrol;
     
     public enum ChaseState
     {
@@ -91,6 +94,8 @@ public class DullahanChaseSystem : MonoBehaviour
     
     void Update()
     {
+        if (isMovementPaused) return;
+
         UpdateChaseIntensity();
         HandleStateMachine();
         UpdateVisualEffects();
@@ -122,6 +127,8 @@ public class DullahanChaseSystem : MonoBehaviour
         // Find managers
         audioManager = FindObjectOfType<DullahanAudioManager>();
         eventManager = FindObjectOfType<DullahanChaseEventManager>();
+        meleeAttack = GetComponent<DullahanMeleeAttack>();
+        smartPatrol = GetComponent<EnemySmartPatrol>();
         
         // Setup audio
         if (audioSource == null)
@@ -165,6 +172,7 @@ public class DullahanChaseSystem : MonoBehaviour
     
     void HandlePatrol()
     {
+        if (isMovementPaused) return;
         if (!isPatrolling) return;
         
         if (useWaypointPatrol && patrolWaypoints.Length > 0)
@@ -209,6 +217,12 @@ public class DullahanChaseSystem : MonoBehaviour
     {
         if (!isChasing || playerTransform == null) return;
 
+        // Don't chase if movement is paused (after attack)
+        if (isMovementPaused)
+        {
+            return;
+        }
+
         // Update chase intensity based on distance
         float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
         float normalizedDistance = Mathf.Clamp01(1f - (distanceToPlayer / maxDetectionRange));
@@ -243,6 +257,8 @@ public class DullahanChaseSystem : MonoBehaviour
     
     void HandleSearch()
     {
+        if (isMovementPaused) return;
+
         // Move to last known player position
         if (Vector3.Distance(transform.position, lastKnownPlayerPosition) > 1f)
         {
@@ -276,6 +292,8 @@ public class DullahanChaseSystem : MonoBehaviour
     
     void HandleReturn()
     {
+        if (isMovementPaused) return;
+
         // Return to patrol center
         if (Vector3.Distance(transform.position, patrolCenter) > 1f)
         {
@@ -340,6 +358,8 @@ public class DullahanChaseSystem : MonoBehaviour
     
     public void StartChase(int cycleNumber = 0)
     {
+        if (isMovementPaused) return;
+
         // Allow re-initialization to update cycle number and speed settings
 
         currentCycleNumber = cycleNumber;
@@ -520,6 +540,73 @@ public class DullahanChaseSystem : MonoBehaviour
         float finalSpeed = Mathf.Min(calculatedSpeed, maxChaseSpeed);
 
         return finalSpeed;
+    }
+
+    /// <summary>
+    /// Public method called by DullahanMeleeAttack to pause movement after hitting player.
+    /// Gives player a chance to escape.
+    /// </summary>
+    public void PauseMovementAfterAttack(float duration)
+    {
+        if (!isMovementPaused)
+        {
+            StartCoroutine(PauseMovementCoroutine(duration));
+        }
+    }
+
+    /// <summary>
+    /// Coroutine that pauses NavMeshAgent movement for specified duration.
+    /// </summary>
+    private IEnumerator PauseMovementCoroutine(float duration)
+    {
+        isMovementPaused = true;
+
+        // Also pause melee attack component
+        if (meleeAttack != null)
+        {
+            meleeAttack.SetMovementPaused(true);
+        }
+
+        // CRITICAL: Also pause EnemySmartPatrol if it exists (this was the bug!)
+        if (smartPatrol != null)
+        {
+            smartPatrol.SetMovementPaused(true);
+            Debug.Log($"[DullahanChaseSystem] EnemySmartPatrol PAUSED");
+        }
+
+        // Stop NavMeshAgent movement completely
+        if (dullahanAgent != null && dullahanAgent.enabled && dullahanAgent.isOnNavMesh)
+        {
+            dullahanAgent.isStopped = true;
+            dullahanAgent.ResetPath(); // Clear current path to stop movement
+            dullahanAgent.velocity = UnityEngine.Vector3.zero; // Stop all momentum
+            Debug.Log($"[DullahanChaseSystem] Pausing movement for {duration} seconds after attack");
+        }
+
+        // Wait for cooldown duration
+        yield return new WaitForSeconds(duration);
+
+        // Resume movement only if still in chase state
+        if (dullahanAgent != null && dullahanAgent.enabled && dullahanAgent.isOnNavMesh && currentState == ChaseState.Chase)
+        {
+            dullahanAgent.isStopped = false;
+            Debug.Log($"[DullahanChaseSystem] Resuming chase after {duration}s pause");
+        }
+
+        // Resume melee attack component
+        if (meleeAttack != null)
+        {
+            meleeAttack.SetMovementPaused(false);
+        }
+
+        // Resume EnemySmartPatrol
+        if (smartPatrol != null)
+        {
+            smartPatrol.SetMovementPaused(false);
+            Debug.Log($"[DullahanChaseSystem] EnemySmartPatrol RESUMED");
+        }
+
+        isMovementPaused = false;
     }
 
     // Debug visualization
