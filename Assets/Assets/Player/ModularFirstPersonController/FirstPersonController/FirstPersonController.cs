@@ -161,8 +161,11 @@ public class FirstPersonController : MonoBehaviour
     #region Audio System
 
     [Header("Audio Sources")]
-    [Tooltip("Audio source for footstep sounds (walk and sprint)")]
+    [Tooltip("Audio source for walking footstep sounds")]
     public AudioSource footstepAudioSource;
+
+    [Tooltip("Audio source for sprinting footstep sounds")]
+    public AudioSource sprintAudioSource;
 
     [Tooltip("Audio source for breathing sounds (exhausted/fatigued state)")]
     public AudioSource breathingAudioSource;
@@ -180,6 +183,13 @@ public class FirstPersonController : MonoBehaviour
     [Tooltip("Time interval between sprint footstep sounds in seconds")]
     public float sprintFootstepInterval = 0.35f;
 
+    [Tooltip("Enable pitch variation for more natural footstep sounds")]
+    public bool enableFootstepPitchVariation = true;
+
+    [Tooltip("Amount of random pitch variation (0.05 = ±5% variation)")]
+    [Range(0f, 0.15f)]
+    public float footstepPitchVariation = 0.05f;
+
     [Header("Stamina Audio")]
     [Tooltip("Looping sound played when stamina is exhausted (drag and drop audio clip)")]
     public AudioClip exhaustedBreathingSound;
@@ -188,8 +198,9 @@ public class FirstPersonController : MonoBehaviour
     [Range(0.1f, 0.5f)]
     public float breathingFadeOutThreshold = 0.3f;
 
-    // Internal Variables
-    private float nextFootstepTime = 0f;
+    // Internal Variables - Movement state tracking for smart audio playback
+    private bool wasWalking = false;
+    private bool wasSprinting = false;
     private bool isExhaustedBreathingPlaying = false;
 
     #endregion
@@ -436,6 +447,12 @@ public class FirstPersonController : MonoBehaviour
             footstepAudioSource.enabled = true;
         }
 
+        if (sprintAudioSource != null && !sprintAudioSource.enabled)
+        {
+            Debug.LogWarning("[FirstPersonController] Sprint AudioSource is disabled - enabling it.", this);
+            sprintAudioSource.enabled = true;
+        }
+
         #endregion
     }
 
@@ -457,7 +474,12 @@ public class FirstPersonController : MonoBehaviour
 
         if (footstepAudioSource == null)
         {
-            Debug.LogWarning("[FirstPersonController] Footstep AudioSource not assigned! Footstep sounds won't play.", this);
+            Debug.LogWarning("[FirstPersonController] Walk AudioSource not assigned! Walking sounds won't play.", this);
+        }
+
+        if (sprintAudioSource == null)
+        {
+            Debug.LogWarning("[FirstPersonController] Sprint AudioSource not assigned! Sprint sounds won't play.", this);
         }
         #endregion
     }
@@ -891,9 +913,20 @@ public class FirstPersonController : MonoBehaviour
 
     private void HandleFootsteps()
     {
-        // Safety checks - ensure we have audio source and are grounded
-        if (footstepAudioSource == null || !isGrounded)
+        // Safety checks - ensure we have audio sources and are grounded
+        if (!isGrounded)
         {
+            // Stop all movement sounds when not grounded
+            if (footstepAudioSource != null && footstepAudioSource.isPlaying)
+            {
+                footstepAudioSource.Stop();
+                wasWalking = false;
+            }
+            if (sprintAudioSource != null && sprintAudioSource.isPlaying)
+            {
+                sprintAudioSource.Stop();
+                wasSprinting = false;
+            }
             return;
         }
 
@@ -902,39 +935,88 @@ public class FirstPersonController : MonoBehaviour
         float verticalInput = Input.GetAxis("Vertical");
         bool hasMovementInput = (Mathf.Abs(horizontalInput) > 0.1f || Mathf.Abs(verticalInput) > 0.1f);
 
-        if (hasMovementInput && Time.time >= nextFootstepTime)
+        // Determine current movement state
+        bool isCurrentlySprinting = hasMovementInput && isSprinting;
+        bool isCurrentlyWalking = hasMovementInput && !isSprinting;
+
+        // SPRINT AUDIO HANDLING
+        if (isCurrentlySprinting && sprintAudioSource != null && sprintFootstepSound != null)
         {
-            // Determine which footstep sound to play based on sprint state
-            AudioClip footstepToPlay = null;
-            float footstepInterval = walkFootstepInterval;
+            // State changed to sprinting - start sprint audio
+            if (!wasSprinting)
+            {
+                // Stop walk audio if playing
+                if (footstepAudioSource != null && footstepAudioSource.isPlaying)
+                {
+                    footstepAudioSource.Stop();
+                }
 
-            // Sprint audio: Only play when BOTH sprinting AND pressing movement keys (Shift + WASD)
-            if (isSprinting && sprintFootstepSound != null)
-            {
-                footstepToPlay = sprintFootstepSound;
-                footstepInterval = sprintFootstepInterval;
-                Debug.Log("Playing sprint footstep sound (Shift + WASD pressed)");
+                // Start sprint audio loop
+                sprintAudioSource.clip = sprintFootstepSound;
+                sprintAudioSource.loop = true;
+                sprintAudioSource.Play();
+                wasSprinting = true;
+                wasWalking = false;
+                Debug.Log("[FirstPersonController] Sprint audio started");
             }
-            // Walk audio: Play when pressing movement keys WITHOUT sprint (WASD only)
-            else if (walkFootstepSound != null)
+        }
+        else if (wasSprinting)
+        {
+            // State changed from sprinting - stop sprint audio
+            if (sprintAudioSource != null && sprintAudioSource.isPlaying)
             {
-                footstepToPlay = walkFootstepSound;
-                footstepInterval = walkFootstepInterval;
-                Debug.Log("Playing walk footstep sound (WASD pressed, no Shift)");
-            }
-
-            // Play the footstep sound if we have a valid clip
-            if (footstepToPlay != null)
-            {
-                footstepAudioSource.PlayOneShot(footstepToPlay);
-                nextFootstepTime = Time.time + footstepInterval;
+                sprintAudioSource.Stop();
+                wasSprinting = false;
+                Debug.Log("[FirstPersonController] Sprint audio stopped");
             }
         }
 
-        // Reset footstep timer when not pressing movement keys
+        // WALK AUDIO HANDLING
+        if (isCurrentlyWalking && footstepAudioSource != null && walkFootstepSound != null)
+        {
+            // State changed to walking - start walk audio
+            if (!wasWalking)
+            {
+                // Stop sprint audio if playing (redundant safety check)
+                if (sprintAudioSource != null && sprintAudioSource.isPlaying)
+                {
+                    sprintAudioSource.Stop();
+                }
+
+                // Start walk audio loop
+                footstepAudioSource.clip = walkFootstepSound;
+                footstepAudioSource.loop = true;
+                footstepAudioSource.Play();
+                wasWalking = true;
+                wasSprinting = false;
+                Debug.Log("[FirstPersonController] Walk audio started");
+            }
+        }
+        else if (wasWalking)
+        {
+            // State changed from walking - stop walk audio
+            if (footstepAudioSource != null && footstepAudioSource.isPlaying)
+            {
+                footstepAudioSource.Stop();
+                wasWalking = false;
+                Debug.Log("[FirstPersonController] Walk audio stopped");
+            }
+        }
+
+        // IDLE STATE - No movement input
         if (!hasMovementInput)
         {
-            nextFootstepTime = 0f;
+            // Stop both audio sources when idle
+            if (footstepAudioSource != null && footstepAudioSource.isPlaying)
+            {
+                footstepAudioSource.Stop();
+                wasWalking = false;
+            }
+            if (sprintAudioSource != null && sprintAudioSource.isPlaying)
+            {
+                sprintAudioSource.Stop();
+                wasSprinting = false;
+            }
         }
     }
 
@@ -1226,7 +1308,8 @@ public class FirstPersonController : MonoBehaviour
 
         // Audio Sources
         GUILayout.Label("Audio Sources", new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleLeft, fontStyle = FontStyle.Bold, fontSize = 12 }, GUILayout.ExpandWidth(true));
-        fpc.footstepAudioSource = (AudioSource)EditorGUILayout.ObjectField(new GUIContent("Footstep Audio Source", "Audio source for footstep sounds (walk and sprint)"), fpc.footstepAudioSource, typeof(AudioSource), true);
+        fpc.footstepAudioSource = (AudioSource)EditorGUILayout.ObjectField(new GUIContent("Walk Audio Source", "Audio source for walking footstep sounds"), fpc.footstepAudioSource, typeof(AudioSource), true);
+        fpc.sprintAudioSource = (AudioSource)EditorGUILayout.ObjectField(new GUIContent("Sprint Audio Source", "Audio source for sprinting footstep sounds"), fpc.sprintAudioSource, typeof(AudioSource), true);
         fpc.breathingAudioSource = (AudioSource)EditorGUILayout.ObjectField(new GUIContent("Breathing Audio Source", "Audio source for breathing sounds (exhausted/fatigued state)"), fpc.breathingAudioSource, typeof(AudioSource), true);
 
         EditorGUILayout.Space();
@@ -1237,6 +1320,12 @@ public class FirstPersonController : MonoBehaviour
         fpc.sprintFootstepSound = (AudioClip)EditorGUILayout.ObjectField(new GUIContent("Sprint Footstep Sound", "Sound played when sprinting"), fpc.sprintFootstepSound, typeof(AudioClip), false);
         fpc.walkFootstepInterval = EditorGUILayout.Slider(new GUIContent("Walk Interval", "Time interval between walk footstep sounds in seconds"), fpc.walkFootstepInterval, 0.1f, 2f);
         fpc.sprintFootstepInterval = EditorGUILayout.Slider(new GUIContent("Sprint Interval", "Time interval between sprint footstep sounds in seconds"), fpc.sprintFootstepInterval, 0.1f, 2f);
+
+        EditorGUILayout.Space();
+        fpc.enableFootstepPitchVariation = EditorGUILayout.ToggleLeft(new GUIContent("Enable Pitch Variation", "Adds random pitch variation for more natural footstep sounds (professional quality)"), fpc.enableFootstepPitchVariation);
+        GUI.enabled = fpc.enableFootstepPitchVariation;
+        fpc.footstepPitchVariation = EditorGUILayout.Slider(new GUIContent("Pitch Variation", "Amount of random pitch variation (0.05 = ±5% variation, recommended)"), fpc.footstepPitchVariation, 0f, 0.15f);
+        GUI.enabled = true;
 
         EditorGUILayout.Space();
 
