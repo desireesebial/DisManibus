@@ -17,7 +17,7 @@ RenderSettings:
   m_Fog: 1
   m_FogColor: {r: 0.20122819, g: 0.21961688, b: 0.3207547, a: 1}
   m_FogMode: 2
-  m_FogDensity: 0.2
+  m_FogDensity: 0.1
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0, g: 0, b: 0, a: 1}
@@ -32,7 +32,7 @@ RenderSettings:
   m_FlareFadeSpeed: 3
   m_HaloTexture: {fileID: 0}
   m_SpotCookie: {fileID: 10001, guid: 0000000000000000e000000000000000, type: 0}
-  m_DefaultReflectionMode: 0
+  m_DefaultReflectionMode: 1
   m_DefaultReflectionResolution: 128
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
@@ -540,6 +540,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 4025349}
 --- !u!1 &7831158
 GameObject:
@@ -12455,6 +12458,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 61154100}
 --- !u!43 &61900105
 Mesh:
@@ -12931,6 +12937,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 67609135}
 --- !u!114 &67609141
 MonoBehaviour:
@@ -12948,6 +12957,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 67609137}
 --- !u!1 &73008935
 GameObject:
@@ -13808,6 +13820,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 96912027}
 --- !u!43 &102058867
 Mesh:
@@ -14910,6 +14925,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 118710414}
 --- !u!1 &119023983
 GameObject:
@@ -21462,6 +21480,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 142296578}
 --- !u!1 &143599649
 GameObject:
@@ -49423,6 +49444,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 465783680}
 --- !u!1 &468496485
 GameObject:
@@ -64872,6 +64896,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 606955936}
 --- !u!1 &614387456
 GameObject:
@@ -71248,6 +71275,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 642506680}
 --- !u!1 &646358065
 GameObject:
@@ -72166,6 +72196,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 656867139}
 --- !u!1 &659664119 stripped
 GameObject:
@@ -72424,6 +72457,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 670360625}
 --- !u!43 &675147503
 Mesh:
@@ -92360,6 +92396,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 779997056}
 --- !u!1 &782990380
 GameObject:
@@ -103118,6 +103157,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 805214930}
 --- !u!1 &810426925
 GameObject:
@@ -103326,6 +103368,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 811078949}
 --- !u!1 &812328542
 GameObject:
@@ -106109,6 +106154,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 866118505}
 --- !u!1 &866540159
 GameObject:
@@ -111444,6 +111492,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 869524273}
 --- !u!43 &869797506
 Mesh:
@@ -135500,6 +135551,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 927814322}
 --- !u!43 &931531276
 Mesh:
@@ -136478,6 +136532,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 941906179}
 --- !u!1 &945313387
 GameObject:
@@ -136892,6 +136949,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 953827677}
 --- !u!1 &954199161
 GameObject:
@@ -150646,6 +150706,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1023260731}
 --- !u!1 &1028880468
 GameObject:
@@ -164017,6 +164080,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1091713146}
 --- !u!1 &1106820798
 GameObject:
@@ -171127,6 +171193,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1157922237}
 --- !u!1 &1159432487
 GameObject:
@@ -172266,6 +172335,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1183099120}
 --- !u!1 &1184719219
 GameObject:
@@ -174172,6 +174244,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1215218910}
 --- !u!1 &1215532918
 GameObject:
@@ -174885,6 +174960,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1228167360}
 --- !u!1 &1231770614
 GameObject:
@@ -175811,6 +175889,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1253780514}
 --- !u!1 &1260095079
 GameObject:
@@ -176074,6 +176155,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1264079153}
 --- !u!1 &1264850280
 GameObject:
@@ -179405,6 +179489,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1315451105}
 --- !u!1 &1318029046
 GameObject:
@@ -185562,6 +185649,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1353019755}
 --- !u!1 &1355486693
 GameObject:
@@ -199312,6 +199402,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1423698397}
 --- !u!1 &1424719569
 GameObject:
@@ -201147,6 +201240,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1453435207}
 --- !u!1 &1455198351
 GameObject:
@@ -201322,6 +201418,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1455198355}
 --- !u!1 &1461310801
 GameObject:
@@ -216311,6 +216410,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1389998460}
 --- !u!1 &1597164857
 GameObject:
@@ -223359,6 +223461,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1661621214}
 --- !u!1 &1668332351
 GameObject:
@@ -245184,6 +245289,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1749471967}
 --- !u!1 &1750330664
 GameObject:
@@ -368917,6 +369025,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1885564812}
 --- !u!1 &1886401933
 GameObject:
@@ -371053,6 +371164,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1930605764}
 --- !u!114 &1930605770
 MonoBehaviour:
@@ -371070,6 +371184,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1930605766}
 --- !u!1 &1932742959
 GameObject:
@@ -372759,6 +372876,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1970735254}
 --- !u!1 &1973525339
 GameObject:
@@ -383907,6 +384027,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 2027816170}
 --- !u!1 &2035874277
 GameObject:
@@ -390119,6 +390242,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 2055998752}
 --- !u!1 &2056818345
 GameObject:
@@ -396376,6 +396502,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 2079087160}
 --- !u!108 &2080220520
 Light:
@@ -396470,6 +396599,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 2080220520}
 --- !u!43 &2086970169
 Mesh:
@@ -402039,6 +402171,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 2112703638}
 --- !u!43 &2116058896
 Mesh:
@@ -402424,6 +402559,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 2123422483}
 --- !u!43 &2125312493
 Mesh:
@@ -410528,11 +410666,14 @@ MonoBehaviour:
   bobSpeed: 10
   bobAmount: {x: 0, y: 0.1, z: 0}
   footstepAudioSource: {fileID: 0}
+  sprintAudioSource: {fileID: 0}
   breathingAudioSource: {fileID: 0}
   walkFootstepSound: {fileID: 0}
   sprintFootstepSound: {fileID: 0}
   walkFootstepInterval: 0.5
   sprintFootstepInterval: 0.35
+  enableFootstepPitchVariation: 1
+  footstepPitchVariation: 0.05
   exhaustedBreathingSound: {fileID: 0}
   breathingFadeOutThreshold: 0.3
   exhaustedSpeedReduction: 0.5
@@ -412480,6 +412621,9 @@ MonoBehaviour:
   maxOffDuration: 5
   minTimeBetweenBlinks: 0.5
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 5539532300683696261}
 --- !u!4 &5572989458782274857
 Transform:

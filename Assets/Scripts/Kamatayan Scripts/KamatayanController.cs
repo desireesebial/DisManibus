@@ -103,6 +103,9 @@ public class KamatayanController : MonoBehaviour
     // Point Light behavior tracking
     private bool wasInPointLight25Range = false;
 
+    // Movement pause from EnemyDamageController
+    private bool isMovementPausedExternal = false;
+
     void Reset()
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
@@ -226,6 +229,13 @@ public class KamatayanController : MonoBehaviour
     {
         while (true)
         {
+            // Skip all behavior if movement is paused by EnemyDamageController
+            if (isMovementPausedExternal)
+            {
+                yield return null;
+                continue;
+            }
+
             // Monitor for FirstEncounter trigger
             MonitorFirstEncounterTrigger();
 
@@ -405,6 +415,18 @@ public class KamatayanController : MonoBehaviour
 
         while (isChasing)
         {
+            // Check if movement has been paused by EnemyDamageController
+            if (isMovementPausedExternal)
+            {
+                isChasing = false;
+                if (navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
+                {
+                    navMeshAgent.isStopped = true;
+                }
+                LogDebug("Chase interrupted by movement pause");
+                break;
+            }
+
             if (player == null)
             {
                 isChasing = false;
@@ -934,5 +956,26 @@ public class KamatayanController : MonoBehaviour
     public KamatayanAnimationState GetCurrentState() => currentState;
     public bool IsChasing() => isChasing;
     public void SetPatrolWaypoints(Transform[] waypoints) => patrolWaypoints = waypoints;
+
+    /// <summary>
+    /// Called by EnemyDamageController to sync pause state after attacking player
+    /// </summary>
+    public void SetMovementPausedExternal(bool paused)
+    {
+        isMovementPausedExternal = paused;
+
+        if (paused && navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
+        {
+            navMeshAgent.isStopped = true;
+            navMeshAgent.ResetPath();
+            navMeshAgent.velocity = Vector3.zero;
+            LogDebug($"Movement paused by EnemyDamageController");
+        }
+        else if (!paused && navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
+        {
+            navMeshAgent.isStopped = false;
+            LogDebug($"Movement resumed by EnemyDamageController");
+        }
+    }
 }
 

@@ -56,6 +56,7 @@ public class EnemyDamageController : MonoBehaviour
     private DullahanMeleeAttack dullahanMeleeAttack;
     private EnemySmartPatrol enemySmartPatrol;
     private KuchisakeOnnaController kuchisakeController;
+    private KamatayanController kamatayanController;
     
     public enum EnemyType
     {
@@ -122,6 +123,7 @@ public class EnemyDamageController : MonoBehaviour
         dullahanMeleeAttack = GetComponent<DullahanMeleeAttack>();
         enemySmartPatrol = GetComponent<EnemySmartPatrol>();
         kuchisakeController = GetComponent<KuchisakeOnnaController>();
+        kamatayanController = GetComponent<KamatayanController>();
 
         // Get audio source if not assigned
         if (audioSource == null)
@@ -451,6 +453,11 @@ public class EnemyDamageController : MonoBehaviour
             kuchisakeController.SetMovementPausedExternal(true);
             Debug.Log($"[EnemyDamageController] Triggered KuchisakeOnnaController pause");
         }
+        if (kamatayanController != null)
+        {
+            kamatayanController.SetMovementPausedExternal(true);
+            Debug.Log($"[EnemyDamageController] Triggered KamatayanController pause");
+        }
 
         Debug.Log($"[EnemyDamageController] {gameObject.name} pausing movement for {duration} seconds");
 
@@ -469,6 +476,10 @@ public class EnemyDamageController : MonoBehaviour
         if (kuchisakeController != null)
         {
             kuchisakeController.SetMovementPausedExternal(false);
+        }
+        if (kamatayanController != null)
+        {
+            kamatayanController.SetMovementPausedExternal(false);
         }
 
         // Resume movement
