@@ -65,6 +65,14 @@ namespace SaveLoad
             }
         }
 
+        private void OnApplicationQuit()
+        {
+            if (instance == this)
+            {
+                Destroy(gameObject);
+            }
+        }
+
         public void RegisterEntity(PersistentEntity entity)
         {
             if (entity == null || registeredEntities.Contains(entity))
