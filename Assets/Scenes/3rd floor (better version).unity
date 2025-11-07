@@ -375,10 +375,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minOffDuration: 1
-  maxOffDuration: 5
-  minTimeBetweenBlinks: 0.5
+  minOffDuration: 0.01
+  maxOffDuration: 1
+  minTimeBetweenBlinks: 0.01
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1194084}
 --- !u!1 &7289318
 GameObject:
@@ -8520,10 +8523,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minOffDuration: 1
-  maxOffDuration: 5
-  minTimeBetweenBlinks: 0.5
+  minOffDuration: 0.01
+  maxOffDuration: 1
+  minTimeBetweenBlinks: 0.01
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 313402303}
 --- !u!1 &320051084
 GameObject:
@@ -14157,10 +14163,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minOffDuration: 1
-  maxOffDuration: 5
-  minTimeBetweenBlinks: 0.5
+  minOffDuration: 0.01
+  maxOffDuration: 1
+  minTimeBetweenBlinks: 0.01
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 444757798}
 --- !u!1 &457600828
 GameObject:
@@ -16285,10 +16294,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minOffDuration: 1
-  maxOffDuration: 5
-  minTimeBetweenBlinks: 0.5
+  minOffDuration: 0.01
+  maxOffDuration: 1
+  minTimeBetweenBlinks: 0.01
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 530275079}
 --- !u!1 &534136856
 GameObject:
@@ -157341,6 +157353,10 @@ MonoBehaviour:
   vignetteAtLow: 0.8
   enableBlur: 0
   maxBlurIntensity: 5
+  blurAtFull: 0
+  blurAtHigh: 2.5
+  blurAtMid: 3
+  blurAtLow: 3.5
   transitionSpeed: 3
   useSmoothEasing: 1
   enablePulseAtCritical: 1
@@ -160772,10 +160788,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minOffDuration: 1
-  maxOffDuration: 5
-  minTimeBetweenBlinks: 0.5
+  minOffDuration: 0.01
+  maxOffDuration: 1
+  minTimeBetweenBlinks: 0.01
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 755660740}
 --- !u!1 &756409882
 GameObject:
@@ -169930,10 +169949,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minOffDuration: 1
-  maxOffDuration: 5
-  minTimeBetweenBlinks: 0.5
+  minOffDuration: 0.01
+  maxOffDuration: 1
+  minTimeBetweenBlinks: 0.01
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1043676662}
 --- !u!1 &1045351165
 GameObject:
@@ -173628,10 +173650,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minOffDuration: 1
-  maxOffDuration: 5
-  minTimeBetweenBlinks: 0.5
+  minOffDuration: 0.01
+  maxOffDuration: 1
+  minTimeBetweenBlinks: 0.01
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1183292778}
 --- !u!1 &1183491793
 GameObject:
@@ -176630,10 +176655,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minOffDuration: 1
-  maxOffDuration: 5
-  minTimeBetweenBlinks: 0.5
+  minOffDuration: 0.01
+  maxOffDuration: 1
+  minTimeBetweenBlinks: 0.01
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1274198107}
 --- !u!1 &1274926968
 GameObject:
@@ -185061,10 +185089,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minOffDuration: 1
-  maxOffDuration: 5
-  minTimeBetweenBlinks: 0.5
+  minOffDuration: 0.01
+  maxOffDuration: 1
+  minTimeBetweenBlinks: 0.01
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1573829566}
 --- !u!1 &1581275235
 GameObject:
@@ -186669,10 +186700,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minOffDuration: 1
-  maxOffDuration: 5
-  minTimeBetweenBlinks: 0.5
+  minOffDuration: 0.01
+  maxOffDuration: 1
+  minTimeBetweenBlinks: 0.01
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1635171856}
 --- !u!1 &1635975126
 GameObject:
@@ -332059,10 +332093,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minOffDuration: 1
-  maxOffDuration: 5
-  minTimeBetweenBlinks: 0.5
+  minOffDuration: 0.01
+  maxOffDuration: 1
+  minTimeBetweenBlinks: 0.01
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 1904764534}
 --- !u!1 &1909217185
 GameObject:
@@ -356967,10 +357004,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8f7e9d3c2b4a5f6d8e9c1b2a3d4e5f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minOffDuration: 1
-  maxOffDuration: 5
-  minTimeBetweenBlinks: 0.5
+  minOffDuration: 0.01
+  maxOffDuration: 1
+  minTimeBetweenBlinks: 0.01
   maxTimeBetweenBlinks: 3
+  enablePlayerDetection: 1
+  playerDetectionRange: 27.5
+  excludeFromBlinking: 0
   targetLight: {fileID: 108193848395525621}
 --- !u!108 &108490534800839736
 Light:

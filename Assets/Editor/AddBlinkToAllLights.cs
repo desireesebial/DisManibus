@@ -16,7 +16,6 @@ namespace DisManibus.Editor
         private static readonly string[] ScenePaths = new string[]
         {
             "Assets/Scenes/1st Floor (BAD ENDING).unity",
-            "Assets/Scenes/1st Floor (GOOD ENDING).unity",
             "Assets/Scenes/2nd Floor (Better Version).unity",
             "Assets/Scenes/3rd floor (better version).unity",
             "Assets/Scenes/4th Floor (better version).unity"
@@ -100,10 +99,17 @@ namespace DisManibus.Editor
                     // Add BlinkLight component
                     BlinkLight blinkLight = light.gameObject.AddComponent<BlinkLight>();
                     blinkLight.targetLight = light;
-                    blinkLight.minOffDuration = 1f;
-                    blinkLight.maxOffDuration = 5f;
-                    blinkLight.minTimeBetweenBlinks = 0.5f;
+
+                    // Set new default values (faster blinking)
+                    blinkLight.minOffDuration = 0.01f;
+                    blinkLight.maxOffDuration = 1f;
+                    blinkLight.minTimeBetweenBlinks = 0.01f;
                     blinkLight.maxTimeBetweenBlinks = 3f;
+
+                    // Set player detection settings
+                    blinkLight.enablePlayerDetection = true;
+                    blinkLight.playerDetectionRange = 27.5f;
+                    blinkLight.excludeFromBlinking = false;
 
                     Debug.Log($"Added BlinkLight to: {light.gameObject.name} in scene {scene.name}");
                     sceneLightsAdded++;
