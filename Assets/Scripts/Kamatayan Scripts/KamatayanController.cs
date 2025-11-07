@@ -37,6 +37,16 @@ public class KamatayanController : MonoBehaviour
     [SerializeField] float autoPatrolRadius = 20f;
     [SerializeField] int minWaypointsToGenerate = 4;
 
+    [Header("FirstEncounter Alternating Patrol")]
+    [SerializeField] VideoTrigger firstEncounterTrigger;
+    [SerializeField] float playerInterceptDistance = 15f; // Distance ahead of player to intercept
+    [SerializeField] float predictionTime = 4f; // Seconds to predict player movement (3-5)
+
+    [Header("Point Light Behaviors")]
+    [SerializeField] Transform pointLight25; // Safe zone - disables alternating patrol
+    [SerializeField] float pointLight25Range = 25f; // Detection radius for Point Light 25
+    [SerializeField] Transform pointLight24; // Teleport destination when 6th digit entered
+
     [Header("Looking Behavior")]
     [SerializeField] float lookingInterval = 10f; // How many waypoints before looking
     [SerializeField] float lookingDuration = 4f;
@@ -84,6 +94,15 @@ public class KamatayanController : MonoBehaviour
     private List<Vector3> generatedWaypoints = new List<Vector3>();
     private bool useGeneratedWaypoints = false;
 
+    // FirstEncounter alternating patrol tracking
+    private bool alternatingPatrolActive = false;
+    private bool shouldGoNearPlayer = false;
+    private Vector3 lastPlayerPosition;
+    private Vector3 playerVelocity;
+
+    // Point Light behavior tracking
+    private bool wasInPointLight25Range = false;
+
     void Reset()
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
@@ -109,6 +128,13 @@ public class KamatayanController : MonoBehaviour
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
             if (playerObj != null)
                 player = playerObj.transform;
+        }
+
+        // Initialize player tracking
+        if (player != null)
+        {
+            lastPlayerPosition = player.position;
+            playerVelocity = Vector3.zero;
         }
 
         // Setup waypoint system
@@ -200,6 +226,12 @@ public class KamatayanController : MonoBehaviour
     {
         while (true)
         {
+            // Monitor for FirstEncounter trigger
+            MonitorFirstEncounterTrigger();
+
+            // Update player velocity tracking
+            UpdatePlayerVelocity();
+
             // Always check for player detection first
             if (CheckForPlayer() && !isChasing)
             {
@@ -500,28 +532,213 @@ public class KamatayanController : MonoBehaviour
     }
 
     /// <summary>
-    /// Get next waypoint in sequence
+    /// Monitor FirstEncounter trigger and activate alternating patrol when triggered
     /// </summary>
-    Vector3 GetNextWaypoint()
+    void MonitorFirstEncounterTrigger()
     {
-        int waypointCount = GetWaypointCount();
-        
-        if (waypointCount == 0)
-        {
-            Debug.LogWarning($"[{name}] No waypoints available!");
-            return transform.position;
-        }
+        if (firstEncounterTrigger == null || alternatingPatrolActive)
+            return;
 
-        if (useRandomPatrol)
+        if (firstEncounterTrigger.hasPlayed)
         {
-            currentWaypointIndex = Random.Range(0, waypointCount);
+            alternatingPatrolActive = true;
+            shouldGoNearPlayer = false; // Start with random waypoint first
+            LogDebug("FirstEncounter triggered! Activating alternating patrol system");
+        }
+    }
+
+    /// <summary>
+    /// Update player velocity for prediction
+    /// </summary>
+    void UpdatePlayerVelocity()
+    {
+        if (player == null)
+            return;
+
+        // Calculate velocity based on position change
+        Vector3 currentPlayerPosition = player.position;
+        playerVelocity = (currentPlayerPosition - lastPlayerPosition) / Time.deltaTime;
+        lastPlayerPosition = currentPlayerPosition;
+    }
+
+    /// <summary>
+    /// Get predicted player position based on movement direction
+    /// </summary>
+    Vector3 GetPredictedPlayerPosition()
+    {
+        if (player == null)
+            return transform.position;
+
+        // Predict where player will be
+        Vector3 predictedPosition = player.position + (playerVelocity * predictionTime);
+
+        // If player is not moving much, just get a position near them
+        if (playerVelocity.magnitude < 0.5f)
+        {
+            // Player is stationary, pick a random position around them
+            float randomAngle = Random.Range(0f, 360f);
+            Vector3 offset = Quaternion.Euler(0, randomAngle, 0) * Vector3.forward * playerInterceptDistance;
+            predictedPosition = player.position + offset;
         }
         else
         {
-            currentWaypointIndex = (currentWaypointIndex + 1) % waypointCount;
+            // Add slight offset to the side so not directly in their path
+            Vector3 rightOffset = Vector3.Cross(playerVelocity.normalized, Vector3.up) * Random.Range(-5f, 5f);
+            predictedPosition += rightOffset;
         }
 
-        return GetWaypointPosition(currentWaypointIndex);
+        // Find valid NavMesh position near predicted location
+        if (NavMesh.SamplePosition(predictedPosition, out NavMeshHit hit, playerInterceptDistance * 2f, NavMesh.AllAreas))
+        {
+            LogDebug($"Predicted player interception at {hit.position} (player moving at {playerVelocity.magnitude:F2} m/s)");
+            return hit.position;
+        }
+
+        // Fallback to near player's current position
+        if (NavMesh.SamplePosition(player.position, out hit, playerInterceptDistance, NavMesh.AllAreas))
+        {
+            return hit.position;
+        }
+
+        // Last resort: return current position
+        return transform.position;
+    }
+
+    /// <summary>
+    /// Check if player is near Point Light 25 (safe zone)
+    /// </summary>
+    bool IsPlayerNearPointLight25()
+    {
+        if (pointLight25 == null || player == null)
+            return false;
+
+        float distance = Vector3.Distance(player.position, pointLight25.position);
+        return distance <= pointLight25Range;
+    }
+
+    /// <summary>
+    /// Find the nearest existing waypoint to Point Light 24
+    /// </summary>
+    Vector3 FindNearestWaypointToPointLight24()
+    {
+        if (pointLight24 == null)
+        {
+            LogDebug("Point Light 24 not assigned!");
+            return transform.position;
+        }
+
+        int waypointCount = GetWaypointCount();
+        if (waypointCount == 0)
+        {
+            LogDebug("No waypoints available for teleport!");
+            return pointLight24.position;
+        }
+
+        Vector3 nearestWaypoint = GetWaypointPosition(0);
+        float nearestDistance = Vector3.Distance(pointLight24.position, nearestWaypoint);
+
+        for (int i = 1; i < waypointCount; i++)
+        {
+            Vector3 waypoint = GetWaypointPosition(i);
+            float distance = Vector3.Distance(pointLight24.position, waypoint);
+
+            if (distance < nearestDistance)
+            {
+                nearestWaypoint = waypoint;
+                nearestDistance = distance;
+            }
+        }
+
+        LogDebug($"Found nearest waypoint to Point Light 24: {nearestWaypoint} (distance: {nearestDistance:F2}m)");
+        return nearestWaypoint;
+    }
+
+    /// <summary>
+    /// Teleport Kamatayan to nearest waypoint near Point Light 24
+    /// Called by KeyPadScript when player enters 6th digit
+    /// </summary>
+    public void TeleportToPointLight24()
+    {
+        Vector3 teleportDestination = FindNearestWaypointToPointLight24();
+
+        // Teleport Kamatayan
+        if (navMeshAgent != null && navMeshAgent.isOnNavMesh)
+        {
+            navMeshAgent.Warp(teleportDestination);
+            LogDebug($"Teleported to Point Light 24 area at {teleportDestination}");
+        }
+        else
+        {
+            transform.position = teleportDestination;
+            LogDebug($"Force teleported to Point Light 24 area at {teleportDestination}");
+        }
+    }
+
+    /// <summary>
+    /// Get next waypoint in sequence - alternates between random waypoints and player intercept
+    /// </summary>
+    Vector3 GetNextWaypoint()
+    {
+        // Check if player is near Point Light 25 (safe zone)
+        bool playerNearLight25 = IsPlayerNearPointLight25();
+
+        // Handle Point Light 25 safe zone logic
+        if (playerNearLight25 && !wasInPointLight25Range)
+        {
+            // Player just entered Point Light 25 range
+            LogDebug("Player entered Point Light 25 safe zone - disabling alternating patrol");
+            wasInPointLight25Range = true;
+        }
+        else if (!playerNearLight25 && wasInPointLight25Range)
+        {
+            // Player just exited Point Light 25 range
+            LogDebug("Player exited Point Light 25 safe zone - resuming alternating patrol");
+            wasInPointLight25Range = false;
+        }
+
+        // If alternating patrol is active AND player is NOT in Point Light 25 range
+        if (alternatingPatrolActive && !playerNearLight25)
+        {
+            if (shouldGoNearPlayer)
+            {
+                // Go near player (predicted position)
+                LogDebug("Next destination: Intercept player");
+                shouldGoNearPlayer = false; // Next time go to random waypoint
+                return GetPredictedPlayerPosition();
+            }
+            else
+            {
+                // Go to random waypoint from existing patrol
+                LogDebug("Next destination: Random waypoint");
+                shouldGoNearPlayer = true; // Next time go near player
+
+                int waypointCount = GetWaypointCount();
+                if (waypointCount == 0)
+                {
+                    Debug.LogWarning($"[{name}] No waypoints available!");
+                    return transform.position;
+                }
+
+                // Always pick a random waypoint
+                currentWaypointIndex = Random.Range(0, waypointCount);
+                return GetWaypointPosition(currentWaypointIndex);
+            }
+        }
+        else
+        {
+            // Normal patrol behavior (or player in Point Light 25 safe zone)
+            int waypointCount = GetWaypointCount();
+
+            if (waypointCount == 0)
+            {
+                Debug.LogWarning($"[{name}] No waypoints available!");
+                return transform.position;
+            }
+
+            // Always use random patrol when in this mode
+            currentWaypointIndex = Random.Range(0, waypointCount);
+            return GetWaypointPosition(currentWaypointIndex);
+        }
     }
 
     /// <summary>

@@ -31,7 +31,11 @@ public class KeyPadScript : MonoBehaviour
     public AudioClip successSound;
     public AudioClip failSound;
     public AudioClip buttonPressSound;
-    
+
+    [Header("Kamatayan Integration (KeyPad2 only)")]
+    public bool isKeyPad2 = false; // Set to true for KeyPad2
+    public KamatayanController kamatayanController; // Reference to Kamatayan
+
     private int Presses;
     private string result;
     private string ScreenText;
@@ -106,7 +110,21 @@ public class KeyPadScript : MonoBehaviour
                         }
                         Code[Presses] = buttonNumber;
                         Presses += 1;
-                        
+
+                        // Check if this is KeyPad2 and 6th digit was just entered
+                        if (isKeyPad2 && Presses == 6)
+                        {
+                            Debug.Log("[KeyPad2] 6th digit entered - triggering Kamatayan teleport!");
+                            if (kamatayanController != null)
+                            {
+                                kamatayanController.TeleportToPointLight24();
+                            }
+                            else
+                            {
+                                Debug.LogWarning("[KeyPad2] KamatayanController reference not set!");
+                            }
+                        }
+
                         // Play button press sound
                         PlayButtonPressSound();
                     }
