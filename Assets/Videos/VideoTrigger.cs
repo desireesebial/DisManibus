@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Video;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class VideoTrigger : MonoBehaviour
 {
@@ -22,6 +23,10 @@ public class VideoTrigger : MonoBehaviour
 
     [Tooltip("Optional: Reference to FirstPersonController. If not set, will find it automatically")]
     public FirstPersonController playerController;
+
+    [Header("Post-Video Behavior")]
+    [Tooltip("Scene to load after video finishes. Leave empty to stay in current scene")]
+    public string sceneToLoadAfterVideo = "";
 
     // Internal variables
     public bool hasPlayed = false; // Public so KuchisakeOnna can monitor it
@@ -257,6 +262,12 @@ public class VideoTrigger : MonoBehaviour
     {
         Debug.Log("VideoTrigger: Video finished playing");
         StopVideo();
+
+        // Load scene if specified
+        if (!string.IsNullOrEmpty(sceneToLoadAfterVideo))
+        {
+            LoadSceneAfterVideo();
+        }
     }
 
     private void StopVideo()
@@ -313,6 +324,22 @@ public class VideoTrigger : MonoBehaviour
         }
 
         Debug.Log("VideoTrigger: Game state restored");
+    }
+
+    private void LoadSceneAfterVideo()
+    {
+        Debug.Log($"VideoTrigger: Loading scene '{sceneToLoadAfterVideo}' after video");
+
+        // Check if SceneTransitionManager exists for smooth transitions
+        if (SceneTransitionManager.Instance != null)
+        {
+            SceneTransitionManager.Instance.LoadScene(sceneToLoadAfterVideo, "Returning to Menu...");
+        }
+        else
+        {
+            // Fallback to direct scene loading if no transition manager
+            SceneManager.LoadScene(sceneToLoadAfterVideo);
+        }
     }
 
     private void OnDestroy()
