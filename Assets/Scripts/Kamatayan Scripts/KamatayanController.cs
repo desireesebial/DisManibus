@@ -216,18 +216,13 @@ public class KamatayanController : MonoBehaviour
 
             // Normal patrol cycle
             yield return StartCoroutine(PatrolToWaypointState());
-            
-            // Wait at waypoint
+
+            // Look around immediately at every waypoint
+            yield return StartCoroutine(LookAroundState());
+
+            // Wait at waypoint (configurable via waitTimeAtWaypoint field)
             yield return StartCoroutine(WaitAtWaypointState());
-            
-            // Periodically look around
-            waypointsVisitedSinceLastLook++;
-            if (waypointsVisitedSinceLastLook >= Mathf.Max(2, lookingInterval / 10f))
-            {
-                yield return StartCoroutine(LookAroundState());
-                waypointsVisitedSinceLastLook = 0;
-            }
-            
+
             yield return null;
         }
     }
@@ -269,10 +264,14 @@ public class KamatayanController : MonoBehaviour
             if (!navMeshAgent.pathPending)
             {
                 float distanceToDestination = Vector3.Distance(transform.position, destination);
-                
-                if (distanceToDestination <= waypointReachedDistance)
+
+                // Check if reached waypoint (either by distance OR by NavMesh arrival)
+                bool hasArrived = distanceToDestination <= waypointReachedDistance;
+                bool navMeshArrived = navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance + 0.5f;
+
+                if (hasArrived || navMeshArrived)
                 {
-                    LogDebug($"Reached waypoint {currentWaypointIndex}");
+                    LogDebug($"Reached waypoint {currentWaypointIndex} (distance: {distanceToDestination:F2}m, remaining: {navMeshAgent.remainingDistance:F2}m)");
                     break;
                 }
             }
