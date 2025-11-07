@@ -57,6 +57,7 @@ public class EnemyDamageController : MonoBehaviour
     private EnemySmartPatrol enemySmartPatrol;
     private KuchisakeOnnaController kuchisakeController;
     private KamatayanController kamatayanController;
+    private JenglotAI jenglotAI;
     
     public enum EnemyType
     {
@@ -124,6 +125,7 @@ public class EnemyDamageController : MonoBehaviour
         enemySmartPatrol = GetComponent<EnemySmartPatrol>();
         kuchisakeController = GetComponent<KuchisakeOnnaController>();
         kamatayanController = GetComponent<KamatayanController>();
+        jenglotAI = GetComponent<JenglotAI>();
 
         // Get audio source if not assigned
         if (audioSource == null)
@@ -458,6 +460,11 @@ public class EnemyDamageController : MonoBehaviour
             kamatayanController.SetMovementPausedExternal(true);
             Debug.Log($"[EnemyDamageController] Triggered KamatayanController pause");
         }
+        if (jenglotAI != null)
+        {
+            jenglotAI.SetMovementPausedExternal(true);
+            Debug.Log($"[EnemyDamageController] Triggered JenglotAI pause");
+        }
 
         Debug.Log($"[EnemyDamageController] {gameObject.name} pausing movement for {duration} seconds");
 
@@ -480,6 +487,10 @@ public class EnemyDamageController : MonoBehaviour
         if (kamatayanController != null)
         {
             kamatayanController.SetMovementPausedExternal(false);
+        }
+        if (jenglotAI != null)
+        {
+            jenglotAI.SetMovementPausedExternal(false);
         }
 
         // Resume movement

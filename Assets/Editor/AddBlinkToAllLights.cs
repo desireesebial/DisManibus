@@ -96,6 +96,9 @@ namespace DisManibus.Editor
                         continue;
                     }
 
+                    // Set light to use hard shadows
+                    light.shadows = LightShadows.Hard;
+
                     // Add BlinkLight component
                     BlinkLight blinkLight = light.gameObject.AddComponent<BlinkLight>();
                     blinkLight.targetLight = light;
@@ -111,7 +114,7 @@ namespace DisManibus.Editor
                     blinkLight.playerDetectionRange = 27.5f;
                     blinkLight.excludeFromBlinking = false;
 
-                    Debug.Log($"Added BlinkLight to: {light.gameObject.name} in scene {scene.name}");
+                    Debug.Log($"Added BlinkLight and Hard Shadows to: {light.gameObject.name} in scene {scene.name}");
                     sceneLightsAdded++;
                     totalLightsAdded++;
                 }

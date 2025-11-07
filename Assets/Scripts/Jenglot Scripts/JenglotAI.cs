@@ -84,6 +84,7 @@ public class JenglotAI : MonoBehaviour
     JenglotAnimationState currentAnimationState = JenglotAnimationState.Idle;
     bool wasFrozenByFlashlight = false; // Track if we were frozen to maintain freeze state
     bool isMovementPaused = false; // Track if movement is paused after attack
+    bool isMovementPausedExternal = false; // Track if movement is paused by EnemyDamageController
 
     void Reset()
     {
@@ -174,8 +175,8 @@ public class JenglotAI : MonoBehaviour
         if (player == null || navMeshAgent == null)
             return;
 
-        // Don't update if movement is paused (after attack)
-        if (isMovementPaused)
+        // Don't update if movement is paused (after attack or by EnemyDamageController)
+        if (isMovementPaused || isMovementPausedExternal)
         {
             return;
         }
@@ -514,6 +515,27 @@ public class JenglotAI : MonoBehaviour
         }
 
         isMovementPaused = false;
+    }
+
+    /// <summary>
+    /// Called by EnemyDamageController to sync pause state after attacking player
+    /// </summary>
+    public void SetMovementPausedExternal(bool paused)
+    {
+        isMovementPausedExternal = paused;
+
+        if (paused && navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
+        {
+            navMeshAgent.isStopped = true;
+            navMeshAgent.ResetPath();
+            navMeshAgent.velocity = Vector3.zero;
+            Debug.Log($"[{name}] Movement paused by EnemyDamageController");
+        }
+        else if (!paused && navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
+        {
+            navMeshAgent.isStopped = false;
+            Debug.Log($"[{name}] Movement resumed by EnemyDamageController");
+        }
     }
 
     void OnDrawGizmosSelected()
