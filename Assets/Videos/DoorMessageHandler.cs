@@ -73,7 +73,18 @@ public class DoorMessageHandler : MonoBehaviour
 
         // ✅ Trigger dialogue when locked
         if (dialogueManager)
+        {
             dialogueManager.ShowLine(lockedDoorDialogue);
+
+            // Wait for typing to finish
+            yield return new WaitUntil(() => dialogueManager.lineFinished);
+
+            // Display for 2 more seconds
+            yield return new WaitForSeconds(2f);
+
+            // Clear the dialogue
+            dialogueManager.ClearLine();
+        }
 
         // Optional: keep visual/sound feedback
         ShowMessage("Door Locked");

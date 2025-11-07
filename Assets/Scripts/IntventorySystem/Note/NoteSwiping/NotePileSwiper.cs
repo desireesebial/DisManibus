@@ -28,7 +28,7 @@ public class NotePileSwiper : MonoBehaviour
     public bool keepLastPage = true;
 
     [Header("Cancel / Resume")]
-    public KeyCode cancelKey = KeyCode.Escape;
+    public KeyCode cancelKey = KeyCode.Tab;
     [Tooltip("Persist remaining pages across sessions using PlayerPrefs")] public bool persistProgress = true;
     [Tooltip("Unique identifier for this pile to persist progress")] public string pileId = "DefaultPile";
 
@@ -41,6 +41,17 @@ public class NotePileSwiper : MonoBehaviour
     [TextArea(2, 4)]
     public string customControlText = "";
 
+    [Header("Dialogue Integration")]
+    [Tooltip("Reference to DialogueManager to show character thoughts")]
+    public DialogueManager dialogueManager;
+    [Tooltip("Character thoughts/subtitles for each page swipe (from first to last). Accumulated letters will be appended.")]
+    public List<string> pageSubtitles = new List<string>();
+    [Tooltip("After this many swipes, show the hint message")]
+    public int showHintAfterSwipeCount = 4;
+    [Tooltip("Hint message to show after specified swipes (about combining letters)")]
+    [TextArea(2, 4)]
+    public string hintMessage = "Wait... if I combine these letters from top to bottom...";
+
     [Header("State")]
     public bool isActive = false;
 
@@ -52,6 +63,9 @@ public class NotePileSwiper : MonoBehaviour
     private Dictionary<RectTransform, Vector2> originalPositions = new Dictionary<RectTransform, Vector2>();
     private Dictionary<RectTransform, Vector3> originalRotations = new Dictionary<RectTransform, Vector3>();
     private Dictionary<RectTransform, Vector3> originalScales = new Dictionary<RectTransform, Vector3>();
+    private int swipeCount = 0;
+    private string accumulatedLetters = "";
+    private int initialPageCount = 0;
 
     // Fired once when the pile is fully cleared (after optional final note is shown)
     public System.Action OnPileCleared;
@@ -72,18 +86,23 @@ public class NotePileSwiper : MonoBehaviour
         NormalizeOrder();
         CacheOriginalScale();
         clearedFired = false;
-        
+
         // Store all original pages and their transforms if not already stored
         if (allOriginalPages.Count == 0 && pilePages != null && pilePages.Count > 0)
         {
             StoreOriginalPages();
         }
-        
+
         if (!progressApplied)
         {
             LoadAndApplyProgress();
             progressApplied = true;
         }
+
+        // Reset dialogue tracking for fresh session
+        swipeCount = 0;
+        accumulatedLetters = "";
+        initialPageCount = pilePages != null ? pilePages.Count : 0;
 
         // Initialize control guide (hide it initially, will show when ActivatePile(true) is called)
         HideControlGuide();
@@ -140,10 +159,23 @@ public class NotePileSwiper : MonoBehaviour
         if (active)
         {
             ShowControlGuide();
+
+            // Show first dialogue for the currently visible page
+            if (pilePages != null && pilePages.Count > 0)
+            {
+                int currentSubtitleIndex = initialPageCount - pilePages.Count;
+                ShowPageSubtitle(currentSubtitleIndex);
+            }
         }
         else
         {
             HideControlGuide();
+
+            // Clear dialogue when pile is deactivated
+            if (dialogueManager != null)
+            {
+                dialogueManager.ClearLine();
+            }
         }
     }
 
@@ -202,6 +234,13 @@ public class NotePileSwiper : MonoBehaviour
         // Save progress after each discard
         SaveProgress();
 
+        // Show dialogue for the NEW visible page (if any remain)
+        if (pilePages.Count > 0)
+        {
+            int currentSubtitleIndex = initialPageCount - pilePages.Count;
+            ShowPageSubtitle(currentSubtitleIndex);
+        }
+
         // Pop next page slightly for feedback
         if (pilePages.Count > 0)
         {
@@ -234,6 +273,13 @@ public class NotePileSwiper : MonoBehaviour
         if (!isActive || isAnimating) return;
         SaveProgress();
         isActive = false;
+
+        // Clear dialogue when cancelled
+        if (dialogueManager != null)
+        {
+            dialogueManager.ClearLine();
+        }
+
         OnCancelled?.Invoke();
     }
 
@@ -343,6 +389,11 @@ public class NotePileSwiper : MonoBehaviour
         clearedFired = false;
         isAnimating = false;
 
+        // Reset dialogue tracking
+        swipeCount = 0;
+        accumulatedLetters = "";
+        initialPageCount = pilePages.Count;
+
         Debug.Log($"Pile reset! {pilePages.Count} pages restored.");
     }
 
@@ -399,6 +450,88 @@ public class NotePileSwiper : MonoBehaviour
         if (controlGuideText != null)
         {
             controlGuideText.gameObject.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// Shows character thoughts and accumulated letters for the currently visible page.
+    /// After specified number of subtitles shown, shows hint about combining letters.
+    /// </summary>
+    /// <param name="subtitleIndex">Index of the subtitle to show (0-based)</param>
+    private void ShowPageSubtitle(int subtitleIndex)
+    {
+        if (dialogueManager == null) return;
+
+        // Check if we have a subtitle for this index
+        if (subtitleIndex >= 0 && subtitleIndex < pageSubtitles.Count)
+        {
+            string subtitle = pageSubtitles[subtitleIndex];
+
+            // Try to extract letter from subtitle (looks for single uppercase letters)
+            string extractedLetter = ExtractLetterFromSubtitle(subtitle);
+            if (!string.IsNullOrEmpty(extractedLetter))
+            {
+                accumulatedLetters += extractedLetter;
+            }
+
+            // Build the full dialogue message with accumulated letters
+            string fullMessage = subtitle;
+            if (!string.IsNullOrEmpty(accumulatedLetters))
+            {
+                fullMessage += $" - Letters so far: {accumulatedLetters}";
+            }
+
+            dialogueManager.ShowLine(fullMessage);
+            Debug.Log($"[NotePileSwiper] Showing subtitle {subtitleIndex}: {fullMessage}");
+        }
+
+        // After showing the specified subtitle index (converted to count), show the hint
+        int subtitlesShown = subtitleIndex + 1;
+        if (subtitlesShown == showHintAfterSwipeCount && !string.IsNullOrEmpty(hintMessage))
+        {
+            // Wait a bit before showing hint (let previous dialogue finish)
+            StartCoroutine(ShowHintAfterDelay(1.5f));
+        }
+    }
+
+    /// <summary>
+    /// Extracts single uppercase letter from subtitle text.
+    /// Looks for patterns like 'B' or "B" or just B surrounded by spaces/punctuation.
+    /// </summary>
+    private string ExtractLetterFromSubtitle(string subtitle)
+    {
+        if (string.IsNullOrEmpty(subtitle)) return "";
+
+        // Look for single uppercase letters between quotes or apostrophes
+        System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex(@"['""']([A-Z])['""']");
+        var match = regex.Match(subtitle);
+        if (match.Success)
+        {
+            return match.Groups[1].Value;
+        }
+
+        // Fallback: look for standalone uppercase letter surrounded by spaces/punctuation
+        regex = new System.Text.RegularExpressions.Regex(@"\b([A-Z])\b");
+        match = regex.Match(subtitle);
+        if (match.Success)
+        {
+            return match.Groups[1].Value;
+        }
+
+        return "";
+    }
+
+    /// <summary>
+    /// Shows the hint message after a delay to let previous dialogue finish.
+    /// </summary>
+    private IEnumerator ShowHintAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (dialogueManager != null && !string.IsNullOrEmpty(hintMessage))
+        {
+            dialogueManager.ShowLine(hintMessage);
+            Debug.Log($"[NotePileSwiper] Showing hint: {hintMessage}");
         }
     }
 }
