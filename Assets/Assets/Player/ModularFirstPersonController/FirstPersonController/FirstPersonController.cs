@@ -241,6 +241,8 @@ public class FirstPersonController : MonoBehaviour
 
     public bool IsCrouched => isCrouched;
     public bool IsSprinting => isSprinting;
+    public float SprintRemaining => sprintRemaining;
+    public bool IsFatigued => isFatigued;
 
     public void SetCrouchState(bool shouldCrouch)
     {
@@ -696,8 +698,9 @@ public class FirstPersonController : MonoBehaviour
             HeadBob();
         }
 
-        HandleFootsteps();
-        HandleExhaustedBreathing();
+        // DISABLED: Audio now handled by PlayerAudioManager.cs
+        // HandleFootsteps();
+        // HandleExhaustedBreathing();
         HandleExhaustion();
 
     }
