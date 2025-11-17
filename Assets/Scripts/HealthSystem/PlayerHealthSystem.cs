@@ -40,6 +40,10 @@ public class PlayerHealthSystem : MonoBehaviour
     public float damageFlashDuration = 0.2f;
     public Color damageFlashColor = Color.red;
 
+    [Header("Directional Damage Indicator")]
+    [Tooltip("Reference to the directional damage indicator component")]
+    public HealthSystem.DirectionalDamageIndicator damageIndicator;
+
     [Header("Player Controller")]
     public FirstPersonController playerController;
 
@@ -246,6 +250,23 @@ public class PlayerHealthSystem : MonoBehaviour
         else
         {
             Debug.LogWarning($"Health did not change! This should not happen. damage={damage}, health={currentHealth}");
+        }
+    }
+
+    /// <summary>
+    /// Applies damage to the player and shows directional damage indicator
+    /// </summary>
+    /// <param name="damage">Amount of damage to apply</param>
+    /// <param name="enemyPosition">World position of the enemy that dealt damage</param>
+    public void ApplyDamage(int damage, Vector3 enemyPosition)
+    {
+        // Apply the damage using the standard method
+        ApplyDamage(damage);
+
+        // Show directional damage indicator if available
+        if (damageIndicator != null && IsAlive)
+        {
+            damageIndicator.ShowDamageIndicator(enemyPosition, damage);
         }
     }
 
@@ -689,21 +710,21 @@ public class PlayerHealthSystem : MonoBehaviour
             {
                 damageAmount = Mathf.Max(1, jenglotDamage);
                 Debug.Log($"Jenglot hit detected! Applying {damageAmount} damage");
-                TakeDamage(damageAmount);
+                ApplyDamage(damageAmount, enemyPosition);
                 damageApplied = true;
             }
             else if (!string.IsNullOrEmpty(kamatayanTag) && other.CompareTag(kamatayanTag))
             {
                 damageAmount = Mathf.Max(1, kamatayanDamage);
                 Debug.Log($"Kamatayan hit detected! Applying {damageAmount} damage");
-                TakeDamage(damageAmount);
+                ApplyDamage(damageAmount, enemyPosition);
                 damageApplied = true;
             }
             else if (!string.IsNullOrEmpty(dullahanTag) && other.CompareTag(dullahanTag))
             {
                 damageAmount = Mathf.Max(1, dullahanDamage);
                 Debug.Log($"Dullahan hit detected! Applying {damageAmount} damage");
-                TakeDamage(damageAmount);
+                ApplyDamage(damageAmount, enemyPosition);
                 damageApplied = true;
             }
             else

@@ -201,8 +201,8 @@ public class EnemyDamageController : MonoBehaviour
 
         Debug.Log($"[EnemyDamageController] {gameObject.name} ({enemyType}) is attacking player for {damageToPlayer} damage");
 
-        // Deal damage to player FIRST
-        playerHealthSystem.ApplyDamage(damageToPlayer);
+        // Deal damage to player FIRST (with enemy position for directional damage indicator)
+        playerHealthSystem.ApplyDamage(damageToPlayer, transform.position);
 
         // ONLY play attack sound AFTER damage is successfully applied to player
         if (audioSource != null && attackSound != null)

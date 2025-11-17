@@ -711,7 +711,7 @@ public class KuchisakeOnnaController : MonoBehaviour
             PlayerHealthSystem playerHealth = player.GetComponent<PlayerHealthSystem>();
             if (playerHealth != null)
             {
-                playerHealth.ApplyDamage(attackDamage);
+                playerHealth.ApplyDamage(attackDamage, transform.position);
                 Debug.Log($"[KuchisakeOnna] Attacked player for {attackDamage} damage. Player health: {playerHealth.CurrentHealth}");
 
                 // Check if player died
